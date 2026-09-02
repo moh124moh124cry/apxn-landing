@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    
     <!-- إعدادات SEO الأساسية -->
     <title>Apex Network (APXN) | Web3 Cloud Mining</title>
     <meta name="description" content="Apex Network is a decentralized Web3 cloud mining project on the Binance Smart Chain (BSC). Join us and start mining APXN tokens directly from Telegram.">
@@ -23,78 +23,298 @@
     <meta name="twitter:image" content="https://apxn.network/logo2%20(1).png">
 
     <!-- أيقونة الموقع (Favicon) -->
-    <link rel="icon" href="logo2 (1).png" type="image/png">
+    <link rel="icon" href="logo2%20(1).png" type="image/png">
 
-    <!-- مكتبة Tailwind CSS -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- إعدادات ألوان مخصصة لتناسب المشروع -->
+    <!-- Custom Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        apex: '#3b82f6', // لون أزرق احترافي
-                        dark: '#0f172a'
+                        slate: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+    <style>
+        .hero-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: rgba(202, 138, 4, 0.15);
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
 </head>
-<body class="bg-dark text-white font-sans antialiased selection:bg-apex selection:text-white flex flex-col min-h-screen">
+<body class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-900">
 
-    <!-- شريط التنقل -->
-    <header class="w-full py-6 px-4 border-b border-gray-800 bg-dark/80 backdrop-blur-md fixed top-0 z-50">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="logo2 (1).png" alt="Apex Network Logo" class="w-10 h-10 rounded-full">
-                <span class="text-xl font-bold tracking-wider">Apex Network</span>
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 transition-all">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center gap-4">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="toggleMenu()" title="Click to open menu">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center border border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.5)] group-hover:scale-105 transition-transform overflow-hidden">
+                    <img src="logo2%20(1).png" alt="Apex Network Logo" class="w-full h-full object-cover rounded-full">
+                </div>
+                <span class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                    APEX NETWORK
+                </span>
+                <span class="text-gray-500 text-xs ml-2 md:hidden">(Click to Menu)</span>
             </div>
-            <a href="https://t.me/ApxMinerBot" target="_blank" class="hidden md:inline-block bg-apex hover:bg-blue-600 transition text-white px-6 py-2 rounded-full font-semibold">
-                Start Mining
-            </a>
+            
+            <div id="nav-menu" class="hidden flex-wrap gap-4 md:gap-8 text-sm font-bold text-gray-300 md:ml-8 transition-all duration-300 ease-in-out">
+                <a href="#home" class="hover:text-yellow-400 transition-colors px-2 py-1">Home</a>
+                <a href="#mining" class="hover:text-yellow-400 transition-colors px-2 py-1">Mining</a>
+                <a href="#whitepaper" class="hover:text-yellow-400 transition-colors px-2 py-1">Whitepaper</a>
+                <a href="#roadmap" class="hover:text-yellow-400 transition-colors px-2 py-1">Roadmap</a>
+                <a href="#support" class="hover:text-yellow-400 transition-colors px-2 py-1">Support</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- القسم الرئيسي (Hero Section) -->
-    <main class="flex-grow flex flex-col justify-center items-center text-center px-4 pt-32 pb-20 max-w-4xl mx-auto mt-10">
-        <img src="logo2 (1).png" alt="APXN" class="w-32 h-32 mb-8 mx-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-        
-        <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-            The Future of <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-apex">Web3 Cloud Mining</span>
-        </h1>
-        
-        <p class="text-gray-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
-            Apex Network (APXN) is a decentralized mining ecosystem on the Binance Smart Chain. Start mining directly from your Telegram app with zero hardware required.
-        </p>
-        
-        <div class="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
-            <a href="https://t.me/ApxMinerBot" target="_blank" class="bg-apex hover:bg-blue-600 transition px-8 py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2">
-                ⛏️ Open Telegram App
-            </a>
-            <a href="https://t.me/ApexMiner_Official" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition border border-gray-700 px-8 py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2">
-                📢 Official Channel
-            </a>
-        </div>
+    <!-- Hero / Home Section -->
+    <section id="home" class="relative pt-40 pb-20 px-6 min-h-[90vh] flex items-center justify-center">
+        <div class="hero-glow"></div>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <span class="border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 inline-block">
+                Binance Smart Chain (BEP-20)
+            </span>
+            
+            <!-- Token Logo -->
+            <div class="flex justify-center mb-8">
+                <div class="w-40 h-40 rounded-full p-[4px] bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-800 shadow-[0_0_50px_rgba(234,179,8,0.4)]">
+                    <div class="w-full h-full rounded-full border-[6px] border-slate-950 bg-slate-900 flex items-center justify-center relative overflow-hidden">
+                        <img src="logo2%20(1).png" alt="Apex Network Logo" class="w-full h-full object-cover rounded-full">
+                    </div>
+                </div>
+            </div>
 
-        <!-- معلومات العقد الذكي -->
-        <div class="mt-16 bg-gray-900/50 border border-gray-800 p-6 rounded-2xl w-full max-w-2xl mx-auto">
-            <p class="text-sm text-gray-500 uppercase tracking-widest mb-2">Verified Smart Contract (BSC)</p>
-            <div class="flex flex-col sm:flex-row items-center justify-between bg-black/50 p-3 rounded-lg border border-gray-800 break-all">
-                <code class="text-apex font-mono text-sm sm:text-base mb-2 sm:mb-0 text-center sm:text-left">0x88074bA197BBB0a3AFF891E52d05764F98509956</code>
-                <a href="https://bscscan.com/address/0x88074bA197BBB0a3AFF891E52d05764F98509956" target="_blank" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded transition whitespace-nowrap">
-                    View on BscScan
+            <h1 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
+                Welcome to <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">Apex Network</span>
+            </h1>
+            
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 md:p-8 mb-10 max-w-3xl mx-auto backdrop-blur-sm text-left">
+                <h3 class="text-xl font-bold text-white mb-2 border-b border-slate-700 pb-2">What is Cloud Mining?</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                    Cloud mining utilizes shared processing power hosted in remote data centers. Apex Network decentralizes this infrastructure, integrating it directly into Telegram via the Binance Smart Chain. It requires zero hardware, zero energy consumption, and zero complex setups from your side.
+                </p>
+                
+                <h3 class="text-xl font-bold text-white mb-2 border-b border-slate-700 pb-2">The Apex Network Process</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    Join our Telegram Mini-App to claim your pioneer genesis bonus. Engage in daily check-ins, complete social tasks, and invite friends to increase your mining speed. Accumulate APXN points seamlessly before our official Token Generation Event (TGE) and Mainnet launch.
+                </p>
+            </div>
+
+            <div id="mining" class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                <a href="https://t.me/ApxMinerBot" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-black text-xl px-10 py-5 rounded-2xl shadow-[0_0_25px_rgba(245,158,11,0.5)] hover:scale-105 hover:shadow-[0_0_35px_rgba(245,158,11,0.7)] transition-all flex items-center justify-center gap-3">
+                    START MINING NOW ⛏️
                 </a>
             </div>
         </div>
-    </main>
+    </section>
 
-    <!-- الفوتر -->
-    <footer class="w-full py-8 border-t border-gray-800 text-center">
-        <p class="text-gray-500 mb-2">© 2026 Apex Network. All rights reserved.</p>
-        <a href="mailto:contact@apxn.network" class="text-apex hover:underline text-sm">contact@apxn.network</a>
+    <!-- Whitepaper & Tokenomics Section -->
+    <section id="whitepaper" class="py-24 px-6 border-t border-slate-800 bg-slate-900/30 relative">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-sm font-black text-yellow-500 uppercase tracking-widest mb-2">Whitepaper Data</h2>
+                <h3 class="text-4xl md:text-5xl font-black text-white">Tokenomics & Security</h3>
+            </div>
+
+            <div class="bg-slate-900 border border-emerald-500/50 p-6 rounded-2xl mb-12 shadow-[0_0_15px_rgba(16,185,129,0.1)] flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h4 class="font-bold text-emerald-400 text-lg mb-1 flex items-center gap-2">🛡️ Verified Smart Contract</h4>
+                    <p class="text-sm text-gray-400">Apex Network is built on audited BEP-20 contracts with zero mint functions.</p>
+                </div>
+                <div class="flex flex-col items-end gap-2 w-full md:w-auto">
+                    <code class="text-yellow-400 font-mono text-xs md:text-sm bg-black/50 px-4 py-2 rounded-lg border border-slate-700 w-full text-center md:text-right break-all">
+                        0x88074bA197BBB0a3AFF891E52d05764F98509956
+                    </code>
+                    <a href="https://bscscan.com/token/0x88074bA197BBB0a3AFF891E52d05764F98509956" target="_blank" rel="noopener noreferrer" class="text-emerald-400 text-xs font-bold hover:underline">
+                        Verify on BscScan ↗
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-xl flex flex-col justify-center text-center col-span-1 md:col-span-2 lg:col-span-3 mb-4">
+                    <span class="text-5xl mb-2">💎</span>
+                    <h4 class="text-yellow-500 font-black text-4xl mb-1">100,000,000</h4>
+                    <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">Total Fixed Supply (APXN)</p>
+                </div>
+                
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-white">Community & Airdrop</span>
+                        <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-black">63%</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Allocated to early supporters, distributed via in-app points conversion.</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-white">DEX & CEX Liquidity</span>
+                        <span class="bg-purple-600 text-white px-2 py-1 rounded text-xs font-black">20%</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Locked liquidity for PancakeSwap and Centralized Exchanges.</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-white">Marketing & Partners</span>
+                        <span class="bg-green-600 text-white px-2 py-1 rounded text-xs font-black">10%</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Strategic fund for global campaigns and Web3 brand partnerships.</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-white">Core Team</span>
+                        <span class="bg-orange-600 text-white px-2 py-1 rounded text-xs font-black">6%</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Development allocation. Locked via smart contracts with a vesting period.</p>
+                </div>
+
+                <div class="bg-slate-900 border border-yellow-700/50 p-5 rounded-xl lg:col-span-2 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1 h-full bg-yellow-500"></div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-white">Phased Presale / ICO</span>
+                        <span class="bg-red-600 text-white px-2 py-1 rounded text-xs font-black">1%</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Exclusive early-bird Ticket System allocation prior to PancakeSwap listing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="py-24 px-6 border-t border-slate-800 bg-slate-950 relative">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-white">Apex Roadmap</h2>
+                <p class="text-gray-400 mt-4">The strategic path to full decentralization.</p>
+            </div>
+
+            <div class="relative border-l-2 border-slate-700 ml-4 pl-8 space-y-12">
+                <div class="relative">
+                    <span class="absolute -left-[41px] top-1 w-5 h-5 bg-yellow-500 rounded-full ring-4 ring-slate-950 shadow-[0_0_10px_rgba(234,179,8,0.8)]"></span>
+                    <h3 class="font-black text-yellow-400 text-xl mb-2">Q4 2026: Genesis Launch</h3>
+                    <ul class="text-gray-400 text-sm leading-relaxed list-disc ml-4 space-y-1">
+                        <li>Official Launch of Apex Network Telegram app</li>
+                        <li>Start mining and accumulating APXN points</li>
+                        <li>Daily Check-In & Social Tasks system</li>
+                        <li>Wallet linking integration</li>
+                    </ul>
+                </div>
+
+                <div class="relative">
+                    <span class="absolute -left-[41px] top-1 w-5 h-5 bg-purple-500 rounded-full ring-4 ring-slate-950"></span>
+                    <h3 class="font-black text-purple-400 text-xl mb-2">2027: Growth & Upgrades</h3>
+                    <ul class="text-gray-400 text-sm leading-relaxed list-disc ml-4 space-y-1">
+                        <li><strong class="text-white">Q1:</strong> Mining speed enhancements & Referral system</li>
+                        <li><strong class="text-white">Q2:</strong> Launch of Rig Upgrades & Initiation of Phased Presale</li>
+                        <li><strong class="text-white">Q3:</strong> Global community expansion campaigns</li>
+                        <li><strong class="text-white">Q4:</strong> Ecosystem expansion & Security infrastructure</li>
+                    </ul>
+                </div>
+
+                <div class="relative">
+                    <span class="absolute -left-[41px] top-1 w-5 h-5 bg-blue-500 rounded-full ring-4 ring-slate-950"></span>
+                    <h3 class="font-black text-blue-400 text-xl mb-2">2028: Token Generation & Testnet</h3>
+                    <ul class="text-gray-400 text-sm leading-relaxed list-disc ml-4 space-y-1">
+                        <li><strong class="text-white">Q1-Q2:</strong> Platform optimization & Tokenomics preparation</li>
+                        <li><strong class="text-white">Q3:</strong> Conclusion of Presale, Official Listing Announcement & TGE</li>
+                        <li><strong class="text-white">Q4:</strong> Apex Network Testnet Launch</li>
+                    </ul>
+                </div>
+
+                <div class="relative">
+                    <span class="absolute -left-[41px] top-1 w-5 h-5 bg-emerald-500 rounded-full ring-4 ring-slate-950 animate-pulse"></span>
+                    <h3 class="font-black text-emerald-400 text-xl mb-2">2029: Mainnet Era</h3>
+                    <ul class="text-gray-400 text-sm leading-relaxed list-disc ml-4 space-y-1">
+                        <li><strong class="text-white">Q1-Q2:</strong> Testnet expansion & Staking Implementation</li>
+                        <li><strong class="text-white">Q3:</strong> Final security audits & Validators setup</li>
+                        <li><strong class="text-white">Q4:</strong> <span class="text-emerald-400 font-bold">Apex Network Mainnet Official Launch</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer & Support Section -->
+    <footer id="support" class="border-t border-slate-800 bg-slate-950 pt-16 pb-8 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10 border-b border-slate-800 pb-12">
+            
+            <div class="flex flex-col items-center md:items-start text-center md:text-left gap-4 flex-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border border-yellow-500/50 overflow-hidden">
+                        <img src="logo2%20(1).png" alt="Apex Network Logo" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <span class="text-2xl font-black tracking-wider text-white">APEX NETWORK</span>
+                </div>
+                <div class="mt-2 bg-slate-900 border border-slate-800 p-4 rounded-xl max-w-sm">
+                    <h5 class="text-yellow-500 font-black text-xs uppercase tracking-widest mb-1">Founder</h5>
+                    <p class="text-white font-bold text-lg">M.C</p>
+                    <p class="text-gray-400 text-xs mt-1">Crypto & Blockchain Developer</p>
+                    <p class="text-gray-500 text-[10px] mt-1 flex items-center gap-1">📍 Canada</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col items-center md:items-end text-center md:text-right gap-6 flex-1">
+                <div>
+                    <h4 class="text-gray-400 font-bold text-sm uppercase tracking-widest mb-2">APXN Support Email</h4>
+                    <a href="mailto:contact@apxn.network" class="text-xl font-black text-yellow-500 hover:text-yellow-400 transition-colors bg-yellow-500/10 px-4 py-2 rounded-lg border border-yellow-500/30">
+                        contact@apxn.network
+                    </a>
+                </div>
+                
+                <div>
+                    <h4 class="text-gray-400 font-bold text-sm uppercase tracking-widest mb-3">Community Links</h4>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="https://t.me/ApexMiner_Official" target="_blank" rel="noopener noreferrer" class="bg-[#2AABEE] hover:bg-[#229ED9] text-white text-sm font-bold px-6 py-3 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2">
+                            📢 Telegram Channel
+                        </a>
+                        <a href="https://t.me/ApexMinerGroup" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-sm font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+                            💬 Telegram Group
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto mt-8 text-center text-gray-600 text-xs font-medium">
+            <p>&copy; 2026 Apex Network. All rights reserved.</p>
+        </div>
     </footer>
 
+    <!-- Script for Menu Toggle -->
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('nav-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+        }
+    </script>
 </body>
 </html>
