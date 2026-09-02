@@ -1,4 +1,4 @@
-# ![Apex Network](logo2.png) Apex Network (APXN)
+# ![Apex Network Logo](logo2%20(1).png) Apex Network (APXN)
 
 **The Future of Web3 Cloud Mining on Binance Smart Chain.**
 
