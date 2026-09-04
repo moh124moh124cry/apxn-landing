@@ -25,6 +25,12 @@
     <!-- أيقونة الموقع (Favicon) -->
     <link rel="icon" href="logo2%20(1).png" type="image/png">
 
+    <!-- 📊 كود تتبع Vercel Analytics الجديد 📊 -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
     <!-- ⚡ تحسينات الأداء: تسريع الاتصال بمكتبة Tailwind وتحميل اللوجو مسبقاً ⚡ -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
@@ -328,6 +334,7 @@
         </div>
     </footer>
 
+    <!-- سكربت التحكم بالقائمة الجانبية -->
     <script>
         function toggleMenu() {
             const menu = document.getElementById('nav-menu');
@@ -339,21 +346,6 @@
                 menu.classList.remove('flex');
             }
         }
-    </script>
-    
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('https://ipapi.co/json/')
-                .then(res => res.json())
-                .then(data => {
-                    const userCountry = data.country_code || 'Unknown';
-                    fetch('/api/track-visit', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ country: userCountry })
-                    });
-                }).catch(err => console.log('Tracking error:', err));
-        });
     </script>
 </body>
 </html>
