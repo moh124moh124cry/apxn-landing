@@ -3,35 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Network - Global Stats</title>
-    <!-- استدعاء مكتبات التصميم وقاعدة البيانات -->
+    <title>Apex Network - Website Visits & Countries</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-950 text-white font-sans antialiased min-h-screen py-16 px-6">
     <div class="max-w-6xl mx-auto">
         
-        <!-- قسم العنوان -->
+        <!-- العنوان الخاص بزيارات الموقع -->
         <div class="text-center mb-16">
             <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-4 uppercase tracking-widest drop-shadow-lg">
-                Global Network Stats
+                Website Visitor Stats
             </h1>
             <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-                Live overview of the Apex Network mining community. Our decentralized ecosystem is rapidly expanding across the globe.
+                Live overview of total site visits and global audience distribution on apxn.network.
             </p>
         </div>
 
-        <!-- إجمالي المعدنين -->
+        <!-- إجمالي عدد الزيارات -->
         <div class="flex justify-center mb-12">
             <div class="bg-slate-900/80 backdrop-blur-md border border-yellow-500/30 px-10 py-6 rounded-3xl shadow-[0_0_30px_rgba(234,179,8,0.15)] flex flex-col items-center">
-                <span class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Total Registered Miners</span>
-                <span id="total-users" class="text-5xl font-black text-white">...</span>
+                <span class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Total Site Visits</span>
+                <span id="total-visits" class="text-5xl font-black text-white">...</span>
             </div>
         </div>
 
         <!-- شبكة الدول -->
         <div id="stats-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- أيقونة التحميل -->
             <div class="col-span-full flex justify-center mt-10" id="loading">
                 <div class="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
@@ -39,30 +36,21 @@
     </div>
 
     <script>
-        // ⚠️ مهم جداً: ضع مفاتيح مشروعك هنا داخل علامات التنصيص ⚠️
-        const SUPABASE_URL = 'ضع_رابط_سوبابيز_هنا';
-        const SUPABASE_ANON_KEY = 'ضع_مفتاح_anon_هنا';
-        
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        async function fetchVisitorStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                const container = document.getElementById('stats-container');
 
-        async function fetchStats() {
-            const { data, error } = await supabase.from('users').select('country');
-            
-            document.getElementById('loading').style.display = 'none';
-            const container = document.getElementById('stats-container');
+                if (!data || data.error) throw new Error();
 
-            if (error) {
-                console.error("Error fetching data:", error);
-                container.innerHTML = '<div class="col-span-full text-center text-red-500 mt-10">System Error: Could not load stats.</div>';
-                return;
-            }
-
-            if (data) {
-                document.getElementById('total-users').innerText = data.length.toLocaleString();
+                document.getElementById('total-visits').innerText = data.length.toLocaleString();
                 
                 const countryCounts = {};
-                data.forEach(user => {
-                    const c = user.country;
+                data.forEach(row => {
+                    const c = row.country;
                     if (c && c !== 'Unknown') {
                         countryCounts[c] = (countryCounts[c] || 0) + 1;
                     }
@@ -73,7 +61,7 @@
                     .sort((a, b) => b.count - a.count);
 
                 if (sortedStats.length === 0) {
-                    container.innerHTML = '<div class="col-span-full text-center text-gray-500 mt-10">No active miners recorded yet.</div>';
+                    container.innerHTML = '<div class="col-span-full text-center text-gray-500 mt-10">No visits recorded yet.</div>';
                     return;
                 }
 
@@ -86,14 +74,18 @@
                         </div>
                         <div class="flex flex-col items-end">
                             <span class="text-yellow-400 font-black text-xl">${item.count.toLocaleString()}</span>
-                            <span class="text-slate-500 text-[10px] uppercase tracking-wider">Miners</span>
+                            <span class="text-slate-500 text-[10px] uppercase tracking-wider">Visits</span>
                         </div>
                     </div>
                 `).join('');
+
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('stats-container').innerHTML = '<div class="col-span-full text-center text-red-500 mt-10">Could not load stats.</div>';
             }
         }
 
-        fetchStats();
+        fetchVisitorStats();
     </script>
 </body>
 </html>
