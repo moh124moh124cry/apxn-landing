@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>What Are APXN Points? How the Apex Network Telegram Mini App Works</title>
+    <meta name="description" content="Learn how APXN Points work inside the Apex Network Telegram Mini App, including 12-hour claims, daily check-ins, social tasks, referrals, mining speed and current app mechanics.">
+    <meta name="keywords" content="APXN Points, Apex Network, Telegram Mini App, APXN Mining, Web3, Daily Check-In, APXN Referral, BSC">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Apex Network Editorial">
+
+    <link rel="canonical" href="https://apxn.network/blog/articles/what-are-apxn-points.html">
+    <link rel="icon" href="../../logo2%20(1).png" type="image/png">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="What Are APXN Points? How the Apex Network Telegram Mini App Works">
+    <meta property="og:description" content="A practical guide to APXN Points, 12-hour claims, daily rewards, tasks and referrals inside the Apex Network Telegram Mini App.">
+    <meta property="og:url" content="https://apxn.network/blog/articles/what-are-apxn-points.html">
+    <meta property="og:image" content="https://apxn.network/logo2%20(1).png">
+    <meta property="og:site_name" content="Apex Network">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="What Are APXN Points? | Apex Network">
+    <meta name="twitter:description" content="Understand the current APXN Points system inside the Apex Network Telegram Mini App.">
+    <meta name="twitter:image" content="https://apxn.network/logo2%20(1).png">
+
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { background: #020617; }
+        .gold-text {
+            background: linear-gradient(90deg, #fde047, #f59e0b, #fb923c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .article-body p {
+            color: #cbd5e1;
+            line-height: 1.9;
+            margin: 1rem 0 1.5rem;
+        }
+        .article-body h2 {
+            color: #fff;
+            font-size: 1.75rem;
+            font-weight: 900;
+            margin-top: 2.7rem;
+            margin-bottom: 1rem;
+            line-height: 1.25;
+        }
+        .article-body h3 {
+            color: #facc15;
+            font-size: 1.2rem;
+            font-weight: 900;
+            margin-top: 2rem;
+            margin-bottom: .75rem;
+        }
+        .article-body ul, .article-body ol {
+            color: #cbd5e1;
+            margin: 1rem 0 1.5rem 1.5rem;
+            line-height: 1.9;
+        }
+        .article-body ul { list-style: disc; }
+        .article-body ol { list-style: decimal; }
+        .article-body strong { color: #fff; }
+        .article-body a { color: #facc15; font-weight: 800; }
+        .article-body a:hover { color: #fde047; }
+        .info-box {
+            background: rgba(15, 23, 42, .8);
+            border: 1px solid rgba(234, 179, 8, .25);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "What Are APXN Points? How the Apex Network Telegram Mini App Works",
+      "description": "A practical guide to APXN Points, 12-hour claims, daily check-ins, social tasks and referrals inside the Apex Network Telegram Mini App.",
+      "image": "https://apxn.network/logo2%20(1).png",
+      "mainEntityOfPage": "https://apxn.network/blog/articles/what-are-apxn-points.html",
+      "datePublished": "2026-09-08",
+      "dateModified": "2026-09-08",
+      "author": {
+        "@type": "Organization",
+        "name": "Apex Network Editorial"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Apex Network",
+        "url": "https://apxn.network",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://apxn.network/logo2%20(1).png"
+        }
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Are APXN Points already tradable tokens?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The current Telegram Mini App tracks APXN ecosystem points and pre-launch rewards. They should not be described as guaranteed cash value or guaranteed future token value."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How often can users claim APXN Points?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The current app logic uses a 12-hour claim cycle."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do referrals affect APXN mining speed?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "An active referred friend can increase the user's mining speed by 5 percent of the base mining rate under the current app logic."
+          }
+        }
+      ]
+    }
+    </script>
+</head>
+
+<body class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950">
+
+    <header class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5">
+            <a href="../index.html" class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50">
+                    <img src="../../logo2%20(1).png" alt="Apex Network Logo" class="w-full h-full object-cover" width="44" height="44">
+                </div>
+                <div>
+                    <div class="font-black tracking-wider gold-text text-base sm:text-lg">APEX NETWORK</div>
+                    <div class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]">APXN Blog</div>
+                </div>
+            </a>
+
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="hidden sm:inline-flex text-sm font-bold text-gray-400 hover:text-yellow-400 transition-colors">Blog Home</a>
+                <a href="https://t.me/ApxMinerBot" target="_blank" rel="noopener noreferrer"
+                   class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl hover:scale-[1.03] transition-transform">
+                    Open APXN App
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <article>
+
+            <!-- Hero -->
+            <section class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent">
+                <div class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20">
+                    <nav aria-label="Breadcrumb" class="text-xs text-gray-500 font-bold mb-7">
+                        <a href="../../index.html" class="hover:text-yellow-400">Home</a>
+                        <span class="mx-2">/</span>
+                        <a href="../index.html" class="hover:text-yellow-400">Blog</a>
+                        <span class="mx-2">/</span>
+                        <span class="text-yellow-400">APXN Guides</span>
+                    </nav>
+
+                    <span class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5">
+                        APXN Guides
+                    </span>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6">
+                        What Are <span class="gold-text">APXN Points?</span>
+                        How the Apex Network Telegram Mini App Works
+                    </h1>
+
+                    <p class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7">
+                        A transparent guide to the current APXN ecosystem point system, including 12-hour claims, daily check-ins, social tasks, referrals and mining-speed boosts.
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500">
+                        <span class="font-bold text-gray-300">Apex Network Editorial</span>
+                        <span>•</span>
+                        <time datetime="2026-09-08">September 8, 2026</time>
+                        <span>•</span>
+                        <span>8 min read</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main content -->
+            <section class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-12 sm:py-16">
+
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8 mb-10 flex flex-col sm:flex-row gap-6 items-center">
+                    <div class="w-24 h-24 shrink-0 rounded-full p-1 bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-800">
+                        <div class="w-full h-full rounded-full overflow-hidden border-4 border-slate-950">
+                            <img src="../../logo2%20(1).png" alt="APXN Logo" class="w-full h-full object-cover" width="96" height="96">
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-black mb-2">Quick answer</h2>
+                        <p class="text-gray-400 leading-relaxed">
+                            APXN Points are the current in-app ecosystem points tracked by the Apex Network Telegram Mini App. Users can accumulate them through timed claims, daily check-ins, verified social tasks and referrals. They should not be presented as guaranteed cash value or as a guaranteed number of future tokens.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="article-body">
+
+                    <p>
+                        Apex Network is building its user experience around a Telegram Mini App, allowing people to participate directly from Telegram without installing a separate mobile application. At the center of that experience is the <strong>APXN Points</strong> system.
+                    </p>
+
+                    <p>
+                        The most important thing to understand is that the current balance shown inside the Mini App represents <strong>ecosystem points and pre-launch rewards</strong>. These points are used to measure participation before later stages of the Apex Network roadmap. They should not be confused with a guaranteed cash balance, guaranteed investment return or guaranteed future token allocation.
+                    </p>
+
+                    <p>
+                        This article explains how the system currently works based on the live application logic, and separates features that are already active from features that remain planned for future development.
+                    </p>
+
+                    <h2>What exactly are APXN Points?</h2>
+
+                    <p>
+                        APXN Points are digital participation units recorded in the Apex Network application database. They help track a user's activity in the ecosystem, including mining sessions, check-ins, tasks and referrals.
+                    </p>
+
+                    <p>
+                        In practical terms, the user opens the Telegram Mini App, starts or continues a mining session, returns after the required time window and claims the accumulated amount. Other activities can add additional points or affect the rate at which the balance grows.
+                    </p>
+
+                    <div class="info-box">
+                        <strong class="block text-yellow-400 mb-2">Important distinction</strong>
+                        <p class="!m-0 text-sm">
+                            The current app tracks APXN Points. The points system should not be described as a guaranteed exchange-listed token balance, guaranteed withdrawal amount or guaranteed future market value.
+                        </p>
+                    </div>
+
+                    <h2>How the 12-hour APXN claim cycle works</h2>
+
+                    <p>
+                        The current Mini App uses a <strong>12-hour claim cycle</strong>. During this period, the app calculates the points accumulated from the user's mining rate. When the claim window is ready, the user can claim the accumulated amount and begin the next cycle.
+                    </p>
+
+                    <p>
+                        This system is designed around recurring participation rather than continuous interaction. A user does not need to keep Telegram open for 12 hours. Instead, the application uses timestamps and account data to determine how much has accumulated.
+                    </p>
+
+                    <p>
+                        The current base mining rate in the application logic is:
+                    </p>
+
+                    <div class="info-box text-center">
+                        <div class="text-sm text-gray-500 font-bold uppercase tracking-widest mb-2">Base Rate</div>
+                        <div class="text-3xl sm:text-4xl font-black gold-text">0.00025 APXN Points / second</div>
+                    </div>
+
+                    <p>
+                        Because the system is driven by recorded time and a defined rate, the balance can be calculated when the user returns. This is different from traditional proof-of-work cryptocurrency mining, where specialized hardware performs computational work to secure a blockchain.
+                    </p>
+
+                    <h2>Does the Telegram app perform real blockchain mining?</h2>
+
+                    <p>
+                        The current Telegram experience is best understood as an <strong>ecosystem participation and point-accrual system</strong>. Users do not need mining hardware, GPUs or ASIC devices to participate.
+                    </p>
+
+                    <p>
+                        The term "mining" is used inside the product experience to describe the timed accumulation of APXN Points. However, users should distinguish this from proof-of-work mining performed directly on a blockchain network.
+                    </p>
+
+                    <p>
+                        This distinction matters for transparency. A user interacting with a Telegram button is participating in the Apex Network reward system; the action itself is not proof-of-work computation.
+                    </p>
+
+                    <h2>Daily Check-In rewards</h2>
+
+                    <p>
+                        Apex Network also includes a daily check-in mechanism. This rewards users for returning to the Mini App regularly.
+                    </p>
+
+                    <p>
+                        The current seven-day progression starts at <strong>100 APXN Points</strong> and increases through the cycle until reaching <strong>700 APXN Points</strong> on the seventh day.
+                    </p>
+
+                    <p>
+                        Daily check-ins create a second participation layer beyond the 12-hour mining claim. For users, this means regular engagement can matter independently from the timed point accumulation.
+                    </p>
+
+                    <h2>Daily Telegram and X tasks</h2>
+
+                    <p>
+                        Social participation is another part of the current application. Daily tasks connected to Telegram and X can each provide <strong>100 APXN Points</strong> when completed according to the app's current rules.
+                    </p>
+
+                    <p>
+                        The project also includes one-time social tasks. These can provide <strong>500 APXN Points per task</strong>. The purpose is to connect community growth with the reward experience inside the Mini App.
+                    </p>
+
+                    <p>
+                        Some Telegram membership tasks are not based only on a user pressing a button. The application can verify Telegram channel or group membership through Telegram's API before crediting the relevant reward.
+                    </p>
+
+                    <h2>How APXN referrals work</h2>
+
+                    <p>
+                        Referrals are one of the main mechanics inside Apex Network. A user can invite another person through a referral link. When the referral is valid, the new participant can receive a referral-related starting reward, while the referring user's network can affect mining speed.
+                    </p>
+
+                    <p>
+                        Under the current app logic, a valid referred user can receive an additional <strong>1,000 APXN Points</strong> when joining through the referral flow.
+                    </p>
+
+                    <h3>Active referral mining boost</h3>
+
+                    <p>
+                        An active referred friend can increase the referring user's mining rate by <strong>5% of the base mining rate</strong>.
+                    </p>
+
+                    <p>
+                        The important word is <strong>active</strong>. In the current logic, a referred user is considered active when that user has made a claim within the previous 24 hours.
+                    </p>
+
+                    <p>
+                        This means the referral feature is not simply a count of how many people were invited. The system rewards networks where referred users continue to participate.
+                    </p>
+
+                    <h2>Registration rewards</h2>
+
+                    <p>
+                        Apex Network also uses staged registration rewards. The amount can depend on the current user-growth stage of the platform.
+                    </p>
+
+                    <p>
+                        The current project logic includes a progression of registration rewards such as:
+                    </p>
+
+                    <ul>
+                        <li><strong>10,000 APXN Points</strong> for the earliest qualifying stage.</li>
+                        <li><strong>5,000 APXN Points</strong> in a later stage.</li>
+                        <li><strong>2,500 APXN Points</strong> as the user base continues to expand.</li>
+                        <li><strong>1,000 APXN Points</strong> in a subsequent stage.</li>
+                    </ul>
+
+                    <p>
+                        Because these rewards are linked to growth thresholds, users should rely on the amount displayed by the live application rather than assume that an older promotional amount is still available.
+                    </p>
+
+                    <h2>Country and referral information</h2>
+
+                    <p>
+                        The Mini App stores a user's country when the account is created. This information supports ecosystem statistics and features such as displaying country flags alongside referred friends.
+                    </p>
+
+                    <p>
+                        This helps the project show the geographic reach of its community without changing the fundamental points mechanics.
+                    </p>
+
+                    <h2>Account verification and security</h2>
+
+                    <p>
+                        Telegram Mini Apps can receive signed initialization data from Telegram. Apex Network's server-side logic verifies this data rather than blindly trusting identity information coming from the browser.
+                    </p>
+
+                    <p>
+                        The verification flow uses Telegram's signed <code class="text-yellow-300">initData</code> and HMAC validation. This is an important security layer because account balances and referral relationships should be associated with verified Telegram identities rather than arbitrary client-side values.
+                    </p>
+
+                    <p>
+                        No system is risk-free, but server-side validation reduces the opportunity for simple client-side impersonation or manipulation.
+                    </p>
+
+                    <h2>What about wallet linking?</h2>
+
+                    <p>
+                        The current user interface contains wallet-related elements, but users should distinguish between a visible interface and a fully persisted wallet-binding feature.
+                    </p>
+
+                    <p>
+                        In the current version reviewed for this guide, permanent wallet-address storage is not treated as a completed production feature. For that reason, Apex Network documentation should not tell users that their wallet is permanently linked to their Telegram account unless that functionality is later implemented and verified.
+                    </p>
+
+                    <h2>What about Boosts?</h2>
+
+                    <p>
+                        The application includes a Boost Store concept, but the current interface marks those options as <strong>Soon</strong> and the purchase actions are disabled.
+                    </p>
+
+                    <p>
+                        This is a good example of the difference between a live feature and a planned feature. The blog will describe boosts as part of future product development until the purchasing and activation logic is actually enabled.
+                    </p>
+
+                    <h2>APXN Points and the future token ecosystem</h2>
+
+                    <p>
+                        Apex Network's broader roadmap includes a BEP-20 ecosystem on Binance Smart Chain and later network-development milestones. However, the existence of a points balance today does not by itself determine the future market value of APXN, a listing price or an exact point-to-token conversion ratio.
+                    </p>
+
+                    <p>
+                        Any conversion rules should come from a future official project announcement and should be clearly documented when finalized.
+                    </p>
+
+                    <p>
+                        For this reason, responsible APXN content should avoid statements such as "one point equals one token" or promises of guaranteed value unless the project formally establishes those rules.
+                    </p>
+
+                    <h2>Why this approach matters for users</h2>
+
+                    <p>
+                        Clear documentation helps users understand what they are doing inside a Web3-related application. It also separates real functionality from expectations about future development.
+                    </p>
+
+                    <p>
+                        Today, users can evaluate Apex Network based on concrete mechanics: timed claims, check-ins, tasks, referrals, active-friend boosts and account verification. Future features can then be documented when they become operational.
+                    </p>
+
+                    <h2>How to start using the APXN Mini App</h2>
+
+                    <ol>
+                        <li>Open the official Apex Network Telegram Mini App.</li>
+                        <li>Create or initialize your APXN account through Telegram.</li>
+                        <li>Review your current starting balance and mining rate.</li>
+                        <li>Participate in the 12-hour claim cycle.</li>
+                        <li>Use Daily Check-In when available.</li>
+                        <li>Complete eligible social tasks.</li>
+                        <li>Invite real users through your referral link.</li>
+                        <li>Return regularly so your own account and referral network remain active.</li>
+                    </ol>
+
+                    <p>
+                        Always use the official links published by Apex Network and be cautious of private messages claiming to offer guaranteed APXN returns, paid account upgrades or requests for seed phrases.
+                    </p>
+
+                    <h2>Frequently asked questions</h2>
+
+                    <h3>Are APXN Points already tradable tokens?</h3>
+                    <p>
+                        No. The current Telegram Mini App tracks APXN ecosystem points and pre-launch rewards. They should not be described as guaranteed tradable value.
+                    </p>
+
+                    <h3>How often can I claim APXN Points?</h3>
+                    <p>
+                        The current application logic uses a 12-hour claim cycle.
+                    </p>
+
+                    <h3>Do referrals increase the mining rate?</h3>
+                    <p>
+                        Yes. Under the current logic, an active referred friend can add 5% of the base mining rate. An active referral is tied to recent participation, including a claim within the previous 24 hours.
+                    </p>
+
+                    <h3>Is the Boost Store active?</h3>
+                    <p>
+                        Not yet in the version covered by this article. Boost options are shown as upcoming features and their purchase buttons are currently disabled.
+                    </p>
+
+                    <h3>Is wallet linking complete?</h3>
+                    <p>
+                        Wallet-related interface elements exist, but permanent wallet-address binding should not be considered a completed feature until persistent storage and production behavior are confirmed.
+                    </p>
+
+                    <h2>Final thoughts</h2>
+
+                    <p>
+                        APXN Points provide the engagement layer of the current Apex Network Telegram Mini App. The system combines timed point accumulation with daily activity, tasks and referrals, creating a simple way for users to participate before later project milestones.
+                    </p>
+
+                    <p>
+                        The most useful way to follow the project is to focus on what is live today and treat future features as roadmap items until they are released. This APXN Blog will follow the same principle: explain active functionality clearly, label planned functionality accurately and avoid unsupported financial promises.
+                    </p>
+
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="mt-12 bg-amber-500/[0.07] border border-amber-500/20 rounded-2xl p-6">
+                    <h2 class="font-black text-amber-300 mb-2">Educational disclaimer</h2>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        This article explains the current Apex Network application mechanics for educational and documentation purposes. It is not financial advice and does not promise token value, profit, exchange listing, withdrawal value or a specific future conversion ratio for APXN Points.
+                    </p>
+                </div>
+
+                <!-- CTA -->
+                <div class="mt-10 bg-slate-900 border border-slate-800 rounded-3xl p-7 sm:p-10 text-center">
+                    <div class="w-20 h-20 mx-auto rounded-full overflow-hidden border border-yellow-500/40 mb-5">
+                        <img src="../../logo2%20(1).png" alt="Apex Network" class="w-full h-full object-cover" width="80" height="80">
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black mb-3">Explore the Apex Network Mini App</h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto mb-6">
+                        Experience the current APXN Points system directly through the official Telegram Mini App.
+                    </p>
+                    <a href="https://t.me/ApxMinerBot"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="inline-flex bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black px-7 py-4 rounded-xl hover:scale-[1.02] transition-transform">
+                        Open APXN on Telegram
+                    </a>
+                </div>
+
+                <div class="mt-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-slate-800 pt-8">
+                    <a href="../index.html" class="text-yellow-400 font-black hover:text-yellow-300">← Back to APXN Blog</a>
+                    <a href="../../index.html" class="text-gray-500 font-bold hover:text-yellow-400">Apex Network Website →</a>
+                </div>
+
+            </section>
+        </article>
+    </main>
+
+    <footer class="border-t border-slate-800 bg-slate-950">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-10">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs text-gray-600">
+                <p>&copy; 2026 Apex Network. All rights reserved.</p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="../../privacy.html" class="hover:text-yellow-400">Privacy Policy</a>
+                    <a href="../../terms.html" class="hover:text-yellow-400">Terms & Conditions</a>
+                    <a href="mailto:contact@apxn.network" class="hover:text-yellow-400">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
+
