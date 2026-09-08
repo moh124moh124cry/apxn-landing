@@ -6,7 +6,7 @@
  * - Reads the APXN knowledge base before every article.
  * - Reads blog configuration and existing article registry.
  * - Selects the next waiting topic.
- * - Generates a structured long-form draft through the OpenAI Responses API.
+ * - Generates a structured long-form draft through the xAI Responses API using Grok.
  * - Runs local editorial/quality checks.
  * - Never auto-publishes risky or unverified claims.
  * - Saves drafts as noindex HTML plus structured JSON metadata.
@@ -27,13 +27,15 @@ const PATHS = {
   config: path.join(ROOT, "data", "blog-config.json"),
   knowledge: path.join(ROOT, "data", "apxn-blog-knowledge.json"),
   articles: path.join(ROOT, "data", "blog-articles.json"),
+  costs: path.join(ROOT, "data", "blog-costs.json"),
   generated: path.join(ROOT, "data", "generated"),
   drafts: path.join(ROOT, "blog", "drafts"),
   published: path.join(ROOT, "blog", "articles")
 };
 
-const API_URL = "https://api.openai.com/v1/responses";
-const DEFAULT_MODEL = "gpt-5.6-luna";
+const DEFAULT_XAI_BASE_URL = "https://api.x.ai/v1";
+const DEFAULT_MODEL = "grok-4.3";
+const COST_TICKS_PER_USD = 10_000_000_000;
 
 /* -------------------------------------------------------------------------- */
 /* Utilities                                                                  */
@@ -156,6 +158,111 @@ function isTruthyEnv(name) {
   );
 }
 
+function monthKey(dateString = todayISO()) {
+  return String(dateString).slice(0, 7);
+}
+
+function readCostLedger() {
+  if (!fs.existsSync(PATHS.costs)) {
+    return {
+      schema_version: 1,
+      provider: "xai",
+      currency: "USD",
+      months: {}
+    };
+  }
+
+  return readJson(PATHS.costs);
+}
+
+function monthlySpend(ledger, month = monthKey()) {
+  const entries = Array.isArray(ledger?.months?.[month]?.requests)
+    ? ledger.months[month].requests
+    : [];
+
+  return entries.reduce((sum, item) => {
+    const value = Number(item?.cost_usd || 0);
+    return Number.isFinite(value) ? sum + value : sum;
+  }, 0);
+}
+
+function ensureBudgetAvailable(config, ledger) {
+  const control = config?.cost_control || {};
+  if (control.enabled !== true) return;
+
+  const budget = Number(control.monthly_budget_usd || 0);
+  if (!(budget > 0)) return;
+
+  const spent = monthlySpend(ledger);
+
+  if (
+    control.stop_when_monthly_budget_reached === true &&
+    spent >= budget
+  ) {
+    fail(
+      `Monthly xAI budget reached: $${spent.toFixed(4)} spent of $${budget.toFixed(2)}.`
+    );
+  }
+}
+
+function responseCost(responseJson) {
+  const ticks = Number(responseJson?.usage?.cost_in_usd_ticks);
+
+  if (!Number.isFinite(ticks) || ticks < 0) {
+    return {
+      ticks: null,
+      usd: null
+    };
+  }
+
+  return {
+    ticks,
+    usd: ticks / COST_TICKS_PER_USD
+  };
+}
+
+function recordCost({
+  ledger,
+  response,
+  model,
+  topic,
+  articleSlug,
+  date
+}) {
+  const month = monthKey(date);
+  ledger.months = ledger.months || {};
+  ledger.months[month] = ledger.months[month] || {
+    requests: []
+  };
+
+  const cost = responseCost(response);
+
+  const entry = {
+    date,
+    response_id: response?.id || null,
+    model,
+    topic,
+    article_slug: articleSlug || null,
+    input_tokens: Number(response?.usage?.input_tokens || 0),
+    cached_input_tokens: Number(
+      response?.usage?.input_tokens_details?.cached_tokens || 0
+    ),
+    output_tokens: Number(response?.usage?.output_tokens || 0),
+    reasoning_tokens: Number(
+      response?.usage?.output_tokens_details?.reasoning_tokens || 0
+    ),
+    total_tokens: Number(response?.usage?.total_tokens || 0),
+    cost_in_usd_ticks: cost.ticks,
+    cost_usd: cost.usd
+  };
+
+  ledger.months[month].requests.push(entry);
+  ledger.months[month].total_cost_usd = monthlySpend(ledger, month);
+  ledger.last_updated = date;
+
+  return entry;
+}
+
 function safeFilename(value) {
   return slugify(value) || `article-${Date.now()}`;
 }
@@ -167,6 +274,14 @@ function safeFilename(value) {
 function validateConfig(config) {
   if (config?.writer?.enabled !== true) {
     fail("The AI writer is disabled in data/blog-config.json.");
+  }
+
+  if (config?.ai?.provider !== "xai") {
+    fail('data/blog-config.json must set ai.provider to "xai".');
+  }
+
+  if (!config?.ai?.default_model) {
+    fail("data/blog-config.json is missing ai.default_model.");
   }
 
   if (!config?.content_sources?.knowledge_file) {
@@ -328,11 +443,7 @@ function buildInput(topic, config, knowledge, manifest) {
 
   return JSON.stringify(
     {
-      task: {
-        topic: topic.topic,
-        requested_category: topic.category,
-        priority: topic.priority
-      },
+      apxn_knowledge_base: knowledge,
       configured_categories: config.categories,
       writer_settings: {
         minimum_words: config.writer.minimum_words,
@@ -342,8 +453,12 @@ function buildInput(topic, config, knowledge, manifest) {
         include_disclaimer: config.writer.include_disclaimer,
         include_internal_links: config.writer.include_internal_links
       },
-      existing_articles_do_not_duplicate: existing,
-      apxn_knowledge_base: knowledge
+      task: {
+        topic: topic.topic,
+        requested_category: topic.category,
+        priority: topic.priority
+      },
+      existing_articles_do_not_duplicate: existing
     },
     null,
     2
@@ -351,7 +466,7 @@ function buildInput(topic, config, knowledge, manifest) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* OpenAI                                                                     */
+/* xAI / Grok                                                                 */
 /* -------------------------------------------------------------------------- */
 
 function extractResponseText(responseJson) {
@@ -397,18 +512,153 @@ function parseGeneratedJson(rawText) {
     }
   }
 
-  fail("The AI response was not valid JSON. No files were changed.");
+  fail("Grok returned invalid JSON. No blog files were changed.");
 }
 
-async function callOpenAI({ apiKey, model, instructions, input }) {
+function buildArticleSchema(config) {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "title",
+      "slug",
+      "description",
+      "excerpt",
+      "category",
+      "keywords",
+      "sections",
+      "faq",
+      "disclaimer",
+      "requires_manual_review",
+      "review_reasons",
+      "claims_used"
+    ],
+    properties: {
+      title: { type: "string" },
+      slug: { type: "string" },
+      description: { type: "string" },
+      excerpt: { type: "string" },
+      category: {
+        type: "string",
+        enum: config.categories
+      },
+      keywords: {
+        type: "array",
+        items: { type: "string" }
+      },
+      sections: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["heading", "paragraphs"],
+          properties: {
+            heading: { type: "string" },
+            paragraphs: {
+              type: "array",
+              items: { type: "string" }
+            }
+          }
+        }
+      },
+      faq: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["question", "answer"],
+          properties: {
+            question: { type: "string" },
+            answer: { type: "string" }
+          }
+        }
+      },
+      disclaimer: { type: "string" },
+      requires_manual_review: { type: "boolean" },
+      review_reasons: {
+        type: "array",
+        items: { type: "string" }
+      },
+      claims_used: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["claim", "knowledge_status"],
+          properties: {
+            claim: { type: "string" },
+            knowledge_status: {
+              type: "string",
+              enum: [
+                "implemented",
+                "official_ui_claim",
+                "ui_only",
+                "planned",
+                "verify_before_publish",
+                "blocked_auto_publish"
+              ]
+            }
+          }
+        }
+      }
+    }
+  };
+}
+
+function resolveXaiEndpoint(config) {
+  const base = String(
+    config?.ai?.api_base_url || DEFAULT_XAI_BASE_URL
+  ).replace(/\/+$/, "");
+
+  const endpoint = String(
+    config?.ai?.responses_endpoint || "/responses"
+  );
+
+  return `${base}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+}
+
+async function callXAI({
+  apiKey,
+  model,
+  instructions,
+  input,
+  config
+}) {
   const requestBody = {
     model,
-    instructions,
-    input,
-    max_output_tokens: 14000
+    input: [
+      {
+        role: "system",
+        content: instructions
+      },
+      {
+        role: "user",
+        content: input
+      }
+    ],
+    reasoning: {
+      effort: String(config?.ai?.reasoning_effort || "none")
+    },
+    max_output_tokens: 14000,
+    store: false,
+    text: {
+      format: {
+        type: "json_schema",
+        name: "apxn_blog_article",
+        schema: buildArticleSchema(config),
+        strict: true
+      }
+    }
   };
 
-  const response = await fetch(API_URL, {
+  if (
+    config?.cost_control?.use_prompt_caching === true &&
+    config?.ai?.prompt_cache_key
+  ) {
+    requestBody.prompt_cache_key = String(config.ai.prompt_cache_key);
+  }
+
+  const response = await fetch(resolveXaiEndpoint(config), {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
@@ -423,22 +673,31 @@ async function callOpenAI({ apiKey, model, instructions, input }) {
   try {
     data = JSON.parse(text);
   } catch {
-    fail(`OpenAI API returned a non-JSON response (HTTP ${response.status}).`);
+    fail(`xAI API returned a non-JSON response (HTTP ${response.status}).`);
   }
 
   if (!response.ok) {
     const message =
       data?.error?.message ||
       data?.message ||
-      `OpenAI API request failed with HTTP ${response.status}.`;
+      `xAI API request failed with HTTP ${response.status}.`;
 
     fail(message);
+  }
+
+  if (data?.status && data.status !== "completed") {
+    const detail =
+      data?.incomplete_details?.reason ||
+      data?.error?.message ||
+      data.status;
+
+    fail(`xAI response did not complete successfully: ${detail}`);
   }
 
   const outputText = extractResponseText(data);
 
   if (!outputText) {
-    fail("OpenAI API returned no usable text output.");
+    fail("xAI API returned no usable article output.");
   }
 
   return {
@@ -1135,17 +1394,31 @@ async function main() {
     );
   }
 
-  const apiKey = String(process.env.OPENAI_API_KEY || "").trim();
+  const apiKeyVariable =
+    String(config?.security?.xai_key_variable || "XAI_API_KEY").trim() ||
+    "XAI_API_KEY";
+
+  const apiKey = String(process.env[apiKeyVariable] || "").trim();
 
   if (!apiKey) {
     fail(
-      "OPENAI_API_KEY is missing. Add it as a secret/environment variable; never place the key in repository files."
+      `${apiKeyVariable} is missing. Add it as a GitHub Actions secret; never place the key in repository files.`
     );
   }
 
+  const modelVariable =
+    String(config?.security?.xai_model_variable || "XAI_MODEL").trim() ||
+    "XAI_MODEL";
+
   const model =
-    String(process.env.OPENAI_MODEL || DEFAULT_MODEL).trim() ||
-    DEFAULT_MODEL;
+    String(
+      process.env[modelVariable] ||
+      config?.ai?.default_model ||
+      DEFAULT_MODEL
+    ).trim() || DEFAULT_MODEL;
+
+  const costLedger = readCostLedger();
+  ensureBudgetAvailable(config, costLedger);
 
   const instructions = buildInstructions(config);
   const input = buildInput(queueItem, config, knowledge, manifest);
@@ -1157,11 +1430,12 @@ async function main() {
   console.log(`Model: ${model}`);
   console.log("Generating article...");
 
-  const { response, generated } = await callOpenAI({
+  const { response, generated } = await callXAI({
     apiKey,
     model,
     instructions,
-    input
+    input,
+    config
   });
 
   const article = normalizeGeneratedArticle(
@@ -1169,6 +1443,44 @@ async function main() {
     queueItem,
     config
   );
+
+  const date = todayISO();
+
+  const costEntry = recordCost({
+    ledger: costLedger,
+    response,
+    model,
+    topic: queueItem.topic,
+    articleSlug: article.slug,
+    date
+  });
+
+  /*
+   * Persist the actual API charge immediately so failed quality checks still
+   * count against the monthly budget.
+   */
+  writeJson(PATHS.costs, costLedger);
+
+  const requestCostUsd = Number(costEntry?.cost_usd);
+  const maxPerArticle = Number(
+    config?.cost_control?.maximum_cost_per_article_usd || 0
+  );
+
+  if (
+    config?.cost_control?.enabled === true &&
+    maxPerArticle > 0 &&
+    Number.isFinite(requestCostUsd) &&
+    requestCostUsd > maxPerArticle
+  ) {
+    article.requires_manual_review = true;
+    article.review_reasons = uniqueStrings(
+      [
+        ...article.review_reasons,
+        `xAI request cost $${requestCostUsd.toFixed(4)}, above configured per-article target of $${maxPerArticle.toFixed(2)}.`
+      ],
+      30
+    );
+  }
 
   const quality = runQualityChecks(article, config, manifest);
 
@@ -1190,8 +1502,6 @@ async function main() {
 
     fail("Draft was rejected by quality checks. No manifest changes were saved.");
   }
-
-  const date = todayISO();
 
   /*
    * Publishing is deliberately strict.
@@ -1238,6 +1548,16 @@ async function main() {
     category: article.category,
     model,
     response_id: response?.id || null,
+    provider: "xai",
+    cost: {
+      cost_in_usd_ticks: costEntry?.cost_in_usd_ticks ?? null,
+      cost_usd: costEntry?.cost_usd ?? null,
+      input_tokens: costEntry?.input_tokens ?? 0,
+      cached_input_tokens: costEntry?.cached_input_tokens ?? 0,
+      output_tokens: costEntry?.output_tokens ?? 0,
+      reasoning_tokens: costEntry?.reasoning_tokens ?? 0,
+      total_tokens: costEntry?.total_tokens ?? 0
+    },
     status: published ? "published" : "draft",
     requires_manual_review: article.requires_manual_review,
     review_reasons: article.review_reasons,
@@ -1275,6 +1595,18 @@ async function main() {
   console.log(`HTML: ${path.relative(ROOT, htmlPath)}`);
   console.log(`Structured draft: ${path.relative(ROOT, structuredPath)}`);
   console.log(`Manifest updated: ${path.relative(ROOT, PATHS.articles)}`);
+  console.log(`Cost ledger: ${path.relative(ROOT, PATHS.costs)}`);
+
+  if (Number.isFinite(requestCostUsd)) {
+    console.log(`xAI request cost: $${requestCostUsd.toFixed(6)}`);
+    console.log(
+      `Monthly tracked spend: $${monthlySpend(costLedger).toFixed(6)}`
+    );
+  } else {
+    console.log(
+      "xAI request cost was not present in the API response; check xAI usage dashboard."
+    );
+  }
 
   if (article.requires_manual_review) {
     console.log("\nManual review required:");
