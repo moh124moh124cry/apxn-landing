@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>APXN Blog | Apex Network Web3, Blockchain & Guides</title>
+    <meta name="description" content="Explore Apex Network (APXN) updates, Web3 guides, blockchain education, BSC insights, security tips, and development news from the APXN ecosystem.">
+    <meta name="keywords" content="APXN Blog, Apex Network, Web3, Blockchain, BSC, BEP-20, Telegram Mini App, APXN Points, Crypto Education">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Apex Network">
+
+    <link rel="canonical" href="https://apxn.network/blog/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="APXN Blog | Apex Network">
+    <meta property="og:description" content="Web3 education, APXN guides, blockchain insights and development updates from Apex Network.">
+    <meta property="og:url" content="https://apxn.network/blog/">
+    <meta property="og:image" content="https://apxn.network/logo2%20(1).png">
+    <meta property="og:site_name" content="Apex Network">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="APXN Blog | Apex Network">
+    <meta name="twitter:description" content="Web3 education, APXN guides, blockchain insights and development updates.">
+    <meta name="twitter:image" content="https://apxn.network/logo2%20(1).png">
+
+    <link rel="icon" href="../logo2%20(1).png" type="image/png">
+
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            background: #020617;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        .gold-text {
+            background: linear-gradient(90deg, #fde047, #f59e0b, #fb923c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 620px;
+            height: 620px;
+            border-radius: 9999px;
+            background: rgba(234, 179, 8, 0.10);
+            filter: blur(110px);
+            pointer-events: none;
+            left: 50%;
+            top: 40%;
+            transform: translate(-50%, -50%);
+        }
+
+        .article-card {
+            transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(234, 179, 8, .45);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .28);
+        }
+
+        .category-chip.active {
+            color: #020617;
+            background: linear-gradient(90deg, #facc15, #f59e0b);
+            border-color: transparent;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "APXN Blog",
+      "url": "https://apxn.network/blog/",
+      "description": "Official Apex Network educational blog covering APXN, Web3, blockchain, BSC, security and development updates.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Apex Network",
+        "url": "https://apxn.network",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://apxn.network/logo2%20(1).png"
+        }
+      }
+    }
+    </script>
+</head>
+
+<body class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5">
+            <a href="../index.html" class="flex items-center gap-3 group min-w-0">
+                <div class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50 shadow-[0_0_18px_rgba(234,179,8,0.25)]">
+                    <img src="../logo2%20(1).png" alt="Apex Network Logo" class="w-full h-full object-cover" width="44" height="44">
+                </div>
+                <div class="min-w-0">
+                    <div class="font-black tracking-wider gold-text text-base sm:text-lg truncate">APEX NETWORK</div>
+                    <div class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]">Official Blog</div>
+                </div>
+            </a>
+
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-bold text-gray-300">
+                <a href="../index.html" class="hover:text-yellow-400 transition-colors">Home</a>
+                <a href="#featured" class="hover:text-yellow-400 transition-colors">Featured</a>
+                <a href="#categories" class="hover:text-yellow-400 transition-colors">Categories</a>
+                <a href="#latest" class="hover:text-yellow-400 transition-colors">Latest</a>
+                <a href="../privacy.html" class="hover:text-yellow-400 transition-colors">Privacy</a>
+            </nav>
+
+            <a href="https://t.me/ApxMinerBot"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="shrink-0 bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl hover:scale-[1.03] transition-transform shadow-[0_0_20px_rgba(245,158,11,0.22)]">
+                Open APXN App
+            </a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Hero -->
+        <section class="relative overflow-hidden border-b border-slate-800">
+            <div class="hero-glow"></div>
+
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-20 sm:py-24 relative z-10">
+                <div class="max-w-4xl">
+                    <span class="inline-flex items-center gap-2 border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest mb-6">
+                        APXN Knowledge Hub
+                    </span>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-7xl font-black leading-tight mb-6">
+                        Learn Web3.
+                        <span class="gold-text">Understand APXN.</span>
+                    </h1>
+
+                    <p class="text-gray-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-3xl">
+                        Educational guides, Apex Network updates, blockchain explainers, BSC insights and practical security articles built around the real APXN ecosystem.
+                    </p>
+
+                    <div class="mt-9 flex flex-col sm:flex-row gap-3 max-w-3xl">
+                        <div class="relative flex-1">
+                            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
+                            </svg>
+                            <input
+                                id="searchInput"
+                                type="search"
+                                placeholder="Search APXN, Web3, BSC, security..."
+                                aria-label="Search blog articles"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-2xl pl-12 pr-4 py-4 text-sm text-white placeholder-gray-500 outline-none focus:border-yellow-500/60 focus:ring-2 focus:ring-yellow-500/10 transition-all"
+                            >
+                        </div>
+
+                        <button
+                            type="button"
+                            onclick="resetFilters()"
+                            class="bg-slate-900 border border-slate-700 hover:border-yellow-500/50 text-gray-300 hover:text-yellow-400 font-bold px-6 py-4 rounded-2xl transition-colors">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust note -->
+        <section class="border-b border-slate-800 bg-slate-900/25">
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-5">
+                <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 text-sm">
+                    <span class="text-emerald-400 font-black">Editorial standard</span>
+                    <p class="text-gray-400">
+                        APXN articles distinguish between live app features, ecosystem points, planned roadmap features and general Web3 education.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured -->
+        <section id="featured" class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <div class="flex items-end justify-between gap-5 mb-8">
+                <div>
+                    <p class="text-yellow-500 text-xs font-black uppercase tracking-[0.22em] mb-2">Editor's Pick</p>
+                    <h2 class="text-3xl sm:text-4xl font-black">Featured Article</h2>
+                </div>
+            </div>
+
+            <article class="article-card overflow-hidden bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl">
+                <div class="grid lg:grid-cols-2">
+                    <div class="relative min-h-[300px] lg:min-h-[430px] flex items-center justify-center overflow-hidden border-b lg:border-b-0 lg:border-r border-slate-800">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.18),transparent_60%)]"></div>
+                        <div class="relative text-center p-10">
+                            <div class="w-36 h-36 sm:w-44 sm:h-44 mx-auto rounded-full p-1 bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-800 shadow-[0_0_55px_rgba(234,179,8,0.25)]">
+                                <div class="w-full h-full rounded-full overflow-hidden border-[5px] border-slate-950 bg-slate-900">
+                                    <img src="../logo2%20(1).png" alt="APXN Logo" class="w-full h-full object-cover" width="176" height="176">
+                                </div>
+                            </div>
+                            <p class="mt-6 text-yellow-400 font-black text-sm uppercase tracking-widest">APXN Guides</p>
+                        </div>
+                    </div>
+
+                    <div class="p-7 sm:p-10 lg:p-12 flex flex-col justify-center">
+                        <div class="flex flex-wrap gap-2 mb-5">
+                            <span class="text-[11px] font-black bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-3 py-1.5 rounded-full">APXN GUIDES</span>
+                            <span class="text-[11px] font-bold bg-slate-800 text-gray-400 px-3 py-1.5 rounded-full">7 min read</span>
+                        </div>
+
+                        <h3 class="text-2xl sm:text-4xl font-black leading-tight mb-4">
+                            What Are APXN Points? A Practical Guide to the Apex Network Telegram Mini App
+                        </h3>
+
+                        <p class="text-gray-400 leading-relaxed mb-7">
+                            Understand how APXN ecosystem points work, how 12-hour claims, daily check-ins, social tasks and active referrals fit into the current Telegram Mini App experience.
+                        </p>
+
+                        <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 mb-8">
+                            <span>By Apex Network Editorial</span>
+                            <span>•</span>
+                            <span>Updated 2026</span>
+                        </div>
+
+                        <a href="articles/what-are-apxn-points.html"
+                           class="inline-flex w-fit items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black px-6 py-3.5 rounded-xl hover:scale-[1.02] transition-transform">
+                            Read Article
+                            <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- Categories -->
+        <section id="categories" class="border-y border-slate-800 bg-slate-900/20">
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-12">
+                <div class="mb-7">
+                    <p class="text-yellow-500 text-xs font-black uppercase tracking-[0.22em] mb-2">Explore Topics</p>
+                    <h2 class="text-2xl sm:text-3xl font-black">Blog Categories</h2>
+                </div>
+
+                <div class="flex flex-wrap gap-3" id="categoryFilters">
+                    <button data-category="all" class="category-chip active border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">All</button>
+                    <button data-category="APXN News" class="category-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">APXN News</button>
+                    <button data-category="APXN Guides" class="category-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">APXN Guides</button>
+                    <button data-category="Blockchain" class="category-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">Blockchain</button>
+                    <button data-category="Web3" class="category-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">Web3</button>
+                    <button data-category="BSC" class="category-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">BSC</button>
+                    <button data-category="Security" class="category-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">Security</button>
+                    <button data-category="Education" class="category-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">Education</button>
+                    <button data-category="Development" class="category-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">Development</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Latest -->
+        <section id="latest" class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-9">
+                <div>
+                    <p class="text-yellow-500 text-xs font-black uppercase tracking-[0.22em] mb-2">Fresh Knowledge</p>
+                    <h2 class="text-3xl sm:text-4xl font-black">Latest Articles</h2>
+                </div>
+                <p id="resultCount" class="text-sm text-gray-500 font-bold">6 articles</p>
+            </div>
+
+            <div id="articlesGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+                <!-- Article 1 -->
+                <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
+                         data-category="APXN Guides"
+                         data-search="apxn points telegram mini app mining claim daily check in referral tasks">
+                    <div class="h-2 bg-gradient-to-r from-yellow-500 to-orange-500"></div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 px-3 py-1.5 rounded-full">APXN Guides</span>
+                            <span class="text-xs text-gray-600">7 min</span>
+                        </div>
+
+                        <h3 class="font-black text-xl leading-snug mb-3 line-clamp-2">
+                            What Are APXN Points? How the Telegram Mini App Works
+                        </h3>
+
+                        <p class="text-sm text-gray-400 leading-relaxed line-clamp-3 mb-6">
+                            A factual guide to claims, daily rewards, social tasks and referral-based mining speed inside the current APXN Mini App.
+                        </p>
+
+                        <a href="articles/what-are-apxn-points.html" class="mt-auto text-yellow-400 font-black text-sm hover:text-yellow-300">Read guide →</a>
+                    </div>
+                </article>
+
+                <!-- Article 2 -->
+                <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
+                         data-category="Blockchain"
+                         data-search="blockchain beginner guide blocks transactions decentralization web3 apxn">
+                    <div class="h-2 bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-full">Blockchain</span>
+                            <span class="text-xs text-gray-600">9 min</span>
+                        </div>
+
+                        <h3 class="font-black text-xl leading-snug mb-3 line-clamp-2">
+                            Blockchain Explained for Beginners: From Blocks to Web3
+                        </h3>
+
+                        <p class="text-sm text-gray-400 leading-relaxed line-clamp-3 mb-6">
+                            Learn the core concepts behind blockchain networks before exploring how Web3 projects such as Apex Network use public-chain infrastructure.
+                        </p>
+
+                        <a href="articles/blockchain-for-beginners.html" class="mt-auto text-yellow-400 font-black text-sm hover:text-yellow-300">Read article →</a>
+                    </div>
+                </article>
+
+                <!-- Article 3 -->
+                <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
+                         data-category="BSC"
+                         data-search="bsc binance smart chain bep20 apxn gas fees wallet transaction">
+                    <div class="h-2 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-yellow-300 bg-yellow-500/10 border border-yellow-500/20 px-3 py-1.5 rounded-full">BSC</span>
+                            <span class="text-xs text-gray-600">8 min</span>
+                        </div>
+
+                        <h3 class="font-black text-xl leading-snug mb-3 line-clamp-2">
+                            What Is BSC? Understanding BEP-20 Tokens and Gas Fees
+                        </h3>
+
+                        <p class="text-sm text-gray-400 leading-relaxed line-clamp-3 mb-6">
+                            A clear explanation of Binance Smart Chain, BEP-20 token standards and transaction fees, with APXN ecosystem context.
+                        </p>
+
+                        <a href="articles/what-is-bsc-bep20.html" class="mt-auto text-yellow-400 font-black text-sm hover:text-yellow-300">Read article →</a>
+                    </div>
+                </article>
+
+                <!-- Article 4 -->
+                <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
+                         data-category="Security"
+                         data-search="security crypto wallet seed phrase scam phishing telegram web3 safety apxn">
+                    <div class="h-2 bg-gradient-to-r from-emerald-500 to-green-400"></div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">Security</span>
+                            <span class="text-xs text-gray-600">10 min</span>
+                        </div>
+
+                        <h3 class="font-black text-xl leading-snug mb-3 line-clamp-2">
+                            Web3 Security Basics: Protecting Your Wallet and Telegram Account
+                        </h3>
+
+                        <p class="text-sm text-gray-400 leading-relaxed line-clamp-3 mb-6">
+                            Practical steps to avoid phishing, fake support accounts, seed-phrase theft and other common risks affecting crypto users.
+                        </p>
+
+                        <a href="articles/web3-security-basics.html" class="mt-auto text-yellow-400 font-black text-sm hover:text-yellow-300">Read article →</a>
+                    </div>
+                </article>
+
+                <!-- Article 5 -->
+                <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
+                         data-category="Web3"
+                         data-search="telegram mini apps web3 applications ecosystem apxn bot">
+                    <div class="h-2 bg-gradient-to-r from-sky-500 to-blue-500"></div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-sky-400 bg-sky-500/10 border border-sky-500/20 px-3 py-1.5 rounded-full">Web3</span>
+                            <span class="text-xs text-gray-600">8 min</span>
+                        </div>
+
+                        <h3 class="font-black text-xl leading-snug mb-3 line-clamp-2">
+                            How Telegram Mini Apps Are Bringing Web3 to Everyday Users
+                        </h3>
+
+                        <p class="text-sm text-gray-400 leading-relaxed line-clamp-3 mb-6">
+                            Explore why Telegram Mini Apps are becoming an accessible interface for Web3 communities and how APXN uses this model for engagement.
+                        </p>
+
+                        <a href="articles/telegram-mini-apps-web3.html" class="mt-auto text-yellow-400 font-black text-sm hover:text-yellow-300">Read article →</a>
+                    </div>
+                </article>
+
+                <!-- Article 6 -->
+                <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
+                         data-category="Development"
+                         data-search="apxn roadmap testnet mainnet development roadmap planned feature boost store">
+                    <div class="h-2 bg-gradient-to-r from-purple-500 to-fuchsia-500"></div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-full">Development</span>
+                            <span class="text-xs text-gray-600">6 min</span>
+                        </div>
+
+                        <h3 class="font-black text-xl leading-snug mb-3 line-clamp-2">
+                            APXN Development Roadmap: Live Features vs Planned Milestones
+                        </h3>
+
+                        <p class="text-sm text-gray-400 leading-relaxed line-clamp-3 mb-6">
+                            A transparent look at what is currently live in the APXN Mini App and which ecosystem milestones remain part of the future roadmap.
+                        </p>
+
+                        <a href="articles/apxn-roadmap-live-vs-planned.html" class="mt-auto text-yellow-400 font-black text-sm hover:text-yellow-300">Read article →</a>
+                    </div>
+                </article>
+
+            </div>
+
+            <div id="emptyState" class="hidden text-center border border-dashed border-slate-700 rounded-2xl p-10 mt-8">
+                <p class="text-xl font-black mb-2">No articles found</p>
+                <p class="text-gray-500 text-sm">Try another search term or choose a different category.</p>
+            </div>
+        </section>
+
+        <!-- Newsletter / CTA -->
+        <section class="border-y border-slate-800 bg-gradient-to-r from-yellow-500/5 via-orange-500/5 to-yellow-500/5">
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16">
+                <div class="bg-slate-900 border border-yellow-500/20 rounded-3xl p-7 sm:p-10 lg:p-12 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 shadow-[0_0_45px_rgba(234,179,8,0.05)]">
+                    <div class="max-w-2xl">
+                        <p class="text-yellow-400 text-xs font-black uppercase tracking-[0.22em] mb-3">Join the Ecosystem</p>
+                        <h2 class="text-3xl sm:text-4xl font-black mb-4">Learn about APXN, then explore the Mini App.</h2>
+                        <p class="text-gray-400 leading-relaxed">
+                            The blog provides education and project documentation. The Telegram Mini App remains the interactive APXN ecosystem experience.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-3 shrink-0">
+                        <a href="https://t.me/ApxMinerBot"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black px-6 py-4 rounded-xl text-center hover:scale-[1.02] transition-transform">
+                            Open Telegram App
+                        </a>
+
+                        <a href="https://t.me/ApexMiner_Official"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="bg-slate-950 border border-slate-700 text-white font-black px-6 py-4 rounded-xl text-center hover:border-yellow-500/50 hover:text-yellow-400 transition-colors">
+                            Telegram Channel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-10 pb-10 border-b border-slate-800">
+
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full overflow-hidden border border-yellow-500/40">
+                            <img src="../logo2%20(1).png" alt="Apex Network" class="w-full h-full object-cover" width="40" height="40">
+                        </div>
+                        <span class="font-black tracking-wider">APEX NETWORK</span>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        APXN Blog is the educational and editorial hub of the Apex Network ecosystem.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-black mb-4">Explore</h3>
+                    <div class="flex flex-col gap-3 text-sm text-gray-500">
+                        <a href="../index.html" class="hover:text-yellow-400 transition-colors">Main Website</a>
+                        <a href="#categories" class="hover:text-yellow-400 transition-colors">Categories</a>
+                        <a href="#latest" class="hover:text-yellow-400 transition-colors">Latest Articles</a>
+                        <a href="https://t.me/ApxMinerBot" target="_blank" rel="noopener noreferrer" class="hover:text-yellow-400 transition-colors">Telegram Mini App</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-black mb-4">Legal & Support</h3>
+                    <div class="flex flex-col gap-3 text-sm text-gray-500">
+                        <a href="../privacy.html" class="hover:text-yellow-400 transition-colors">Privacy Policy</a>
+                        <a href="../terms.html" class="hover:text-yellow-400 transition-colors">Terms & Conditions</a>
+                        <a href="mailto:contact@apxn.network" class="hover:text-yellow-400 transition-colors">contact@apxn.network</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs text-gray-600">
+                <p>&copy; 2026 Apex Network. All rights reserved.</p>
+                <p>Educational content only. Not financial advice.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const articleItems = Array.from(document.querySelectorAll('.article-item'));
+        const categoryButtons = Array.from(document.querySelectorAll('.category-chip'));
+        const resultCount = document.getElementById('resultCount');
+        const emptyState = document.getElementById('emptyState');
+
+        let activeCategory = 'all';
+
+        function updateArticles() {
+            const query = (searchInput.value || '').trim().toLowerCase();
+            let visible = 0;
+
+            articleItems.forEach((article) => {
+                const category = article.dataset.category || '';
+                const searchable = (article.dataset.search || '').toLowerCase();
+                const text = article.innerText.toLowerCase();
+
+                const matchesCategory = activeCategory === 'all' || category === activeCategory;
+                const matchesSearch = !query || searchable.includes(query) || text.includes(query);
+                const shouldShow = matchesCategory && matchesSearch;
+
+                article.classList.toggle('hidden', !shouldShow);
+
+                if (shouldShow) visible++;
+            });
+
+            resultCount.textContent = visible === 1 ? '1 article' : `${visible} articles`;
+            emptyState.classList.toggle('hidden', visible !== 0);
+        }
+
+        categoryButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                activeCategory = button.dataset.category;
+
+                categoryButtons.forEach((item) => item.classList.remove('active'));
+                button.classList.add('active');
+
+                updateArticles();
+
+                document.getElementById('latest').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+
+        searchInput.addEventListener('input', updateArticles);
+
+        function resetFilters() {
+            activeCategory = 'all';
+            searchInput.value = '';
+
+            categoryButtons.forEach((item) => {
+                item.classList.toggle('active', item.dataset.category === 'all');
+            });
+
+            updateArticles();
+        }
+
+        updateArticles();
+    </script>
+
+</body>
+</html>
+
