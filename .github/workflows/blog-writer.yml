@@ -15,6 +15,12 @@ on:
         default: false
         type: boolean
 
+      writer_test:
+        description: "Generate one private Grok draft to test xAI without publishing"
+        required: false
+        default: false
+        type: boolean
+
   schedule:
     - cron: "0 8 * * 1"
     - cron: "0 8 * * 3"
@@ -35,7 +41,6 @@ jobs:
 
     env:
       XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-      BLOG_PUBLISH: "true"
       TZ: "Africa/Algiers"
 
     steps:
@@ -58,10 +63,30 @@ jobs:
           node --check scripts/blog-planner.mjs
 
       - name: Validate manual mode
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && inputs.planner_only }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
         run: |
-          echo "Choose only one manual mode: sync_only OR planner_only."
-          exit 1
+          COUNT=0
+
+          if [ "${{ inputs.sync_only }}" = "true" ]; then
+            COUNT=$((COUNT + 1))
+          fi
+
+          if [ "${{ inputs.planner_only }}" = "true" ]; then
+            COUNT=$((COUNT + 1))
+          fi
+
+          if [ "${{ inputs.writer_test }}" = "true" ]; then
+            COUNT=$((COUNT + 1))
+          fi
+
+          if [ "$COUNT" -gt 1 ]; then
+            echo "Choose only one manual mode:"
+            echo "- sync_only"
+            echo "- planner_only"
+            echo "- writer_test"
+            exit 1
+          fi
 
       - name: Replenish topic queue
         id: planner
@@ -70,7 +95,7 @@ jobs:
 
       - name: Check automation readiness
         id: gate
-        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only) }}
+        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only && !inputs.writer_test) }}
         shell: bash
         run: |
           AUTO_GENERATE="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('data/blog-config.json','utf8'));process.stdout.write(String(c?.automation?.auto_generate_enabled===true));")"
@@ -103,14 +128,33 @@ jobs:
 
       - name: Sync blog only
         id: sync_only
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && !inputs.planner_only }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && !inputs.planner_only && !inputs.writer_test }}
         continue-on-error: true
         run: node scripts/blog-sync.mjs
+
+      - name: Generate private Grok test draft
+        id: writer_test
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && !inputs.sync_only && !inputs.planner_only }}
+        continue-on-error: true
+        env:
+          BLOG_PUBLISH: "false"
+        run: node scripts/blog-writer.mjs
+
+      - name: Upload private draft artifact
+        if: ${{ steps.writer_test.outcome == 'success' || steps.writer.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: apxn-private-draft-${{ github.run_number }}
+          path: .workflow-output/drafts/
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Generate article with Grok
         id: writer
         if: ${{ steps.gate.outputs.ready == 'true' }}
         continue-on-error: true
+        env:
+          BLOG_PUBLISH: "true"
         run: node scripts/blog-writer.mjs
 
       - name: Sync blog index and sitemap
@@ -134,6 +178,41 @@ jobs:
           fi
 
           git commit -m "chore(blog): automated content update"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Preserve writer test API cost only
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && (steps.writer_test.outcome == 'success' || steps.writer_test.outcome == 'failure') }}
+        shell: bash
+        run: |
+          git config user.name "APXN Blog Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          if [ ! -f data/blog-costs.json ]; then
+            echo "No xAI cost ledger was created."
+
+            git reset --hard HEAD
+            git clean -fd
+
+            exit 0
+          fi
+
+          git add data/blog-costs.json
+
+          if git diff --cached --quiet; then
+            echo "No xAI cost change to commit."
+
+            git reset --hard HEAD
+            git clean -fd
+
+            exit 0
+          fi
+
+          git commit -m "chore(blog): record Grok test usage"
+
+          git reset --hard HEAD
+          git clean -fd
+
           git pull --rebase origin main
           git push origin HEAD:main
 
@@ -163,6 +242,13 @@ jobs:
 
           git pull --rebase origin main
           git push origin HEAD:main
+
+      - name: Fail if writer test failed
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && steps.writer_test.outcome == 'failure' }}
+        run: |
+          echo "The private Grok test failed."
+          echo "Check the Generate private Grok test draft step for details."
+          exit 1
 
       - name: Fail if generation failed
         if: ${{ steps.writer.outcome == 'failure' }}
