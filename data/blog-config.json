@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "site": {
+    "name": "APXN Blog",
+    "brand": "Apex Network",
+    "base_url": "https://apxn.network",
+    "blog_url": "https://apxn.network/blog/",
+    "default_language": "en",
+    "author": "Apex Network Editorial",
+    "support_email": "contact@apxn.network"
+  },
+
+  "content_sources": {
+    "knowledge_file": "data/apxn-blog-knowledge.json",
+    "articles_manifest": "data/blog-articles.json"
+  },
+
+  "categories": [
+    "APXN News",
+    "APXN Guides",
+    "Blockchain",
+    "Web3",
+    "BSC",
+    "Security",
+    "Education",
+    "Development"
+  ],
+
+  "writer": {
+    "enabled": true,
+    "default_mode": "draft",
+    "minimum_words": 1200,
+    "target_words": 1500,
+    "maximum_words": 1900,
+    "include_apxn_context": true,
+    "include_faq": true,
+    "include_internal_links": true,
+    "include_disclaimer": true,
+    "include_article_schema": true,
+    "include_faq_schema": true,
+    "allow_external_research": true
+  },
+
+  "editorial_rules": {
+    "require_knowledge_file": true,
+    "require_original_content": true,
+    "require_educational_value": true,
+    "avoid_keyword_stuffing": true,
+    "avoid_duplicate_topics": true,
+    "avoid_guaranteed_profit_claims": true,
+    "avoid_guaranteed_token_value": true,
+    "avoid_unverified_exchange_listings": true,
+    "avoid_unverified_partnerships": true,
+    "avoid_unverified_prices": true,
+    "avoid_presenting_planned_features_as_live": true,
+    "describe_current_balance_as_apxn_points": true
+  },
+
+  "automation": {
+    "auto_generate_enabled": false,
+    "auto_publish_enabled": false,
+    "articles_per_week": 3,
+    "preferred_days": [
+      "Monday",
+      "Wednesday",
+      "Saturday"
+    ],
+    "publication_timezone": "Africa/Algiers",
+    "require_quality_check": true,
+    "require_duplicate_check": true,
+    "update_sitemap_after_publish": true,
+    "update_blog_index_after_publish": true
+  },
+
+  "seo": {
+    "canonical_domain": "https://apxn.network",
+    "default_og_image": "https://apxn.network/logo2%20(1).png",
+    "robots": "index, follow",
+    "generate_meta_description": true,
+    "generate_keywords": true,
+    "generate_breadcrumbs": true
+  },
+
+  "publishing": {
+    "article_directory": "blog/articles",
+    "article_extension": ".html",
+    "sitemap_file": "sitemap.xml",
+    "blog_index_file": "blog/index.html"
+  },
+
+  "security": {
+    "store_api_keys_in_repository": false,
+    "use_environment_variables": true,
+    "openai_key_variable": "OPENAI_API_KEY",
+    "admin_secret_variable": "BLOG_ADMIN_SECRET"
+  }
+}
