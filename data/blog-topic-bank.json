@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "language": "en",
+  "last_updated": "2026-09-08",
+  "purpose": "Safe evergreen topic bank for automated APXN Blog publishing.",
+  "rules": {
+    "english_only": true,
+    "avoid_duplicate_topics": true,
+    "allow_external_research": false,
+    "prefer_educational_topics": true,
+    "never_promise_profit": true,
+    "never_promise_token_value": true,
+    "never_confirm_unverified_listings": true,
+    "never_present_planned_features_as_live": true
+  },
+  "topics": [
+    {
+      "id": "bank-001",
+      "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-002",
+      "topic": "How the 12-Hour APXN Points Claim Cycle Works",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-003",
+      "topic": "How APXN Mining Speed Is Calculated Inside the Telegram Mini App",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-004",
+      "topic": "Understanding the APXN 7-Day Daily Check-In Cycle",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-005",
+      "topic": "APXN Daily Tasks vs One-Time Social Tasks: What Is the Difference?",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-006",
+      "topic": "What Makes an APXN Referral an Active Friend?",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-007",
+      "topic": "Understanding the APXN 24-Hour Active Friend Window",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-008",
+      "topic": "How APXN Referral Mining Boosts Are Calculated",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-009",
+      "topic": "How APXN Welcome Bonuses Work for New Users",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-010",
+      "topic": "How APXN Telegram Referral Links Work",
+      "category": "APXN Guides",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-011",
+      "topic": "How Telegram Mini App initData Authentication Protects APXN Users",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-012",
+      "topic": "What Is HMAC Verification and Why Telegram Mini Apps Use It",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-013",
+      "topic": "Why Server-Side Validation Matters in Telegram Mini Apps",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-014",
+      "topic": "How Database Row Locking Helps Protect Point Claim Systems",
+      "category": "Development",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-015",
+      "topic": "How Supabase Can Support Secure Web3 Mini App Backends",
+      "category": "Development",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-016",
+      "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+      "category": "Web3",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-017",
+      "topic": "How to Read and Verify a Crypto Wallet Address",
+      "category": "Education",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-018",
+      "topic": "Self-Custody Wallet Basics for Web3 Beginners",
+      "category": "Education",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-019",
+      "topic": "How to Protect Your Seed Phrase and Private Keys",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-020",
+      "topic": "Common Web3 Phishing Scams and How to Avoid Them",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-021",
+      "topic": "How to Recognize Fake Telegram Crypto Accounts and Bots",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-022",
+      "topic": "What Are Smart Contract Approvals and Why Should Users Review Them?",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-023",
+      "topic": "What Is BNB Smart Chain and How Does It Work?",
+      "category": "BSC",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-024",
+      "topic": "What Is a BEP-20 Token? A Beginner-Friendly Guide",
+      "category": "BSC",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-025",
+      "topic": "Understanding Gas Fees on BNB Smart Chain",
+      "category": "BSC",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-026",
+      "topic": "How Blockchain Explorers Help Users Verify Transactions",
+      "category": "Blockchain",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-027",
+      "topic": "Blockchain Transactions Explained for Complete Beginners",
+      "category": "Blockchain",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-028",
+      "topic": "Testnet vs Mainnet: What Is the Difference?",
+      "category": "Blockchain",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-029",
+      "topic": "What Is a Token Generation Event (TGE)?",
+      "category": "Education",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-030",
+      "topic": "DEX vs CEX: Understanding Crypto Exchange Models",
+      "category": "Education",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-031",
+      "topic": "How to Read the APXN Development Roadmap Responsibly",
+      "category": "Development",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-032",
+      "topic": "Live Features vs Planned Features in the APXN Ecosystem",
+      "category": "Development",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-033",
+      "topic": "Understanding APXN Tokenomics as a Project Allocation Plan",
+      "category": "Education",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-034",
+      "topic": "How Telegram Mini Apps Make Web3 Applications Easier to Access",
+      "category": "Web3",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-035",
+      "topic": "What Users Should Check Before Connecting a Wallet to a Web3 App",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    },
+    {
+      "id": "bank-036",
+      "topic": "Why Crypto Users Should Never Share Private Keys or Seed Phrases",
+      "category": "Security",
+      "risk": "safe",
+      "status": "available"
+    }
+  ]
+}
