@@ -4,9 +4,10 @@
  *
  * Purpose:
  * - Uses the APXN knowledge base as the source of truth for APXN project facts.
- * - Uses xAI Web Search for general/current BSC, Web3, blockchain, Telegram and security topics.
+ * - Uses xAI Web Search only in bounded verification passes for external/current facts.
  * - Restricts web research to curated official/primary domains.
  * - Generates English-only structured long-form articles with Grok.
+ * - Runs generation -> bounded verification -> auto-fix -> bounded re-verification.
  * - Runs local quality, risk, duplicate, source and cost checks.
  * - Never auto-publishes risky, unsourced or review-required content.
  * - Keeps private drafts outside the public Git tree.
@@ -44,7 +45,9 @@ const MAX_RECORDED_SOURCES = 12;
 const MAX_CORRECTION_ROUNDS = 2;
 const MAX_PRODUCTION_TOPIC_ATTEMPTS = 3;
 const MAX_TEST_TOPIC_ATTEMPTS = 1;
-const VERIFIER_OUTPUT_TOKEN_CAP = 2_400;
+const VERIFIER_OUTPUT_TOKEN_CAP = 1_800;
+const INITIAL_VERIFIER_MAX_TURNS = 1;
+const FINAL_VERIFIER_MAX_TURNS = 1;
 const MIN_EXTERNAL_VERIFIED_CLAIMS = 3;
 const MIN_APXN_VERIFIED_CLAIMS = 2;
 const MIN_REPAIR_BUDGET_USD = 0.012;
@@ -614,14 +617,13 @@ function buildInstructions(config, research) {
 
   const researchRules = research.enabled
     ? `
-EXTERNAL RESEARCH IS REQUIRED:
-- You MUST use web_search before writing current or technical factual claims.
-- Use only the configured official/primary domains.
-- Treat documentation pages as stronger than blogs, tutorials, community posts, forums, or memory.
-- Distinguish historical information from current behavior explicitly.
-- Never state a changing metric, version, fee, count, feature status, release state, security recommendation, or protocol behavior from memory alone.
-- If an important claim cannot be verified, omit it rather than guessing.
-- Do not place raw citation markup inside the article text; source metadata is recorded separately.
+EXTERNAL FACTS WILL BE VERIFIED AFTER THE DRAFT:
+- Draft WITHOUT web_search. A separate independent verifier will use current official sources after you finish.
+- Prefer stable educational explanations over volatile metrics, versions, fees, counts, release states or time-sensitive details.
+- When a changing/current fact is genuinely important to the topic, state it cautiously and include it in factual_claims so the verifier can check it.
+- Never invent a precise number, date, version, fee, security recommendation or live feature status merely to make the article sound authoritative.
+- Clearly distinguish historical context from current behavior.
+- Do not place raw citation markup inside the article text; verified source metadata is attached later.
 `
     : `
 APXN KNOWLEDGE MODE:
@@ -933,7 +935,9 @@ async function callStructuredXAI({
   research,
   schema,
   schemaName,
-  maxOutputTokens
+  maxOutputTokens,
+  useWebSearch = research?.enabled === true,
+  maxTurns = null
 }) {
   const requestBody = {
     model,
@@ -954,12 +958,16 @@ async function callStructuredXAI({
     }
   };
 
-  if (research?.enabled) {
+  if (useWebSearch) {
     requestBody.tools = [{
       type: "web_search",
       filters: { allowed_domains: research.allowed_domains.slice(0, MAX_WEB_DOMAINS) }
     }];
     requestBody.include = ["no_inline_citations", "web_search_call.action.sources"];
+
+    if (Number.isInteger(maxTurns) && maxTurns > 0) {
+      requestBody.max_turns = maxTurns;
+    }
   }
 
   const reasoningEffort = String(config?.ai?.reasoning_effort || "none").trim();
@@ -1027,7 +1035,11 @@ async function generateArticle({ apiKey, model, config, knowledge, manifest, que
     research,
     schema: buildArticleSchema(config),
     schemaName: "apxn_blog_article",
-    maxOutputTokens: outputTokenLimit(config)
+    maxOutputTokens: outputTokenLimit(config),
+    // Cost control: drafting never searches the web. Current facts are checked
+    // by the independent verifier below, which is much cheaper than letting
+    // both the writer and verifier run agentic web-search loops.
+    useWebSearch: false
   });
 }
 
@@ -1069,7 +1081,10 @@ function buildVerifierInput({ article, queueItem, knowledge, research }) {
   }, null, 2);
 }
 
-async function verifyArticle({ apiKey, model, config, article, queueItem, knowledge, research }) {
+async function verifyArticle({
+  apiKey, model, config, article, queueItem, knowledge, research,
+  maxTurns = INITIAL_VERIFIER_MAX_TURNS
+}) {
   return callStructuredXAI({
     apiKey,
     model,
@@ -1079,7 +1094,12 @@ async function verifyArticle({ apiKey, model, config, article, queueItem, knowle
     research,
     schema: buildVerificationSchema(),
     schemaName: "apxn_article_verification",
-    maxOutputTokens: VERIFIER_OUTPUT_TOKEN_CAP
+    maxOutputTokens: VERIFIER_OUTPUT_TOKEN_CAP,
+    useWebSearch: research.enabled === true,
+    // One agentic turn can contain multiple parallel web searches. Limiting
+    // turns prevents the verifier from repeatedly browsing the same docs and
+    // keeps the automatic pipeline inside the per-article budget.
+    maxTurns: research.enabled ? maxTurns : null
   });
 }
 
@@ -1120,7 +1140,10 @@ async function correctArticle({
     research: { ...research, enabled: false },
     schema: buildArticleSchema(config),
     schemaName: "apxn_corrected_article",
-    maxOutputTokens: outputTokenLimit(config)
+    maxOutputTokens: outputTokenLimit(config),
+    // Corrections use the verifier's evidence and precise corrections. They do
+    // not perform another search; the corrected result is re-verified after.
+    useWebSearch: false
   });
 }
 
@@ -2168,16 +2191,25 @@ async function processTopic({
   console.log(`Topic: ${queueItem.topic}`);
   console.log(`Category: ${queueItem.category}`);
   console.log(`Research mode: ${research.mode}`);
-  if (research.enabled) console.log(`Allowed domains: ${research.allowed_domains.join(", ")}`);
+  if (research.enabled) {
+    console.log(`Allowed domains: ${research.allowed_domains.join(", ")}`);
+    console.log(`Verifier web-search max turns: ${INITIAL_VERIFIER_MAX_TURNS}`);
+  }
 
   ensureBudgetAvailable(config, costLedger);
   console.log("Generating article...");
 
+  console.log(
+    research.enabled
+      ? "Draft web search: disabled; current facts will be checked by the verifier."
+      : "Draft web search: not required for reviewed APXN knowledge mode."
+  );
+
   const generation = await generateArticle({
     apiKey, model, config, knowledge, manifest, queueItem, research
   });
-  research.sources = generation.sources;
-  research.server_side_tools_used = generation.serverSideToolsUsed;
+  research.sources = [];
+  research.server_side_tools_used = 0;
 
   let article = normalizeGeneratedArticle(generation.generated, queueItem, config);
   let costEntry = recordCost({
@@ -2187,7 +2219,13 @@ async function processTopic({
     topic: queueItem.topic,
     articleSlug: article.slug,
     date,
-    research,
+    research: {
+      ...research,
+      enabled: false,
+      mode: research.enabled ? "draft_without_web_search" : research.mode,
+      sources: [],
+      server_side_tools_used: 0
+    },
     stage: "generation"
   });
   costEntries.push(costEntry);
@@ -2274,7 +2312,8 @@ async function processTopic({
 
     console.log(`Re-verification round ${round}...`);
     const recheck = await verifyArticle({
-      apiKey, model, config, article, queueItem, knowledge, research
+      apiKey, model, config, article, queueItem, knowledge, research,
+      maxTurns: FINAL_VERIFIER_MAX_TURNS
     });
     verification = normalizeVerificationReport(recheck.generated, research);
     verification.server_side_tools_used = recheck.serverSideToolsUsed;
