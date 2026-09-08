@@ -3,15 +3,13 @@
  * Path: scripts/blog-writer.mjs
  *
  * Purpose:
- * - Reads the APXN knowledge base before every article.
- * - Reads blog configuration and the article registry.
- * - Selects the next safe waiting topic.
- * - Generates one structured long-form English article through the xAI Responses API.
- * - Runs strict local editorial, security, duplicate, language, and length checks.
- * - Never auto-publishes risky or unverified claims.
- * - Tracks xAI cost and enforces conservative budget gates.
- * - Publishes approved HTML to blog/articles/.
- * - Keeps non-published drafts out of the public Git repository tree.
+ * - Uses the APXN knowledge base as the source of truth for APXN project facts.
+ * - Uses xAI Web Search for general/current BSC, Web3, blockchain, Telegram and security topics.
+ * - Restricts web research to curated official/primary domains.
+ * - Generates English-only structured long-form articles with Grok.
+ * - Runs local quality, risk, duplicate, source and cost checks.
+ * - Never auto-publishes risky, unsourced or review-required content.
+ * - Keeps private drafts outside the public Git tree.
  *
  * No external npm packages are required.
  */
@@ -41,6 +39,8 @@ const DEFAULT_MODEL = "grok-4.3";
 const COST_TICKS_PER_USD = 10_000_000_000;
 const XAI_TIMEOUT_MS = 180_000;
 const ABSOLUTE_OUTPUT_TOKEN_CAP = 6_500;
+const MAX_WEB_DOMAINS = 5;
+const MAX_RECORDED_SOURCES = 12;
 
 /* -------------------------------------------------------------------------- */
 /* Utilities                                                                  */
@@ -201,6 +201,95 @@ function outputTokenLimit(config) {
   return Math.min(ABSOLUTE_OUTPUT_TOKEN_CAP, Math.max(4_500, estimated));
 }
 
+function safeUrl(value) {
+  try {
+    const parsed = new URL(String(value || "").trim());
+    if (!["http:", "https:"].includes(parsed.protocol)) return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
+function hostnameOf(value) {
+  try {
+    return new URL(String(value)).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+
+function domainMatches(hostname, allowedDomain) {
+  const host = String(hostname || "").toLowerCase().replace(/^www\./, "");
+  const allowed = String(allowedDomain || "").toLowerCase().replace(/^www\./, "");
+
+  return host === allowed || host.endsWith(`.${allowed}`);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Research policy                                                            */
+/* -------------------------------------------------------------------------- */
+
+function isApXnSpecificTopic(topic) {
+  const text = `${topic?.topic || ""} ${topic?.category || ""}`.toLowerCase();
+
+  return (
+    /\bapxn\b/.test(text) ||
+    /\bapex network\b/.test(text) ||
+    /^apxn\b/i.test(String(topic?.category || ""))
+  );
+}
+
+function buildResearchPlan(topic) {
+  const text = `${topic?.topic || ""} ${topic?.category || ""}`.toLowerCase();
+
+  if (isApXnSpecificTopic(topic)) {
+    return {
+      enabled: false,
+      mode: "apxn_knowledge_only",
+      reason: "APXN-specific article: internal reviewed project knowledge is the primary source.",
+      allowed_domains: [],
+      minimum_sources: 0
+    };
+  }
+
+  let domains = [];
+
+  if (/\b(bsc|bnb smart chain|bnb chain|bep-?20|gas fee)\b/.test(text)) {
+    domains = ["docs.bnbchain.org", "bnbchain.org"];
+  } else if (/\btelegram\b/.test(text)) {
+    domains = ["core.telegram.org", "telegram.org"];
+  } else if (/\b(security|wallet|phishing|private key|seed phrase|authentication)\b/.test(text)) {
+    domains = [
+      "cisa.gov",
+      "nist.gov",
+      "ethereum.org",
+      "support.metamask.io",
+      "docs.metamask.io"
+    ];
+  } else if (/\b(ethereum|smart contract|solidity)\b/.test(text)) {
+    domains = ["ethereum.org", "docs.soliditylang.org"];
+  } else if (/\b(bitcoin|proof of work|blockchain)\b/.test(text)) {
+    domains = ["bitcoin.org", "ethereum.org", "docs.bnbchain.org", "bnbchain.org"];
+  } else if (/\b(web3|decentralized|dapp|dapps)\b/.test(text)) {
+    domains = ["ethereum.org", "docs.bnbchain.org", "bnbchain.org", "core.telegram.org"];
+  } else if (/\b(node\.?js|javascript|web development|web app)\b/.test(text)) {
+    domains = ["nodejs.org", "developer.mozilla.org", "docs.github.com"];
+  } else {
+    domains = ["ethereum.org", "docs.bnbchain.org", "bnbchain.org", "core.telegram.org"];
+  }
+
+  domains = uniqueStrings(domains, MAX_WEB_DOMAINS);
+
+  return {
+    enabled: true,
+    mode: "official_web_research",
+    reason: "General/technical article: current facts must be checked against official or primary web sources.",
+    allowed_domains: domains,
+    minimum_sources: 1
+  };
+}
+
 /* -------------------------------------------------------------------------- */
 /* Cost control                                                               */
 /* -------------------------------------------------------------------------- */
@@ -277,13 +366,34 @@ function responseCost(responseJson) {
   };
 }
 
+function countServerSideTools(response) {
+  const direct = Number(response?.usage?.num_server_side_tools_used);
+  if (Number.isFinite(direct) && direct >= 0) return direct;
+
+  const usage =
+    response?.server_side_tool_usage ||
+    response?.usage?.server_side_tool_usage;
+
+  if (usage && typeof usage === "object") {
+    return Object.values(usage).reduce((sum, value) => {
+      const numeric = Number(value);
+      return Number.isFinite(numeric) ? sum + numeric : sum;
+    }, 0);
+  }
+
+  return (Array.isArray(response?.output) ? response.output : []).filter(
+    (item) => String(item?.type || "").endsWith("_call")
+  ).length;
+}
+
 function recordCost({
   ledger,
   response,
   model,
   topic,
   articleSlug,
-  date
+  date,
+  research
 }) {
   const month = monthKey(date);
   ledger.months = ledger.months || {};
@@ -308,6 +418,9 @@ function recordCost({
       response?.usage?.output_tokens_details?.reasoning_tokens || 0
     ),
     total_tokens: Number(response?.usage?.total_tokens || 0),
+    server_side_tools_used: countServerSideTools(response),
+    web_research_enabled: research?.enabled === true,
+    web_source_count: Number(research?.sources?.length || 0),
     cost_in_usd_ticks: cost.ticks,
     cost_usd: cost.usd
   };
@@ -452,17 +565,34 @@ function chooseNextTopic(manifest) {
 /* Prompt building                                                            */
 /* -------------------------------------------------------------------------- */
 
-function buildInstructions(config) {
+function buildInstructions(config, research) {
   const min = Number(config.writer.minimum_words || 1200);
   const target = Number(config.writer.target_words || 1500);
   const max = Number(config.writer.maximum_words || 1900);
+
+  const researchRules = research.enabled
+    ? `
+EXTERNAL RESEARCH IS REQUIRED FOR THIS ARTICLE:
+- You MUST use the provided web_search tool before writing factual technical/current claims.
+- Search only the allowed official/primary domains configured in the tool.
+- Prefer current documentation over old tutorials, memory, forum posts, or marketing copy.
+- If official sources disagree with your prior knowledge, follow the current official source.
+- Do not invent citations, source URLs, dates, metrics, block times, validator counts, fees, or protocol behavior.
+- Do not place citation markdown or raw source URLs inside the article JSON. The publishing system records web sources separately from the API response.
+- If you cannot verify an important factual statement from the available official sources, either omit it or set requires_manual_review=true and explain why.
+`
+    : `
+EXTERNAL RESEARCH IS DISABLED FOR THIS ARTICLE:
+- Use the supplied APXN knowledge JSON as the source of truth for APXN project facts.
+- Do not introduce current external claims about APXN that are not present in the supplied reviewed knowledge.
+`;
 
   return `
 You are the APXN Blog editorial writer for Apex Network.
 
 Your job is to create accurate, useful, original, SEO-friendly educational articles in ENGLISH ONLY.
 
-MANDATORY SOURCE RULES:
+MANDATORY APXN SOURCE RULES:
 1. The supplied APXN knowledge JSON is the highest-priority source for all APXN project facts.
 2. Never invent APXN facts.
 3. Distinguish clearly between implemented current behavior, official UI claims, UI-only behavior, planned roadmap features, verify-before-publish claims, and blocked-auto-publish claims.
@@ -475,9 +605,8 @@ MANDATORY SOURCE RULES:
 10. Country data is informational. Do not present it as KYC, citizenship, identity, or eligibility proof.
 11. If the requested article would require a fact marked verify_before_publish or blocked_auto_publish, set requires_manual_review=true and explain why.
 12. The article must provide real educational value beyond project promotion.
-13. Do not cite or imply external research unless it is explicitly present in the supplied knowledge.
-14. Do not include Arabic text. The APXN Blog is English-only.
-
+13. Do not include Arabic text. The APXN Blog is English-only.
+${researchRules}
 WRITING REQUIREMENTS:
 - Language: English only.
 - Target length: about ${target} words.
@@ -518,7 +647,7 @@ RETURN EXACTLY THIS JSON SHAPE:
   "review_reasons": [],
   "claims_used": [
     {
-      "claim": "brief description",
+      "claim": "brief APXN project claim if any",
       "knowledge_status": "implemented|official_ui_claim|ui_only|planned|verify_before_publish|blocked_auto_publish"
     }
   ]
@@ -526,7 +655,7 @@ RETURN EXACTLY THIS JSON SHAPE:
 `.trim();
 }
 
-function buildInput(topic, config, knowledge, manifest) {
+function buildInput(topic, config, knowledge, manifest, research) {
   const existing = manifest.articles.map((article) => ({
     id: article.id,
     slug: article.slug,
@@ -537,6 +666,7 @@ function buildInput(topic, config, knowledge, manifest) {
 
   return JSON.stringify(
     {
+      current_date: todayISO(),
       apxn_knowledge_base: knowledge,
       configured_categories: config.categories,
       writer_settings: {
@@ -547,7 +677,13 @@ function buildInput(topic, config, knowledge, manifest) {
         include_faq: config.writer.include_faq,
         include_disclaimer: config.writer.include_disclaimer,
         include_internal_links: config.writer.include_internal_links,
-        allow_external_research: false
+        allow_external_research: research.enabled
+      },
+      research_policy: {
+        mode: research.mode,
+        required: research.enabled,
+        allowed_domains: research.allowed_domains,
+        minimum_sources: research.minimum_sources
       },
       task: {
         topic: topic.topic,
@@ -608,7 +744,7 @@ function parseGeneratedJson(rawText) {
       try {
         return JSON.parse(candidate);
       } catch {
-        // Fall through to the explicit error below.
+        // Fall through.
       }
     }
   }
@@ -718,12 +854,70 @@ function resolveXaiEndpoint(config) {
   return `${base}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 }
 
+function normalizeSource(raw) {
+  const url = safeUrl(raw?.url || raw?.link || raw?.href);
+  if (!url) return null;
+
+  const domain = hostnameOf(url);
+  const title = normalizeSpace(raw?.title || raw?.name || domain || url);
+
+  return {
+    title: title || domain || url,
+    url,
+    domain
+  };
+}
+
+function extractWebSources(response, research) {
+  const found = [];
+  const seen = new Set();
+
+  function add(raw) {
+    const source = normalizeSource(raw);
+    if (!source) return;
+
+    if (
+      research?.enabled &&
+      Array.isArray(research.allowed_domains) &&
+      research.allowed_domains.length > 0 &&
+      !research.allowed_domains.some((domain) =>
+        domainMatches(source.domain, domain)
+      )
+    ) {
+      return;
+    }
+
+    const key = source.url.toLowerCase();
+    if (seen.has(key)) return;
+
+    seen.add(key);
+    found.push(source);
+  }
+
+  for (const item of Array.isArray(response?.output) ? response.output : []) {
+    if (Array.isArray(item?.action?.sources)) {
+      for (const source of item.action.sources) add(source);
+    }
+
+    for (const content of Array.isArray(item?.content) ? item.content : []) {
+      for (const annotation of Array.isArray(content?.annotations) ? content.annotations : []) {
+        if (annotation?.url || annotation?.link || annotation?.href) {
+          add(annotation);
+        }
+      }
+    }
+  }
+
+  return found.slice(0, MAX_RECORDED_SOURCES);
+}
+
 async function callXAI({
   apiKey,
   model,
   instructions,
   input,
-  config
+  config,
+  research
 }) {
   const requestBody = {
     model,
@@ -749,6 +943,22 @@ async function callXAI({
       }
     }
   };
+
+  if (research.enabled) {
+    requestBody.tools = [
+      {
+        type: "web_search",
+        filters: {
+          allowed_domains: research.allowed_domains.slice(0, MAX_WEB_DOMAINS)
+        }
+      }
+    ];
+
+    requestBody.include = [
+      "no_inline_citations",
+      "web_search_call.action.sources"
+    ];
+  }
 
   const reasoningEffort = String(
     config?.ai?.reasoning_effort || "none"
@@ -828,7 +1038,9 @@ async function callXAI({
 
   return {
     response: data,
-    generated: parseGeneratedJson(outputText)
+    generated: parseGeneratedJson(outputText),
+    sources: extractWebSources(data, research),
+    serverSideToolsUsed: countServerSideTools(data)
   };
 }
 
@@ -1014,7 +1226,44 @@ function detectRiskyLanguage(article) {
   return uniqueStrings(reasons, 30);
 }
 
-function runQualityChecks(article, config, manifest) {
+function applyResearchChecks(article, research) {
+  if (!research.enabled) return;
+
+  const sourceCount = Array.isArray(research.sources)
+    ? research.sources.length
+    : 0;
+
+  if (research.server_side_tools_used < 1) {
+    article.requires_manual_review = true;
+    article.review_reasons.push(
+      "External research was required, but xAI reported no server-side tool usage."
+    );
+  }
+
+  if (sourceCount < research.minimum_sources) {
+    article.requires_manual_review = true;
+    article.review_reasons.push(
+      `External research was required, but only ${sourceCount} acceptable source(s) were returned; minimum is ${research.minimum_sources}.`
+    );
+  }
+
+  for (const source of research.sources) {
+    const allowed = research.allowed_domains.some((domain) =>
+      domainMatches(source.domain, domain)
+    );
+
+    if (!allowed) {
+      article.requires_manual_review = true;
+      article.review_reasons.push(
+        `Unexpected research source domain requires review: ${source.domain}`
+      );
+    }
+  }
+
+  article.review_reasons = uniqueStrings(article.review_reasons, 30);
+}
+
+function runQualityChecks(article, config, manifest, research) {
   const errors = [];
   const warnings = [];
 
@@ -1083,6 +1332,8 @@ function runQualityChecks(article, config, manifest) {
     );
   }
 
+  applyResearchChecks(article, research);
+
   if (article.requires_manual_review && article.review_reasons.length === 0) {
     article.review_reasons = [
       "The AI marked this article for manual editorial review."
@@ -1098,7 +1349,7 @@ function runQualityChecks(article, config, manifest) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Internal links                                                             */
+/* Internal links and source rendering                                        */
 /* -------------------------------------------------------------------------- */
 
 function chooseRelatedArticles(manifest, article, limit = 3) {
@@ -1145,6 +1396,39 @@ ${cards}
                 </section>`;
 }
 
+function renderSources(research) {
+  if (!research?.enabled || !Array.isArray(research.sources) || research.sources.length === 0) {
+    return "";
+  }
+
+  const items = research.sources
+    .map((source) => {
+      const title = escapeHtml(source.title || source.domain || source.url);
+      const domain = escapeHtml(source.domain || "");
+      const url = escapeHtml(source.url);
+
+      return `
+                        <li>
+                            <a href="${url}" target="_blank" rel="noopener noreferrer" class="text-yellow-400 hover:text-yellow-300 font-bold">
+                                ${title}
+                            </a>
+                            ${domain ? `<span class="text-gray-600"> — ${domain}</span>` : ""}
+                        </li>`;
+    })
+    .join("\n");
+
+  return `
+                <section class="mt-12 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8">
+                    <h2 class="text-2xl font-black mb-3">Sources and further reading</h2>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-5">
+                        Current technical facts in this guide were checked with xAI Web Search restricted to approved official or primary sources.
+                    </p>
+                    <ol class="space-y-3 text-sm text-gray-400 list-decimal pl-5">
+${items}
+                    </ol>
+                </section>`;
+}
+
 /* -------------------------------------------------------------------------- */
 /* HTML rendering                                                             */
 /* -------------------------------------------------------------------------- */
@@ -1176,7 +1460,8 @@ function renderArticleHtml({
   date,
   words,
   reading,
-  relatedArticles
+  relatedArticles,
+  research
 }) {
   const baseUrl = String(config.site?.base_url || "https://apxn.network")
     .replace(/\/+$/, "");
@@ -1245,6 +1530,7 @@ ${renderParagraphs(section.paragraphs)}`
     : "";
 
   const relatedHtml = renderRelatedArticles(relatedArticles);
+  const sourcesHtml = renderSources(research);
 
   return `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -1333,10 +1619,6 @@ ${renderParagraphs(section.paragraphs)}`
             margin-bottom: .75rem;
         }
 
-        .article-body strong {
-            color: #fff;
-        }
-
         @media (max-width: 640px) {
             .article-body h2 { font-size: 1.45rem; }
         }
@@ -1423,6 +1705,7 @@ ${sectionsHtml}
 ${faqHtml}
                 </div>
 ${disclaimerHtml}
+${sourcesHtml}
 ${relatedHtml}
 
                 <div class="mt-10 bg-slate-900 border border-slate-800 rounded-3xl p-7 sm:p-10 text-center">
@@ -1502,7 +1785,8 @@ function addManifestRecord({
   published,
   model,
   queueItem,
-  structuredPath
+  structuredPath,
+  research
 }) {
   const id = nextArticleId(manifest.articles);
   const baseUrl = String(config.site?.base_url || "https://apxn.network")
@@ -1550,9 +1834,25 @@ function addManifestRecord({
     source: "ai",
     ai_model: model,
     knowledge_schema_version: 1,
-    verified_against_knowledge: !article.requires_manual_review,
+    verified_against_knowledge:
+      !research.enabled && !article.requires_manual_review,
+    verified_with_web_sources:
+      research.enabled &&
+      research.sources.length >= research.minimum_sources &&
+      !article.requires_manual_review,
     requires_manual_review: article.requires_manual_review,
     review_reasons: article.review_reasons,
+
+    research: {
+      mode: research.mode,
+      web_search_enabled: research.enabled,
+      server_side_tools_used: research.server_side_tools_used,
+      source_count: research.sources.length,
+      source_domains: uniqueStrings(
+        research.sources.map((source) => source.domain),
+        MAX_RECORDED_SOURCES
+      )
+    },
 
     seo: {
       canonical: published ? url : null,
@@ -1678,8 +1978,14 @@ async function main() {
   const costLedger = readCostLedger();
   ensureBudgetAvailable(config, costLedger);
 
-  const instructions = buildInstructions(config);
-  const input = buildInput(queueItem, config, knowledge, manifest);
+  const research = {
+    ...buildResearchPlan(queueItem),
+    sources: [],
+    server_side_tools_used: 0
+  };
+
+  const instructions = buildInstructions(config, research);
+  const input = buildInput(queueItem, config, knowledge, manifest, research);
 
   console.log("APXN Blog AI Writer");
   console.log("-------------------");
@@ -1687,19 +1993,31 @@ async function main() {
   console.log(`Topic: ${queueItem.topic}`);
   console.log(`Category: ${queueItem.category}`);
   console.log(`Model: ${model}`);
+  console.log(`Research mode: ${research.mode}`);
+
+  if (research.enabled) {
+    console.log(`Allowed web domains: ${research.allowed_domains.join(", ")}`);
+  } else {
+    console.log("Web Search: disabled for APXN-specific project facts");
+  }
+
   console.log(`Maximum output tokens: ${outputTokenLimit(config)}`);
   console.log("Generating article...");
 
-  const { response, generated } = await callXAI({
+  const result = await callXAI({
     apiKey,
     model,
     instructions,
     input,
-    config
+    config,
+    research
   });
 
+  research.sources = result.sources;
+  research.server_side_tools_used = result.serverSideToolsUsed;
+
   const article = normalizeGeneratedArticle(
-    generated,
+    result.generated,
     queueItem,
     config
   );
@@ -1708,16 +2026,18 @@ async function main() {
 
   const costEntry = recordCost({
     ledger: costLedger,
-    response,
+    response: result.response,
     model,
     topic: queueItem.topic,
     articleSlug: article.slug,
-    date
+    date,
+    research
   });
 
   /*
    * Persist the actual API charge immediately so failed quality checks still
-   * count against the monthly budget.
+   * count against the monthly budget. xAI's cost covers model tokens and
+   * server-side tools in the same cost_in_usd_ticks value.
    */
   writeJson(PATHS.costs, costLedger);
 
@@ -1756,10 +2076,19 @@ async function main() {
     );
   }
 
-  const quality = runQualityChecks(article, config, manifest);
+  const quality = runQualityChecks(article, config, manifest, research);
 
   console.log(`Generated words: ${quality.words}`);
   console.log(`Reading time: ${quality.reading_minutes} min`);
+
+  if (research.enabled) {
+    console.log(`Server-side tools used: ${research.server_side_tools_used}`);
+    console.log(`Accepted web sources: ${research.sources.length}`);
+
+    for (const source of research.sources) {
+      console.log(`- ${source.domain}: ${source.url}`);
+    }
+  }
 
   if (quality.warnings.length > 0) {
     console.warn("\nWarnings:");
@@ -1818,7 +2147,7 @@ async function main() {
     topic: queueItem.topic,
     category: article.category,
     model,
-    response_id: response?.id || null,
+    response_id: result.response?.id || null,
     provider: "xai",
     cost: {
       cost_in_usd_ticks: costEntry?.cost_in_usd_ticks ?? null,
@@ -1827,7 +2156,17 @@ async function main() {
       cached_input_tokens: costEntry?.cached_input_tokens ?? 0,
       output_tokens: costEntry?.output_tokens ?? 0,
       reasoning_tokens: costEntry?.reasoning_tokens ?? 0,
-      total_tokens: costEntry?.total_tokens ?? 0
+      total_tokens: costEntry?.total_tokens ?? 0,
+      server_side_tools_used: costEntry?.server_side_tools_used ?? 0
+    },
+    research: {
+      mode: research.mode,
+      required: research.enabled,
+      allowed_domains: research.allowed_domains,
+      minimum_sources: research.minimum_sources,
+      server_side_tools_used: research.server_side_tools_used,
+      source_count: research.sources.length,
+      sources: research.sources
     },
     status: published ? "published" : "draft",
     requires_manual_review: article.requires_manual_review,
@@ -1840,34 +2179,25 @@ async function main() {
     article
   };
 
-  if (published) {
-    const html = renderArticleHtml({
-      article,
-      config,
-      date,
-      words: quality.words,
-      reading: quality.reading_minutes,
-      relatedArticles
-    });
+  const html = renderArticleHtml({
+    article,
+    config,
+    date,
+    words: quality.words,
+    reading: quality.reading_minutes,
+    relatedArticles,
+    research
+  });
 
+  if (published) {
     writeText(publicHtmlPath, html);
     writeJson(publicStructuredPath, generatedRecord);
   } else {
-    /*
-     * Draft files intentionally live under .workflow-output/, which is NOT
-     * included by the workflow's `git add blog data sitemap.xml` command.
-     * The next workflow hardening step uploads this folder as a GitHub Actions
-     * artifact for review instead of exposing drafts in the public repository.
-     */
-    const previewHtml = renderArticleHtml({
-      article,
-      config,
-      date,
-      words: quality.words,
-      reading: quality.reading_minutes,
-      relatedArticles
-    })
-      .replace('<meta name="robots" content="index, follow">', '<meta name="robots" content="noindex, nofollow">')
+    const previewHtml = html
+      .replace(
+        '<meta name="robots" content="index, follow">',
+        '<meta name="robots" content="noindex, nofollow">'
+      )
       .replace(
         `<link rel="canonical" href="${escapeHtml(String(config.site?.base_url || "https://apxn.network").replace(/\/+$/, ""))}/blog/articles/${escapeHtml(article.slug)}.html">`,
         ""
@@ -1886,7 +2216,8 @@ async function main() {
     published,
     model,
     queueItem,
-    structuredPath
+    structuredPath,
+    research
   });
 
   const topicBankChanged = updateTopicBank({
