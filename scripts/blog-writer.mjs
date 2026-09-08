@@ -41,6 +41,13 @@ const XAI_TIMEOUT_MS = 180_000;
 const ABSOLUTE_OUTPUT_TOKEN_CAP = 6_500;
 const MAX_WEB_DOMAINS = 5;
 const MAX_RECORDED_SOURCES = 12;
+const MAX_CORRECTION_ROUNDS = 2;
+const MAX_PRODUCTION_TOPIC_ATTEMPTS = 3;
+const MAX_TEST_TOPIC_ATTEMPTS = 1;
+const VERIFIER_OUTPUT_TOKEN_CAP = 2_400;
+const MIN_EXTERNAL_VERIFIED_CLAIMS = 3;
+const MIN_APXN_VERIFIED_CLAIMS = 2;
+const MIN_REPAIR_BUDGET_USD = 0.012;
 
 /* -------------------------------------------------------------------------- */
 /* Utilities                                                                  */
@@ -223,7 +230,10 @@ function domainMatches(hostname, allowedDomain) {
   const host = String(hostname || "").toLowerCase().replace(/^www\./, "");
   const allowed = String(allowedDomain || "").toLowerCase().replace(/^www\./, "");
 
-  return host === allowed || host.endsWith(`.${allowed}`);
+  // Exact matching is intentional. Allowing all subdomains can accidentally admit
+  // forums, community hosts, archives, or marketing sites when only official docs
+  // were intended. Add a subdomain explicitly to the research plan when trusted.
+  return host === allowed;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -249,44 +259,47 @@ function buildResearchPlan(topic) {
       mode: "apxn_knowledge_only",
       reason: "APXN-specific article: internal reviewed project knowledge is the primary source.",
       allowed_domains: [],
-      minimum_sources: 0
+      minimum_sources: 0,
+      minimum_verified_claims: MIN_APXN_VERIFIED_CLAIMS
     };
   }
 
   let domains = [];
 
+  // Curated primary/official sources only. Keep domains exact and documentation-first.
   if (/\b(bsc|bnb smart chain|bnb chain|bep-?20|gas fee)\b/.test(text)) {
-    domains = ["docs.bnbchain.org", "bnbchain.org"];
+    domains = ["docs.bnbchain.org"];
+  } else if (/\btelegram\b/.test(text) && /\b(initdata|authentication|auth|mini app security)\b/.test(text)) {
+    domains = ["core.telegram.org"];
+  } else if (/\b(metamask|wallet extension)\b/.test(text)) {
+    domains = ["support.metamask.io", "docs.metamask.io", "cisa.gov", "nist.gov"];
+  } else if (/\b(security|phishing|private key|seed phrase|authentication|account security)\b/.test(text)) {
+    domains = ["cisa.gov", "nist.gov", "ethereum.org", "core.telegram.org"];
   } else if (/\btelegram\b/.test(text)) {
-    domains = ["core.telegram.org", "telegram.org"];
-  } else if (/\b(security|wallet|phishing|private key|seed phrase|authentication)\b/.test(text)) {
-    domains = [
-      "cisa.gov",
-      "nist.gov",
-      "ethereum.org",
-      "support.metamask.io",
-      "docs.metamask.io"
-    ];
-  } else if (/\b(ethereum|smart contract|solidity)\b/.test(text)) {
+    domains = ["core.telegram.org"];
+  } else if (/\b(ethereum|smart contract|solidity|evm)\b/.test(text)) {
     domains = ["ethereum.org", "docs.soliditylang.org"];
-  } else if (/\b(bitcoin|proof of work|blockchain)\b/.test(text)) {
-    domains = ["bitcoin.org", "ethereum.org", "docs.bnbchain.org", "bnbchain.org"];
+  } else if (/\b(bitcoin|proof of work)\b/.test(text)) {
+    domains = ["developer.bitcoin.org", "bitcoin.org"];
+  } else if (/\b(blockchain)\b/.test(text)) {
+    domains = ["ethereum.org", "developer.bitcoin.org", "docs.bnbchain.org"];
   } else if (/\b(web3|decentralized|dapp|dapps)\b/.test(text)) {
-    domains = ["ethereum.org", "docs.bnbchain.org", "bnbchain.org", "core.telegram.org"];
+    domains = ["ethereum.org", "core.telegram.org", "docs.bnbchain.org"];
   } else if (/\b(node\.?js|javascript|web development|web app)\b/.test(text)) {
     domains = ["nodejs.org", "developer.mozilla.org", "docs.github.com"];
   } else {
-    domains = ["ethereum.org", "docs.bnbchain.org", "bnbchain.org", "core.telegram.org"];
+    domains = ["ethereum.org", "developer.mozilla.org", "nist.gov"];
   }
 
   domains = uniqueStrings(domains, MAX_WEB_DOMAINS);
 
   return {
     enabled: true,
-    mode: "official_web_research",
-    reason: "General/technical article: current facts must be checked against official or primary web sources.",
+    mode: "official_web_research_and_verification",
+    reason: "General/technical article: factual claims must be checked against current official or primary sources.",
     allowed_domains: domains,
-    minimum_sources: 1
+    minimum_sources: Math.min(2, domains.length || 1),
+    minimum_verified_claims: MIN_EXTERNAL_VERIFIED_CLAIMS
   };
 }
 
@@ -350,6 +363,23 @@ function ensureBudgetAvailable(config, ledger) {
   }
 }
 
+function topicSpend(entries) {
+  return (Array.isArray(entries) ? entries : []).reduce((sum, entry) => {
+    const value = Number(entry?.cost_usd);
+    return Number.isFinite(value) ? sum + value : sum;
+  }, 0);
+}
+
+function canContinueTopicBudget(config, entries, minimumReserve = MIN_REPAIR_BUDGET_USD) {
+  const control = config?.cost_control || {};
+  if (control.enabled !== true) return true;
+
+  const maximum = Number(control.maximum_cost_per_article_usd || 0);
+  if (!(maximum > 0)) return true;
+
+  return topicSpend(entries) + minimumReserve <= maximum;
+}
+
 function responseCost(responseJson) {
   const ticks = Number(responseJson?.usage?.cost_in_usd_ticks);
 
@@ -393,7 +423,8 @@ function recordCost({
   topic,
   articleSlug,
   date,
-  research
+  research,
+  stage = "generation"
 }) {
   const month = monthKey(date);
   ledger.months = ledger.months || {};
@@ -409,6 +440,7 @@ function recordCost({
     model,
     topic,
     article_slug: articleSlug || null,
+    stage,
     input_tokens: Number(response?.usage?.input_tokens || 0),
     cached_input_tokens: Number(
       response?.usage?.input_tokens_details?.cached_tokens || 0
@@ -565,6 +597,16 @@ function chooseNextTopic(manifest) {
 /* Prompt building                                                            */
 /* -------------------------------------------------------------------------- */
 
+function compactApXnContext(knowledge) {
+  return {
+    project: "Apex Network (APXN)",
+    current_balance_term: "APXN Points",
+    editorial_note:
+      "Do not invent APXN claims in general educational articles. APXN-specific claims require the full reviewed knowledge base.",
+    knowledge_schema_version: knowledge?.schema_version || 1
+  };
+}
+
 function buildInstructions(config, research) {
   const min = Number(config.writer.minimum_words || 1200);
   const target = Number(config.writer.target_words || 1500);
@@ -572,86 +614,45 @@ function buildInstructions(config, research) {
 
   const researchRules = research.enabled
     ? `
-EXTERNAL RESEARCH IS REQUIRED FOR THIS ARTICLE:
-- You MUST use the provided web_search tool before writing factual technical/current claims.
-- Search only the allowed official/primary domains configured in the tool.
-- Prefer current documentation over old tutorials, memory, forum posts, or marketing copy.
-- If official sources disagree with your prior knowledge, follow the current official source.
-- Do not invent citations, source URLs, dates, metrics, block times, validator counts, fees, or protocol behavior.
-- Do not place citation markdown or raw source URLs inside the article JSON. The publishing system records web sources separately from the API response.
-- If you cannot verify an important factual statement from the available official sources, either omit it or set requires_manual_review=true and explain why.
+EXTERNAL RESEARCH IS REQUIRED:
+- You MUST use web_search before writing current or technical factual claims.
+- Use only the configured official/primary domains.
+- Treat documentation pages as stronger than blogs, tutorials, community posts, forums, or memory.
+- Distinguish historical information from current behavior explicitly.
+- Never state a changing metric, version, fee, count, feature status, release state, security recommendation, or protocol behavior from memory alone.
+- If an important claim cannot be verified, omit it rather than guessing.
+- Do not place raw citation markup inside the article text; source metadata is recorded separately.
 `
     : `
-EXTERNAL RESEARCH IS DISABLED FOR THIS ARTICLE:
-- Use the supplied APXN knowledge JSON as the source of truth for APXN project facts.
-- Do not introduce current external claims about APXN that are not present in the supplied reviewed knowledge.
+APXN KNOWLEDGE MODE:
+- Use the supplied reviewed APXN knowledge JSON as the source of truth for APXN facts.
+- Do not use outside memory to override reviewed APXN behavior.
+- If project sources conflict or a claim is marked verify_before_publish/blocked_auto_publish, omit the claim or mark it for correction.
 `;
 
   return `
 You are the APXN Blog editorial writer for Apex Network.
+Create an accurate, useful, original, SEO-friendly article in ENGLISH ONLY.
 
-Your job is to create accurate, useful, original, SEO-friendly educational articles in ENGLISH ONLY.
-
-MANDATORY APXN SOURCE RULES:
-1. The supplied APXN knowledge JSON is the highest-priority source for all APXN project facts.
-2. Never invent APXN facts.
-3. Distinguish clearly between implemented current behavior, official UI claims, UI-only behavior, planned roadmap features, verify-before-publish claims, and blocked-auto-publish claims.
-4. Current in-app balances must be called "APXN Points" unless explicitly discussing a future APXN token.
-5. Never describe pressing Claim as proof-of-work, proof-of-stake, or blockchain consensus mining.
-6. Never promise profit, returns, listing price, token value, exchange listing, point conversion value, or guaranteed withdrawal.
-7. Never present Testnet, Mainnet, staking, presale, exchange support, disabled upgrades, or other planned features as live unless the supplied knowledge explicitly marks them implemented.
-8. Never claim permanent wallet binding when the supplied knowledge says wallet persistence is not implemented.
-9. Telegram channel/group membership may be described as server-verified only where supported by the knowledge. Do not claim X likes/follows are externally verified when they are not.
-10. Country data is informational. Do not present it as KYC, citizenship, identity, or eligibility proof.
-11. If the requested article would require a fact marked verify_before_publish or blocked_auto_publish, set requires_manual_review=true and explain why.
-12. The article must provide real educational value beyond project promotion.
-13. Do not include Arabic text. The APXN Blog is English-only.
+MANDATORY APXN RULES:
+1. Current in-app balances are "APXN Points" unless explicitly discussing a future token.
+2. Never describe the Claim action as proof-of-work, proof-of-stake, or blockchain consensus mining.
+3. Never promise profit, returns, token value, listing, conversion value, or guaranteed withdrawal.
+4. Never present planned Testnet, Mainnet, staking, presale, exchange support, upgrades, or roadmap items as live without reviewed proof.
+5. Never claim permanent wallet binding when persistence is not implemented.
+6. Country information is informational, not KYC or identity proof.
+7. The article must provide educational value beyond promotion.
+8. Do not include Arabic text.
 ${researchRules}
 WRITING REQUIREMENTS:
-- Language: English only.
-- Target length: about ${target} words.
-- Minimum acceptable length: ${min} words.
-- Maximum target length: ${max} words.
-- Clear beginner-friendly English.
-- Use descriptive section headings.
-- Avoid hype, spammy wording, keyword stuffing, and repetitive conclusions.
-- Include practical examples where useful.
-- Include a short FAQ.
-- Include a responsible educational disclaimer when financial/token/presale concepts are discussed.
-- Do not output markdown code fences.
-- Do not output HTML.
-- Return ONE valid JSON object only.
+- Target about ${target} words; minimum ${min}; maximum target ${max}.
+- Clear beginner-friendly English with at least 6 substantive sections.
+- Include practical examples when useful and at least 2 FAQ items.
+- Avoid hype, keyword stuffing, stale numbers, and unsupported certainty.
+- Include a responsible educational disclaimer for financial/token/presale concepts.
+- Return ONE valid JSON object only; no Markdown fences and no HTML.
 
-RETURN EXACTLY THIS JSON SHAPE:
-{
-  "title": "string",
-  "slug": "lowercase-kebab-case",
-  "description": "SEO meta description, ideally 140-165 characters",
-  "excerpt": "short article summary",
-  "category": "one configured category",
-  "keywords": ["keyword", "..."],
-  "sections": [
-    {
-      "heading": "section heading",
-      "paragraphs": ["paragraph 1", "paragraph 2"]
-    }
-  ],
-  "faq": [
-    {
-      "question": "question",
-      "answer": "answer"
-    }
-  ],
-  "disclaimer": "string or empty string",
-  "requires_manual_review": false,
-  "review_reasons": [],
-  "claims_used": [
-    {
-      "claim": "brief APXN project claim if any",
-      "knowledge_status": "implemented|official_ui_claim|ui_only|planned|verify_before_publish|blocked_auto_publish"
-    }
-  ]
-}
+For factual_claims, list the important technical/current/project claims that a separate verifier should check. Include numbers, dates, versions, feature status, protocol behavior, security guidance, and named entities when material.
 `.trim();
 }
 
@@ -667,7 +668,7 @@ function buildInput(topic, config, knowledge, manifest, research) {
   return JSON.stringify(
     {
       current_date: todayISO(),
-      apxn_knowledge_base: knowledge,
+      apxn_context: research.enabled ? compactApXnContext(knowledge) : knowledge,
       configured_categories: config.categories,
       writer_settings: {
         language: "en",
@@ -676,14 +677,14 @@ function buildInput(topic, config, knowledge, manifest, research) {
         maximum_words: config.writer.maximum_words,
         include_faq: config.writer.include_faq,
         include_disclaimer: config.writer.include_disclaimer,
-        include_internal_links: config.writer.include_internal_links,
-        allow_external_research: research.enabled
+        include_internal_links: config.writer.include_internal_links
       },
       research_policy: {
         mode: research.mode,
         required: research.enabled,
         allowed_domains: research.allowed_domains,
-        minimum_sources: research.minimum_sources
+        minimum_sources: research.minimum_sources,
+        minimum_verified_claims: research.minimum_verified_claims
       },
       task: {
         topic: topic.topic,
@@ -703,30 +704,21 @@ function buildInput(topic, config, knowledge, manifest, research) {
 /* -------------------------------------------------------------------------- */
 
 function extractResponseText(responseJson) {
-  if (
-    typeof responseJson?.output_text === "string" &&
-    responseJson.output_text.trim()
-  ) {
+  if (typeof responseJson?.output_text === "string" && responseJson.output_text.trim()) {
     return responseJson.output_text.trim();
   }
 
   const pieces = [];
-
   for (const outputItem of Array.isArray(responseJson?.output) ? responseJson.output : []) {
     for (const content of Array.isArray(outputItem?.content) ? outputItem.content : []) {
-      if (typeof content?.text === "string") {
-        pieces.push(content.text);
-      }
+      if (typeof content?.text === "string") pieces.push(content.text);
     }
   }
-
   return pieces.join("\n").trim();
 }
 
 function parseGeneratedJson(rawText) {
-  let text = String(rawText || "").trim();
-
-  text = text
+  let text = String(rawText || "").trim()
     .replace(/^```json\s*/i, "")
     .replace(/^```\s*/i, "")
     .replace(/\s*```$/i, "")
@@ -737,19 +729,15 @@ function parseGeneratedJson(rawText) {
   } catch {
     const firstBrace = text.indexOf("{");
     const lastBrace = text.lastIndexOf("}");
-
     if (firstBrace >= 0 && lastBrace > firstBrace) {
-      const candidate = text.slice(firstBrace, lastBrace + 1);
-
       try {
-        return JSON.parse(candidate);
+        return JSON.parse(text.slice(firstBrace, lastBrace + 1));
       } catch {
         // Fall through.
       }
     }
   }
-
-  fail("Grok returned invalid JSON. No blog article was saved.");
+  fail("Grok returned invalid JSON.");
 }
 
 function buildArticleSchema(config) {
@@ -757,32 +745,17 @@ function buildArticleSchema(config) {
     type: "object",
     additionalProperties: false,
     required: [
-      "title",
-      "slug",
-      "description",
-      "excerpt",
-      "category",
-      "keywords",
-      "sections",
-      "faq",
-      "disclaimer",
-      "requires_manual_review",
-      "review_reasons",
-      "claims_used"
+      "title", "slug", "description", "excerpt", "category", "keywords",
+      "sections", "faq", "disclaimer", "requires_manual_review",
+      "review_reasons", "claims_used", "factual_claims"
     ],
     properties: {
       title: { type: "string" },
       slug: { type: "string" },
       description: { type: "string" },
       excerpt: { type: "string" },
-      category: {
-        type: "string",
-        enum: config.categories
-      },
-      keywords: {
-        type: "array",
-        items: { type: "string" }
-      },
+      category: { type: "string", enum: config.categories },
+      keywords: { type: "array", items: { type: "string" } },
       sections: {
         type: "array",
         items: {
@@ -791,10 +764,7 @@ function buildArticleSchema(config) {
           required: ["heading", "paragraphs"],
           properties: {
             heading: { type: "string" },
-            paragraphs: {
-              type: "array",
-              items: { type: "string" }
-            }
+            paragraphs: { type: "array", items: { type: "string" } }
           }
         }
       },
@@ -812,10 +782,7 @@ function buildArticleSchema(config) {
       },
       disclaimer: { type: "string" },
       requires_manual_review: { type: "boolean" },
-      review_reasons: {
-        type: "array",
-        items: { type: "string" }
-      },
+      review_reasons: { type: "array", items: { type: "string" } },
       claims_used: {
         type: "array",
         items: {
@@ -826,15 +793,66 @@ function buildArticleSchema(config) {
             claim: { type: "string" },
             knowledge_status: {
               type: "string",
-              enum: [
-                "implemented",
-                "official_ui_claim",
-                "ui_only",
-                "planned",
-                "verify_before_publish",
-                "blocked_auto_publish"
-              ]
+              enum: ["implemented", "official_ui_claim", "ui_only", "planned", "verify_before_publish", "blocked_auto_publish"]
             }
+          }
+        }
+      },
+      factual_claims: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["claim", "kind", "time_sensitive"],
+          properties: {
+            claim: { type: "string" },
+            kind: {
+              type: "string",
+              enum: ["project", "technical", "numeric", "security", "historical", "current_status", "general"]
+            },
+            time_sensitive: { type: "boolean" }
+          }
+        }
+      }
+    }
+  };
+}
+
+function buildVerificationSchema() {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["verdict", "confidence", "summary", "checked_claims", "issues"],
+    properties: {
+      verdict: { type: "string", enum: ["pass", "fix"] },
+      confidence: { type: "string", enum: ["high", "medium", "low"] },
+      summary: { type: "string" },
+      checked_claims: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["claim", "status", "importance", "source_urls"],
+          properties: {
+            claim: { type: "string" },
+            status: { type: "string", enum: ["verified", "incorrect", "outdated", "uncertain", "not_applicable"] },
+            importance: { type: "string", enum: ["critical", "major", "minor"] },
+            source_urls: { type: "array", items: { type: "string" } }
+          }
+        }
+      },
+      issues: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["claim", "problem", "correction", "severity", "source_urls"],
+          properties: {
+            claim: { type: "string" },
+            problem: { type: "string" },
+            correction: { type: "string" },
+            severity: { type: "string", enum: ["critical", "major", "minor"] },
+            source_urls: { type: "array", items: { type: "string" } }
           }
         }
       }
@@ -843,29 +861,17 @@ function buildArticleSchema(config) {
 }
 
 function resolveXaiEndpoint(config) {
-  const base = String(
-    config?.ai?.api_base_url || DEFAULT_XAI_BASE_URL
-  ).replace(/\/+$/, "");
-
-  const endpoint = String(
-    config?.ai?.responses_endpoint || "/responses"
-  );
-
+  const base = String(config?.ai?.api_base_url || DEFAULT_XAI_BASE_URL).replace(/\/+$/, "");
+  const endpoint = String(config?.ai?.responses_endpoint || "/responses");
   return `${base}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 }
 
 function normalizeSource(raw) {
   const url = safeUrl(raw?.url || raw?.link || raw?.href);
   if (!url) return null;
-
   const domain = hostnameOf(url);
   const title = normalizeSpace(raw?.title || raw?.name || domain || url);
-
-  return {
-    title: title || domain || url,
-    url,
-    domain
-  };
+  return { title: title || domain || url, url, domain };
 }
 
 function extractWebSources(response, research) {
@@ -875,21 +881,15 @@ function extractWebSources(response, research) {
   function add(raw) {
     const source = normalizeSource(raw);
     if (!source) return;
-
     if (
       research?.enabled &&
       Array.isArray(research.allowed_domains) &&
       research.allowed_domains.length > 0 &&
-      !research.allowed_domains.some((domain) =>
-        domainMatches(source.domain, domain)
-      )
-    ) {
-      return;
-    }
+      !research.allowed_domains.some((domain) => domainMatches(source.domain, domain))
+    ) return;
 
     const key = source.url.toLowerCase();
     if (seen.has(key)) return;
-
     seen.add(key);
     found.push(source);
   }
@@ -898,90 +898,80 @@ function extractWebSources(response, research) {
     if (Array.isArray(item?.action?.sources)) {
       for (const source of item.action.sources) add(source);
     }
-
     for (const content of Array.isArray(item?.content) ? item.content : []) {
       for (const annotation of Array.isArray(content?.annotations) ? content.annotations : []) {
-        if (annotation?.url || annotation?.link || annotation?.href) {
-          add(annotation);
-        }
+        if (annotation?.url || annotation?.link || annotation?.href) add(annotation);
       }
     }
   }
-
   return found.slice(0, MAX_RECORDED_SOURCES);
 }
 
-async function callXAI({
+function mergeSources(...groups) {
+  const seen = new Set();
+  const merged = [];
+  for (const group of groups) {
+    for (const raw of Array.isArray(group) ? group : []) {
+      const source = normalizeSource(raw) || raw;
+      if (!source?.url) continue;
+      const key = String(source.url).toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(source);
+      if (merged.length >= MAX_RECORDED_SOURCES) return merged;
+    }
+  }
+  return merged;
+}
+
+async function callStructuredXAI({
   apiKey,
   model,
   instructions,
   input,
   config,
-  research
+  research,
+  schema,
+  schemaName,
+  maxOutputTokens
 }) {
   const requestBody = {
     model,
     input: [
-      {
-        role: "system",
-        content: instructions
-      },
-      {
-        role: "user",
-        content: input
-      }
+      { role: "system", content: instructions },
+      { role: "user", content: input }
     ],
-    max_output_tokens: outputTokenLimit(config),
+    max_output_tokens: maxOutputTokens,
     store: false,
     truncation: "disabled",
     text: {
       format: {
         type: "json_schema",
-        name: "apxn_blog_article",
-        schema: buildArticleSchema(config),
+        name: schemaName,
+        schema,
         strict: true
       }
     }
   };
 
-  if (research.enabled) {
-    requestBody.tools = [
-      {
-        type: "web_search",
-        filters: {
-          allowed_domains: research.allowed_domains.slice(0, MAX_WEB_DOMAINS)
-        }
-      }
-    ];
-
-    requestBody.include = [
-      "no_inline_citations",
-      "web_search_call.action.sources"
-    ];
+  if (research?.enabled) {
+    requestBody.tools = [{
+      type: "web_search",
+      filters: { allowed_domains: research.allowed_domains.slice(0, MAX_WEB_DOMAINS) }
+    }];
+    requestBody.include = ["no_inline_citations", "web_search_call.action.sources"];
   }
 
-  const reasoningEffort = String(
-    config?.ai?.reasoning_effort || "none"
-  ).trim();
+  const reasoningEffort = String(config?.ai?.reasoning_effort || "none").trim();
+  if (reasoningEffort) requestBody.reasoning = { effort: reasoningEffort };
 
-  if (reasoningEffort) {
-    requestBody.reasoning = {
-      effort: reasoningEffort
-    };
-  }
-
-  if (
-    config?.cost_control?.use_prompt_caching === true &&
-    config?.ai?.prompt_cache_key
-  ) {
+  if (config?.cost_control?.use_prompt_caching === true && config?.ai?.prompt_cache_key) {
     requestBody.prompt_cache_key = String(config.ai.prompt_cache_key);
   }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), XAI_TIMEOUT_MS);
-
   let response;
-
   try {
     response = await fetch(resolveXaiEndpoint(config), {
       method: "POST",
@@ -996,16 +986,13 @@ async function callXAI({
     if (error?.name === "AbortError") {
       fail(`xAI API request timed out after ${Math.round(XAI_TIMEOUT_MS / 1000)} seconds.`);
     }
-
     fail(`xAI API request failed before receiving a response: ${error.message}`);
   } finally {
     clearTimeout(timeout);
   }
 
   const text = await response.text();
-
   let data;
-
   try {
     data = JSON.parse(text);
   } catch {
@@ -1013,35 +1000,128 @@ async function callXAI({
   }
 
   if (!response.ok) {
-    const message =
-      data?.error?.message ||
-      data?.message ||
-      `xAI API request failed with HTTP ${response.status}.`;
-
-    fail(message);
+    fail(data?.error?.message || data?.message || `xAI API request failed with HTTP ${response.status}.`);
   }
-
   if (data?.status && data.status !== "completed") {
-    const detail =
-      data?.incomplete_details?.reason ||
-      data?.error?.message ||
-      data.status;
-
-    fail(`xAI response did not complete successfully: ${detail}`);
+    fail(`xAI response did not complete successfully: ${data?.incomplete_details?.reason || data?.status}.`);
   }
 
   const outputText = extractResponseText(data);
-
-  if (!outputText) {
-    fail("xAI API returned no usable article output.");
-  }
+  if (!outputText) fail("xAI API returned no usable structured output.");
 
   return {
     response: data,
     generated: parseGeneratedJson(outputText),
-    sources: extractWebSources(data, research),
+    sources: extractWebSources(data, research || { enabled: false, allowed_domains: [] }),
     serverSideToolsUsed: countServerSideTools(data)
   };
+}
+
+async function generateArticle({ apiKey, model, config, knowledge, manifest, queueItem, research }) {
+  return callStructuredXAI({
+    apiKey,
+    model,
+    instructions: buildInstructions(config, research),
+    input: buildInput(queueItem, config, knowledge, manifest, research),
+    config,
+    research,
+    schema: buildArticleSchema(config),
+    schemaName: "apxn_blog_article",
+    maxOutputTokens: outputTokenLimit(config)
+  });
+}
+
+function buildVerifierInstructions(research) {
+  const sourceRule = research.enabled
+    ? `Use web_search and only the configured official domains. Current documentation outranks blogs, memory, forum posts, and historical pages. Verify changing facts against what is current now.`
+    : `Use only the supplied reviewed APXN knowledge base. Do not use outside assumptions to override it.`;
+
+  return `
+You are an independent factual verifier. Do NOT rewrite the article.
+${sourceRule}
+
+Check all material factual claims, especially:
+- numbers, percentages, dates, versions, limits, fees, speeds, block times, counts and defaults;
+- current/live/planned/deprecated feature status;
+- protocol/network/product names and architecture;
+- wallet, authentication and security guidance;
+- claims using words such as current, now, latest, today, always, never, guaranteed or typically;
+- APXN project claims against the supplied reviewed knowledge when in APXN mode.
+
+Historical facts are allowed only when clearly described as historical. If current and historical sources conflict, current official documentation wins.
+A claim is "verified" only when the available authoritative evidence directly supports the wording.
+If wording is too broad, absolute, outdated, misleading or unsupported, create an issue with a precise correction or instruct removal.
+Return JSON only.
+`.trim();
+}
+
+function buildVerifierInput({ article, queueItem, knowledge, research }) {
+  return JSON.stringify({
+    current_date: todayISO(),
+    topic: queueItem.topic,
+    research_policy: {
+      mode: research.mode,
+      allowed_domains: research.allowed_domains,
+      minimum_verified_claims: research.minimum_verified_claims
+    },
+    apxn_knowledge_base: research.enabled ? undefined : knowledge,
+    article
+  }, null, 2);
+}
+
+async function verifyArticle({ apiKey, model, config, article, queueItem, knowledge, research }) {
+  return callStructuredXAI({
+    apiKey,
+    model,
+    instructions: buildVerifierInstructions(research),
+    input: buildVerifierInput({ article, queueItem, knowledge, research }),
+    config,
+    research,
+    schema: buildVerificationSchema(),
+    schemaName: "apxn_article_verification",
+    maxOutputTokens: VERIFIER_OUTPUT_TOKEN_CAP
+  });
+}
+
+function buildCorrectionInstructions(config) {
+  return `
+You are the APXN Blog correction editor. Rewrite the supplied article JSON so every verifier issue and local quality blocker is resolved.
+- Preserve the same topic and English-only language.
+- Keep the article between ${config.writer.minimum_words} and ${config.writer.maximum_words} words when practical.
+- Remove unsupported or uncertain claims instead of guessing.
+- Apply the verifier's precise correction when provided.
+- Do not introduce new changing numbers, dates, versions, fees, current-status claims, security absolutes, or named listings unless they are explicitly supported in the verifier report.
+- Preserve APXN terminology and safety rules.
+- Keep at least 6 substantive sections and 2 FAQ entries.
+- Set requires_manual_review=false only when all supplied issues are actually resolved.
+- Return one JSON object matching the article schema; no HTML or Markdown fences.
+`.trim();
+}
+
+async function correctArticle({
+  apiKey, model, config, article, verification, quality, queueItem, knowledge, research
+}) {
+  const input = JSON.stringify({
+    current_date: todayISO(),
+    topic: queueItem.topic,
+    article_to_correct: article,
+    verifier_report: verification,
+    local_quality_errors: quality.errors,
+    local_review_reasons: article.review_reasons,
+    apxn_knowledge_base: research.enabled ? undefined : knowledge
+  }, null, 2);
+
+  return callStructuredXAI({
+    apiKey,
+    model,
+    instructions: buildCorrectionInstructions(config),
+    input,
+    config,
+    research: { ...research, enabled: false },
+    schema: buildArticleSchema(config),
+    schemaName: "apxn_corrected_article",
+    maxOutputTokens: outputTokenLimit(config)
+  });
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1086,6 +1166,15 @@ function normalizeGeneratedArticle(raw, topic, config) {
     }))
     .filter((item) => item.claim);
 
+  const factualClaims = (Array.isArray(raw?.factual_claims) ? raw.factual_claims : [])
+    .map((item) => ({
+      claim: normalizeSpace(item?.claim),
+      kind: normalizeSpace(item?.kind || "general"),
+      time_sensitive: item?.time_sensitive === true
+    }))
+    .filter((item) => item.claim)
+    .slice(0, 40);
+
   return {
     title,
     slug,
@@ -1099,7 +1188,8 @@ function normalizeGeneratedArticle(raw, topic, config) {
     disclaimer: normalizeSpace(raw?.disclaimer),
     requires_manual_review: raw?.requires_manual_review === true,
     review_reasons: uniqueStrings(raw?.review_reasons, 20),
-    claims_used: claimsUsed
+    claims_used: claimsUsed,
+    factual_claims: factualClaims
   };
 }
 
@@ -1121,6 +1211,77 @@ function articlePlainText(article) {
   parts.push(article.disclaimer);
 
   return parts.filter(Boolean).join("\n");
+}
+
+function normalizeVerificationReport(raw, research) {
+  const checkedClaims = (Array.isArray(raw?.checked_claims) ? raw.checked_claims : [])
+    .map((item) => ({
+      claim: normalizeSpace(item?.claim),
+      status: normalizeSpace(item?.status),
+      importance: normalizeSpace(item?.importance),
+      source_urls: uniqueStrings(item?.source_urls, 8).filter((url) => {
+        const safe = safeUrl(url);
+        if (!safe) return false;
+        if (!research.enabled) return true;
+        return research.allowed_domains.some((domain) => domainMatches(hostnameOf(safe), domain));
+      })
+    }))
+    .filter((item) => item.claim);
+
+  const issues = (Array.isArray(raw?.issues) ? raw.issues : [])
+    .map((item) => ({
+      claim: normalizeSpace(item?.claim),
+      problem: normalizeSpace(item?.problem),
+      correction: normalizeSpace(item?.correction),
+      severity: normalizeSpace(item?.severity),
+      source_urls: uniqueStrings(item?.source_urls, 8).filter((url) => {
+        const safe = safeUrl(url);
+        if (!safe) return false;
+        if (!research.enabled) return true;
+        return research.allowed_domains.some((domain) => domainMatches(hostnameOf(safe), domain));
+      })
+    }))
+    .filter((item) => item.claim || item.problem);
+
+  return {
+    verdict: raw?.verdict === "pass" ? "pass" : "fix",
+    confidence: ["high", "medium", "low"].includes(raw?.confidence) ? raw.confidence : "low",
+    summary: normalizeSpace(raw?.summary),
+    checked_claims: checkedClaims,
+    issues,
+    server_side_tools_used: 0
+  };
+}
+
+function verificationPasses(report, research) {
+  if (!report || report.verdict !== "pass" || report.confidence === "low") return false;
+  if (report.issues.length > 0) return false;
+  if (research.enabled && Number(report.server_side_tools_used || 0) < 1) return false;
+
+  const bad = report.checked_claims.filter((item) =>
+    ["incorrect", "outdated", "uncertain"].includes(item.status)
+  );
+  if (bad.length > 0) return false;
+
+  const verifiedClaims = report.checked_claims.filter((item) => item.status === "verified");
+  if (verifiedClaims.length < Number(research.minimum_verified_claims || 1)) return false;
+
+  if (research.enabled) {
+    const sourcedVerified = verifiedClaims.filter((item) => item.source_urls.length > 0);
+    if (sourcedVerified.length < Number(research.minimum_verified_claims || 1)) return false;
+  }
+
+  return true;
+}
+
+function combinedVerificationSources(resultSources, report) {
+  const reportSources = [];
+  for (const item of [...(report?.checked_claims || []), ...(report?.issues || [])]) {
+    for (const url of item?.source_urls || []) {
+      reportSources.push({ url, title: hostnameOf(url), domain: hostnameOf(url) });
+    }
+  }
+  return mergeSources(resultSources, reportSources);
 }
 
 function detectRiskyLanguage(article) {
@@ -1332,7 +1493,9 @@ function runQualityChecks(article, config, manifest, research) {
     );
   }
 
-  applyResearchChecks(article, research);
+  // Independent verification, not the writer's own research pass, decides whether
+  // external facts are publishable. This avoids forcing an unnecessary rewrite
+  // when the verifier has already checked the claims against official sources.
 
   if (article.requires_manual_review && article.review_reasons.length === 0) {
     article.review_reasons = [
@@ -1786,7 +1949,8 @@ function addManifestRecord({
   model,
   queueItem,
   structuredPath,
-  research
+  research,
+  verification
 }) {
   const id = nextArticleId(manifest.articles);
   const baseUrl = String(config.site?.base_url || "https://apxn.network")
@@ -1842,6 +2006,13 @@ function addManifestRecord({
       !article.requires_manual_review,
     requires_manual_review: article.requires_manual_review,
     review_reasons: article.review_reasons,
+
+    verification: {
+      verdict: verification?.verdict || null,
+      confidence: verification?.confidence || null,
+      checked_claims: verification?.checked_claims?.length || 0,
+      issues: verification?.issues?.length || 0
+    },
 
     research: {
       mode: research.mode,
@@ -1932,214 +2103,274 @@ function updateTopicBank({
   return true;
 }
 
+function markTopicRejected({ manifest, bank, queueItem, date, reasons }) {
+  updateQueueItem(queueItem, {
+    status: "skipped_verification",
+    skipped_at: date,
+    skipped_reason: uniqueStrings(reasons, 12).join(" | ") || "Could not pass automated verification within safety limits."
+  });
+
+  if (bank && Array.isArray(bank.topics) && queueItem?.topic_bank_id) {
+    const item = bank.topics.find((entry) => entry?.id === queueItem.topic_bank_id);
+    if (item) {
+      Object.assign(item, {
+        status: "used",
+        result: "rejected_verification",
+        used_at: date,
+        rejection_reason: queueItem.skipped_reason
+      });
+      bank.last_updated = date;
+      bank.planner_state = bank.planner_state || {};
+      bank.planner_state.available_topics = bank.topics.filter((entry) => entry?.status === "available").length;
+      bank.planner_state.queued_topics = bank.topics.filter((entry) => entry?.status === "queued").length;
+      bank.planner_state.used_topics = bank.topics.filter((entry) =>
+        ["used", "published", "drafted"].includes(entry?.status)
+      ).length;
+    }
+  }
+
+  manifest.last_updated = date;
+}
+
+function diagnosticDraftPaths(article) {
+  const slug = article?.slug || `failed-${Date.now()}`;
+  return {
+    json: path.join(PATHS.privateDrafts, `${slug}.json`),
+    html: path.join(PATHS.privateDrafts, `${slug}.html`)
+  };
+}
+
 /* -------------------------------------------------------------------------- */
 /* Main                                                                       */
 /* -------------------------------------------------------------------------- */
 
-async function main() {
-  const config = readJson(PATHS.config);
-  const knowledge = readJson(PATHS.knowledge);
-  const manifest = readJson(PATHS.articles);
-  const topicBank = readJsonIfExists(PATHS.topicBank);
-
-  validateConfig(config);
-  validateManifest(manifest);
-
-  const { queueItem, skipped } = chooseNextTopic(manifest);
-
-  if (skipped > 0) {
-    writeJson(PATHS.articles, manifest);
-    console.log(`Skipped ${skipped} invalid/duplicate queued topic(s) before generation.`);
-  }
-
-  const apiKeyVariable =
-    String(config?.security?.xai_key_variable || "XAI_API_KEY").trim() ||
-    "XAI_API_KEY";
-
-  const apiKey = String(process.env[apiKeyVariable] || "").trim();
-
-  if (!apiKey) {
-    fail(
-      `${apiKeyVariable} is missing. Add it as a GitHub Actions secret; never place the key in repository files.`
-    );
-  }
-
-  const modelVariable =
-    String(config?.security?.xai_model_variable || "XAI_MODEL").trim() ||
-    "XAI_MODEL";
-
-  const model =
-    String(
-      process.env[modelVariable] ||
-      config?.ai?.default_model ||
-      DEFAULT_MODEL
-    ).trim() || DEFAULT_MODEL;
-
-  const costLedger = readCostLedger();
-  ensureBudgetAvailable(config, costLedger);
-
+async function processTopic({
+  config,
+  knowledge,
+  manifest,
+  topicBank,
+  queueItem,
+  apiKey,
+  model,
+  costLedger,
+  publishRequested
+}) {
+  const date = todayISO();
+  const costEntries = [];
   const research = {
     ...buildResearchPlan(queueItem),
     sources: [],
     server_side_tools_used: 0
   };
 
-  const instructions = buildInstructions(config, research);
-  const input = buildInput(queueItem, config, knowledge, manifest, research);
-
-  console.log("APXN Blog AI Writer");
-  console.log("-------------------");
-  console.log("Language: English only");
+  console.log("\nTopic attempt");
+  console.log("-------------");
   console.log(`Topic: ${queueItem.topic}`);
   console.log(`Category: ${queueItem.category}`);
-  console.log(`Model: ${model}`);
   console.log(`Research mode: ${research.mode}`);
+  if (research.enabled) console.log(`Allowed domains: ${research.allowed_domains.join(", ")}`);
 
-  if (research.enabled) {
-    console.log(`Allowed web domains: ${research.allowed_domains.join(", ")}`);
-  } else {
-    console.log("Web Search: disabled for APXN-specific project facts");
-  }
-
-  console.log(`Maximum output tokens: ${outputTokenLimit(config)}`);
+  ensureBudgetAvailable(config, costLedger);
   console.log("Generating article...");
 
-  const result = await callXAI({
-    apiKey,
-    model,
-    instructions,
-    input,
-    config,
-    research
+  const generation = await generateArticle({
+    apiKey, model, config, knowledge, manifest, queueItem, research
   });
+  research.sources = generation.sources;
+  research.server_side_tools_used = generation.serverSideToolsUsed;
 
-  research.sources = result.sources;
-  research.server_side_tools_used = result.serverSideToolsUsed;
-
-  const article = normalizeGeneratedArticle(
-    result.generated,
-    queueItem,
-    config
-  );
-
-  const date = todayISO();
-
-  const costEntry = recordCost({
+  let article = normalizeGeneratedArticle(generation.generated, queueItem, config);
+  let costEntry = recordCost({
     ledger: costLedger,
-    response: result.response,
+    response: generation.response,
     model,
     topic: queueItem.topic,
     articleSlug: article.slug,
     date,
-    research
+    research,
+    stage: "generation"
   });
-
-  /*
-   * Persist the actual API charge immediately so failed quality checks still
-   * count against the monthly budget. xAI's cost covers model tokens and
-   * server-side tools in the same cost_in_usd_ticks value.
-   */
+  costEntries.push(costEntry);
   writeJson(PATHS.costs, costLedger);
 
-  const requestCostUsd = Number(costEntry?.cost_usd);
-  const maxPerArticle = Number(
-    config?.cost_control?.maximum_cost_per_article_usd || 0
+  let quality = runQualityChecks(article, config, manifest, research);
+
+  if (!canContinueTopicBudget(config, costEntries)) {
+    markTopicRejected({
+      manifest,
+      bank: topicBank,
+      queueItem,
+      date,
+      reasons: [`Topic cost reached $${topicSpend(costEntries).toFixed(4)} before independent verification.`]
+    });
+    return { success: false, reason: "budget_after_generation" };
+  }
+
+  console.log("Running independent verification...");
+  const verificationResult = await verifyArticle({
+    apiKey, model, config, article, queueItem, knowledge, research
+  });
+  let verification = normalizeVerificationReport(verificationResult.generated, research);
+  verification.server_side_tools_used = verificationResult.serverSideToolsUsed;
+  research.sources = mergeSources(
+    research.sources,
+    combinedVerificationSources(verificationResult.sources, verification)
   );
+  research.server_side_tools_used += verificationResult.serverSideToolsUsed;
 
-  if (
-    config?.cost_control?.enabled === true &&
-    maxPerArticle > 0 &&
-    Number.isFinite(requestCostUsd) &&
-    requestCostUsd > maxPerArticle
-  ) {
-    article.requires_manual_review = true;
-    article.review_reasons = uniqueStrings(
-      [
-        ...article.review_reasons,
-        `xAI request cost $${requestCostUsd.toFixed(4)}, above configured per-article target of $${maxPerArticle.toFixed(2)}.`
-      ],
-      30
-    );
-  }
+  costEntry = recordCost({
+    ledger: costLedger,
+    response: verificationResult.response,
+    model,
+    topic: queueItem.topic,
+    articleSlug: article.slug,
+    date,
+    research,
+    stage: "verification_0"
+  });
+  costEntries.push(costEntry);
+  writeJson(PATHS.costs, costLedger);
 
-  if (
-    config?.cost_control?.track_exact_api_cost === true &&
-    !Number.isFinite(requestCostUsd)
-  ) {
-    article.requires_manual_review = true;
-    article.review_reasons = uniqueStrings(
-      [
-        ...article.review_reasons,
-        "xAI did not return an exact request cost, so automatic publication was blocked by cost-control policy."
-      ],
-      30
-    );
-  }
-
-  const quality = runQualityChecks(article, config, manifest, research);
-
-  console.log(`Generated words: ${quality.words}`);
-  console.log(`Reading time: ${quality.reading_minutes} min`);
-
-  if (research.enabled) {
-    console.log(`Server-side tools used: ${research.server_side_tools_used}`);
-    console.log(`Accepted web sources: ${research.sources.length}`);
-
-    for (const source of research.sources) {
-      console.log(`- ${source.domain}: ${source.url}`);
-    }
-  }
-
-  if (quality.warnings.length > 0) {
-    console.warn("\nWarnings:");
-    for (const warning of quality.warnings) {
-      console.warn(`- ${warning}`);
-    }
-  }
-
-  if (quality.errors.length > 0) {
-    console.error("\nQuality check failed:");
-    for (const error of quality.errors) {
-      console.error(`- ${error}`);
-    }
-
-    fail("Article was rejected by quality checks. Only the xAI cost ledger was saved.");
-  }
-
-  const publishRequested =
-    config?.automation?.auto_generate_enabled === true &&
-    config?.automation?.auto_publish_enabled === true &&
-    isTruthyEnv("BLOG_PUBLISH");
-
-  const published =
-    publishRequested &&
+  let verified = verificationPasses(verification, research) &&
+    quality.errors.length === 0 &&
     article.requires_manual_review !== true;
 
+  for (let round = 1; !verified && round <= MAX_CORRECTION_ROUNDS; round += 1) {
+    if (!canContinueTopicBudget(config, costEntries)) {
+      console.warn(`Stopping corrections because topic spend is $${topicSpend(costEntries).toFixed(4)}.`);
+      break;
+    }
+
+    console.log(`Auto-correction round ${round}...`);
+    const correction = await correctArticle({
+      apiKey,
+      model,
+      config,
+      article,
+      verification,
+      quality,
+      queueItem,
+      knowledge,
+      research
+    });
+
+    article = normalizeGeneratedArticle(correction.generated, queueItem, config);
+    costEntry = recordCost({
+      ledger: costLedger,
+      response: correction.response,
+      model,
+      topic: queueItem.topic,
+      articleSlug: article.slug,
+      date,
+      research: { ...research, enabled: false, sources: [] },
+      stage: `correction_${round}`
+    });
+    costEntries.push(costEntry);
+    writeJson(PATHS.costs, costLedger);
+
+    quality = runQualityChecks(article, config, manifest, research);
+
+    if (!canContinueTopicBudget(config, costEntries)) break;
+
+    console.log(`Re-verification round ${round}...`);
+    const recheck = await verifyArticle({
+      apiKey, model, config, article, queueItem, knowledge, research
+    });
+    verification = normalizeVerificationReport(recheck.generated, research);
+    verification.server_side_tools_used = recheck.serverSideToolsUsed;
+    research.sources = mergeSources(
+      research.sources,
+      combinedVerificationSources(recheck.sources, verification)
+    );
+    research.server_side_tools_used += recheck.serverSideToolsUsed;
+
+    costEntry = recordCost({
+      ledger: costLedger,
+      response: recheck.response,
+      model,
+      topic: queueItem.topic,
+      articleSlug: article.slug,
+      date,
+      research,
+      stage: `verification_${round}`
+    });
+    costEntries.push(costEntry);
+    writeJson(PATHS.costs, costLedger);
+
+    verified = verificationPasses(verification, research) &&
+      quality.errors.length === 0 &&
+      article.requires_manual_review !== true;
+  }
+
+  const topicCostUsd = topicSpend(costEntries);
+  const maxPerArticle = Number(config?.cost_control?.maximum_cost_per_article_usd || 0);
+  if (maxPerArticle > 0 && topicCostUsd > maxPerArticle) {
+    verified = false;
+    article.requires_manual_review = true;
+    article.review_reasons = uniqueStrings([
+      ...article.review_reasons,
+      `Automated pipeline cost $${topicCostUsd.toFixed(4)} exceeded the configured per-article maximum of $${maxPerArticle.toFixed(2)}.`
+    ], 30);
+  }
+
+  console.log(`Words: ${quality.words}`);
+  console.log(`Verification: ${verification.verdict} / ${verification.confidence}`);
+  console.log(`Verified claims: ${verification.checked_claims.filter((item) => item.status === "verified").length}`);
+  console.log(`Verification issues: ${verification.issues.length}`);
+  console.log(`Accepted sources: ${research.sources.length}`);
+  console.log(`Topic pipeline cost: $${topicCostUsd.toFixed(6)}`);
+
+  if (!verified) {
+    const reasons = [
+      ...quality.errors,
+      ...article.review_reasons,
+      ...verification.issues.map((issue) => `${issue.severity}: ${issue.problem}`),
+      verification.summary
+    ].filter(Boolean);
+
+    const paths = diagnosticDraftPaths(article);
+    const relatedArticles = chooseRelatedArticles(manifest, article, 3);
+    const html = renderArticleHtml({
+      article,
+      config,
+      date,
+      words: quality.words,
+      reading: quality.reading_minutes,
+      relatedArticles,
+      research
+    }).replace(
+      '<meta name="robots" content="index, follow">',
+      '<meta name="robots" content="noindex, nofollow">'
+    );
+
+    writeJson(paths.json, {
+      generated_at: date,
+      status: "rejected_verification",
+      topic: queueItem.topic,
+      model,
+      pipeline_cost_usd: topicCostUsd,
+      quality,
+      verification,
+      research,
+      article
+    });
+    writeText(paths.html, html);
+
+    markTopicRejected({ manifest, bank: topicBank, queueItem, date, reasons });
+    console.warn("Topic rejected after automated correction/verification. Moving to the next topic when allowed.");
+    return { success: false, reason: "verification_failed", article, verification };
+  }
+
+  article.requires_manual_review = false;
+  article.review_reasons = [];
+
+  const published = publishRequested;
   const relatedArticles = chooseRelatedArticles(manifest, article, 3);
-
-  const publicHtmlPath = path.join(
-    PATHS.published,
-    `${article.slug}.html`
-  );
-
-  const publicStructuredPath = path.join(
-    PATHS.generated,
-    `${article.slug}.json`
-  );
-
-  const privateStructuredPath = path.join(
-    PATHS.privateDrafts,
-    `${article.slug}.json`
-  );
-
-  const privateHtmlPath = path.join(
-    PATHS.privateDrafts,
-    `${article.slug}.html`
-  );
-
-  const structuredPath = published
-    ? publicStructuredPath
-    : privateStructuredPath;
+  const publicHtmlPath = path.join(PATHS.published, `${article.slug}.html`);
+  const publicStructuredPath = path.join(PATHS.generated, `${article.slug}.json`);
+  const privateStructuredPath = path.join(PATHS.privateDrafts, `${article.slug}.json`);
+  const privateHtmlPath = path.join(PATHS.privateDrafts, `${article.slug}.html`);
+  const structuredPath = published ? publicStructuredPath : privateStructuredPath;
 
   const generatedRecord = {
     generated_at: date,
@@ -2147,30 +2378,20 @@ async function main() {
     topic: queueItem.topic,
     category: article.category,
     model,
-    response_id: result.response?.id || null,
     provider: "xai",
-    cost: {
-      cost_in_usd_ticks: costEntry?.cost_in_usd_ticks ?? null,
-      cost_usd: costEntry?.cost_usd ?? null,
-      input_tokens: costEntry?.input_tokens ?? 0,
-      cached_input_tokens: costEntry?.cached_input_tokens ?? 0,
-      output_tokens: costEntry?.output_tokens ?? 0,
-      reasoning_tokens: costEntry?.reasoning_tokens ?? 0,
-      total_tokens: costEntry?.total_tokens ?? 0,
-      server_side_tools_used: costEntry?.server_side_tools_used ?? 0
-    },
+    pipeline_cost_usd: topicCostUsd,
+    cost_entries: costEntries,
     research: {
       mode: research.mode,
       required: research.enabled,
       allowed_domains: research.allowed_domains,
-      minimum_sources: research.minimum_sources,
       server_side_tools_used: research.server_side_tools_used,
       source_count: research.sources.length,
       sources: research.sources
     },
+    verification,
     status: published ? "published" : "draft",
-    requires_manual_review: article.requires_manual_review,
-    review_reasons: article.review_reasons,
+    requires_manual_review: false,
     quality: {
       word_count: quality.words,
       reading_minutes: quality.reading_minutes,
@@ -2193,16 +2414,10 @@ async function main() {
     writeText(publicHtmlPath, html);
     writeJson(publicStructuredPath, generatedRecord);
   } else {
-    const previewHtml = html
-      .replace(
-        '<meta name="robots" content="index, follow">',
-        '<meta name="robots" content="noindex, nofollow">'
-      )
-      .replace(
-        `<link rel="canonical" href="${escapeHtml(String(config.site?.base_url || "https://apxn.network").replace(/\/+$/, ""))}/blog/articles/${escapeHtml(article.slug)}.html">`,
-        ""
-      );
-
+    const previewHtml = html.replace(
+      '<meta name="robots" content="index, follow">',
+      '<meta name="robots" content="noindex, nofollow">'
+    );
     writeJson(privateStructuredPath, generatedRecord);
     writeText(privateHtmlPath, previewHtml);
   }
@@ -2217,7 +2432,8 @@ async function main() {
     model,
     queueItem,
     structuredPath,
-    research
+    research,
+    verification
   });
 
   const topicBankChanged = updateTopicBank({
@@ -2229,54 +2445,100 @@ async function main() {
     date
   });
 
-  writeJson(PATHS.articles, manifest);
+  if (topicBankChanged) writeJson(PATHS.topicBank, topicBank);
 
-  if (topicBankChanged) {
-    writeJson(PATHS.topicBank, topicBank);
-  }
-
-  console.log("\nSuccess.");
-  console.log(`Article ID: ${manifestRecord.id}`);
+  console.log(`Article ${manifestRecord.id} passed automated verification.`);
   console.log(`Status: ${manifestRecord.status}`);
+  return { success: true, published, manifestRecord, article, verification };
+}
 
-  if (published) {
-    console.log(`HTML: ${path.relative(ROOT, publicHtmlPath)}`);
-    console.log(`Structured article: ${path.relative(ROOT, publicStructuredPath)}`);
-  } else {
-    console.log(`Private draft JSON: ${path.relative(ROOT, privateStructuredPath)}`);
-    console.log(`Private draft preview: ${path.relative(ROOT, privateHtmlPath)}`);
-    console.log("Draft files are outside the workflow's Git commit paths and are not published by Vercel.");
-  }
+async function main() {
+  const config = readJson(PATHS.config);
+  const knowledge = readJson(PATHS.knowledge);
+  const manifest = readJson(PATHS.articles);
+  const topicBank = readJsonIfExists(PATHS.topicBank);
 
-  console.log(`Manifest updated: ${path.relative(ROOT, PATHS.articles)}`);
-  console.log(`Cost ledger: ${path.relative(ROOT, PATHS.costs)}`);
+  validateConfig(config);
+  validateManifest(manifest);
 
-  if (topicBankChanged) {
-    console.log(`Topic bank updated: ${path.relative(ROOT, PATHS.topicBank)}`);
-  }
+  const apiKeyVariable = String(config?.security?.xai_key_variable || "XAI_API_KEY").trim() || "XAI_API_KEY";
+  const apiKey = String(process.env[apiKeyVariable] || "").trim();
+  if (!apiKey) fail(`${apiKeyVariable} is missing. Add it as a GitHub Actions secret.`);
 
-  if (Number.isFinite(requestCostUsd)) {
-    console.log(`xAI request cost: $${requestCostUsd.toFixed(6)}`);
-    console.log(
-      `Monthly tracked spend: $${monthlySpend(costLedger).toFixed(6)}`
-    );
-  } else {
-    console.log(
-      "xAI request cost was not present in the API response; automatic publication was blocked by cost-control policy."
-    );
-  }
+  const modelVariable = String(config?.security?.xai_model_variable || "XAI_MODEL").trim() || "XAI_MODEL";
+  const model = String(process.env[modelVariable] || config?.ai?.default_model || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
 
-  if (article.requires_manual_review) {
-    console.log("\nManual review required:");
-    for (const reason of article.review_reasons) {
-      console.log(`- ${reason}`);
+  const costLedger = readCostLedger();
+  const publishRequested =
+    config?.automation?.auto_generate_enabled === true &&
+    config?.automation?.auto_publish_enabled === true &&
+    isTruthyEnv("BLOG_PUBLISH");
+
+  const maxTopicAttempts = publishRequested
+    ? MAX_PRODUCTION_TOPIC_ATTEMPTS
+    : MAX_TEST_TOPIC_ATTEMPTS;
+
+  console.log("APXN Blog AI Writer + Auto Verifier");
+  console.log("-----------------------------------");
+  console.log("Language: English only");
+  console.log(`Model: ${model}`);
+  console.log(`Publish requested: ${publishRequested}`);
+  console.log(`Maximum topic attempts this run: ${maxTopicAttempts}`);
+  console.log(`Maximum correction rounds per topic: ${MAX_CORRECTION_ROUNDS}`);
+
+  let produced = null;
+  for (let attempt = 1; attempt <= maxTopicAttempts; attempt += 1) {
+    ensureBudgetAvailable(config, costLedger);
+
+    let selection;
+    try {
+      selection = chooseNextTopic(manifest);
+    } catch (error) {
+      console.warn(`No eligible topic remains: ${error.message}`);
+      break;
     }
+
+    if (selection.skipped > 0) {
+      console.log(`Skipped ${selection.skipped} invalid/duplicate queued topic(s).`);
+    }
+
+    console.log(`\n=== Topic ${attempt}/${maxTopicAttempts} ===`);
+    const result = await processTopic({
+      config,
+      knowledge,
+      manifest,
+      topicBank,
+      queueItem: selection.queueItem,
+      apiKey,
+      model,
+      costLedger,
+      publishRequested
+    });
+
+    writeJson(PATHS.articles, manifest);
+    if (topicBank) writeJson(PATHS.topicBank, topicBank);
+    writeJson(PATHS.costs, costLedger);
+
+    if (result.success) {
+      produced = result;
+      break;
+    }
+
+    if (!publishRequested) break;
   }
 
-  if (!published) {
-    console.log(
-      "\nThe article was saved as a private workflow draft. Automatic publication remains disabled or manual review is required."
-    );
+  console.log(`\nMonthly tracked spend: $${monthlySpend(costLedger).toFixed(6)}`);
+
+  if (!produced) {
+    console.log("No article passed the automated verification pipeline in this run.");
+    console.log("Failed topics were skipped safely so a future run can continue with the next queued topic.");
+    return;
+  }
+
+  if (produced.published) {
+    console.log("Verified article published to blog/articles and ready for blog-sync.");
+  } else {
+    console.log("Verified article saved as a private workflow draft because publishing is currently disabled/test mode.");
   }
 }
 
