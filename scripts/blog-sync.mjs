@@ -158,8 +158,7 @@ function articleSearchText(article) {
   ]
     .filter(Boolean)
     .join(" ")
-    .toLowerCase()
-    .replaceAll('"', "&quot;");
+    .toLowerCase();
 }
 
 function renderFeaturedArticle(article) {
@@ -225,7 +224,7 @@ function renderArticleCard(article) {
   return `
                 <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
                          data-category="${escapeHtml(article.category || "")}"
-                         data-search="${search}">
+                         data-search="${escapeHtml(search)}">
                     <div class="h-2 bg-gradient-to-r from-yellow-500 to-orange-500"></div>
 
                     <div class="p-6 flex flex-col flex-1">
@@ -551,7 +550,7 @@ ${cards}
 
             <div id="emptyState" class="${count > 0 ? "hidden " : ""}text-center border border-dashed border-slate-700 rounded-2xl p-10 mt-8">
                 <p class="text-xl font-black mb-2">No articles found</p>
-                <p class="text-gray-500 text-sm">Try another search term or choose a different category or language.</p>
+                <p class="text-gray-500 text-sm">Try another search term or choose a different category.</p>
             </div>
         </section>
 
