@@ -7,7 +7,7 @@
  * - Reads data/blog-articles.json
  * - Uses ONLY articles with status === "published"
  * - Verifies every published article file exists before indexing it
- * - Rebuilds blog/index.html from the manifest
+ * - Rebuilds blog/index.html from the manifest (English-only)
  * - Rebuilds sitemap.xml with static pages + blog + published articles
  * - Never exposes drafts in the blog index or sitemap
  *
@@ -70,19 +70,6 @@ function escapeXml(value) {
 
 function cleanUrlBase(value) {
   return String(value || "https://apxn.network").replace(/\/+$/, "");
-}
-
-function normalizeLanguage(value) {
-  const language = String(value || "en").trim().toLowerCase();
-  return language === "ar" ? "ar" : "en";
-}
-
-function languageLabel(language) {
-  return normalizeLanguage(language) === "ar" ? "العربية" : "English";
-}
-
-function isArabic(language) {
-  return normalizeLanguage(language) === "ar";
 }
 
 function formatDate(value) {
@@ -167,7 +154,6 @@ function articleSearchText(article) {
     article.title,
     article.description,
     article.category,
-    article.language,
     ...(Array.isArray(article.keywords) ? article.keywords : [])
   ]
     .filter(Boolean)
@@ -186,8 +172,6 @@ function renderFeaturedArticle(article) {
   }
 
   const href = relativeArticleHref(article);
-  const language = normalizeLanguage(article.language);
-  const rtl = isArabic(language);
 
   return `
             <article class="article-card overflow-hidden bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl">
@@ -204,10 +188,9 @@ function renderFeaturedArticle(article) {
                         </div>
                     </div>
 
-                    <div class="p-7 sm:p-10 lg:p-12 flex flex-col justify-center" ${rtl ? 'dir="rtl"' : ""}>
+                    <div class="p-7 sm:p-10 lg:p-12 flex flex-col justify-center">
                         <div class="flex flex-wrap gap-2 mb-5">
                             <span class="text-[11px] font-black bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-3 py-1.5 rounded-full">${escapeHtml(article.category || "APXN")}</span>
-                            <span class="text-[11px] font-bold bg-slate-800 text-gray-400 px-3 py-1.5 rounded-full">${escapeHtml(languageLabel(language))}</span>
                             <span class="text-[11px] font-bold bg-slate-800 text-gray-400 px-3 py-1.5 rounded-full">${Number(article.reading_minutes || 1)} min read</span>
                         </div>
 
@@ -227,8 +210,8 @@ function renderFeaturedArticle(article) {
 
                         <a href="${escapeHtml(href)}"
                            class="inline-flex w-fit items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black px-6 py-3.5 rounded-xl hover:scale-[1.02] transition-transform">
-                            ${rtl ? "اقرأ المقال" : "Read Article"}
-                            <span aria-hidden="true">${rtl ? "←" : "→"}</span>
+                            Read Article
+                            <span aria-hidden="true">→</span>
                         </a>
                     </div>
                 </div>
@@ -237,16 +220,12 @@ function renderFeaturedArticle(article) {
 
 function renderArticleCard(article) {
   const href = relativeArticleHref(article);
-  const language = normalizeLanguage(article.language);
-  const rtl = isArabic(language);
   const search = articleSearchText(article);
 
   return `
                 <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
                          data-category="${escapeHtml(article.category || "")}"
-                         data-language="${escapeHtml(language)}"
-                         data-search="${search}"
-                         ${rtl ? 'dir="rtl"' : ""}>
+                         data-search="${search}">
                     <div class="h-2 bg-gradient-to-r from-yellow-500 to-orange-500"></div>
 
                     <div class="p-6 flex flex-col flex-1">
@@ -255,9 +234,6 @@ function renderArticleCard(article) {
                                 ${escapeHtml(article.category || "APXN")}
                             </span>
 
-                            <span class="text-xs text-gray-600">
-                                ${escapeHtml(languageLabel(language))}
-                            </span>
                         </div>
 
                         <h3 class="font-black text-xl leading-snug mb-3 line-clamp-2">
@@ -275,7 +251,7 @@ function renderArticleCard(article) {
                         </div>
 
                         <a href="${escapeHtml(href)}" class="mt-auto text-yellow-400 font-black text-sm hover:text-yellow-300">
-                            ${rtl ? "اقرأ المقال ←" : "Read guide →"}
+                            Read guide →
                         </a>
                     </div>
                 </article>`;
@@ -399,8 +375,7 @@ function buildBlogIndex(config, publishedArticles) {
             box-shadow: 0 16px 40px rgba(0, 0, 0, .28);
         }
 
-        .category-chip.active,
-        .language-chip.active {
+        .category-chip.active {
             color: #020617;
             background: linear-gradient(90deg, #facc15, #f59e0b);
             border-color: transparent;
@@ -557,11 +532,6 @@ ${renderFeaturedArticle(featured)}
                     ${renderCategoryButtons(categories)}
                 </div>
 
-                <div class="mt-6 flex flex-wrap gap-3" id="languageFilters">
-                    <button data-language="all" class="language-chip active border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">All Languages</button>
-                    <button data-language="en" class="language-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">English</button>
-                    <button data-language="ar" class="language-chip border border-slate-700 bg-slate-900 text-gray-300 font-bold text-sm px-4 py-2.5 rounded-xl transition-all">العربية</button>
-                </div>
             </div>
         </section>
 
@@ -666,12 +636,10 @@ ${cards}
         const searchInput = document.getElementById('searchInput');
         const articleItems = Array.from(document.querySelectorAll('.article-item'));
         const categoryButtons = Array.from(document.querySelectorAll('.category-chip'));
-        const languageButtons = Array.from(document.querySelectorAll('.language-chip'));
         const resultCount = document.getElementById('resultCount');
         const emptyState = document.getElementById('emptyState');
 
         let activeCategory = 'all';
-        let activeLanguage = 'all';
 
         function updateArticles() {
             const query = (searchInput.value || '').trim().toLowerCase();
@@ -679,17 +647,12 @@ ${cards}
 
             articleItems.forEach((article) => {
                 const category = article.dataset.category || '';
-                const language = article.dataset.language || 'en';
                 const searchable = (article.dataset.search || '').toLowerCase();
                 const text = article.innerText.toLowerCase();
 
                 const matchesCategory =
                     activeCategory === 'all' ||
                     category === activeCategory;
-
-                const matchesLanguage =
-                    activeLanguage === 'all' ||
-                    language === activeLanguage;
 
                 const matchesSearch =
                     !query ||
@@ -698,7 +661,6 @@ ${cards}
 
                 const shouldShow =
                     matchesCategory &&
-                    matchesLanguage &&
                     matchesSearch;
 
                 article.classList.toggle('hidden', !shouldShow);
@@ -728,35 +690,14 @@ ${cards}
             });
         });
 
-        languageButtons.forEach((button) => {
-            button.addEventListener('click', () => {
-                activeLanguage = button.dataset.language;
-
-                languageButtons.forEach((item) => item.classList.remove('active'));
-                button.classList.add('active');
-
-                updateArticles();
-
-                document.getElementById('latest').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            });
-        });
-
         searchInput.addEventListener('input', updateArticles);
 
         function resetFilters() {
             activeCategory = 'all';
-            activeLanguage = 'all';
             searchInput.value = '';
 
             categoryButtons.forEach((item) => {
                 item.classList.toggle('active', item.dataset.category === 'all');
-            });
-
-            languageButtons.forEach((item) => {
-                item.classList.toggle('active', item.dataset.language === 'all');
             });
 
             updateArticles();
