@@ -1,0 +1,164 @@
+name: APXN Blog Writer
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_only:
+        description: "Rebuild blog index and sitemap without calling xAI"
+        required: false
+        default: false
+        type: boolean
+
+  schedule:
+    - cron: "0 8 * * 1"
+    - cron: "0 8 * * 3"
+    - cron: "0 8 * * 6"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-blog-writer
+  cancel-in-progress: false
+
+jobs:
+  blog:
+    name: Generate and publish APXN article
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+      BLOG_PUBLISH: "true"
+      TZ: "Africa/Algiers"
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate blog scripts
+        run: |
+          node --check scripts/blog-writer.mjs
+          node --check scripts/blog-sync.mjs
+
+      - name: Check automation readiness
+        id: gate
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.sync_only) }}
+        shell: bash
+        run: |
+          AUTO_GENERATE="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('data/blog-config.json','utf8'));process.stdout.write(String(c?.automation?.auto_generate_enabled===true));")"
+
+          WAITING_COUNT="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('data/blog-articles.json','utf8'));process.stdout.write(String((m?.generation_queue||[]).filter(x=>x?.status==='waiting').length));")"
+
+          READY=true
+          REASON=ready
+
+          if [ "$AUTO_GENERATE" != "true" ]; then
+            READY=false
+            REASON=automation_disabled
+          elif [ "$WAITING_COUNT" = "0" ]; then
+            READY=false
+            REASON=no_waiting_topics
+          elif [ -z "$XAI_API_KEY" ]; then
+            READY=false
+            REASON=xai_key_missing
+          fi
+
+          echo "ready=$READY" >> "$GITHUB_OUTPUT"
+          echo "reason=$REASON" >> "$GITHUB_OUTPUT"
+          echo "waiting_count=$WAITING_COUNT" >> "$GITHUB_OUTPUT"
+
+          if [ "$READY" = "true" ]; then
+            echo "APXN Blog automation is ready."
+          else
+            echo "APXN Blog automation skipped safely: $REASON"
+          fi
+
+      - name: Sync blog only
+        id: sync_only
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only }}
+        continue-on-error: true
+        run: node scripts/blog-sync.mjs
+
+      - name: Generate article with Grok
+        id: writer
+        if: ${{ steps.gate.outputs.ready == 'true' }}
+        continue-on-error: true
+        run: node scripts/blog-writer.mjs
+
+      - name: Sync blog index and sitemap
+        id: sync
+        if: ${{ steps.writer.outcome == 'success' }}
+        continue-on-error: true
+        run: node scripts/blog-sync.mjs
+
+      - name: Commit successful blog update
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.sync_only && steps.sync_only.outcome == 'success') || (steps.writer.outcome == 'success' && steps.sync.outcome == 'success') }}
+        shell: bash
+        run: |
+          git config user.name "APXN Blog Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add blog data sitemap.xml
+
+          if git diff --cached --quiet; then
+            echo "No blog changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(blog): automated content update"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Preserve API cost after failed pipeline
+        if: ${{ steps.writer.outcome == 'failure' || (steps.writer.outcome == 'success' && steps.sync.outcome == 'failure') }}
+        shell: bash
+        run: |
+          if [ ! -f data/blog-costs.json ]; then
+            echo "No xAI cost ledger was created."
+            exit 0
+          fi
+
+          git config user.name "APXN Blog Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add data/blog-costs.json
+
+          if git diff --cached --quiet; then
+            echo "No cost change to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(blog): record xAI usage"
+
+          git reset --hard HEAD
+          git clean -fd
+
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Fail if generation failed
+        if: ${{ steps.writer.outcome == 'failure' }}
+        run: |
+          echo "The Grok writer failed. Any available cost ledger update was preserved."
+          exit 1
+
+      - name: Fail if synchronization failed
+        if: ${{ steps.writer.outcome == 'success' && steps.sync.outcome == 'failure' }}
+        run: |
+          echo "The article was not committed because blog synchronization failed."
+          exit 1
+
+      - name: Fail if manual sync failed
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && steps.sync_only.outcome == 'failure' }}
+        run: |
+          echo "Manual blog synchronization failed."
+          exit 1
