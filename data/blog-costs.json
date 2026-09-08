@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "provider": "xai",
+  "currency": "USD",
+  "months": {
+    "2026-09": {
+      "requests": [
+        {
+          "date": "2026-09-08",
+          "response_id": "c2f31bae-cc4e-92f8-a0db-ca9124c356d7",
+          "model": "grok-4.3",
+          "topic": "What Is BSC? Understanding BEP-20 Tokens and Gas Fees",
+          "article_slug": "what-is-bsc-understanding-bep-20-tokens-and-gas-fees",
+          "input_tokens": 6463,
+          "cached_input_tokens": 128,
+          "output_tokens": 2488,
+          "reasoning_tokens": 0,
+          "total_tokens": 8951,
+          "cost_in_usd_ticks": 141643500,
+          "cost_usd": 0.01416435
+        }
+      ],
+      "total_cost_usd": 0.01416435
+    }
+  },
+  "last_updated": "2026-09-08"
+}
