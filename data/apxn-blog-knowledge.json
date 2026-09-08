@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "generated_from": {
+    "project": "Apex Network Telegram Mini App",
+    "archive": "apex-miner-main.zip",
+    "reviewed_at": "2026-09-08",
+    "primary_sources": [
+      "README.md",
+      "app/page.js",
+      "app/api/register/route.js",
+      "app/api/bootstrap/route.js",
+      "app/api/checkin/route.js",
+      "app/api/mining/claim/route.js",
+      "app/api/tasks/daily/route.js",
+      "app/api/tasks/social/route.js",
+      "app/api/friends/route.js",
+      "app/api/stats/route.js",
+      "lib/telegram-auth.js",
+      "supabase/migrations/001_daily_checkin_rpc.sql",
+      "supabase/migrations/002_social_task_rpc.sql",
+      "supabase/migrations/003_daily_task_rpc.sql",
+      "supabase/migrations/008_friends_rpc.sql",
+      "supabase/migrations/009_global_stats_rpc.sql",
+      "supabase/migrations/012_fix_text_telegram_id_rpcs.sql",
+      "supabase/migrations/013_optimize_mining_claim_cooldown.sql"
+    ]
+  },
+  "status_definitions": {
+    "implemented": "Verified in executable application/API/database logic.",
+    "official_ui_claim": "Presented by the project UI but not independently proven by executable code.",
+    "ui_only": "Visible in the UI but not backed by persistent application logic in the reviewed archive.",
+    "planned": "Roadmap item or disabled Soon feature; do not describe as currently available.",
+    "verify_before_publish": "Do not let the automated writer present this as fact until manually confirmed or externally verified.",
+    "blocked_auto_publish": "Known inconsistency or high-risk claim; automation must not publish it as a current fact."
+  },
+  "project_identity": {
+    "name": "Apex Network",
+    "symbol": "APXN",
+    "product": "Telegram Mini App",
+    "website": "https://apxn.network",
+    "telegram_bot": "https://t.me/ApxMinerBot",
+    "telegram_channel": "https://t.me/ApexMiner_Official",
+    "telegram_group": "https://t.me/ApexMinerGroup",
+    "x": "https://x.com/ApexNetworkApp",
+    "support_email": "contact@apxn.network",
+    "network_context": "Binance Smart Chain (BSC)",
+    "token_standard": "BEP-20",
+    "contract_address": "0x88074bA197BBB0a3AFF891E52d05764F98509956",
+    "status": "official_ui_claim",
+    "source_paths": ["app/page.js", "README.md"]
+  },
+  "implemented_product_facts": {
+    "telegram_authentication": {
+      "status": "implemented",
+      "facts": [
+        "The server validates Telegram Mini App initData using Telegram HMAC verification.",
+        "Telegram authentication data is accepted for up to 24 hours in the reviewed implementation.",
+        "User identity is derived from the verified Telegram user payload, not from a client-supplied user ID."
+      ],
+      "source_paths": ["lib/telegram-auth.js"]
+    },
+    "points_mining": {
+      "status": "implemented",
+      "terminology": "APXN Points",
+      "base_rate_points_per_second": 0.00025,
+      "claim_cooldown_seconds": 43200,
+      "claim_cooldown_hours": 12,
+      "reward_formula": "elapsed_seconds * total_mining_rate",
+      "notes": [
+        "The current application tracks APXN points before token transition/TGE.",
+        "The automated blog must describe this as an in-app points system, not as proof-of-work blockchain mining.",
+        "A successful claim atomically updates the balance and last_claim timestamp in Supabase."
+      ],
+      "source_paths": [
+        "app/page.js",
+        "app/api/mining/claim/route.js",
+        "supabase/migrations/013_optimize_mining_claim_cooldown.sql"
+      ]
+    },
+    "registration_and_early_bonus": {
+      "status": "implemented",
+      "base_mining_rate_points_per_second": 0.00025,
+      "welcome_bonus_tiers": [
+        {"registered_users_before_new_account": "0-9,999", "welcome_bonus_points": 10000},
+        {"registered_users_before_new_account": "10,000-49,999", "welcome_bonus_points": 5000},
+        {"registered_users_before_new_account": "50,000-99,999", "welcome_bonus_points": 2500},
+        {"registered_users_before_new_account": "100,000+", "welcome_bonus_points": 1000}
+      ],
+      "valid_referral_bonus_to_new_user_points": 1000,
+      "notes": [
+        "A valid referrer must already exist and cannot be the same Telegram user.",
+        "The 1,000-point referral bonus in registration is credited to the newly referred user, while the inviter benefits through active-friend mining speed boosts."
+      ],
+      "source_paths": [
+        "app/api/register/route.js",
+        "supabase/migrations/012_fix_text_telegram_id_rpcs.sql"
+      ]
+    },
+    "daily_checkin": {
+      "status": "implemented",
+      "timezone_basis": "UTC",
+      "cycle_days": 7,
+      "rewards_points": [100, 200, 300, 400, 500, 600, 700],
+      "cycle_behavior": "After day 7, the reward cycle returns to 100 points while the streak can continue.",
+      "missed_day_behavior": "If the previous check-in was not yesterday, the next successful check-in starts a new streak at day 1.",
+      "duplicate_prevention": "Atomic database row locking plus API-side duplicate gates.",
+      "source_paths": [
+        "app/page.js",
+        "app/api/checkin/route.js",
+        "supabase/migrations/001_daily_checkin_rpc.sql",
+        "supabase/migrations/012_fix_text_telegram_id_rpcs.sql"
+      ]
+    },
+    "daily_tasks": {
+      "status": "implemented",
+      "allowed_tasks": ["telegram", "twitter"],
+      "reward_points_each": 100,
+      "claim_frequency": "Once per UTC day per task",
+      "important_note": "The reviewed implementation uses a delay before claiming from the UI, but the backend reward RPC records completion rather than independently verifying the external like action.",
+      "source_paths": [
+        "app/page.js",
+        "app/api/tasks/daily/route.js",
+        "supabase/migrations/003_daily_task_rpc.sql",
+        "supabase/migrations/012_fix_text_telegram_id_rpcs.sql"
+      ]
+    },
+    "one_time_social_tasks": {
+      "status": "implemented",
+      "tasks": [
+        {"task": "Join Telegram Channel", "reward_points": 500, "server_verification": "Telegram getChatMember"},
+        {"task": "Join Telegram Group", "reward_points": 500, "server_verification": "Telegram getChatMember"},
+        {"task": "Follow on X", "reward_points": 500, "server_verification": "No external X verification in reviewed implementation"}
+      ],
+      "claim_frequency": "One-time per task",
+      "source_paths": [
+        "app/page.js",
+        "app/api/tasks/social/route.js",
+        "supabase/migrations/002_social_task_rpc.sql",
+        "supabase/migrations/012_fix_text_telegram_id_rpcs.sql"
+      ]
+    },
+    "referrals": {
+      "status": "implemented",
+      "invite_link_pattern": "https://t.me/ApxMinerBot/app?startapp={telegram_user_id}",
+      "active_friend_definition": "A referred account whose last successful mining claim was within the previous 24 hours.",
+      "speed_bonus_per_active_friend": "5% of the inviter's base mining rate",
+      "total_rate_formula": "base_rate + active_friends * (base_rate * 0.05)",
+      "friend_list_fields": ["first_name", "country", "last_claim"],
+      "country_role": "Informational only; it does not affect authentication, rewards, mining or referral eligibility.",
+      "source_paths": [
+        "app/page.js",
+        "app/api/register/route.js",
+        "supabase/migrations/008_friends_rpc.sql",
+        "supabase/migrations/013_optimize_mining_claim_cooldown.sql"
+      ]
+    },
+    "community_stats": {
+      "status": "implemented",
+      "facts": [
+        "The app can return total registered accounts.",
+        "The app can aggregate registered accounts by stored country code.",
+        "Country is recorded from Vercel's x-vercel-ip-country header when a new account is created and is not overwritten later merely because the user travels or changes networks.",
+        "Stats responses are CDN-cacheable for a short period in the reviewed API."
+      ],
+      "source_paths": [
+        "app/api/register/route.js",
+        "app/api/stats/route.js",
+        "app/stats/page.js",
+        "supabase/migrations/009_global_stats_rpc.sql"
+      ]
+    }
+  },
+  "features_not_to_describe_as_live": {
+    "wallet_linking": {
+      "status": "ui_only",
+      "observed_behavior": [
+        "The UI can request an EVM account from Binance Web3, MetaMask, Trust Wallet, OKX Web3 or a generic injected provider.",
+        "The UI accepts a manually pasted 42-character 0x BSC address.",
+        "The reviewed code only stores a shortened wallet address in React component state for display.",
+        "No API call or Supabase persistence for the wallet address was found in the reviewed archive."
+      ],
+      "editorial_rule": "Do not say that a wallet is permanently bound to the Telegram account or stored for future withdrawals until persistence exists and is verified.",
+      "source_paths": ["app/page.js", "app/api/bootstrap/route.js"]
+    },
+    "boost_store": {
+      "status": "planned",
+      "ui_label": "Soon",
+      "all_purchase_buttons_disabled": true,
+      "levels": [
+        {
+          "name": "Level 1: APXN Miners",
+          "currency": "APXN",
+          "items": [
+            {"name": "Nano Miner", "display_price": "5,000", "display_boost": "+0.001/sec"},
+            {"name": "Micro Rig", "display_price": "10,000", "display_boost": "+0.002/sec"},
+            {"name": "Mini Core", "display_price": "15,000", "display_boost": "+0.003/sec"},
+            {"name": "Eco Miner", "display_price": "20,000", "display_boost": "+0.004/sec"}
+          ]
+        },
+        {
+          "name": "Level 2: Telegram Stars",
+          "currency": "Telegram Stars",
+          "items": [
+            {"name": "Stellar Rig", "display_price": "10", "display_boost": "+0.006/sec"},
+            {"name": "Nova Core", "display_price": "20", "display_boost": "+0.007/sec"},
+            {"name": "Pulsar Miner", "display_price": "30", "display_boost": "+0.008/sec"},
+            {"name": "Nebula Unit", "display_price": "40", "display_boost": "+0.01/sec"}
+          ]
+        },
+        {
+          "name": "Level 3: TON Elite",
+          "currency": "TON",
+          "items": [
+            {"name": "Apex Quantum", "display_price": "0.1", "display_boost": "+0.03/sec"},
+            {"name": "Titan Node", "display_price": "0.2", "display_boost": "+0.04/sec"},
+            {"name": "Cyber Miner", "display_price": "0.3", "display_boost": "+0.05/sec"},
+            {"name": "Genesis Rig", "display_price": "0.4", "display_boost": "+0.06/sec"}
+          ]
+        }
+      ],
+      "editorial_rule": "Describe these as planned/preview features only; never imply that users can currently buy or activate them.",
+      "source_paths": ["app/page.js"]
+    },
+    "kyc_via_upgrade_unlocks": {
+      "status": "verify_before_publish",
+      "ui_claim": "The UI states that users must unlock at least two stages in every boost level to pass KYC and qualify for APXN airdrop withdrawal.",
+      "technical_observation": "No implemented KYC backend or purchase/unlock logic was found in the reviewed archive, and the boost buttons are disabled.",
+      "editorial_rule": "Do not auto-publish this as an enforced current requirement until the backend and official policy are confirmed.",
+      "source_paths": ["app/page.js"]
+    }
+  },
+  "roadmap": {
+    "status": "planned",
+    "source_path": "app/page.js",
+    "phases": [
+      {"period": "Q4 2026", "title": "Genesis Launch", "items": ["Official launch of Telegram app", "Start accumulating APXN points", "Daily Check-In and Social Tasks", "Referral rewards", "Wallet linking integration"]},
+      {"period": "Q1 2027", "title": "Mining & Engagement", "items": ["Mining speed enhancements", "Daily streak improvements", "Additional tasks and rewards", "Referral/activity tiers upgrades", "Telegram UI/UX improvements"]},
+      {"period": "Q2 2027", "title": "Rig Upgrades & Presale", "items": ["Rig upgrades", "Burning points for internal upgrades", "Initiation of phased presale"]},
+      {"period": "Q3 2027", "title": "Community & Growth", "items": ["Referral system expansion", "Advanced user tiers", "Community campaigns", "Phased presale ongoing"]},
+      {"period": "Q4 2027", "title": "Ecosystem Expansion", "items": ["Mini App optimization", "Mining/upgrades enhancements", "Security infrastructure development", "Technical preparation"]},
+      {"period": "Q1 2028", "title": "Platform Optimization", "items": ["Speed/stability/point-economy improvements", "Security stress tests", "Token transition preparation", "Phased presale ongoing"]},
+      {"period": "Q2 2028", "title": "Token Preparation", "items": ["APXN tokenomics preparation", "Security systems final review", "Community expansion", "Major announcement preparation"]},
+      {"period": "Q3 2028", "title": "Listing Announcement", "items": ["Conclusion of phased presale", "Official listing announcement", "Announcement of supported DEX/CEX platforms", "Points-to-token transition announcement", "Apex Testnet announcement"]},
+      {"period": "Q4 2028", "title": "Apex Testnet", "items": ["Testnet launch", "Network/transaction/security testing", "Developer access", "Testnet Explorer"]},
+      {"period": "Q1 2029", "title": "Testnet Expansion", "items": ["Performance optimization", "Bug fixes and scaling", "Developer support", "Staking preparation"]},
+      {"period": "Q2 2029", "title": "Staking Implementation", "items": ["Apex Staking", "APXN staking rewards", "Validator/node testing", "Staking security audits"]},
+      {"period": "Q3 2029", "title": "Mainnet Preparation", "items": ["Final security audits", "Mainnet and Explorer preparation", "Validator setup and documentation", "Readiness announcement"]},
+      {"period": "Q4 2029", "title": "Apex Mainnet Launch", "items": ["Mainnet official launch", "APXN running natively on Mainnet", "Mainnet staking activation", "Mainnet Explorer", "Ecosystem/partnership expansion"]}
+    ],
+    "editorial_rule": "Always use future-tense/planned language for roadmap phases that have not been completed and never present roadmap timing as guaranteed."
+  },
+  "tokenomics_and_contract_content": {
+    "status": "official_ui_claim",
+    "total_supply_displayed": "100,000,000 APXN",
+    "distribution": [
+      {"bucket": "Community & Airdrop", "percent": 63},
+      {"bucket": "DEX & CEX Liquidity", "percent": 20},
+      {"bucket": "Marketing & Partners", "percent": 10},
+      {"bucket": "Core Team", "percent": 6},
+      {"bucket": "Phased Presale / ICO", "percent": 1}
+    ],
+    "points_conversion_ui_statement": "The in-app UI says APXN Points will be converted to APXN tokens during TGE and that the ratio depends on activity, upgrades and early-access status.",
+    "editorial_rule": "Describe conversion criteria as the current project policy/plan, not as a guaranteed conversion amount. Never invent a conversion ratio.",
+    "source_paths": ["app/page.js", "README.md"]
+  },
+  "claims_requiring_manual_confirmation": [
+    {
+      "claim": "Verified and audited smart contract / audited via Thirdweb",
+      "status": "verify_before_publish",
+      "reason": "The UI states this, but the reviewed application code does not itself prove an external audit."
+    },
+    {
+      "claim": "No mint functions, no hidden taxes, fixed total supply",
+      "status": "verify_before_publish",
+      "reason": "The UI states this; contract source/bytecode was not part of the uploaded Mini App archive."
+    },
+    {
+      "claim": "Locked PancakeSwap/CEX liquidity or guaranteed decentralized trading",
+      "status": "verify_before_publish",
+      "reason": "The application code does not prove liquidity locks, exchange relationships, or guaranteed trading."
+    },
+    {
+      "claim": "Gate.io listing",
+      "status": "blocked_auto_publish",
+      "reason": "README mentions CEX/DEX platforms 'such as Gate.io', but there is no evidence of an official Gate.io listing in the uploaded project."
+    },
+    {
+      "claim": "Presale is currently active at $0.10 per APXN",
+      "status": "blocked_auto_publish",
+      "reason": "The Tokenomics UI labels the presale as Active Phase and displays $0.10/APXN, but the same Roadmap says the phased presale starts in Q2 2027. On 2026-09-08 these statements conflict."
+    }
+  ],
+  "automation_editorial_rules": [
+    "Use implemented facts as the highest-priority source for current product behavior.",
+    "Use the exact term APXN Points when describing the current in-app balance unless discussing the future token explicitly.",
+    "Never promise profits, guaranteed returns, guaranteed token price, guaranteed listing date, guaranteed exchange listing, or guaranteed point-conversion value.",
+    "Never state that pressing Claim performs blockchain consensus mining. Explain that the Mini App calculates and records ecosystem points programmatically.",
+    "Never present a roadmap item, Soon feature, disabled upgrade, staking feature, Testnet, Mainnet, presale, or CEX/DEX support as already live unless the knowledge base status is updated after verification.",
+    "Do not claim wallet persistence or withdrawal-address binding until a server/database implementation exists and is verified.",
+    "When discussing Telegram tasks, state that channel/group membership is server-verified; do not claim that X follows/likes are technically verified if the current code does not verify them externally.",
+    "Country information is informational and must not be presented as proof of identity, citizenship, KYC, or eligibility.",
+    "For tokenomics, use phrases such as 'the current APXN project plan states' where the data comes from project UI rather than executable reward logic.",
+    "Every article must contain useful educational content beyond promotion of APXN.",
+    "Include a non-financial-advice disclaimer on investment/tokenomics/presale articles.",
+    "Block auto-publication whenever an article requires a fact marked verify_before_publish or blocked_auto_publish."
+  ],
+  "recommended_blog_categories": [
+    "APXN Updates",
+    "APXN Guides",
+    "Mining Points & Rewards",
+    "Telegram Mini Apps",
+    "Blockchain Basics",
+    "BSC & BEP-20",
+    "Web3 Wallets",
+    "Security",
+    "Tokenomics",
+    "Roadmap & Development",
+    "Community & Referrals"
+  ],
+  "safe_article_seed_topics": [
+    "How APXN Points Work Inside the Apex Network Telegram Mini App",
+    "APXN Mining Claims Explained: The 12-Hour Claim Cycle",
+    "How Active Referrals Increase APXN Mining Speed",
+    "What Counts as an Active Friend in Apex Network?",
+    "APXN Daily Check-In Rewards: How the 7-Day Cycle Works",
+    "APXN Daily Tasks vs One-Time Social Tasks",
+    "How Telegram Membership Verification Works in Apex Network",
+    "Understanding the APXN Early-Adopter Welcome Bonus Tiers",
+    "How the APXN Referral Link Works in Telegram",
+    "Why Apex Network Uses Telegram Mini App Authentication",
+    "What Is a Telegram Mini App? APXN as a Practical Example",
+    "What Is BSC and Why Do BEP-20 Addresses Start With 0x?",
+    "Web3 Wallet Basics for APXN Users: MetaMask, Trust Wallet, Binance Web3 and OKX",
+    "APXN Wallet Linking: What the Current App Supports and What Is Still Planned",
+    "APXN Upgrade Store Preview: What 'Soon' Means",
+    "APXN Roadmap Explained: From Telegram Points to Testnet and Mainnet",
+    "APXN Tokenomics Explained: Understanding the Current Project Allocation Plan",
+    "What Is a Token Generation Event (TGE)? APXN Context Explained",
+    "Points vs Tokens: Understanding the Current APXN App Phase",
+    "How Apex Network Uses Supabase to Protect Point Claims from Duplicate Requests",
+    "Why APXN Uses a 24-Hour Activity Window for Referral Boosts",
+    "How Country Flags Work in the APXN Referral List",
+    "What Is a BEP-20 Token? An APXN-Focused Beginner Guide",
+    "What Is a Blockchain Testnet? Understanding the Planned Apex Testnet",
+    "What Is Mainnet? Understanding the Long-Term Apex Network Roadmap"
+  ]
+}
+
