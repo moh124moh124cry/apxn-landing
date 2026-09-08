@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+
   "site": {
     "name": "APXN Blog",
     "brand": "Apex Network",
@@ -26,6 +27,16 @@
     "Development"
   ],
 
+  "ai": {
+    "provider": "xai",
+    "provider_name": "Grok",
+    "api_base_url": "https://api.x.ai/v1",
+    "responses_endpoint": "/responses",
+    "default_model": "grok-4.3",
+    "reasoning_effort": "none",
+    "prompt_cache_key": "apxn-blog-writer-v1"
+  },
+
   "writer": {
     "enabled": true,
     "default_mode": "draft",
@@ -38,7 +49,7 @@
     "include_disclaimer": true,
     "include_article_schema": true,
     "include_faq_schema": true,
-    "allow_external_research": true
+    "allow_external_research": false
   },
 
   "editorial_rules": {
@@ -72,6 +83,15 @@
     "update_blog_index_after_publish": true
   },
 
+  "cost_control": {
+    "enabled": true,
+    "monthly_budget_usd": 1.0,
+    "maximum_cost_per_article_usd": 0.1,
+    "stop_when_monthly_budget_reached": true,
+    "track_exact_api_cost": true,
+    "use_prompt_caching": true
+  },
+
   "seo": {
     "canonical_domain": "https://apxn.network",
     "default_og_image": "https://apxn.network/logo2%20(1).png",
@@ -91,7 +111,8 @@
   "security": {
     "store_api_keys_in_repository": false,
     "use_environment_variables": true,
-    "openai_key_variable": "OPENAI_API_KEY",
+    "xai_key_variable": "XAI_API_KEY",
+    "xai_model_variable": "XAI_MODEL",
     "admin_secret_variable": "BLOG_ADMIN_SECRET"
   }
 }
