@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "last_updated": "2026-09-08",
+  "default_language": "en",
+
+  "stats": {
+    "total_articles": 1,
+    "published": 1,
+    "drafts": 0,
+    "featured": 1
+  },
+
+  "articles": [
+    {
+      "id": "apxn-001",
+      "slug": "what-are-apxn-points",
+      "title": "What Are APXN Points? How the Apex Network Telegram Mini App Works",
+      "description": "Learn how APXN Points work inside the Apex Network Telegram Mini App, including 12-hour claims, daily check-ins, social tasks, referrals, mining speed and current app mechanics.",
+      "category": "APXN Guides",
+      "language": "en",
+      "author": "Apex Network Editorial",
+
+      "status": "published",
+      "featured": true,
+      "indexable": true,
+
+      "published_at": "2026-09-08",
+      "updated_at": "2026-09-08",
+
+      "reading_minutes": 8,
+      "word_count": 1784,
+
+      "path": "blog/articles/what-are-apxn-points.html",
+      "url": "https://apxn.network/blog/articles/what-are-apxn-points.html",
+
+      "image": "https://apxn.network/logo2%20(1).png",
+
+      "keywords": [
+        "APXN Points",
+        "Apex Network",
+        "Telegram Mini App",
+        "APXN Mining",
+        "Daily Check-In",
+        "APXN Referral",
+        "Web3",
+        "BSC"
+      ],
+
+      "source": "manual",
+      "knowledge_schema_version": 1,
+      "verified_against_knowledge": true,
+
+      "seo": {
+        "canonical": "https://apxn.network/blog/articles/what-are-apxn-points.html",
+        "robots": "index, follow",
+        "article_schema": true,
+        "faq_schema": true
+      }
+    }
+  ],
+
+  "generation_queue": [
+    {
+      "priority": 1,
+      "topic": "What Is BSC? Understanding BEP-20 Tokens and Gas Fees",
+      "category": "BSC",
+      "status": "waiting"
+    },
+    {
+      "priority": 2,
+      "topic": "How Telegram Mini Apps Are Bringing Web3 to Everyday Users",
+      "category": "Web3",
+      "status": "waiting"
+    },
+    {
+      "priority": 3,
+      "topic": "Web3 Security Basics: Protecting Your Wallet and Telegram Account",
+      "category": "Security",
+      "status": "waiting"
+    },
+    {
+      "priority": 4,
+      "topic": "Blockchain Explained for Beginners: From Blocks to Web3",
+      "category": "Blockchain",
+      "status": "waiting"
+    },
+    {
+      "priority": 5,
+      "topic": "How APXN Referrals and Active Friend Mining Boosts Work",
+      "category": "APXN Guides",
+      "status": "waiting"
+    },
+    {
+      "priority": 6,
+      "topic": "Understanding the APXN Daily Check-In Reward System",
+      "category": "APXN Guides",
+      "status": "waiting"
+    },
+    {
+      "priority": 7,
+      "topic": "APXN Development Roadmap: Live Features vs Planned Milestones",
+      "category": "Development",
+      "status": "waiting"
+    },
+    {
+      "priority": 8,
+      "topic": "How Telegram Mini App Authentication Works and Why initData Verification Matters",
+      "category": "Security",
+      "status": "waiting"
+    }
+  ],
+
+  "automation_state": {
+    "last_generated_article": null,
+    "last_published_article": "apxn-001",
+    "next_queue_priority": 1,
+    "automatic_generation": false,
+    "automatic_publishing": false
+  }
+}
