@@ -9,6 +9,12 @@ on:
         default: false
         type: boolean
 
+      planner_only:
+        description: "Test and update the topic planner without calling xAI"
+        required: false
+        default: false
+        type: boolean
+
   schedule:
     - cron: "0 8 * * 1"
     - cron: "0 8 * * 3"
@@ -49,10 +55,22 @@ jobs:
         run: |
           node --check scripts/blog-writer.mjs
           node --check scripts/blog-sync.mjs
+          node --check scripts/blog-planner.mjs
+
+      - name: Validate manual mode
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && inputs.planner_only }}
+        run: |
+          echo "Choose only one manual mode: sync_only OR planner_only."
+          exit 1
+
+      - name: Replenish topic queue
+        id: planner
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.sync_only }}
+        run: node scripts/blog-planner.mjs
 
       - name: Check automation readiness
         id: gate
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.sync_only) }}
+        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only) }}
         shell: bash
         run: |
           AUTO_GENERATE="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('data/blog-config.json','utf8'));process.stdout.write(String(c?.automation?.auto_generate_enabled===true));")"
@@ -85,7 +103,7 @@ jobs:
 
       - name: Sync blog only
         id: sync_only
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && !inputs.planner_only }}
         continue-on-error: true
         run: node scripts/blog-sync.mjs
 
@@ -102,7 +120,7 @@ jobs:
         run: node scripts/blog-sync.mjs
 
       - name: Commit successful blog update
-        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.sync_only && steps.sync_only.outcome == 'success') || (steps.writer.outcome == 'success' && steps.sync.outcome == 'success') }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.sync_only && steps.sync_only.outcome == 'success') || (github.event_name == 'workflow_dispatch' && inputs.planner_only && steps.planner.outcome == 'success') || (steps.writer.outcome == 'success' && steps.sync.outcome == 'success') }}
         shell: bash
         run: |
           git config user.name "APXN Blog Bot"
