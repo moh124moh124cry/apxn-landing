@@ -2,14 +2,12 @@
   "schema_version": 1,
   "last_updated": "2026-09-08",
   "default_language": "en",
-
   "stats": {
     "total_articles": 1,
     "published": 1,
     "drafts": 0,
     "featured": 1
   },
-
   "articles": [
     {
       "id": "apxn-001",
@@ -19,22 +17,16 @@
       "category": "APXN Guides",
       "language": "en",
       "author": "Apex Network Editorial",
-
       "status": "published",
       "featured": true,
       "indexable": true,
-
       "published_at": "2026-09-08",
       "updated_at": "2026-09-08",
-
       "reading_minutes": 8,
       "word_count": 1784,
-
       "path": "blog/articles/what-are-apxn-points.html",
       "url": "https://apxn.network/blog/articles/what-are-apxn-points.html",
-
       "image": "https://apxn.network/logo2%20(1).png",
-
       "keywords": [
         "APXN Points",
         "Apex Network",
@@ -45,11 +37,9 @@
         "Web3",
         "BSC"
       ],
-
       "source": "manual",
       "knowledge_schema_version": 1,
       "verified_against_knowledge": true,
-
       "seo": {
         "canonical": "https://apxn.network/blog/articles/what-are-apxn-points.html",
         "robots": "index, follow",
@@ -58,7 +48,6 @@
       }
     }
   ],
-
   "generation_queue": [
     {
       "priority": 1,
@@ -109,12 +98,18 @@
       "status": "waiting"
     }
   ],
-
   "automation_state": {
     "last_generated_article": null,
     "last_published_article": "apxn-001",
     "next_queue_priority": 1,
     "automatic_generation": false,
-    "automatic_publishing": false
+    "automatic_publishing": false,
+    "topic_planner": {
+      "last_run": "2026-09-08",
+      "added_topics": 0,
+      "waiting_topics_after_run": 8,
+      "minimum_waiting_topics": 6,
+      "target_waiting_topics": 12
+    }
   }
 }

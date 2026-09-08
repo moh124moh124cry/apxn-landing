@@ -266,5 +266,11 @@
       "risk": "safe",
       "status": "available"
     }
-  ]
+  ],
+  "planner_state": {
+    "last_run": "2026-09-08",
+    "available_topics": 36,
+    "queued_topics": 0,
+    "used_topics": 0
+  }
 }
