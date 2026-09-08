@@ -4,12 +4,14 @@
  *
  * Purpose:
  * - Reads the APXN knowledge base before every article.
- * - Reads blog configuration and existing article registry.
- * - Selects the next waiting topic.
- * - Generates a structured long-form draft through the xAI Responses API using Grok.
- * - Runs local editorial/quality checks.
+ * - Reads blog configuration and the article registry.
+ * - Selects the next safe waiting topic.
+ * - Generates one structured long-form English article through the xAI Responses API.
+ * - Runs strict local editorial, security, duplicate, language, and length checks.
  * - Never auto-publishes risky or unverified claims.
- * - Saves drafts as noindex HTML plus structured JSON metadata.
+ * - Tracks xAI cost and enforces conservative budget gates.
+ * - Publishes approved HTML to blog/articles/.
+ * - Keeps non-published drafts out of the public Git repository tree.
  *
  * No external npm packages are required.
  */
@@ -27,15 +29,18 @@ const PATHS = {
   config: path.join(ROOT, "data", "blog-config.json"),
   knowledge: path.join(ROOT, "data", "apxn-blog-knowledge.json"),
   articles: path.join(ROOT, "data", "blog-articles.json"),
+  topicBank: path.join(ROOT, "data", "blog-topic-bank.json"),
   costs: path.join(ROOT, "data", "blog-costs.json"),
   generated: path.join(ROOT, "data", "generated"),
-  drafts: path.join(ROOT, "blog", "drafts"),
-  published: path.join(ROOT, "blog", "articles")
+  published: path.join(ROOT, "blog", "articles"),
+  privateDrafts: path.join(ROOT, ".workflow-output", "drafts")
 };
 
 const DEFAULT_XAI_BASE_URL = "https://api.x.ai/v1";
 const DEFAULT_MODEL = "grok-4.3";
 const COST_TICKS_PER_USD = 10_000_000_000;
+const XAI_TIMEOUT_MS = 180_000;
+const ABSOLUTE_OUTPUT_TOKEN_CAP = 6_500;
 
 /* -------------------------------------------------------------------------- */
 /* Utilities                                                                  */
@@ -57,14 +62,25 @@ function readJson(filePath) {
   }
 }
 
-function writeJson(filePath, value) {
+function readJsonIfExists(filePath) {
+  if (!fs.existsSync(filePath)) return null;
+  return readJson(filePath);
+}
+
+function writeTextAtomic(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+
+  const temporary = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  fs.writeFileSync(temporary, value, "utf8");
+  fs.renameSync(temporary, filePath);
+}
+
+function writeJson(filePath, value) {
+  writeTextAtomic(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
 function writeText(filePath, value) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, value, "utf8");
+  writeTextAtomic(filePath, value);
 }
 
 function todayISO() {
@@ -88,6 +104,10 @@ function slugify(value) {
     .slice(0, 90);
 }
 
+function safeFilename(value) {
+  return slugify(value) || `article-${Date.now()}`;
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -95,6 +115,15 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function safeJsonForScript(value) {
+  return JSON.stringify(value, null, 2)
+    .replaceAll("&", "\\u0026")
+    .replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
 }
 
 function stripHtml(value) {
@@ -162,6 +191,20 @@ function monthKey(dateString = todayISO()) {
   return String(dateString).slice(0, 7);
 }
 
+function containsArabicScript(value) {
+  return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/u.test(String(value || ""));
+}
+
+function outputTokenLimit(config) {
+  const maximumWords = Number(config?.writer?.maximum_words || 1900);
+  const estimated = Math.ceil(maximumWords * 2.5);
+  return Math.min(ABSOLUTE_OUTPUT_TOKEN_CAP, Math.max(4_500, estimated));
+}
+
+/* -------------------------------------------------------------------------- */
+/* Cost control                                                               */
+/* -------------------------------------------------------------------------- */
+
 function readCostLedger() {
   if (!fs.existsSync(PATHS.costs)) {
     return {
@@ -201,6 +244,19 @@ function ensureBudgetAvailable(config, ledger) {
   ) {
     fail(
       `Monthly xAI budget reached: $${spent.toFixed(4)} spent of $${budget.toFixed(2)}.`
+    );
+  }
+
+  const perArticleTarget = Number(control.maximum_cost_per_article_usd || 0);
+
+  if (
+    control.stop_when_monthly_budget_reached === true &&
+    perArticleTarget > 0 &&
+    spent + perArticleTarget > budget
+  ) {
+    fail(
+      `Monthly budget safety reserve would be exceeded: $${spent.toFixed(4)} already spent, ` +
+      `$${perArticleTarget.toFixed(2)} reserved for the next article, budget $${budget.toFixed(2)}.`
     );
   }
 }
@@ -263,12 +319,8 @@ function recordCost({
   return entry;
 }
 
-function safeFilename(value) {
-  return slugify(value) || `article-${Date.now()}`;
-}
-
 /* -------------------------------------------------------------------------- */
-/* Validation                                                                 */
+/* Validation and queue selection                                             */
 /* -------------------------------------------------------------------------- */
 
 function validateConfig(config) {
@@ -296,6 +348,14 @@ function validateConfig(config) {
     fail("blog-config.json must contain at least one category.");
   }
 
+  const language = String(config?.site?.default_language || "en")
+    .trim()
+    .toLowerCase();
+
+  if (language !== "en") {
+    fail(`APXN Blog Writer is English-only; site.default_language must be "en", found "${language}".`);
+  }
+
   const min = Number(config?.writer?.minimum_words || 1200);
   const target = Number(config?.writer?.target_words || 1500);
   const max = Number(config?.writer?.maximum_words || 1900);
@@ -313,18 +373,14 @@ function validateManifest(manifest) {
   if (!Array.isArray(manifest?.generation_queue)) {
     fail("data/blog-articles.json must contain a generation_queue array.");
   }
-}
 
-function chooseNextTopic(manifest) {
-  const waiting = manifest.generation_queue
-    .filter((item) => item?.status === "waiting")
-    .sort((a, b) => Number(a.priority || 9999) - Number(b.priority || 9999));
+  const language = String(manifest?.default_language || "en")
+    .trim()
+    .toLowerCase();
 
-  if (waiting.length === 0) {
-    fail("No waiting topics found in data/blog-articles.json.");
+  if (language !== "en") {
+    fail(`data/blog-articles.json must remain English-only; default_language is "${language}".`);
   }
-
-  return waiting[0];
 }
 
 function detectDuplicateTopic(topic, manifest) {
@@ -350,6 +406,48 @@ function detectDuplicateTopic(topic, manifest) {
   return null;
 }
 
+function chooseNextTopic(manifest) {
+  const waiting = manifest.generation_queue
+    .filter((item) => item?.status === "waiting")
+    .sort((a, b) => Number(a.priority || 9999) - Number(b.priority || 9999));
+
+  if (waiting.length === 0) {
+    fail("No waiting topics found in data/blog-articles.json.");
+  }
+
+  let skipped = 0;
+
+  for (const item of waiting) {
+    const itemLanguage = String(item?.language || "en").trim().toLowerCase();
+
+    if (itemLanguage !== "en") {
+      Object.assign(item, {
+        status: "skipped_language",
+        skipped_reason: `English-only writer rejected language "${itemLanguage}".`,
+        skipped_at: todayISO()
+      });
+      skipped += 1;
+      continue;
+    }
+
+    const duplicate = detectDuplicateTopic(item.topic, manifest);
+
+    if (duplicate) {
+      Object.assign(item, {
+        status: "skipped_duplicate",
+        skipped_reason: `Duplicates article ${duplicate.id}: ${duplicate.title}`,
+        skipped_at: todayISO()
+      });
+      skipped += 1;
+      continue;
+    }
+
+    return { queueItem: item, skipped };
+  }
+
+  fail("No eligible waiting topic remains after duplicate/language checks.");
+}
+
 /* -------------------------------------------------------------------------- */
 /* Prompt building                                                            */
 /* -------------------------------------------------------------------------- */
@@ -362,18 +460,12 @@ function buildInstructions(config) {
   return `
 You are the APXN Blog editorial writer for Apex Network.
 
-Your job is to create accurate, useful, original, SEO-friendly educational articles.
+Your job is to create accurate, useful, original, SEO-friendly educational articles in ENGLISH ONLY.
 
 MANDATORY SOURCE RULES:
-1. The APXN knowledge JSON supplied by the user is the highest-priority source for all APXN project facts.
+1. The supplied APXN knowledge JSON is the highest-priority source for all APXN project facts.
 2. Never invent APXN facts.
-3. Distinguish clearly between:
-   - implemented current behavior,
-   - official UI claims,
-   - UI-only behavior,
-   - planned roadmap features,
-   - verify-before-publish claims,
-   - blocked-auto-publish claims.
+3. Distinguish clearly between implemented current behavior, official UI claims, UI-only behavior, planned roadmap features, verify-before-publish claims, and blocked-auto-publish claims.
 4. Current in-app balances must be called "APXN Points" unless explicitly discussing a future APXN token.
 5. Never describe pressing Claim as proof-of-work, proof-of-stake, or blockchain consensus mining.
 6. Never promise profit, returns, listing price, token value, exchange listing, point conversion value, or guaranteed withdrawal.
@@ -383,14 +475,16 @@ MANDATORY SOURCE RULES:
 10. Country data is informational. Do not present it as KYC, citizenship, identity, or eligibility proof.
 11. If the requested article would require a fact marked verify_before_publish or blocked_auto_publish, set requires_manual_review=true and explain why.
 12. The article must provide real educational value beyond project promotion.
+13. Do not cite or imply external research unless it is explicitly present in the supplied knowledge.
+14. Do not include Arabic text. The APXN Blog is English-only.
 
 WRITING REQUIREMENTS:
-- Language: ${config.site?.default_language || "en"}
+- Language: English only.
 - Target length: about ${target} words.
 - Minimum acceptable length: ${min} words.
 - Maximum target length: ${max} words.
 - Clear beginner-friendly English.
-- Use descriptive H2-style section headings.
+- Use descriptive section headings.
 - Avoid hype, spammy wording, keyword stuffing, and repetitive conclusions.
 - Include practical examples where useful.
 - Include a short FAQ.
@@ -446,17 +540,20 @@ function buildInput(topic, config, knowledge, manifest) {
       apxn_knowledge_base: knowledge,
       configured_categories: config.categories,
       writer_settings: {
+        language: "en",
         minimum_words: config.writer.minimum_words,
         target_words: config.writer.target_words,
         maximum_words: config.writer.maximum_words,
         include_faq: config.writer.include_faq,
         include_disclaimer: config.writer.include_disclaimer,
-        include_internal_links: config.writer.include_internal_links
+        include_internal_links: config.writer.include_internal_links,
+        allow_external_research: false
       },
       task: {
         topic: topic.topic,
         requested_category: topic.category,
-        priority: topic.priority
+        priority: topic.priority,
+        language: "en"
       },
       existing_articles_do_not_duplicate: existing
     },
@@ -470,7 +567,10 @@ function buildInput(topic, config, knowledge, manifest) {
 /* -------------------------------------------------------------------------- */
 
 function extractResponseText(responseJson) {
-  if (typeof responseJson?.output_text === "string" && responseJson.output_text.trim()) {
+  if (
+    typeof responseJson?.output_text === "string" &&
+    responseJson.output_text.trim()
+  ) {
     return responseJson.output_text.trim();
   }
 
@@ -504,6 +604,7 @@ function parseGeneratedJson(rawText) {
 
     if (firstBrace >= 0 && lastBrace > firstBrace) {
       const candidate = text.slice(firstBrace, lastBrace + 1);
+
       try {
         return JSON.parse(candidate);
       } catch {
@@ -512,7 +613,7 @@ function parseGeneratedJson(rawText) {
     }
   }
 
-  fail("Grok returned invalid JSON. No blog files were changed.");
+  fail("Grok returned invalid JSON. No blog article was saved.");
 }
 
 function buildArticleSchema(config) {
@@ -636,11 +737,9 @@ async function callXAI({
         content: input
       }
     ],
-    reasoning: {
-      effort: String(config?.ai?.reasoning_effort || "none")
-    },
-    max_output_tokens: 14000,
+    max_output_tokens: outputTokenLimit(config),
     store: false,
+    truncation: "disabled",
     text: {
       format: {
         type: "json_schema",
@@ -651,6 +750,16 @@ async function callXAI({
     }
   };
 
+  const reasoningEffort = String(
+    config?.ai?.reasoning_effort || "none"
+  ).trim();
+
+  if (reasoningEffort) {
+    requestBody.reasoning = {
+      effort: reasoningEffort
+    };
+  }
+
   if (
     config?.cost_control?.use_prompt_caching === true &&
     config?.ai?.prompt_cache_key
@@ -658,18 +767,35 @@ async function callXAI({
     requestBody.prompt_cache_key = String(config.ai.prompt_cache_key);
   }
 
-  const response = await fetch(resolveXaiEndpoint(config), {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(requestBody)
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), XAI_TIMEOUT_MS);
+
+  let response;
+
+  try {
+    response = await fetch(resolveXaiEndpoint(config), {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody),
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      fail(`xAI API request timed out after ${Math.round(XAI_TIMEOUT_MS / 1000)} seconds.`);
+    }
+
+    fail(`xAI API request failed before receiving a response: ${error.message}`);
+  } finally {
+    clearTimeout(timeout);
+  }
 
   const text = await response.text();
 
   let data;
+
   try {
     data = JSON.parse(text);
   } catch {
@@ -754,6 +880,7 @@ function normalizeGeneratedArticle(raw, topic, config) {
     description,
     excerpt,
     category,
+    language: "en",
     keywords: uniqueStrings(raw?.keywords, 12),
     sections,
     faq,
@@ -794,6 +921,14 @@ function detectRiskyLanguage(article) {
       reason: "Named Gate.io claim requires manual verification."
     },
     {
+      regex: /\b(?:binance|coinbase|kucoin|bybit|bitmart)\b.{0,50}\b(?:list|listed|listing|launch)\b/i,
+      reason: "Named exchange listing claim requires manual verification."
+    },
+    {
+      regex: /\b(?:confirmed listing|will be listed|guaranteed listing)\b/i,
+      reason: "Exchange-listing certainty is not allowed for automatic publication."
+    },
+    {
       regex: /\$0\.10\b|0\.10\s*(?:usd|dollars?)?\s*(?:per|\/)\s*apxn/i,
       reason: "The $0.10/APXN presale claim is blocked because project sources conflict."
     },
@@ -802,16 +937,36 @@ function detectRiskyLanguage(article) {
       reason: "Current-presale status conflicts with the reviewed roadmap and requires manual confirmation."
     },
     {
-      regex: /\b(?:audited by thirdweb|verified and audited contract|thirdweb audit)\b/i,
+      regex: /\b(?:audited by thirdweb|verified and audited contract|thirdweb audit|audited contract)\b/i,
       reason: "External smart-contract audit claims require manual verification."
     },
     {
-      regex: /\b(?:locked liquidity|liquidity is locked)\b/i,
+      regex: /\b(?:locked liquidity|liquidity is locked|liquidity lock)\b/i,
       reason: "Liquidity-lock claims require external verification."
+    },
+    {
+      regex: /\b(?:no hidden taxes|no mint|minting disabled forever)\b/i,
+      reason: "Smart-contract restriction claims require verification before automatic publication."
+    },
+    {
+      regex: /\bpancakeswap\b/i,
+      reason: "PancakeSwap/liquidity availability claims require current external verification."
     },
     {
       regex: /\bguaranteed decentralized trading\b/i,
       reason: "Guaranteed trading claims are not allowed for automatic publication."
+    },
+    {
+      regex: /\b(?:guaranteed profit|guaranteed profits|guaranteed return|guaranteed returns|risk[- ]free profit)\b/i,
+      reason: "Guaranteed financial outcome language is not allowed."
+    },
+    {
+      regex: /\b(?:apxn will be worth|apxn price will|price will reach|guaranteed price)\b/i,
+      reason: "Future token price predictions require manual review and must not be guaranteed."
+    },
+    {
+      regex: /\b(?:withdraw apxn now|cash out apxn now|currently withdrawable apxn)\b/i,
+      reason: "Current APXN Points must not be presented as a withdrawable token balance."
     },
     {
       regex: /\b(?:wallet is permanently linked|permanently bound wallet|wallet permanently bound)\b/i,
@@ -828,6 +983,14 @@ function detectRiskyLanguage(article) {
     {
       regex: /\b(?:staking is live|staking is now live|live staking)\b/i,
       reason: "Staking is a roadmap item unless later verified."
+    },
+    {
+      regex: /\b60\s*%\s+(?:airdrop|of the airdrop)\b/i,
+      reason: "A 60% airdrop entitlement claim requires current project verification."
+    },
+    {
+      regex: /\bfirst\s+10[,.]?000\s+(?:active\s+)?miners\b/i,
+      reason: "First-10,000-miners eligibility language requires current project verification."
     }
   ];
 
@@ -879,14 +1042,25 @@ function runQualityChecks(article, config, manifest) {
   const words = wordCount(plain);
   const minimum = Number(config.writer.minimum_words || 1200);
   const maximum = Number(config.writer.maximum_words || 1900);
+  const hardMaximum = maximum + 200;
+
+  if (containsArabicScript(plain)) {
+    errors.push("Arabic-script text was detected. APXN Blog publishing is English-only.");
+  }
 
   if (words < minimum) {
     errors.push(`Article is too short: ${words} words; minimum is ${minimum}.`);
   }
 
-  if (words > maximum + 500) {
+  if (words > maximum) {
     warnings.push(
-      `Article is significantly above the target maximum: ${words} words.`
+      `Article is above the configured target maximum: ${words} words; target maximum is ${maximum}.`
+    );
+  }
+
+  if (words > hardMaximum) {
+    errors.push(
+      `Article is too long: ${words} words; hard maximum is ${hardMaximum}.`
     );
   }
 
@@ -924,6 +1098,54 @@ function runQualityChecks(article, config, manifest) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Internal links                                                             */
+/* -------------------------------------------------------------------------- */
+
+function chooseRelatedArticles(manifest, article, limit = 3) {
+  const published = manifest.articles.filter(
+    (item) => item?.status === "published" && item?.slug && item?.slug !== article.slug
+  );
+
+  const sameCategory = published.filter(
+    (item) => item?.category === article.category
+  );
+
+  const other = published.filter(
+    (item) => item?.category !== article.category
+  );
+
+  return [...sameCategory, ...other].slice(0, limit);
+}
+
+function renderRelatedArticles(relatedArticles) {
+  if (!Array.isArray(relatedArticles) || relatedArticles.length === 0) {
+    return "";
+  }
+
+  const cards = relatedArticles
+    .map((item) => {
+      const title = escapeHtml(item.title || item.slug);
+      const category = escapeHtml(item.category || "APXN Blog");
+      const href = `${encodeURIComponent(item.slug)}.html`;
+
+      return `
+                    <a href="${href}" class="block bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-yellow-500/40 transition-colors">
+                        <div class="text-[11px] font-black uppercase tracking-widest text-yellow-500 mb-2">${category}</div>
+                        <div class="font-black text-white leading-snug">${title}</div>
+                    </a>`;
+    })
+    .join("\n");
+
+  return `
+                <section class="mt-12">
+                    <h2 class="text-2xl font-black mb-5">Related APXN Blog guides</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+${cards}
+                    </div>
+                </section>`;
+}
+
+/* -------------------------------------------------------------------------- */
 /* HTML rendering                                                             */
 /* -------------------------------------------------------------------------- */
 
@@ -951,17 +1173,15 @@ ${faq
 function renderArticleHtml({
   article,
   config,
-  published,
   date,
   words,
-  reading
+  reading,
+  relatedArticles
 }) {
-  const baseUrl = String(config.site?.base_url || "https://apxn.network").replace(/\/+$/, "");
-  const articleUrl = published
-    ? `${baseUrl}/blog/articles/${article.slug}.html`
-    : `${baseUrl}/blog/drafts/${article.slug}.html`;
+  const baseUrl = String(config.site?.base_url || "https://apxn.network")
+    .replace(/\/+$/, "");
 
-  const robots = published ? "index, follow" : "noindex, nofollow";
+  const articleUrl = `${baseUrl}/blog/articles/${article.slug}.html`;
   const ogImage =
     config.seo?.default_og_image ||
     `${baseUrl}/logo2%20(1).png`;
@@ -1024,14 +1244,7 @@ ${renderParagraphs(section.paragraphs)}`
                 </div>`
     : "";
 
-  const reviewBanner = !published
-    ? `
-            <section class="border-b border-amber-500/20 bg-amber-500/[0.06]">
-                <div class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-4 text-sm text-amber-300 font-bold">
-                    Draft preview — this page is marked noindex and is not an official published APXN Blog article.
-                </div>
-            </section>`
-    : "";
+  const relatedHtml = renderRelatedArticles(relatedArticles);
 
   return `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -1042,7 +1255,7 @@ ${renderParagraphs(section.paragraphs)}`
     <title>${escapeHtml(article.title)}</title>
     <meta name="description" content="${escapeHtml(article.description)}">
     <meta name="keywords" content="${escapeHtml(article.keywords.join(", "))}">
-    <meta name="robots" content="${robots}">
+    <meta name="robots" content="index, follow">
     <meta name="author" content="${escapeHtml(config.site?.author || "Apex Network Editorial")}">
 
     <link rel="canonical" href="${escapeHtml(articleUrl)}">
@@ -1130,16 +1343,12 @@ ${renderParagraphs(section.paragraphs)}`
     </style>
 
     <script type="application/ld+json">
-${JSON.stringify(jsonLd, null, 2)}
+${safeJsonForScript(jsonLd)}
     </script>
-${
-  faqSchema
-    ? `
+${faqSchema ? `
     <script type="application/ld+json">
-${JSON.stringify(faqSchema, null, 2)}
-    </script>`
-    : ""
-}
+${safeJsonForScript(faqSchema)}
+    </script>` : ""}
 </head>
 
 <body class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950">
@@ -1164,7 +1373,6 @@ ${JSON.stringify(faqSchema, null, 2)}
             </a>
         </div>
     </header>
-${reviewBanner}
 
     <main>
         <article>
@@ -1215,6 +1423,7 @@ ${sectionsHtml}
 ${faqHtml}
                 </div>
 ${disclaimerHtml}
+${relatedHtml}
 
                 <div class="mt-10 bg-slate-900 border border-slate-800 rounded-3xl p-7 sm:p-10 text-center">
                     <div class="w-20 h-20 mx-auto rounded-full overflow-hidden border border-yellow-500/40 mb-5">
@@ -1245,9 +1454,12 @@ ${disclaimerHtml}
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs text-gray-600">
                 <p>&copy; ${new Date().getFullYear()} Apex Network. All rights reserved.</p>
                 <div class="flex flex-wrap gap-4">
+                    <a href="../../about.html" class="hover:text-yellow-400">About</a>
+                    <a href="../../contact.html" class="hover:text-yellow-400">Contact</a>
+                    <a href="../../editorial-policy.html" class="hover:text-yellow-400">Editorial Policy</a>
+                    <a href="../../disclaimer.html" class="hover:text-yellow-400">Disclaimer</a>
                     <a href="../../privacy.html" class="hover:text-yellow-400">Privacy Policy</a>
                     <a href="../../terms.html" class="hover:text-yellow-400">Terms & Conditions</a>
-                    <a href="mailto:${escapeHtml(config.site?.support_email || "contact@apxn.network")}" class="hover:text-yellow-400">Contact</a>
                 </div>
             </div>
         </div>
@@ -1259,7 +1471,7 @@ ${disclaimerHtml}
 }
 
 /* -------------------------------------------------------------------------- */
-/* Manifest mutation                                                          */
+/* Manifest and topic-bank mutation                                           */
 /* -------------------------------------------------------------------------- */
 
 function recalculateStats(manifest) {
@@ -1289,16 +1501,20 @@ function addManifestRecord({
   date,
   published,
   model,
-  queueItem
+  queueItem,
+  structuredPath
 }) {
   const id = nextArticleId(manifest.articles);
-  const baseUrl = String(config.site?.base_url || "https://apxn.network").replace(/\/+$/, "");
+  const baseUrl = String(config.site?.base_url || "https://apxn.network")
+    .replace(/\/+$/, "");
 
   const relativePath = published
     ? `blog/articles/${article.slug}.html`
-    : `blog/drafts/${article.slug}.html`;
+    : null;
 
-  const url = `${baseUrl}/${relativePath}`;
+  const url = published
+    ? `${baseUrl}/${relativePath}`
+    : null;
 
   const record = {
     id,
@@ -1306,7 +1522,7 @@ function addManifestRecord({
     title: article.title,
     description: article.description,
     category: article.category,
-    language: config.site?.default_language || "en",
+    language: "en",
     author: config.site?.author || "Apex Network Editorial",
 
     status: published ? "published" : "draft",
@@ -1321,6 +1537,9 @@ function addManifestRecord({
 
     path: relativePath,
     url,
+    draft_artifact_path: published
+      ? null
+      : path.relative(ROOT, structuredPath).replaceAll(path.sep, "/"),
 
     image:
       config.seo?.default_og_image ||
@@ -1336,10 +1555,10 @@ function addManifestRecord({
     review_reasons: article.review_reasons,
 
     seo: {
-      canonical: url,
+      canonical: published ? url : null,
       robots: published ? "index, follow" : "noindex, nofollow",
-      article_schema: true,
-      faq_schema: article.faq.length > 0
+      article_schema: published,
+      faq_schema: published && article.faq.length > 0
     }
   };
 
@@ -1373,6 +1592,46 @@ function addManifestRecord({
   return record;
 }
 
+function updateTopicBank({
+  bank,
+  queueItem,
+  published,
+  articleId,
+  slug,
+  date
+}) {
+  if (!bank || !Array.isArray(bank.topics) || !queueItem?.topic_bank_id) {
+    return false;
+  }
+
+  const item = bank.topics.find(
+    (entry) => entry?.id === queueItem.topic_bank_id
+  );
+
+  if (!item) return false;
+
+  Object.assign(item, {
+    status: published ? "published" : "drafted",
+    article_id: articleId,
+    article_slug: slug,
+    used_at: date
+  });
+
+  bank.last_updated = date;
+  bank.planner_state = bank.planner_state || {};
+  bank.planner_state.available_topics = bank.topics.filter(
+    (entry) => entry?.status === "available"
+  ).length;
+  bank.planner_state.queued_topics = bank.topics.filter(
+    (entry) => entry?.status === "queued"
+  ).length;
+  bank.planner_state.used_topics = bank.topics.filter((entry) =>
+    ["used", "published", "drafted"].includes(entry?.status)
+  ).length;
+
+  return true;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Main                                                                       */
 /* -------------------------------------------------------------------------- */
@@ -1381,17 +1640,16 @@ async function main() {
   const config = readJson(PATHS.config);
   const knowledge = readJson(PATHS.knowledge);
   const manifest = readJson(PATHS.articles);
+  const topicBank = readJsonIfExists(PATHS.topicBank);
 
   validateConfig(config);
   validateManifest(manifest);
 
-  const queueItem = chooseNextTopic(manifest);
+  const { queueItem, skipped } = chooseNextTopic(manifest);
 
-  const duplicate = detectDuplicateTopic(queueItem.topic, manifest);
-  if (duplicate) {
-    fail(
-      `The next queued topic appears to duplicate article ${duplicate.id}: ${duplicate.title}`
-    );
+  if (skipped > 0) {
+    writeJson(PATHS.articles, manifest);
+    console.log(`Skipped ${skipped} invalid/duplicate queued topic(s) before generation.`);
   }
 
   const apiKeyVariable =
@@ -1425,9 +1683,11 @@ async function main() {
 
   console.log("APXN Blog AI Writer");
   console.log("-------------------");
+  console.log("Language: English only");
   console.log(`Topic: ${queueItem.topic}`);
   console.log(`Category: ${queueItem.category}`);
   console.log(`Model: ${model}`);
+  console.log(`Maximum output tokens: ${outputTokenLimit(config)}`);
   console.log("Generating article...");
 
   const { response, generated } = await callXAI({
@@ -1482,6 +1742,20 @@ async function main() {
     );
   }
 
+  if (
+    config?.cost_control?.track_exact_api_cost === true &&
+    !Number.isFinite(requestCostUsd)
+  ) {
+    article.requires_manual_review = true;
+    article.review_reasons = uniqueStrings(
+      [
+        ...article.review_reasons,
+        "xAI did not return an exact request cost, so automatic publication was blocked by cost-control policy."
+      ],
+      30
+    );
+  }
+
   const quality = runQualityChecks(article, config, manifest);
 
   console.log(`Generated words: ${quality.words}`);
@@ -1500,21 +1774,9 @@ async function main() {
       console.error(`- ${error}`);
     }
 
-    fail("Draft was rejected by quality checks. No manifest changes were saved.");
+    fail("Article was rejected by quality checks. Only the xAI cost ledger was saved.");
   }
 
-  /*
-   * Publishing is deliberately strict.
-   *
-   * ALL of the following are required:
-   * - auto_generate_enabled=true
-   * - auto_publish_enabled=true
-   * - BLOG_PUBLISH=true environment flag
-   * - article has no manual-review requirement
-   *
-   * Until the full publishing pipeline is completed, the current config keeps
-   * both automation flags false, so this writer creates safe noindex drafts.
-   */
   const publishRequested =
     config?.automation?.auto_generate_enabled === true &&
     config?.automation?.auto_publish_enabled === true &&
@@ -1524,26 +1786,35 @@ async function main() {
     publishRequested &&
     article.requires_manual_review !== true;
 
-  const html = renderArticleHtml({
-    article,
-    config,
-    published,
-    date,
-    words: quality.words,
-    reading: quality.reading_minutes
-  });
+  const relatedArticles = chooseRelatedArticles(manifest, article, 3);
 
-  const htmlPath = published
-    ? path.join(PATHS.published, `${article.slug}.html`)
-    : path.join(PATHS.drafts, `${article.slug}.html`);
+  const publicHtmlPath = path.join(
+    PATHS.published,
+    `${article.slug}.html`
+  );
 
-  const structuredPath = path.join(
+  const publicStructuredPath = path.join(
     PATHS.generated,
     `${article.slug}.json`
   );
 
+  const privateStructuredPath = path.join(
+    PATHS.privateDrafts,
+    `${article.slug}.json`
+  );
+
+  const privateHtmlPath = path.join(
+    PATHS.privateDrafts,
+    `${article.slug}.html`
+  );
+
+  const structuredPath = published
+    ? publicStructuredPath
+    : privateStructuredPath;
+
   const generatedRecord = {
     generated_at: date,
+    language: "en",
     topic: queueItem.topic,
     category: article.category,
     model,
@@ -1569,12 +1840,42 @@ async function main() {
     article
   };
 
-  /*
-   * Write the article output first.
-   * The manifest is updated only after the output files succeed.
-   */
-  writeText(htmlPath, html);
-  writeJson(structuredPath, generatedRecord);
+  if (published) {
+    const html = renderArticleHtml({
+      article,
+      config,
+      date,
+      words: quality.words,
+      reading: quality.reading_minutes,
+      relatedArticles
+    });
+
+    writeText(publicHtmlPath, html);
+    writeJson(publicStructuredPath, generatedRecord);
+  } else {
+    /*
+     * Draft files intentionally live under .workflow-output/, which is NOT
+     * included by the workflow's `git add blog data sitemap.xml` command.
+     * The next workflow hardening step uploads this folder as a GitHub Actions
+     * artifact for review instead of exposing drafts in the public repository.
+     */
+    const previewHtml = renderArticleHtml({
+      article,
+      config,
+      date,
+      words: quality.words,
+      reading: quality.reading_minutes,
+      relatedArticles
+    })
+      .replace('<meta name="robots" content="index, follow">', '<meta name="robots" content="noindex, nofollow">')
+      .replace(
+        `<link rel="canonical" href="${escapeHtml(String(config.site?.base_url || "https://apxn.network").replace(/\/+$/, ""))}/blog/articles/${escapeHtml(article.slug)}.html">`,
+        ""
+      );
+
+    writeJson(privateStructuredPath, generatedRecord);
+    writeText(privateHtmlPath, previewHtml);
+  }
 
   const manifestRecord = addManifestRecord({
     manifest,
@@ -1584,18 +1885,44 @@ async function main() {
     date,
     published,
     model,
-    queueItem
+    queueItem,
+    structuredPath
+  });
+
+  const topicBankChanged = updateTopicBank({
+    bank: topicBank,
+    queueItem,
+    published,
+    articleId: manifestRecord.id,
+    slug: article.slug,
+    date
   });
 
   writeJson(PATHS.articles, manifest);
 
+  if (topicBankChanged) {
+    writeJson(PATHS.topicBank, topicBank);
+  }
+
   console.log("\nSuccess.");
   console.log(`Article ID: ${manifestRecord.id}`);
   console.log(`Status: ${manifestRecord.status}`);
-  console.log(`HTML: ${path.relative(ROOT, htmlPath)}`);
-  console.log(`Structured draft: ${path.relative(ROOT, structuredPath)}`);
+
+  if (published) {
+    console.log(`HTML: ${path.relative(ROOT, publicHtmlPath)}`);
+    console.log(`Structured article: ${path.relative(ROOT, publicStructuredPath)}`);
+  } else {
+    console.log(`Private draft JSON: ${path.relative(ROOT, privateStructuredPath)}`);
+    console.log(`Private draft preview: ${path.relative(ROOT, privateHtmlPath)}`);
+    console.log("Draft files are outside the workflow's Git commit paths and are not published by Vercel.");
+  }
+
   console.log(`Manifest updated: ${path.relative(ROOT, PATHS.articles)}`);
   console.log(`Cost ledger: ${path.relative(ROOT, PATHS.costs)}`);
+
+  if (topicBankChanged) {
+    console.log(`Topic bank updated: ${path.relative(ROOT, PATHS.topicBank)}`);
+  }
 
   if (Number.isFinite(requestCostUsd)) {
     console.log(`xAI request cost: $${requestCostUsd.toFixed(6)}`);
@@ -1604,7 +1931,7 @@ async function main() {
     );
   } else {
     console.log(
-      "xAI request cost was not present in the API response; check xAI usage dashboard."
+      "xAI request cost was not present in the API response; automatic publication was blocked by cost-control policy."
     );
   }
 
@@ -1617,7 +1944,7 @@ async function main() {
 
   if (!published) {
     console.log(
-      "\nThe article was saved as a noindex draft. Automatic publication is still disabled."
+      "\nThe article was saved as a private workflow draft. Automatic publication remains disabled or manual review is required."
     );
   }
 }
