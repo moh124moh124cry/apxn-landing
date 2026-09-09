@@ -323,9 +323,63 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 58481000,
           "cost_usd": 0.0058481
+        },
+        {
+          "date": "2026-09-09",
+          "response_id": "b564e471-1878-901b-a91e-5e80b729e7d4",
+          "model": "grok-4.3",
+          "topic": "What Is BSC? Understanding BEP-20 Tokens and Gas Fees",
+          "article_slug": "what-is-bsc-understanding-bep-20-tokens-and-gas-fees",
+          "stage": "evidence_research",
+          "input_tokens": 21294,
+          "cached_input_tokens": 1600,
+          "output_tokens": 1200,
+          "reasoning_tokens": 0,
+          "total_tokens": 22494,
+          "server_side_tools_used": 5,
+          "web_research_enabled": true,
+          "web_source_count": 3,
+          "cost_in_usd_ticks": 529375000,
+          "cost_usd": 0.0529375
+        },
+        {
+          "date": "2026-09-09",
+          "response_id": "7050d248-20a4-9783-95d3-f2559127f889",
+          "model": "grok-4.3",
+          "topic": "What Is BSC? Understanding BEP-20 Tokens and Gas Fees",
+          "article_slug": "what-is-bsc-understanding-bep-20-tokens-and-gas-fees",
+          "stage": "evidence_audit",
+          "input_tokens": 1794,
+          "cached_input_tokens": 128,
+          "output_tokens": 639,
+          "reasoning_tokens": 0,
+          "total_tokens": 2433,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 37056000,
+          "cost_usd": 0.0037056
+        },
+        {
+          "date": "2026-09-09",
+          "response_id": "0359ec16-8268-9e69-ac64-25c2863aa35f",
+          "model": "grok-4.3",
+          "topic": "What Is BSC? Understanding BEP-20 Tokens and Gas Fees",
+          "article_slug": "what-is-bsc-understanding-bep-20-tokens-and-gas-fees",
+          "stage": "generation",
+          "input_tokens": 2230,
+          "cached_input_tokens": 320,
+          "output_tokens": 1675,
+          "reasoning_tokens": 0,
+          "total_tokens": 3905,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 66390000,
+          "cost_usd": 0.006639
         }
       ],
-      "total_cost_usd": 0.5017437499999999
+      "total_cost_usd": 0.5650258499999998
     }
   },
   "last_updated": "2026-09-09"
