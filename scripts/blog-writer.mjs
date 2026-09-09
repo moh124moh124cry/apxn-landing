@@ -5,6 +5,7 @@
  * Purpose:
  * - Uses the APXN knowledge base as the source of truth for APXN project facts.
  * - Builds an audited Evidence Pack from curated official/primary sources before drafting external topics.
+ * - Performs official Web Search only once per external topic; later audit/write/verify stages use frozen evidence.
  * - Generates English-only articles from the audited Evidence Pack instead of model memory.
  * - Verifies and auto-fixes the article against the same frozen evidence.
  * - Keeps APXN-specific facts grounded in the reviewed internal APXN knowledge base.
@@ -41,19 +42,18 @@ const COST_TICKS_PER_USD = 10_000_000_000;
 const XAI_TIMEOUT_MS = 180_000;
 const ABSOLUTE_OUTPUT_TOKEN_CAP = 6_500;
 const MAX_WEB_DOMAINS = 5;
-const MAX_RECORDED_SOURCES = 12;
+const MAX_RECORDED_SOURCES = 8;
 const MAX_CORRECTION_ROUNDS = 2;
 const MAX_PRODUCTION_TOPIC_ATTEMPTS = 3;
 const MAX_TEST_TOPIC_ATTEMPTS = 1;
 const EVIDENCE_OUTPUT_TOKEN_CAP = 1_600;
-const EVIDENCE_AUDIT_OUTPUT_TOKEN_CAP = 1_400;
+const EVIDENCE_AUDIT_OUTPUT_TOKEN_CAP = 1_100;
 const EVIDENCE_RESEARCH_MAX_TURNS = 1;
-const EVIDENCE_AUDIT_MAX_TURNS = 1;
 const VERIFIER_OUTPUT_TOKEN_CAP = 1_200;
 const MIN_EXTERNAL_VERIFIED_CLAIMS = 3;
 const MIN_APXN_VERIFIED_CLAIMS = 2;
 const MIN_REPAIR_BUDGET_USD = 0.012;
-const MAX_EVIDENCE_FACTS = 18;
+const MAX_EVIDENCE_FACTS = 10;
 
 /* -------------------------------------------------------------------------- */
 /* Utilities                                                                  */
@@ -855,13 +855,14 @@ function buildEvidencePackSchema() {
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["id", "claim", "kind", "temporal_status", "confidence", "source_urls"],
+          required: ["id", "claim", "kind", "temporal_status", "confidence", "supporting_evidence", "source_urls"],
           properties: {
             id: { type: "string" },
             claim: { type: "string" },
             kind: { type: "string", enum: ["technical", "numeric", "security", "historical", "current_status", "general"] },
             temporal_status: { type: "string", enum: ["current", "stable", "historical"] },
             confidence: { type: "string", enum: ["high", "medium", "low"] },
+            supporting_evidence: { type: "string" },
             source_urls: { type: "array", items: { type: "string" } }
           }
         }
@@ -1096,9 +1097,11 @@ Do NOT write an article. Build a compact Evidence Pack from web_search using ONL
 
 RULES:
 - Prefer current official documentation over old announcements, archived pages, community posts, forums, SEO pages or model memory.
+- Use the smallest research footprint that can answer the topic safely: usually 2-3 official pages total. Do not keep exploring once enough evidence is collected.
 - Every fact must be directly supported by at least one page you actually opened through web_search.
+- For every fact, write supporting_evidence as a concise PARAPHRASE (normally 1-2 sentences) of what the official page supports. Do not copy long passages.
 - source_urls must contain only URLs you actually used from the allowed official domains.
-- Keep only facts that are materially useful to the requested topic.
+- Keep only facts that are materially useful to the requested topic; aim for 5-8 strong facts and never exceed the configured maximum.
 - For changing facts (versions, fees, speeds, counts, current architecture, feature state), verify what is current as of ${todayISO()}.
 - If a page is historical, label the fact historical and never present it as current.
 - If official sources conflict and you cannot resolve the conflict confidently, put it in conflicts with resolved=false and OMIT that fact from facts.
@@ -1146,10 +1149,16 @@ function normalizeEvidencePack(raw, research, toolSources = []) {
           ? item.temporal_status
           : "stable",
         confidence: ["high", "medium", "low"].includes(item?.confidence) ? item.confidence : "low",
+        supporting_evidence: normalizeSpace(item?.supporting_evidence).slice(0, 900),
         source_urls: sourceUrls
       };
     })
-    .filter((item) => item.claim && item.confidence !== "low" && item.source_urls.length > 0)
+    .filter((item) =>
+      item.claim &&
+      item.confidence !== "low" &&
+      item.supporting_evidence.length >= 20 &&
+      item.source_urls.length > 0
+    )
     .slice(0, MAX_EVIDENCE_FACTS);
 
   const conflicts = (Array.isArray(raw?.conflicts) ? raw.conflicts : [])
@@ -1184,7 +1193,7 @@ function evidencePackPasses(pack, research) {
   if (pack.facts.length < Number(research.minimum_verified_claims || 1)) return false;
   if (pack.sources.length < Number(research.minimum_sources || 1)) return false;
   if (pack.conflicts.some((item) => item.resolved !== true)) return false;
-  if (pack.facts.some((fact) => fact.source_urls.length === 0 || fact.confidence === "low")) return false;
+  if (pack.facts.some((fact) => fact.source_urls.length === 0 || fact.confidence === "low" || !fact.supporting_evidence)) return false;
   return true;
 }
 
@@ -1206,18 +1215,22 @@ async function researchEvidence({ apiKey, model, config, queueItem, research }) 
 
 function buildEvidenceAuditInstructions(research) {
   return `
-You are the independent Evidence Pack auditor for an automated blog.
-Use web_search ONLY on these official domains: ${research.allowed_domains.join(", ")}.
-Do NOT write an article.
+You are the independent Evidence Pack consistency auditor for an automated blog.
+Do NOT browse the web. Do NOT use model memory. Do NOT write an article.
 
-Audit the supplied candidate Evidence Pack against current official documentation as of ${todayISO()}.
+The candidate Evidence Pack was already collected from official web pages.
+Audit ONLY the supplied candidate facts, their supporting_evidence, and the supplied source_registry.
+
+RULES:
 - Return a REPLACEMENT Evidence Pack, not commentary.
-- Keep a fact only if you directly verified it from a page you opened in this audit.
-- Correct stale wording, old names, outdated metrics and historical/current confusion.
-- Remove any fact you cannot directly support.
-- source_urls must be URLs you actually used in this audit.
-- If official evidence conflicts and the conflict cannot be resolved, record unresolved conflict and omit the disputed fact.
-- Prefer stable facts; include volatile facts only when central to the topic and clearly current.
+- Keep a fact only when its supporting_evidence directly supports the exact wording of the claim.
+- Keep only source_urls that are present in source_registry.
+- Tighten or narrow wording when the supporting evidence is narrower than the original claim.
+- Remove unsupported precision, broad generalizations, stale/current ambiguity, or claims that require facts not present in supporting_evidence.
+- Historical facts must remain clearly historical.
+- Current facts must be worded only as strongly as the supporting evidence allows.
+- If two candidate facts conflict and the supplied evidence cannot resolve the conflict, record it as unresolved and omit the disputed fact.
+- Do not invent replacement facts from memory.
 - Mark sufficient=false if the remaining audited facts are not enough for a useful accurate article.
 Return JSON only.
 `.trim();
@@ -1233,15 +1246,19 @@ async function auditEvidence({ apiKey, model, config, queueItem, research, evide
       topic: queueItem.topic,
       category: queueItem.category,
       allowed_domains: research.allowed_domains,
+      source_registry: (evidencePack?.sources || []).map((source) => ({
+        title: source.title,
+        url: source.url,
+        domain: source.domain
+      })),
       candidate_evidence_pack: evidencePack
     }, null, 2),
     config,
-    research,
+    research: { ...research, enabled: false },
     schema: buildEvidencePackSchema(),
     schemaName: "apxn_audited_evidence_pack",
     maxOutputTokens: EVIDENCE_AUDIT_OUTPUT_TOKEN_CAP,
-    useWebSearch: true,
-    maxTurns: EVIDENCE_AUDIT_MAX_TURNS
+    useWebSearch: false
   });
 }
 
@@ -2473,16 +2490,16 @@ async function processTopic({
       return { success: false, reason: "budget_after_evidence_research" };
     }
 
-    console.log("Auditing Evidence Pack independently...");
+    console.log("Auditing frozen Evidence Pack without additional web research...");
     const evidenceAudit = await auditEvidence({
       apiKey, model, config, queueItem, research, evidencePack: candidateEvidence
     });
     evidencePack = normalizeEvidencePack(
       evidenceAudit.generated,
       research,
-      evidenceAudit.sources
+      candidateEvidence.sources
     );
-    evidencePack.server_side_tools_used = evidenceAudit.serverSideToolsUsed;
+    evidencePack.server_side_tools_used = 0;
 
     costEntry = recordCost({
       ledger: costLedger,
@@ -2493,8 +2510,10 @@ async function processTopic({
       date,
       research: {
         ...research,
-        sources: evidencePack.sources,
-        server_side_tools_used: evidenceAudit.serverSideToolsUsed
+        enabled: false,
+        mode: "evidence_audit_from_frozen_pack",
+        sources: [],
+        server_side_tools_used: 0
       },
       stage: "evidence_audit"
     });
@@ -2503,7 +2522,7 @@ async function processTopic({
 
     research.sources = evidencePack.sources;
     research.server_side_tools_used =
-      Number(evidenceResearch.serverSideToolsUsed || 0) + Number(evidenceAudit.serverSideToolsUsed || 0);
+      Number(evidenceResearch.serverSideToolsUsed || 0);
 
     console.log(`Audited evidence facts: ${evidencePack.facts.length}`);
     console.log(`Audited evidence sources: ${evidencePack.sources.length}`);
