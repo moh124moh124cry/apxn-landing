@@ -3,7 +3,8 @@ name: APXN Blog Writer
 on:
   push:
     branches: [main]
-    paths: [data/blog-config.json]
+    paths:
+      - data/blog-config.json
 
   workflow_dispatch:
     inputs:
@@ -14,19 +15,19 @@ on:
         type: boolean
 
       planner_only:
-        description: "Test and update the topic planner without calling xAI"
+        description: "Run the topic planner without calling xAI"
         required: false
         default: false
         type: boolean
 
       writer_test:
-        description: "Generate one private Grok draft to test xAI without publishing"
+        description: "Generate one private evidence-grounded xAI draft without publishing"
         required: false
         default: false
         type: boolean
 
       source_test:
-        description: "Test direct official sources without calling xAI"
+        description: "Test the official source profiles used by automatic topics without calling xAI"
         required: false
         default: false
         type: boolean
@@ -45,7 +46,7 @@ concurrency:
 
 jobs:
   blog:
-    name: Generate and publish APXN article
+    name: APXN Blog Pipeline
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -67,14 +68,127 @@ jobs:
 
       - name: Validate blog scripts
         run: |
+          set -euo pipefail
           node --check scripts/blog-writer.mjs
           node --check scripts/blog-sync.mjs
           node --check scripts/blog-planner.mjs
+
+      - name: Validate blog routing data
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+
+          const read = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
+          const config = read("data/blog-config.json");
+          const bank = read("data/blog-topic-bank.json");
+          const knowledge = read("data/apxn-blog-knowledge.json");
+          const sourceFile = read("data/blog-source-profiles.json");
+
+          const allowedModes = new Set(["apxn", "external", "hybrid", "manual"]);
+          const categories = new Set(config.categories || []);
+          const aliases = {
+            security: "wallet_security",
+            ethereum: "blockchain_transactions",
+            blockchain: "blockchain_transactions",
+            web3: "telegram_web3"
+          };
+
+          function getAtPath(root, dottedPath) {
+            let current = root;
+
+            for (const part of String(dottedPath || "").split(".").filter(Boolean)) {
+              if (!current || typeof current !== "object" || !(part in current)) {
+                return undefined;
+              }
+
+              current = current[part];
+            }
+
+            return current;
+          }
+
+          if (Number(bank.schema_version || 0) < 2) {
+            throw new Error("blog-topic-bank.json must use schema_version >= 2");
+          }
+
+          if (bank?.rules?.open_web_research_allowed !== false) {
+            throw new Error("Topic bank must keep open_web_research_allowed=false");
+          }
+
+          if (bank?.rules?.approved_official_sources_only !== true) {
+            throw new Error("Topic bank must keep approved_official_sources_only=true");
+          }
+
+          if (sourceFile?.rules?.open_web_research_allowed !== false) {
+            throw new Error("Source profiles must keep open_web_research_allowed=false");
+          }
+
+          if (sourceFile?.rules?.approved_sources_only !== true) {
+            throw new Error("Source profiles must keep approved_sources_only=true");
+          }
+
+          for (const topic of bank.topics || []) {
+            const mode = String(topic.content_mode || "").toLowerCase();
+
+            if (!allowedModes.has(mode)) {
+              throw new Error(`${topic.id}: invalid content_mode`);
+            }
+
+            if (!categories.has(topic.category)) {
+              throw new Error(`${topic.id}: invalid category ${topic.category}`);
+            }
+
+            if (!Array.isArray(topic.knowledge_sections)) {
+              throw new Error(`${topic.id}: knowledge_sections must be an array`);
+            }
+
+            if (["apxn", "hybrid"].includes(mode)) {
+              if (topic.knowledge_sections.length === 0) {
+                throw new Error(`${topic.id}: APXN/hybrid topic has no knowledge_sections`);
+              }
+
+              for (const section of topic.knowledge_sections) {
+                if (getAtPath(knowledge, section) === undefined) {
+                  throw new Error(`${topic.id}: unknown APXN knowledge section ${section}`);
+                }
+              }
+            }
+
+            if (["external", "hybrid"].includes(mode)) {
+              const requested = String(topic.source_profile || "").trim();
+              const profileId = aliases[requested] || requested;
+              const profile = sourceFile.profiles?.[profileId];
+
+              if (!profile) {
+                throw new Error(`${topic.id}: unknown source profile ${requested}`);
+              }
+
+              if (topic.auto_publish_allowed === true && profile.status !== "active") {
+                throw new Error(`${topic.id}: automatic topic uses non-active profile ${profileId}`);
+              }
+            }
+
+            if (mode === "manual" && topic.auto_publish_allowed !== false) {
+              throw new Error(`${topic.id}: manual topic cannot auto publish`);
+            }
+
+            if (String(topic.risk || "").toLowerCase() !== "safe" && topic.auto_publish_allowed === true) {
+              throw new Error(`${topic.id}: non-safe topic cannot auto publish`);
+            }
+          }
+
+          console.log(`Routing validation PASS: ${(bank.topics || []).length} topics checked.`);
+          NODE
 
       - name: Validate manual mode
         if: ${{ github.event_name == 'workflow_dispatch' }}
         shell: bash
         run: |
+          set -euo pipefail
+
           COUNT=0
 
           if [ "${{ inputs.sync_only }}" = "true" ]; then
@@ -107,15 +221,17 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.source_test) }}
         run: node scripts/blog-planner.mjs
 
-      - name: Check automation readiness
+      - name: Check production automation readiness
         id: gate
         if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test) }}
         shell: bash
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
-          AUTO_GENERATE="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('data/blog-config.json','utf8'));process.stdout.write(String(c?.automation?.auto_generate_enabled===true));")"
+          set -euo pipefail
 
+          AUTO_GENERATE="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('data/blog-config.json','utf8'));process.stdout.write(String(c?.automation?.auto_generate_enabled===true));")"
+          AUTO_PUBLISH="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('data/blog-config.json','utf8'));process.stdout.write(String(c?.automation?.auto_publish_enabled===true));")"
           WAITING_COUNT="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('data/blog-articles.json','utf8'));process.stdout.write(String((m?.generation_queue||[]).filter(x=>x?.status==='waiting').length));")"
 
           READY=true
@@ -123,7 +239,10 @@ jobs:
 
           if [ "$AUTO_GENERATE" != "true" ]; then
             READY=false
-            REASON=automation_disabled
+            REASON=auto_generation_disabled
+          elif [ "$AUTO_PUBLISH" != "true" ]; then
+            READY=false
+            REASON=auto_publishing_disabled
           elif [ "$WAITING_COUNT" = "0" ]; then
             READY=false
             REASON=no_waiting_topics
@@ -139,9 +258,9 @@ jobs:
           echo "waiting_count=$WAITING_COUNT" >> "$GITHUB_OUTPUT"
 
           if [ "$READY" = "true" ]; then
-            echo "APXN Blog automation is ready."
+            echo "APXN Blog production automation is ready."
           else
-            echo "APXN Blog automation skipped safely: $REASON"
+            echo "APXN Blog production automation skipped safely: $REASON"
           fi
 
       - name: Sync blog only
@@ -150,78 +269,86 @@ jobs:
         continue-on-error: true
         run: node scripts/blog-sync.mjs
 
-      - name: Test all direct official source profiles
+      - name: Test production official-source routing
         id: source_test
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_test && !inputs.sync_only && !inputs.planner_only && !inputs.writer_test }}
         continue-on-error: true
         shell: bash
-        env:
-          BLOG_SOURCE_TEST: "true"
-          BLOG_PUBLISH: "false"
         run: |
           set -euo pipefail
 
-          MANIFEST="data/blog-articles.json"
-          BACKUP="$RUNNER_TEMP/blog-articles.source-test.backup.json"
+          MATRIX="$RUNNER_TEMP/apxn-source-tests.tsv"
 
-          cp "$MANIFEST" "$BACKUP"
+          node --input-type=module <<'NODE' > "$MATRIX"
+          import fs from "node:fs";
 
-          restore_manifest() {
-            cp "$BACKUP" "$MANIFEST"
-          }
+          const bank = JSON.parse(fs.readFileSync("data/blog-topic-bank.json", "utf8"));
+          const sourceFile = JSON.parse(fs.readFileSync("data/blog-source-profiles.json", "utf8"));
+          const aliases = {
+            security: "wallet_security",
+            ethereum: "blockchain_transactions",
+            blockchain: "blockchain_transactions",
+            web3: "telegram_web3"
+          };
 
-          trap restore_manifest EXIT
+          const seen = new Set();
 
-          TESTS=(
-            "bsc|What Is BSC? Understanding BEP-20 Tokens and Gas Fees|BSC"
-            "telegram_auth|How Telegram Mini App Authentication and initData Verification Work|Security"
-            "telegram_web3|How Telegram Mini Apps Bring Web3 to Everyday Users|Web3"
-            "security|Web3 Security Basics: Phishing, Private Keys, Seed Phrases and MFA|Security"
-            "ethereum|Ethereum, the EVM and Smart Contracts Explained|Blockchain"
-            "blockchain|Blockchain Explained: Blocks, Transactions and Consensus|Blockchain"
-            "web3|What Is Web3? Decentralized Applications and dApps Explained|Web3"
-          )
+          for (const topic of bank.topics || []) {
+            const mode = String(topic.content_mode || "").toLowerCase();
 
-          for ITEM in "${TESTS[@]}"; do
-            IFS='|' read -r TEST_ID TEST_TOPIC TEST_CATEGORY <<< "$ITEM"
+            if (topic.auto_publish_allowed !== true) continue;
+            if (String(topic.risk || "").toLowerCase() !== "safe") continue;
+            if (!["external", "hybrid"].includes(mode)) continue;
 
-            echo "::group::Source profile test: $TEST_ID"
-            echo "Test topic: $TEST_TOPIC"
+            const requested = String(topic.source_profile || "").trim();
+            const profileId = aliases[requested] || requested;
 
-            TEST_ID="$TEST_ID"             TEST_TOPIC="$TEST_TOPIC"             TEST_CATEGORY="$TEST_CATEGORY"             node <<'NODE'
-          const fs = require("fs");
+            if (!profileId || seen.has(profileId)) continue;
 
-          const manifestPath = "data/blog-articles.json";
-          const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+            const profile = sourceFile.profiles?.[profileId];
 
-          manifest.generation_queue = [
-            {
-              id: `source-test-${process.env.TEST_ID}`,
-              topic: process.env.TEST_TOPIC,
-              category: process.env.TEST_CATEGORY,
-              language: "en",
-              priority: 1,
-              status: "waiting",
-              verify_before_publish: false,
-              blocked_auto_publish: false
+            if (!profile || profile.status !== "active") {
+              throw new Error(`Automatic topic ${topic.id} has invalid source profile ${profileId}`);
             }
-          ];
 
-          fs.writeFileSync(
-            manifestPath,
-            `${JSON.stringify(manifest, null, 2)}\n`,
-            "utf8"
-          );
+            seen.add(profileId);
+
+            const safeTopic = String(topic.topic || "").replace(/[\t\r\n]+/g, " ").trim();
+            const safeCategory = String(topic.category || "Education").replace(/[\t\r\n]+/g, " ").trim();
+
+            process.stdout.write(`${profileId}\t${safeTopic}\t${safeCategory}\n`);
+          }
           NODE
 
+          if [ ! -s "$MATRIX" ]; then
+            echo "No active automatic external/hybrid source profiles were found."
+            exit 1
+          fi
+
+          TEST_COUNT=0
+
+          while IFS=$'\t' read -r TEST_ID TEST_TOPIC TEST_CATEGORY; do
+            [ -n "$TEST_ID" ] || continue
+
+            TEST_COUNT=$((TEST_COUNT + 1))
+
+            echo "::group::Official source test: $TEST_ID"
+            echo "Production-routed topic: $TEST_TOPIC"
+
+            BLOG_SOURCE_TEST="true" \
+            BLOG_PUBLISH="false" \
+            TEST_ID="$TEST_ID" \
+            TEST_TOPIC="$TEST_TOPIC" \
+            TEST_CATEGORY="$TEST_CATEGORY" \
             node scripts/blog-writer.mjs
+
             echo "::endgroup::"
-          done
+          done < "$MATRIX"
 
-          echo "All direct official source profiles passed."
-          echo "No xAI API key was exposed to this step and no xAI API call was made."
+          echo "Source routing PASS: $TEST_COUNT profile(s) tested."
+          echo "xAI calls: 0"
 
-      - name: Generate private Grok test draft
+      - name: Generate private writer test draft
         id: writer_test
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && !inputs.sync_only && !inputs.planner_only && !inputs.source_test }}
         continue-on-error: true
@@ -230,7 +357,7 @@ jobs:
           BLOG_PUBLISH: "false"
         run: node scripts/blog-writer.mjs
 
-      - name: Generate article with Grok
+      - name: Generate and publish production article
         id: writer
         if: ${{ steps.gate.outputs.ready == 'true' }}
         continue-on-error: true
@@ -259,6 +386,8 @@ jobs:
         if: ${{ (github.event_name == 'workflow_dispatch' && inputs.sync_only && steps.sync_only.outcome == 'success') || (github.event_name == 'workflow_dispatch' && inputs.planner_only && steps.planner.outcome == 'success') || (steps.writer.outcome == 'success' && steps.sync.outcome == 'success') }}
         shell: bash
         run: |
+          set -euo pipefail
+
           git config user.name "APXN Blog Bot"
           git config user.email "actions@users.noreply.github.com"
 
@@ -278,33 +407,80 @@ jobs:
         if: ${{ steps.writer.outcome == 'success' && steps.sync.outcome == 'success' && steps.commit.outputs.sha != '' }}
         shell: bash
         run: |
+          set -euo pipefail
+
           node --input-type=module <<'NODE'
           import fs from "node:fs";
           import crypto from "node:crypto";
+
           const manifest = JSON.parse(fs.readFileSync("data/blog-articles.json", "utf8"));
-          const article = manifest.articles.find(item => item.id === manifest.automation_state.last_published_article);
-          if (!article || article.status !== "published" || !article.path) throw new Error("No published article found");
+          const article = manifest.articles.find(
+            (item) => item.id === manifest.automation_state.last_published_article
+          );
+
+          if (!article || article.status !== "published" || !article.path) {
+            throw new Error("No published article found for production verification");
+          }
+
           const expected = fs.readFileSync(article.path, "utf8");
-          const digest = text => crypto.createHash("sha256").update(text).digest("hex");
+          const digest = (text) =>
+            crypto.createHash("sha256").update(text).digest("hex");
+
           const base = new URL(article.url).origin;
           let lastError;
+
           for (let attempt = 0; attempt < 18; attempt++) {
             try {
               const [page, index, sitemap] = await Promise.all([
-                fetch(article.url, { signal: AbortSignal.timeout(15000), cache: "no-store" }),
-                fetch(`${base}/blog/`, { signal: AbortSignal.timeout(15000), cache: "no-store" }),
-                fetch(`${base}/sitemap.xml`, { signal: AbortSignal.timeout(15000), cache: "no-store" })
+                fetch(article.url, {
+                  signal: AbortSignal.timeout(15000),
+                  cache: "no-store"
+                }),
+                fetch(`${base}/blog/`, {
+                  signal: AbortSignal.timeout(15000),
+                  cache: "no-store"
+                }),
+                fetch(`${base}/sitemap.xml`, {
+                  signal: AbortSignal.timeout(15000),
+                  cache: "no-store"
+                })
               ]);
-              if (![page, index, sitemap].every(response => response.ok)) throw new Error("Production files are not ready");
-              const [html, listing, xml] = await Promise.all([page.text(), index.text(), sitemap.text()]);
-              if (digest(html) !== digest(expected)) throw new Error("Production article does not match committed HTML yet");
-              if (!listing.includes(article.slug) || !xml.includes(article.url)) throw new Error("Production index or sitemap is not updated yet");
-              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Published and verified: ${article.url}\n\nWords: ${article.word_count}\n`);
-              console.log(`Published article, index and sitemap verified: ${article.url}`);
+
+              if (![page, index, sitemap].every((response) => response.ok)) {
+                throw new Error("Production files are not ready");
+              }
+
+              const [html, listing, xml] = await Promise.all([
+                page.text(),
+                index.text(),
+                sitemap.text()
+              ]);
+
+              if (digest(html) !== digest(expected)) {
+                throw new Error("Production article does not match committed HTML yet");
+              }
+
+              if (!listing.includes(article.slug) || !xml.includes(article.url)) {
+                throw new Error("Production index or sitemap is not updated yet");
+              }
+
+              fs.appendFileSync(
+                process.env.GITHUB_STEP_SUMMARY,
+                `Published and verified: ${article.url}\n\nWords: ${article.word_count}\n`
+              );
+
+              console.log(
+                `Published article, index and sitemap verified: ${article.url}`
+              );
+
               process.exit(0);
-            } catch (error) { lastError = error; }
-            await new Promise(resolve => setTimeout(resolve, 10000));
+            } catch (error) {
+              lastError = error;
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 10000));
           }
+
           throw lastError;
           NODE
 
@@ -312,26 +488,19 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && (steps.writer_test.outcome == 'success' || steps.writer_test.outcome == 'failure') }}
         shell: bash
         run: |
+          set -euo pipefail
+
           git config user.name "APXN Blog Bot"
           git config user.email "actions@users.noreply.github.com"
 
-          if [ ! -f data/blog-costs.json ]; then
-            echo "No xAI cost ledger was created."
-
-            git reset --hard HEAD
-            git clean -fd
-
-            exit 0
+          if [ -f data/blog-costs.json ]; then
+            git add data/blog-costs.json
           fi
-
-          git add data/blog-costs.json
 
           if git diff --cached --quiet; then
             echo "No xAI cost change to commit."
-
             git reset --hard HEAD
             git clean -fd
-
             exit 0
           fi
 
@@ -343,29 +512,25 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
-      - name: Preserve costs and rejected queue after failed pipeline
+      - name: Preserve production failure state
         if: ${{ steps.writer.outcome == 'failure' || (steps.writer.outcome == 'success' && steps.sync.outcome == 'failure') }}
         shell: bash
         run: |
-          if [ ! -f data/blog-costs.json ]; then
-            echo "No xAI cost ledger was created."
-            exit 0
-          fi
+          set -euo pipefail
 
           git config user.name "APXN Blog Bot"
           git config user.email "actions@users.noreply.github.com"
 
-          git add data/blog-costs.json
-          if [ "${{ steps.writer.outcome }}" = "failure" ]; then
-            git add data/blog-articles.json data/blog-topic-bank.json
-          fi
+          [ ! -f data/blog-costs.json ] || git add data/blog-costs.json
+          [ ! -f data/blog-articles.json ] || git add data/blog-articles.json
+          [ ! -f data/blog-topic-bank.json ] || git add data/blog-topic-bank.json
 
           if git diff --cached --quiet; then
-            echo "No cost or queue change to commit."
+            echo "No cost, queue or topic-bank state change to preserve."
             exit 0
           fi
 
-          git commit -m "chore(blog): record xAI usage"
+          git commit -m "chore(blog): preserve rejected pipeline state"
 
           git reset --hard HEAD
           git clean -fd
@@ -376,27 +541,27 @@ jobs:
       - name: Fail if source test failed
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_test && steps.source_test.outcome == 'failure' }}
         run: |
-          echo "The direct official source test failed."
-          echo "No xAI API request was required for this test."
+          echo "The production-routed official source test failed."
+          echo "No xAI API request was used by this source test."
           exit 1
 
       - name: Fail if writer test failed
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && steps.writer_test.outcome == 'failure' }}
         run: |
-          echo "The private Grok test failed."
-          echo "Check the Generate private Grok test draft step for details."
+          echo "The private evidence-grounded writer test failed."
+          echo "Check the Generate private writer test draft step for details."
           exit 1
 
-      - name: Fail if generation failed
+      - name: Fail if production generation failed
         if: ${{ steps.writer.outcome == 'failure' }}
         run: |
-          echo "The Grok writer failed. Any available cost ledger update was preserved."
+          echo "The production writer failed. Any cost/queue state was preserved when available."
           exit 1
 
       - name: Fail if synchronization failed
         if: ${{ steps.writer.outcome == 'success' && steps.sync.outcome == 'failure' }}
         run: |
-          echo "The article was not committed because blog synchronization failed."
+          echo "The generated article was not committed because blog synchronization failed."
           exit 1
 
       - name: Fail if manual sync failed
@@ -404,5 +569,4 @@ jobs:
         run: |
           echo "Manual blog synchronization failed."
           exit 1
-
 
