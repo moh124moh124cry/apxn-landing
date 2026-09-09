@@ -1,5 +1,5 @@
 /**
- * APXN Blog AI Writer — Direct Official Sources Pipeline
+ * APXN Blog AI Writer — Evidence Block Pipeline
  * Path: scripts/blog-writer.mjs
  *
  * Design goals:
@@ -51,10 +51,10 @@ const MAX_EXTERNAL_EVIDENCE_FACTS = 18;
 const EVIDENCE_OUTPUT_TOKENS = 2_200;
 const ARTICLE_OUTPUT_TOKENS = 5_400;
 const VERIFIER_OUTPUT_TOKENS = 2_400;
-const MAX_REWRITE_ROUNDS = 1;
+const MAX_TARGETED_REPAIR_ROUNDS = 1;
 const MAX_PRODUCTION_TOPIC_ATTEMPTS = 3;
 const MAX_TEST_TOPIC_ATTEMPTS = 1;
-const MIN_REWRITE_RESERVE_USD = 0.020;
+const MIN_TARGETED_REPAIR_RESERVE_USD = 0.020;
 
 const SOURCE_PROFILES = {
   bsc: {
@@ -946,41 +946,38 @@ async function extractEvidence({ apiKey, model, config, queueItem, profile, sour
 /* Evidence-mapped article generation                                         */
 /* -------------------------------------------------------------------------- */
 
-function articleSchema(config) {
+
+function clampNumber(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function blockDraftSchema(config) {
   return {
     type: "object",
     additionalProperties: false,
-    required: [
-      "title", "slug", "description", "excerpt", "category", "keywords",
-      "sections", "faq", "disclaimer", "requires_manual_review", "review_reasons"
-    ],
+    required: ["section_headings", "blocks", "faq", "requires_manual_review", "review_reasons"],
     properties: {
-      title: { type: "string" },
-      slug: { type: "string" },
-      description: { type: "string" },
-      excerpt: { type: "string" },
-      category: { type: "string", enum: config.categories },
-      keywords: { type: "array", items: { type: "string" } },
-      sections: {
+      section_headings: {
         type: "array",
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["heading", "paragraphs"],
+          required: ["section_slot", "heading"],
           properties: {
-            heading: { type: "string" },
-            paragraphs: {
-              type: "array",
-              items: {
-                type: "object",
-                additionalProperties: false,
-                required: ["text", "evidence_ids"],
-                properties: {
-                  text: { type: "string" },
-                  evidence_ids: { type: "array", items: { type: "string" } }
-                }
-              }
-            }
+            section_slot: { type: "integer", minimum: 1, maximum: 8 },
+            heading: { type: "string" }
+          }
+        }
+      },
+      blocks: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["block_id", "text"],
+          properties: {
+            block_id: { type: "string" },
+            text: { type: "string" }
           }
         }
       },
@@ -989,69 +986,130 @@ function articleSchema(config) {
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["question", "answer", "evidence_ids"],
+          required: ["question", "answer", "source_block_id"],
           properties: {
             question: { type: "string" },
             answer: { type: "string" },
-            evidence_ids: { type: "array", items: { type: "string" } }
+            source_block_id: { type: "string" }
           }
         }
       },
-      disclaimer: { type: "string" },
       requires_manual_review: { type: "boolean" },
       review_reasons: { type: "array", items: { type: "string" } }
     }
   };
 }
 
-function writerInstructions(config, queueItem, external) {
+function buildEvidenceBlockPlan({ config, queueItem, evidence }) {
+  const facts = (evidence?.facts || []).slice(0, 16);
+  if (facts.length < MIN_EXTERNAL_EVIDENCE_FACTS) {
+    fail(`Cannot build article blocks from only ${facts.length} external evidence facts.`);
+  }
+
+  const target = Number(config?.writer?.target_words || 1500);
+  const sectionCount = clampNumber(Math.round(facts.length / 2), 6, 8);
+  const bodyTarget = Math.max(1080, target - 180);
+  const perBlockTarget = clampNumber(Math.ceil(bodyTarget / facts.length), 78, 165);
+
+  return facts.map((fact, index) => {
+    const sectionSlot = Math.min(
+      sectionCount,
+      Math.floor((index * sectionCount) / facts.length) + 1
+    );
+    return {
+      block_id: `B${String(index + 1).padStart(2, "0")}`,
+      section_slot: sectionSlot,
+      desired_words: perBlockTarget,
+      min_words: Math.max(65, perBlockTarget - 18),
+      max_words: Math.min(190, perBlockTarget + 28),
+      evidence_ids: [fact.id],
+      evidence: fact,
+      editorial_focus: fact.claim
+    };
+  });
+}
+
+function buildKnowledgeBlockPlan({ config, queueItem }) {
+  const target = Number(config?.writer?.target_words || 1500);
+  const blockCount = 12;
+  const sectionCount = 6;
+  const perBlockTarget = clampNumber(Math.ceil(Math.max(1080, target - 180) / blockCount), 88, 125);
+  return Array.from({ length: blockCount }, (_, index) => ({
+    block_id: `B${String(index + 1).padStart(2, "0")}`,
+    section_slot: Math.floor(index / 2) + 1,
+    desired_words: perBlockTarget,
+    min_words: Math.max(72, perBlockTarget - 16),
+    max_words: Math.min(150, perBlockTarget + 24),
+    evidence_ids: ["APXN-KNOWLEDGE"],
+    evidence: null,
+    editorial_focus: `Cover one distinct, non-repeating aspect of "${queueItem.topic}" that is explicitly supported by the reviewed APXN knowledge file.`
+  }));
+}
+
+function buildBlockPlan({ config, queueItem, evidence }) {
+  return evidence
+    ? buildEvidenceBlockPlan({ config, queueItem, evidence })
+    : buildKnowledgeBlockPlan({ config, queueItem });
+}
+
+function blockWriterInstructions(config, queueItem, external, blockPlan) {
   const min = Number(config.writer.minimum_words || 1200);
   const target = Number(config.writer.target_words || 1500);
-  const max = Number(config.writer.maximum_words || 1900);
-
-  const sourceRules = external ? `
-EVIDENCE-MAPPED MODE:
-- The evidence pack is the ONLY source of external facts.
-- Every body paragraph MUST list 1-3 evidence_ids and may state only facts directly supported by those evidence items.
-- Every FAQ answer MUST list evidence_ids and may state only facts supported by them.
-- Do NOT create a section whose subject is not supported by the evidence pack.
-- Do NOT add generic wallet/security/bridge/validator/fee advice unless an evidence item directly supports it.
-- Do NOT invent examples containing amounts, fees, percentages, durations, speeds, counts, dates, block numbers, token quantities, or reserve balances.
-- You may explain a supported fact in beginner-friendly language, but explanation must not introduce a new mechanism, recommendation, comparison, cause, guarantee, or numeric detail.
-- Reusing an evidence item across multiple paragraphs is allowed when each paragraph stays within that evidence.
-` : `
-APXN KNOWLEDGE MODE:
-- The reviewed APXN knowledge JSON is the only authority for APXN project facts.
-- Every body paragraph and FAQ answer must use evidence_ids=["APXN-KNOWLEDGE"].
-- Never promote planned or UI-only features as live.
-- Current in-app balances are APXN Points.
-- Never describe the Claim action as blockchain consensus mining.
-- Never promise token value, profit, exchange listing, conversion value, or withdrawal availability.
-`;
+  const sectionCount = Math.max(...blockPlan.map((item) => item.section_slot));
 
   return `
-You are the APXN Blog editorial writer.
-Write an accurate, original, useful ENGLISH-ONLY article about: ${queueItem.topic}
+You are the APXN Blog evidence-block writer.
 
-${sourceRules}
+Write an accurate ENGLISH-ONLY educational article about:
+"${queueItem.topic}"
 
-STRUCTURE:
-- ${target} words target; hard minimum ${min}; stay at or below ${max} when possible.
-- Use 6-8 substantive sections.
-- Prefer exactly 2 substantial paragraphs per section, normally about 80-120 words each.
-- Include 2-4 FAQ items.
-- Use beginner-friendly explanations and neutral educational tone.
-- Metadata must summarize the article without adding a new factual claim not present in the body.
-- No Arabic.
-- No hype, guaranteed outcomes, fabricated examples, or unsupported current claims.
-- If the available evidence cannot safely support a subtopic, OMIT that subtopic instead of guessing.
-- Set requires_manual_review=true only if the supplied evidence itself contains an unresolved project risk; do not set it merely because evidence is concise.
-- Return JSON only, matching the schema exactly.
+IMPORTANT: You are NOT writing a free-form article. You are filling a fixed block plan.
+
+BLOCK RULES:
+- Return exactly one block for every supplied block_id, with no missing IDs, no duplicate IDs, and no extra IDs.
+- Never merge two block IDs into one paragraph.
+- Each block must stay inside the evidence assigned to THAT block.
+- Do not use facts assigned to a different block.
+- Do not add plausible background knowledge from memory.
+- Do not invent examples, numbers, fees, balances, durations, comparisons, causes, recommendations, security advice, bridge behavior, validator behavior, or current-status claims.
+- A block may explain its assigned fact in beginner-friendly language, but every factual sentence must remain a faithful paraphrase of that assigned evidence.
+- Keep each block near its desired_words and inside its min_words/max_words whenever possible.
+- Do not repeat a sentence, paragraph, example, or explanation from another block.
+- The blocks are already ordered. Keep that order.
+- Create exactly ${sectionCount} concise section headings, one for every section_slot in the plan.
+- Section headings are labels only; they must not introduce new factual claims.
+
+FAQ RULES:
+- Return 2-4 FAQ items.
+- Each FAQ must name one existing source_block_id.
+- Its answer may use ONLY the evidence of that source block.
+- Keep each FAQ answer concise, normally 45-80 words.
+- Do not use a FAQ to introduce a new subtopic.
+
+${external ? `
+EXTERNAL EVIDENCE MODE:
+- The assigned evidence object for each block is the ONLY authority for that block.
+- source URLs and support quotes are supplied for grounding; do not cite or quote them verbatim in the prose unless natural.
+` : `
+APXN KNOWLEDGE MODE:
+- The reviewed APXN knowledge object is the ONLY authority.
+- Current balances are APXN Points.
+- Never describe Claim as blockchain consensus mining.
+- Never promise token value, profit, exchange listing, conversion value, or current withdrawal availability.
+- Planned/UI-only features must not be presented as live.
+`}
+
+LENGTH:
+- Final assembled article must be at least ${min} words and should be near ${target} words.
+- Achieve length by explaining supported facts clearly, not by inventing adjacent facts.
+
+REVIEW:
+- requires_manual_review should be true only when the supplied source material itself contains an unresolved project-risk claim.
+- Return JSON only.
 `.trim();
 }
 
-function writerInput({ queueItem, config, knowledge, evidence }) {
-  const external = Boolean(evidence);
+function blockWriterInput({ queueItem, config, knowledge, evidence, blockPlan }) {
   return JSON.stringify({
     current_date: todayISO(),
     topic: queueItem.topic,
@@ -1061,52 +1119,103 @@ function writerInput({ queueItem, config, knowledge, evidence }) {
       target_words: config.writer.target_words,
       maximum_words: config.writer.maximum_words
     },
-    evidence_pack: external ? evidence : undefined,
-    apxn_knowledge: external ? undefined : knowledge,
-    valid_evidence_ids: external ? evidence.facts.map((fact) => fact.id) : ["APXN-KNOWLEDGE"]
+    block_plan: blockPlan.map((item) => ({
+      block_id: item.block_id,
+      section_slot: item.section_slot,
+      desired_words: item.desired_words,
+      min_words: item.min_words,
+      max_words: item.max_words,
+      assigned_evidence_ids: item.evidence_ids,
+      assigned_evidence: evidence ? [item.evidence] : undefined,
+      editorial_focus: item.editorial_focus
+    })),
+    apxn_knowledge: evidence ? undefined : knowledge
   }, null, 2);
 }
 
-function normalizeArticle(raw, queueItem, config) {
-  const title = normalizeSpace(raw?.title || queueItem.topic);
-  const slug = safeFilename(raw?.slug || title);
-  let category = normalizeSpace(raw?.category || queueItem.category);
-  if (!config.categories.includes(category)) category = config.categories.includes(queueItem.category) ? queueItem.category : config.categories[0];
+function deterministicDescription(topic) {
+  return `A beginner-friendly guide to ${normalizeSpace(topic)}, built from reviewed project information or direct official documentation.`;
+}
 
-  const sections = (Array.isArray(raw?.sections) ? raw.sections : [])
-    .map((section) => ({
-      heading: normalizeSpace(section?.heading),
-      paragraphs: (Array.isArray(section?.paragraphs) ? section.paragraphs : [])
-        .map((paragraph) => ({
-          text: normalizeSpace(paragraph?.text),
-          evidence_ids: uniqueStrings(paragraph?.evidence_ids, 4)
-        }))
-        .filter((paragraph) => paragraph.text)
-    }))
-    .filter((section) => section.heading && section.paragraphs.length > 0);
+function deterministicKeywords(queueItem) {
+  const words = normalizeSpace(queueItem.topic)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .filter((word) => word.length >= 3);
+  return uniqueStrings([queueItem.category, ...words], 10);
+}
 
-  const faq = (Array.isArray(raw?.faq) ? raw.faq : [])
-    .map((item) => ({
-      question: normalizeSpace(item?.question),
-      answer: normalizeSpace(item?.answer),
-      evidence_ids: uniqueStrings(item?.evidence_ids, 4)
-    }))
-    .filter((item) => item.question && item.answer)
-    .slice(0, 6);
+function assembleBlockArticle(raw, queueItem, config, blockPlan) {
+  const planById = new Map(blockPlan.map((item) => [item.block_id, item]));
+  const expectedIds = blockPlan.map((item) => item.block_id);
+  const seenBlocks = new Set();
+  const blockTextById = new Map();
 
+  for (const item of Array.isArray(raw?.blocks) ? raw.blocks : []) {
+    const id = normalizeSpace(item?.block_id).toUpperCase();
+    if (!planById.has(id) || seenBlocks.has(id)) continue;
+    seenBlocks.add(id);
+    blockTextById.set(id, normalizeSpace(item?.text));
+  }
+
+  const sectionCount = Math.max(...blockPlan.map((item) => item.section_slot));
+  const headingBySlot = new Map();
+  for (const item of Array.isArray(raw?.section_headings) ? raw.section_headings : []) {
+    const slot = Number(item?.section_slot);
+    const heading = normalizeSpace(item?.heading);
+    if (Number.isInteger(slot) && slot >= 1 && slot <= sectionCount && heading && !headingBySlot.has(slot)) {
+      headingBySlot.set(slot, heading);
+    }
+  }
+
+  const sections = [];
+  for (let slot = 1; slot <= sectionCount; slot += 1) {
+    const planned = blockPlan.filter((item) => item.section_slot === slot);
+    sections.push({
+      heading: headingBySlot.get(slot) || `Section ${slot}`,
+      paragraphs: planned.map((item) => ({
+        block_id: item.block_id,
+        text: blockTextById.get(item.block_id) || "",
+        evidence_ids: item.evidence_ids
+      }))
+    });
+  }
+
+  const faq = [];
+  const seenFaqQuestions = new Set();
+  for (const item of Array.isArray(raw?.faq) ? raw.faq : []) {
+    const sourceBlockId = normalizeSpace(item?.source_block_id).toUpperCase();
+    const plan = planById.get(sourceBlockId);
+    const question = normalizeSpace(item?.question);
+    const answer = normalizeSpace(item?.answer);
+    const key = question.toLowerCase();
+    if (!plan || !question || !answer || seenFaqQuestions.has(key)) continue;
+    seenFaqQuestions.add(key);
+    faq.push({
+      question,
+      answer,
+      source_block_id: sourceBlockId,
+      evidence_ids: plan.evidence_ids
+    });
+    if (faq.length >= 4) break;
+  }
+
+  const title = normalizeSpace(queueItem.topic);
   return {
     title,
-    slug,
-    description: normalizeSpace(raw?.description),
-    excerpt: normalizeSpace(raw?.excerpt || raw?.description),
-    category,
+    slug: safeFilename(title),
+    description: deterministicDescription(title),
+    excerpt: deterministicDescription(title),
+    category: config.categories.includes(queueItem.category) ? queueItem.category : config.categories[0],
     language: "en",
-    keywords: uniqueStrings(raw?.keywords, 12),
+    keywords: deterministicKeywords(queueItem),
     sections,
     faq,
-    disclaimer: normalizeSpace(raw?.disclaimer),
+    disclaimer: "This article is for educational and informational purposes only and does not constitute financial advice.",
     requires_manual_review: raw?.requires_manual_review === true,
-    review_reasons: uniqueStrings(raw?.review_reasons, 20)
+    review_reasons: uniqueStrings(raw?.review_reasons, 20),
+    _block_plan_expected_ids: expectedIds
   };
 }
 
@@ -1123,46 +1232,23 @@ function articlePlainText(article) {
 
 function buildVerificationUnits(article) {
   const units = [];
-  const allEvidenceIds = uniqueStrings([
-    ...article.sections.flatMap((section) => section.paragraphs.flatMap((paragraph) => paragraph.evidence_ids)),
-    ...article.faq.flatMap((item) => item.evidence_ids)
-  ], 24);
-
-  // Metadata is verified too so SEO text cannot introduce unsupported facts.
-  if (article.description) {
-    units.push({
-      id: "M01",
-      location: "meta_description",
-      text: article.description,
-      evidence_ids: allEvidenceIds
-    });
-  }
-  if (article.excerpt) {
-    units.push({
-      id: "M02",
-      location: "excerpt",
-      text: article.excerpt,
-      evidence_ids: allEvidenceIds
-    });
-  }
-
-  let index = 1;
   for (const section of article.sections) {
     for (const paragraph of section.paragraphs) {
       units.push({
-        id: `P${String(index++).padStart(2, "0")}`,
+        id: normalizeSpace(paragraph.block_id).toUpperCase(),
         location: section.heading,
         text: paragraph.text,
         evidence_ids: paragraph.evidence_ids
       });
     }
   }
+
   let faqIndex = 1;
   for (const item of article.faq) {
     units.push({
       id: `F${String(faqIndex++).padStart(2, "0")}`,
       location: item.question,
-      text: `Question: ${item.question} Answer: ${item.answer}`,
+      text: item.answer,
       evidence_ids: item.evidence_ids
     });
   }
@@ -1185,7 +1271,11 @@ function riskyApXnReasons(article) {
   return uniqueStrings(reasons, 20);
 }
 
-function localArticleChecks({ article, config, manifest, evidence, knowledge }) {
+function paragraphFingerprint(text) {
+  return normalizeComparable(text).replace(/\b(?:the|a|an|and|or|to|of|in|on|for|with)\b/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function localArticleChecks({ article, config, manifest, evidence, knowledge, blockPlan }) {
   const errors = [];
   const warnings = [];
   const text = articlePlainText(article);
@@ -1202,6 +1292,48 @@ function localArticleChecks({ article, config, manifest, evidence, knowledge }) 
 
   const duplicate = manifest.articles.find((item) => slugify(item?.slug || item?.title || "") === article.slug);
   if (duplicate) errors.push(`Duplicate slug already exists: ${article.slug}.`);
+
+  const planById = new Map((blockPlan || []).map((item) => [item.block_id, item]));
+  const bodyUnits = buildVerificationUnits(article).filter((unit) => unit.id.startsWith("B"));
+  const expectedBodyIds = (blockPlan || []).map((item) => item.block_id);
+  const actualBodyIds = bodyUnits.map((unit) => unit.id);
+  const missingBlocks = expectedBodyIds.filter((id) => !actualBodyIds.includes(id));
+  const extraBlocks = actualBodyIds.filter((id) => !expectedBodyIds.includes(id));
+  if (missingBlocks.length) errors.push(`Missing body blocks: ${missingBlocks.join(", ")}.`);
+  if (extraBlocks.length) errors.push(`Unexpected body blocks: ${extraBlocks.join(", ")}.`);
+  if (new Set(actualBodyIds).size !== actualBodyIds.length) errors.push("Duplicate body block IDs detected.");
+
+  const fingerprints = new Map();
+  for (const unit of bodyUnits) {
+    const fp = paragraphFingerprint(unit.text);
+    if (fp.length > 80) {
+      if (fingerprints.has(fp)) errors.push(`Duplicate body paragraph detected: ${fingerprints.get(fp)} and ${unit.id}.`);
+      else fingerprints.set(fp, unit.id);
+    }
+
+    const plan = planById.get(unit.id);
+    if (!unit.text) {
+      errors.push(`${unit.id} is empty.`);
+      continue;
+    }
+    if (plan) {
+      const count = wordCount(unit.text);
+      if (count < plan.min_words) errors.push(`${unit.id} is too short: ${count} words; target minimum ${plan.min_words}.`);
+      if (count > plan.max_words + 25) warnings.push(`${unit.id} is longer than planned: ${count} words.`);
+      const assigned = uniqueStrings(unit.evidence_ids, 4);
+      if (assigned.join("|") !== plan.evidence_ids.join("|")) {
+        errors.push(`${unit.id} evidence mapping changed from the deterministic block plan.`);
+      }
+    }
+  }
+
+  if (evidence) {
+    const bodyEvidenceIds = bodyUnits.flatMap((unit) => unit.evidence_ids);
+    for (const fact of evidence.facts.slice(0, blockPlan.length)) {
+      const uses = bodyEvidenceIds.filter((id) => id === fact.id).length;
+      if (uses !== 1) errors.push(`Evidence ${fact.id} must be used exactly once in body blocks; found ${uses}.`);
+    }
+  }
 
   const validIds = new Set(evidence ? evidence.facts.map((fact) => fact.id) : ["APXN-KNOWLEDGE"]);
   const evidenceById = new Map(evidence ? evidence.facts.map((fact) => [fact.id, fact]) : []);
@@ -1242,19 +1374,18 @@ function localArticleChecks({ article, config, manifest, evidence, knowledge }) 
   }
 
   if (article.requires_manual_review) errors.push(...article.review_reasons.map((r) => `Manual review: ${r}`));
-
-  return { words, reading_minutes: readingMinutes(words), errors: uniqueStrings(errors, 80), warnings };
+  return { words, reading_minutes: readingMinutes(words), errors: uniqueStrings(errors, 100), warnings };
 }
 
-async function generateMappedArticle({ apiKey, model, config, queueItem, knowledge, evidence }) {
+async function generateBlockArticle({ apiKey, model, config, queueItem, knowledge, evidence, blockPlan }) {
   return callStructuredXAI({
     apiKey,
     model,
     config,
-    instructions: writerInstructions(config, queueItem, Boolean(evidence)),
-    input: writerInput({ queueItem, config, knowledge, evidence }),
-    schema: articleSchema(config),
-    schemaName: "apxn_evidence_mapped_article",
+    instructions: blockWriterInstructions(config, queueItem, Boolean(evidence), blockPlan),
+    input: blockWriterInput({ queueItem, config, knowledge, evidence, blockPlan }),
+    schema: blockDraftSchema(config),
+    schemaName: "apxn_evidence_block_article",
     maxOutputTokens: ARTICLE_OUTPUT_TOKENS
   });
 }
@@ -1263,15 +1394,17 @@ async function generateMappedArticle({ apiKey, model, config, queueItem, knowled
 /* Compact paragraph-level final verifier                                     */
 /* -------------------------------------------------------------------------- */
 
+
 function verifierSchema() {
   return {
     type: "object",
     additionalProperties: false,
-    required: ["verdict", "confidence", "summary", "checks"],
+    required: ["verdict", "confidence", "summary", "checked_unit_ids", "checks"],
     properties: {
       verdict: { type: "string", enum: ["pass", "fix"] },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
       summary: { type: "string" },
+      checked_unit_ids: { type: "array", items: { type: "string" } },
       checks: {
         type: "array",
         items: {
@@ -1294,6 +1427,7 @@ function buildVerifierPayload(article, evidence, knowledge) {
   const units = buildVerificationUnits(article);
   const evidenceById = new Map(evidence ? evidence.facts.map((fact) => [fact.id, fact]) : []);
   return {
+    expected_unit_ids: units.map((unit) => unit.id),
     units: units.map((unit) => ({
       unit_id: unit.id,
       location: unit.location,
@@ -1310,29 +1444,56 @@ function buildVerifierPayload(article, evidence, knowledge) {
 function verifierInstructions(external) {
   return `
 You are the FINAL factual gate for an automated blog. Do not rewrite the article.
-${external
-  ? "For each paragraph/FAQ unit, use ONLY the evidence objects assigned to that unit. Do not use other evidence, web browsing, or model memory."
-  : "For each paragraph/FAQ unit, use ONLY the supplied reviewed APXN knowledge. Do not use outside memory."}
 
-RULES:
-- Return exactly one check for EVERY supplied unit_id, no omissions and no duplicates.
-- A unit is supported only if EVERY material factual assertion and recommendation in it is directly supported.
-- If any part adds an unstated mechanism, comparison, causal explanation, recommendation, numeric detail, current-status claim, security claim, or generalization, mark the unit unsupported.
+${external
+  ? "For each unit, use ONLY the evidence objects assigned to that unit. Never use another block's evidence, web browsing, or model memory."
+  : "For each unit, use ONLY the supplied reviewed APXN knowledge. Do not use outside memory."}
+
+ABSOLUTE COVERAGE RULE:
+- Copy EVERY supplied unit_id into checked_unit_ids exactly once.
+- Return exactly one checks item for EVERY supplied unit_id.
+- No omissions. No duplicates. No extra IDs.
+- The order of checked_unit_ids and checks must follow the input order.
+
+FACTUAL RULE:
+- A unit is supported only if EVERY material assertion and recommendation in it is directly supported.
 - Beginner-friendly paraphrase is allowed; new facts are not.
-- Do not treat plausible statements as supported.
-- For numeric claims, the exact number and context must be present in assigned evidence/knowledge.
-- If unsupported, give one concise problem and one concise correction instruction.
-- verdict=pass and confidence=high only if every unit is supported.
+- If any sentence adds an unstated mechanism, comparison, cause, recommendation, numeric detail, security claim, current-status claim, or generalization, mark the whole unit unsupported.
+- Exact numeric details require the same number and context in assigned evidence/knowledge.
+- Plausibility is not evidence.
+- If unsupported, provide a concise problem and a concise correction instruction.
+
+PASS RULE:
+- verdict=pass and confidence=high only when every unit is supported.
 - Return JSON only.
 `.trim();
 }
 
 function normalizeVerifier(raw, expectedUnits) {
-  const expected = new Set(expectedUnits.map((unit) => unit.id));
-  const seen = new Set();
-  const checks = [];
+  const expectedIds = expectedUnits.map((unit) => unit.id);
+  const expected = new Set(expectedIds);
   const structuralErrors = [];
 
+  const checkedIds = (Array.isArray(raw?.checked_unit_ids) ? raw.checked_unit_ids : [])
+    .map((id) => normalizeSpace(id).toUpperCase())
+    .filter(Boolean);
+
+  if (checkedIds.length !== expectedIds.length) {
+    structuralErrors.push(`Verifier checked_unit_ids length ${checkedIds.length}; expected ${expectedIds.length}.`);
+  }
+  if (new Set(checkedIds).size !== checkedIds.length) {
+    structuralErrors.push("Verifier checked_unit_ids contains duplicates.");
+  }
+  const missingChecked = expectedIds.filter((id) => !checkedIds.includes(id));
+  const extraChecked = checkedIds.filter((id) => !expected.has(id));
+  if (missingChecked.length) structuralErrors.push(`Verifier omitted checked_unit_ids: ${missingChecked.join(", ")}.`);
+  if (extraChecked.length) structuralErrors.push(`Verifier returned unknown checked_unit_ids: ${extraChecked.join(", ")}.`);
+  if (checkedIds.join("|") !== expectedIds.join("|")) {
+    structuralErrors.push("Verifier checked_unit_ids order does not exactly match input order.");
+  }
+
+  const seen = new Set();
+  const checks = [];
   for (const item of Array.isArray(raw?.checks) ? raw.checks : []) {
     const id = normalizeSpace(item?.unit_id).toUpperCase();
     if (!expected.has(id)) {
@@ -1352,20 +1513,27 @@ function normalizeVerifier(raw, expectedUnits) {
     });
   }
 
-  const missing = [...expected].filter((id) => !seen.has(id));
-  if (missing.length) structuralErrors.push(`Verifier omitted units: ${missing.join(", ")}.`);
+  const missingChecks = expectedIds.filter((id) => !seen.has(id));
+  if (missingChecks.length) structuralErrors.push(`Verifier omitted checks: ${missingChecks.join(", ")}.`);
+  if (checks.length !== expectedIds.length) {
+    structuralErrors.push(`Verifier returned ${checks.length} checks; expected ${expectedIds.length}.`);
+  }
+  if (checks.map((item) => item.unit_id).join("|") !== expectedIds.join("|")) {
+    structuralErrors.push("Verifier checks order does not exactly match input order.");
+  }
+
   const unsupported = checks.filter((item) => item.status !== "supported");
   const pass =
     raw?.verdict === "pass" &&
     raw?.confidence === "high" &&
     structuralErrors.length === 0 &&
-    unsupported.length === 0 &&
-    checks.length === expected.size;
+    unsupported.length === 0;
 
   return {
     verdict: pass ? "pass" : "fix",
     confidence: ["high", "medium", "low"].includes(raw?.confidence) ? raw.confidence : "low",
     summary: normalizeSpace(raw?.summary),
+    checked_unit_ids: checkedIds,
     checks,
     structural_errors: structuralErrors,
     unsupported,
@@ -1373,7 +1541,7 @@ function normalizeVerifier(raw, expectedUnits) {
   };
 }
 
-async function verifyMappedArticle({ apiKey, model, config, article, evidence, knowledge }) {
+async function verifyBlockArticle({ apiKey, model, config, article, evidence, knowledge }) {
   const units = buildVerificationUnits(article);
   const result = await callStructuredXAI({
     apiKey,
@@ -1382,48 +1550,237 @@ async function verifyMappedArticle({ apiKey, model, config, article, evidence, k
     instructions: verifierInstructions(Boolean(evidence)),
     input: JSON.stringify(buildVerifierPayload(article, evidence, knowledge), null, 2),
     schema: verifierSchema(),
-    schemaName: "apxn_paragraph_grounding_verification",
+    schemaName: "apxn_complete_block_verification",
     maxOutputTokens: VERIFIER_OUTPUT_TOKENS
   });
   return { result, verification: normalizeVerifier(result.generated, units) };
 }
 
-function rewriteInstructions(config, queueItem, external) {
-  return `
-You are repairing an evidence-mapped APXN Blog article about "${queueItem.topic}".
-Return a COMPLETE replacement article JSON.
+function targetedRepairSchema() {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["repairs"],
+    properties: {
+      repairs: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["unit_id", "replacement_text"],
+          properties: {
+            unit_id: { type: "string" },
+            replacement_text: { type: "string" }
+          }
+        }
+      }
+    }
+  };
+}
 
-MANDATORY:
-- Fix every failed verifier unit and every local error.
-- Keep the article at least ${config.writer.minimum_words} words and normally near ${config.writer.target_words} words.
-- Preserve 6-8 substantive sections and at least 2 FAQ items.
+function selectLengthRepairTargets(article, blockPlan, config) {
+  const minArticleWords = Number(config?.writer?.minimum_words || 1200);
+  const deficit = Math.max(0, minArticleWords - wordCount(articlePlainText(article)));
+  if (!deficit) return [];
+
+  const planById = new Map(blockPlan.map((item) => [item.block_id, item]));
+  const body = buildVerificationUnits(article)
+    .filter((unit) => unit.id.startsWith("B"))
+    .map((unit) => {
+      const plan = planById.get(unit.id);
+      const currentWords = wordCount(unit.text);
+      const room = plan ? Math.max(0, plan.max_words - currentWords) : 0;
+      return { unit_id: unit.id, currentWords, room, targetMin: plan?.min_words || currentWords };
+    })
+    .sort((a, b) => (b.room - a.room) || (a.currentWords - b.currentWords));
+
+  const targets = [];
+  let remaining = deficit + 40;
+  for (const item of body) {
+    if (remaining <= 0) break;
+    if (item.room <= 0) continue;
+    const add = Math.min(item.room, remaining);
+    targets.push({
+      unit_id: item.unit_id,
+      reason: `Expand this block by about ${add} words using only its assigned evidence. Do not add new facts.`,
+      target_min_words: item.currentWords + add
+    });
+    remaining -= add;
+  }
+  return targets;
+}
+
+function buildRepairTargets({ article, verification, localChecks, blockPlan, config }) {
+  const targets = new Map();
+
+  for (const item of verification?.unsupported || []) {
+    targets.set(item.unit_id, {
+      unit_id: item.unit_id,
+      reason: item.correction || item.problem || "Remove unsupported assertions and keep only assigned evidence.",
+      target_min_words: null
+    });
+  }
+
+  for (const error of localChecks?.errors || []) {
+    const match = String(error).match(/\b(B\d{2}|F\d{2})\b/i);
+    if (!match) continue;
+    const id = match[1].toUpperCase();
+    if (!targets.has(id)) {
+      targets.set(id, { unit_id: id, reason: error, target_min_words: null });
+    }
+  }
+
+  for (const item of selectLengthRepairTargets(article, blockPlan, config)) {
+    const existing = targets.get(item.unit_id);
+    targets.set(item.unit_id, {
+      unit_id: item.unit_id,
+      reason: existing ? `${existing.reason} ${item.reason}` : item.reason,
+      target_min_words: Math.max(existing?.target_min_words || 0, item.target_min_words || 0) || null
+    });
+  }
+
+  return [...targets.values()];
+}
+
+function repairInstructions(external) {
+  return `
+You repair ONLY the supplied failed/short units of an evidence-block article.
+
+RULES:
+- Return exactly one repair for every requested unit_id, no extras and no duplicates.
+- replacement_text must replace only that unit. Do not rewrite the rest of the article.
 - ${external
-    ? "Use ONLY the supplied evidence pack. Every paragraph and FAQ answer must keep valid evidence_ids and must not add any fact outside those assigned evidence items."
-    : "Use ONLY the supplied reviewed APXN knowledge. Every paragraph and FAQ answer must use evidence_ids=[\"APXN-KNOWLEDGE\"]."}
-- Remove unsupported subtopics completely rather than replacing them with generic unsupported advice.
-- Do not invent numeric examples, fee estimates, timings, balances, security recommendations, comparisons, or mechanisms.
-- When more words are needed, deepen the explanation of supported evidence instead of adding new claims.
+  ? "Use ONLY assigned_evidence for that unit. Never use other evidence or model memory."
+  : "Use ONLY the reviewed APXN knowledge supplied for that unit."}
+- Remove unsupported assertions instead of replacing them with other unsupported advice.
+- If expansion is requested, add explanation only by clarifying the assigned evidence; do not introduce adjacent facts.
+- Do not invent numbers, examples, comparisons, causes, recommendations, security advice, timings, balances, fee estimates, or current-status claims.
+- Preserve a neutral beginner-friendly English tone.
 - Return JSON only.
 `.trim();
 }
 
-async function rewriteArticle({ apiKey, model, config, queueItem, article, verification, localChecks, evidence, knowledge }) {
+async function repairArticleUnits({ apiKey, model, config, article, targets, evidence, knowledge }) {
+  const units = buildVerificationUnits(article);
+  const unitById = new Map(units.map((unit) => [unit.id, unit]));
+  const evidenceById = new Map(evidence ? evidence.facts.map((fact) => [fact.id, fact]) : []);
+
+  const payload = {
+    repair_requests: targets.map((target) => {
+      const unit = unitById.get(target.unit_id);
+      return {
+        unit_id: target.unit_id,
+        current_text: unit?.text || "",
+        reason: target.reason,
+        target_min_words: target.target_min_words,
+        assigned_evidence_ids: unit?.evidence_ids || [],
+        assigned_evidence: evidence
+          ? (unit?.evidence_ids || []).map((id) => evidenceById.get(id)).filter(Boolean)
+          : undefined
+      };
+    }),
+    apxn_knowledge: evidence ? undefined : knowledge
+  };
+
   return callStructuredXAI({
     apiKey,
     model,
     config,
-    instructions: rewriteInstructions(config, queueItem, Boolean(evidence)),
-    input: JSON.stringify({
-      current_article: article,
-      verifier_failures: [...verification.structural_errors, ...verification.unsupported],
-      local_errors: localChecks.errors,
-      evidence_pack: evidence || undefined,
-      apxn_knowledge: evidence ? undefined : knowledge
-    }, null, 2),
-    schema: articleSchema(config),
-    schemaName: "apxn_evidence_mapped_rewrite",
-    maxOutputTokens: ARTICLE_OUTPUT_TOKENS
+    instructions: repairInstructions(Boolean(evidence)),
+    input: JSON.stringify(payload, null, 2),
+    schema: targetedRepairSchema(),
+    schemaName: "apxn_targeted_unit_repairs",
+    maxOutputTokens: Math.min(ARTICLE_OUTPUT_TOKENS, 3200)
   });
+}
+
+function applyUnitRepairs(article, rawRepairs, targets) {
+  const expected = new Set(targets.map((item) => item.unit_id));
+  const seen = new Set();
+  const structuralErrors = [];
+
+  for (const repair of Array.isArray(rawRepairs?.repairs) ? rawRepairs.repairs : []) {
+    const id = normalizeSpace(repair?.unit_id).toUpperCase();
+    const replacement = normalizeSpace(repair?.replacement_text);
+    if (!expected.has(id)) {
+      structuralErrors.push(`Repair returned unexpected unit ${id}.`);
+      continue;
+    }
+    if (seen.has(id)) {
+      structuralErrors.push(`Repair returned duplicate unit ${id}.`);
+      continue;
+    }
+    if (!replacement) {
+      structuralErrors.push(`Repair returned empty replacement for ${id}.`);
+      continue;
+    }
+    seen.add(id);
+
+    if (id.startsWith("B")) {
+      let updated = false;
+      for (const section of article.sections) {
+        const paragraph = section.paragraphs.find((item) => normalizeSpace(item.block_id).toUpperCase() === id);
+        if (paragraph) {
+          paragraph.text = replacement;
+          updated = true;
+          break;
+        }
+      }
+      if (!updated) structuralErrors.push(`Could not apply repair to missing body unit ${id}.`);
+    } else if (id.startsWith("F")) {
+      const index = Number(id.slice(1)) - 1;
+      if (article.faq[index]) article.faq[index].answer = replacement;
+      else structuralErrors.push(`Could not apply repair to missing FAQ unit ${id}.`);
+    }
+  }
+
+  const missing = [...expected].filter((id) => !seen.has(id));
+  if (missing.length) structuralErrors.push(`Repair omitted units: ${missing.join(", ")}.`);
+  return structuralErrors;
+}
+
+function runBlockArchitectureSelfTest(config) {
+  const mockEvidence = {
+    facts: Array.from({ length: 12 }, (_, index) => ({
+      id: `E${String(index + 1).padStart(2, "0")}`,
+      claim: `Mock supported fact ${index + 1}`,
+      kind: "general",
+      source_url: `https://example.com/source-${Math.floor(index / 3) + 1}`,
+      support_quote: `This is a sufficiently long mock support quote for supported fact ${index + 1}.`
+    })),
+    sources: []
+  };
+  const queueItem = { topic: "Architecture self test", category: "Education" };
+  const blockPlan = buildEvidenceBlockPlan({ config, queueItem, evidence: mockEvidence });
+  const sectionCount = Math.max(...blockPlan.map((item) => item.section_slot));
+  const raw = {
+    section_headings: Array.from({ length: sectionCount }, (_, index) => ({
+      section_slot: index + 1,
+      heading: `Self-test section ${index + 1}`
+    })),
+    blocks: blockPlan.map((item, index) => ({
+      block_id: item.block_id,
+      text: `This self-test paragraph ${index + 1} exists only to validate deterministic block assembly and evidence mapping.`
+    })),
+    faq: [
+      { question: "What does this test validate?", answer: "It validates block assembly.", source_block_id: "B01" },
+      { question: "Does it call xAI?", answer: "No API call is needed for this local structural test.", source_block_id: "B02" }
+    ],
+    requires_manual_review: false,
+    review_reasons: []
+  };
+  const article = assembleBlockArticle(raw, queueItem, config, blockPlan);
+  const bodyUnits = buildVerificationUnits(article).filter((unit) => unit.id.startsWith("B"));
+  const expected = blockPlan.map((item) => item.block_id).join("|");
+  const actual = bodyUnits.map((item) => item.id).join("|");
+  if (expected !== actual) fail("Block architecture self-test failed: body unit IDs do not match block plan.");
+  const bodyEvidence = bodyUnits.flatMap((item) => item.evidence_ids);
+  for (const fact of mockEvidence.facts) {
+    if (bodyEvidence.filter((id) => id === fact.id).length !== 1) {
+      fail(`Block architecture self-test failed: ${fact.id} was not mapped exactly once.`);
+    }
+  }
+  console.log(`Block architecture self-test: PASS (${bodyUnits.length} body blocks, ${sectionCount} sections, exact evidence mapping).`);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1671,6 +2028,7 @@ function addManifestRecord({ manifest, queueItem, article, config, quality, veri
 /* Topic pipeline                                                             */
 /* -------------------------------------------------------------------------- */
 
+
 async function processTopic({ config, knowledge, manifest, topicBank, queueItem, apiKey, model, ledger, publishRequested }) {
   const date = todayISO();
   const costEntries = [];
@@ -1705,7 +2063,7 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     console.log(`Relevant excerpts selected: ${sourceBundle.excerpts.length}`);
 
     const extracted = await extractEvidence({ apiKey, model, config, queueItem, profile, sourceBundle });
-    const entry = recordCost({
+    let entry = recordCost({
       ledger,
       response: extracted.result.response,
       model,
@@ -1729,14 +2087,18 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     }
   }
 
+  const blockPlan = buildBlockPlan({ config, queueItem, evidence });
+  console.log(`Deterministic body blocks: ${blockPlan.length}`);
+  console.log(`Deterministic sections: ${Math.max(...blockPlan.map((item) => item.section_slot))}`);
+
   if (!withinPerArticleBudget(config, costEntries, 0.015)) {
     markRejected(manifest, topicBank, queueItem, [`Per-article budget reached before generation: $${topicSpend(costEntries).toFixed(4)}.`]);
     return { success: false, reason: "budget_before_generation" };
   }
 
-  console.log("Generating evidence-mapped article...");
-  const generation = await generateMappedArticle({ apiKey, model, config, queueItem, knowledge, evidence });
-  let article = normalizeArticle(generation.generated, queueItem, config);
+  console.log("Generating fixed evidence blocks...");
+  const generation = await generateBlockArticle({ apiKey, model, config, queueItem, knowledge, evidence, blockPlan });
+  let article = assembleBlockArticle(generation.generated, queueItem, config, blockPlan);
   let entry = recordCost({
     ledger,
     response: generation.response,
@@ -1744,12 +2106,12 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     topic: queueItem.topic,
     articleSlug: article.slug,
     date,
-    stage: "generation_evidence_mapped"
+    stage: "generation_fixed_evidence_blocks"
   });
   costEntries.push(entry);
   writeJson(PATHS.costs, ledger);
 
-  let local = localArticleChecks({ article, config, manifest, evidence, knowledge });
+  let local = localArticleChecks({ article, config, manifest, evidence, knowledge, blockPlan });
   console.log(`Initial words: ${local.words}`);
   console.log(`Initial local errors: ${local.errors.length}`);
 
@@ -1758,8 +2120,8 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     return { success: false, reason: "budget_before_verification" };
   }
 
-  console.log("Running paragraph-level evidence verification...");
-  let verifiedCall = await verifyMappedArticle({ apiKey, model, config, article, evidence, knowledge });
+  console.log("Running complete block/FAQ verification...");
+  let verifiedCall = await verifyBlockArticle({ apiKey, model, config, article, evidence, knowledge });
   let verification = verifiedCall.verification;
   entry = recordCost({
     ledger,
@@ -1768,36 +2130,63 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     topic: queueItem.topic,
     articleSlug: article.slug,
     date,
-    stage: "paragraph_verification_0"
+    stage: "complete_block_verification_0"
   });
   costEntries.push(entry);
   writeJson(PATHS.costs, ledger);
 
   let accepted = local.errors.length === 0 && verification.pass;
+  let repairStructuralErrors = [];
+  let repairUsed = false;
+  let freshVerificationAfterRepair = false;
 
-  if (!accepted && MAX_REWRITE_ROUNDS > 0 && withinPerArticleBudget(config, costEntries, MIN_REWRITE_RESERVE_USD)) {
-    console.log("One evidence-grounded full rewrite is required...");
-    const rewrite = await rewriteArticle({
-      apiKey, model, config, queueItem, article, verification, localChecks: local, evidence, knowledge
-    });
-    article = normalizeArticle(rewrite.generated, queueItem, config);
-    entry = recordCost({
-      ledger,
-      response: rewrite.response,
-      model,
-      topic: queueItem.topic,
-      articleSlug: article.slug,
-      date,
-      stage: "rewrite_1"
-    });
-    costEntries.push(entry);
-    writeJson(PATHS.costs, ledger);
+  if (!accepted && MAX_TARGETED_REPAIR_ROUNDS > 0) {
+    const targets = buildRepairTargets({ article, verification, localChecks: local, blockPlan, config });
 
-    local = localArticleChecks({ article, config, manifest, evidence, knowledge });
+    if (targets.length > 0 && withinPerArticleBudget(config, costEntries, MIN_TARGETED_REPAIR_RESERVE_USD)) {
+      repairUsed = true;
+      console.log(`Targeted repair required for ${targets.length} unit(s): ${targets.map((item) => item.unit_id).join(", ")}`);
+      const repair = await repairArticleUnits({
+        apiKey, model, config, article, targets, evidence, knowledge
+      });
+      entry = recordCost({
+        ledger,
+        response: repair.response,
+        model,
+        topic: queueItem.topic,
+        articleSlug: article.slug,
+        date,
+        stage: "targeted_unit_repair_1"
+      });
+      costEntries.push(entry);
+      writeJson(PATHS.costs, ledger);
 
-    if (withinPerArticleBudget(config, costEntries, 0.010)) {
-      console.log("Mandatory fresh verification of rewritten article...");
-      verifiedCall = await verifyMappedArticle({ apiKey, model, config, article, evidence, knowledge });
+      repairStructuralErrors = applyUnitRepairs(article, repair.generated, targets);
+      local = localArticleChecks({ article, config, manifest, evidence, knowledge, blockPlan });
+
+      if (repairStructuralErrors.length === 0 && withinPerArticleBudget(config, costEntries, 0.010)) {
+        console.log("Mandatory fresh verification of repaired units/article...");
+        verifiedCall = await verifyBlockArticle({ apiKey, model, config, article, evidence, knowledge });
+        verification = verifiedCall.verification;
+        freshVerificationAfterRepair = true;
+        entry = recordCost({
+          ledger,
+          response: verifiedCall.result.response,
+          model,
+          topic: queueItem.topic,
+          articleSlug: article.slug,
+          date,
+          stage: "complete_block_verification_1"
+        });
+        costEntries.push(entry);
+        writeJson(PATHS.costs, ledger);
+        accepted = local.errors.length === 0 && verification.pass;
+      } else {
+        accepted = false;
+      }
+    } else if (targets.length === 0 && verification.structural_errors.length > 0 && withinPerArticleBudget(config, costEntries, 0.010)) {
+      console.log("Verifier coverage was structurally incomplete; re-running verification without changing article...");
+      verifiedCall = await verifyBlockArticle({ apiKey, model, config, article, evidence, knowledge });
       verification = verifiedCall.verification;
       entry = recordCost({
         ledger,
@@ -1806,14 +2195,11 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
         topic: queueItem.topic,
         articleSlug: article.slug,
         date,
-        stage: "paragraph_verification_1"
+        stage: "complete_block_verification_retry"
       });
       costEntries.push(entry);
       writeJson(PATHS.costs, ledger);
       accepted = local.errors.length === 0 && verification.pass;
-    } else {
-      accepted = false;
-      verification = { ...verification, pass: false, verdict: "fix", summary: "Rewrite could not be freshly verified within the configured per-article budget." };
     }
   }
 
@@ -1824,14 +2210,18 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
   console.log(`Words: ${local.words}`);
   console.log(`Local grounding errors: ${local.errors.length}`);
   console.log(`Verifier: ${verification.verdict} / ${verification.confidence}`);
-  console.log(`Verification units: ${verification.checks.length}`);
+  console.log(`Expected verification units: ${buildVerificationUnits(article).length}`);
+  console.log(`Checked verification units: ${verification.checks.length}`);
   console.log(`Unsupported units: ${verification.unsupported.length}`);
-  console.log("Fresh verification matches final article: yes");
+  console.log(`Verifier structural errors: ${verification.structural_errors.length}`);
+  console.log(`Targeted repair used: ${repairUsed ? "yes" : "no"}`);
+  console.log(`Fresh verification matches final article: ${repairUsed ? (freshVerificationAfterRepair ? "yes" : "no") : "initial"}`);
   console.log(`Topic pipeline cost: $${spend.toFixed(6)}`);
 
   if (!accepted) {
     const reasons = [
       ...local.errors,
+      ...repairStructuralErrors,
       ...verification.structural_errors,
       ...verification.unsupported.map((item) => `${item.unit_id}: ${item.problem}`),
       verification.summary
@@ -1847,6 +2237,7 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
       model,
       pipeline_cost_usd: spend,
       quality: local,
+      block_plan: blockPlan,
       evidence_pack: evidence,
       verification,
       research: {
@@ -1881,6 +2272,7 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     provider: "xai",
     pipeline_cost_usd: spend,
     cost_entries: costEntries,
+    block_plan: blockPlan,
     evidence_pack: evidence,
     research: {
       mode: external ? "direct_official_sources" : "apxn_knowledge_only",
@@ -1912,7 +2304,7 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     manifest, queueItem, article, config, quality: local, verification, evidence, model, published, structuredPath
   });
   updateTopicBank(topicBank, queueItem, published ? "published" : "drafted", manifestRecord.id, article.slug);
-  console.log(`Article ${manifestRecord.id} passed the final evidence pipeline.`);
+  console.log(`Article ${manifestRecord.id} passed the final evidence-block pipeline.`);
   console.log(`Status: ${manifestRecord.status}`);
   return { success: true, published };
 }
@@ -1929,9 +2321,17 @@ async function main() {
   validateConfig(config);
   validateManifest(manifest);
 
+  // Optional zero-cost architecture-only self-test. No xAI key or network fetch is needed.
+  if (isTruthyEnv("BLOG_BLOCK_STRUCTURE_TEST")) {
+    runBlockArchitectureSelfTest(config);
+    console.log("Block structure test: PASS (no network fetch and no xAI API call).");
+    return;
+  }
+
   // Optional zero-cost source test. This fetches and ranks official pages, then exits
   // BEFORE requiring XAI_API_KEY or making any xAI API request.
   if (isTruthyEnv("BLOG_SOURCE_TEST")) {
+    runBlockArchitectureSelfTest(config);
     const queueItem = chooseNextTopic(manifest);
     if (isApXnSpecificTopic(queueItem)) {
       console.log("Source test: APXN topic uses the reviewed internal knowledge file; no external fetch is required.");
@@ -1962,7 +2362,7 @@ async function main() {
     isTruthyEnv("BLOG_PUBLISH");
   const maxAttempts = publishRequested ? MAX_PRODUCTION_TOPIC_ATTEMPTS : MAX_TEST_TOPIC_ATTEMPTS;
 
-  console.log("APXN Blog Writer — Direct Official Sources Pipeline");
+  console.log("APXN Blog Writer — Evidence Block Pipeline");
   console.log("---------------------------------------------------");
   console.log("Language: English only");
   console.log(`Model: ${model}`);
