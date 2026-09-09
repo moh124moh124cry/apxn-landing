@@ -87,7 +87,10 @@ const LEGACY_TOPIC_OVERRIDES = {
     content_mode: "external",
     source_profile: "bsc",
     knowledge_sections: [],
-    auto_publish_allowed: true
+    auto_publish_allowed: false,
+    retired: true,
+    retired_reason:
+      "Legacy composite topic retired: BNB Smart Chain, BEP-20 and gas fees are now separate schema-v2 topics with dedicated source profiles."
   },
   "how telegram mini apps are bringing web3 to everyday users": {
     content_mode: "external",
@@ -659,6 +662,16 @@ function findTopicBankItem(queueItem, bank) {
 function hydrateTopic(queueItem, bank) {
   const bankItem = findTopicBankItem(queueItem, bank);
   const legacy = LEGACY_TOPIC_OVERRIDES[normalizeTopic(queueItem?.topic)] || null;
+
+  if (legacy?.retired === true) {
+    return {
+      ok: false,
+      retired_legacy: true,
+      reason:
+        normalizeSpace(legacy.retired_reason) ||
+        "Legacy composite topic has been retired in favor of narrower schema-v2 topics."
+    };
+  }
 
   const contentMode = String(
     queueItem?.content_mode ||
@@ -1382,6 +1395,10 @@ function appendCostRecord({
   };
 
   costs.months[key].requests.push(record);
+  costs.months[key].total_cost_usd = Number(
+    monthSpendUsd(costs, key).toFixed(12)
+  );
+  costs.last_updated = date;
   writeJson(PATHS.costs, costs);
 
   return record;
@@ -2954,4 +2971,5 @@ main().catch((error) => {
   console.error(`\nERROR: ${error.message}`);
   process.exitCode = 1;
 });
+
 
