@@ -1,6 +1,10 @@
 name: APXN Blog Writer
 
 on:
+  push:
+    branches: [main]
+    paths: [data/blog-config.json]
+
   workflow_dispatch:
     inputs:
       sync_only:
@@ -126,6 +130,8 @@ jobs:
           elif [ -z "$XAI_API_KEY" ]; then
             READY=false
             REASON=xai_key_missing
+            echo "::error::XAI_API_KEY is missing"
+            exit 1
           fi
 
           echo "ready=$READY" >> "$GITHUB_OUTPUT"
@@ -224,15 +230,6 @@ jobs:
           BLOG_PUBLISH: "false"
         run: node scripts/blog-writer.mjs
 
-      - name: Upload private draft artifact
-        if: ${{ steps.writer_test.outcome == 'success' || steps.writer.outcome == 'success' }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: apxn-private-draft-${{ github.run_number }}
-          path: .workflow-output/drafts/
-          if-no-files-found: ignore
-          retention-days: 7
-
       - name: Generate article with Grok
         id: writer
         if: ${{ steps.gate.outputs.ready == 'true' }}
@@ -242,6 +239,15 @@ jobs:
           BLOG_PUBLISH: "true"
         run: node scripts/blog-writer.mjs
 
+      - name: Upload private draft artifact
+        if: ${{ always() && (steps.writer_test.outcome == 'success' || steps.writer_test.outcome == 'failure' || steps.writer.outcome == 'success' || steps.writer.outcome == 'failure') }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: apxn-private-draft-${{ github.run_number }}
+          path: .workflow-output/drafts/
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Sync blog index and sitemap
         id: sync
         if: ${{ steps.writer.outcome == 'success' }}
@@ -249,6 +255,7 @@ jobs:
         run: node scripts/blog-sync.mjs
 
       - name: Commit successful blog update
+        id: commit
         if: ${{ (github.event_name == 'workflow_dispatch' && inputs.sync_only && steps.sync_only.outcome == 'success') || (github.event_name == 'workflow_dispatch' && inputs.planner_only && steps.planner.outcome == 'success') || (steps.writer.outcome == 'success' && steps.sync.outcome == 'success') }}
         shell: bash
         run: |
@@ -265,6 +272,41 @@ jobs:
           git commit -m "chore(blog): automated content update"
           git pull --rebase origin main
           git push origin HEAD:main
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Verify published article on production
+        if: ${{ steps.writer.outcome == 'success' && steps.sync.outcome == 'success' && steps.commit.outputs.sha != '' }}
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          import crypto from "node:crypto";
+          const manifest = JSON.parse(fs.readFileSync("data/blog-articles.json", "utf8"));
+          const article = manifest.articles.find(item => item.id === manifest.automation_state.last_published_article);
+          if (!article || article.status !== "published" || !article.path) throw new Error("No published article found");
+          const expected = fs.readFileSync(article.path, "utf8");
+          const digest = text => crypto.createHash("sha256").update(text).digest("hex");
+          const base = new URL(article.url).origin;
+          let lastError;
+          for (let attempt = 0; attempt < 18; attempt++) {
+            try {
+              const [page, index, sitemap] = await Promise.all([
+                fetch(article.url, { signal: AbortSignal.timeout(15000), cache: "no-store" }),
+                fetch(`${base}/blog/`, { signal: AbortSignal.timeout(15000), cache: "no-store" }),
+                fetch(`${base}/sitemap.xml`, { signal: AbortSignal.timeout(15000), cache: "no-store" })
+              ]);
+              if (![page, index, sitemap].every(response => response.ok)) throw new Error("Production files are not ready");
+              const [html, listing, xml] = await Promise.all([page.text(), index.text(), sitemap.text()]);
+              if (digest(html) !== digest(expected)) throw new Error("Production article does not match committed HTML yet");
+              if (!listing.includes(article.slug) || !xml.includes(article.url)) throw new Error("Production index or sitemap is not updated yet");
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Published and verified: ${article.url}\n\nWords: ${article.word_count}\n`);
+              console.log(`Published article, index and sitemap verified: ${article.url}`);
+              process.exit(0);
+            } catch (error) { lastError = error; }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+          }
+          throw lastError;
+          NODE
 
       - name: Preserve writer test API cost only
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && (steps.writer_test.outcome == 'success' || steps.writer_test.outcome == 'failure') }}
@@ -301,7 +343,7 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
-      - name: Preserve API cost after failed pipeline
+      - name: Preserve costs and rejected queue after failed pipeline
         if: ${{ steps.writer.outcome == 'failure' || (steps.writer.outcome == 'success' && steps.sync.outcome == 'failure') }}
         shell: bash
         run: |
@@ -314,9 +356,12 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
 
           git add data/blog-costs.json
+          if [ "${{ steps.writer.outcome }}" = "failure" ]; then
+            git add data/blog-articles.json data/blog-topic-bank.json
+          fi
 
           if git diff --cached --quiet; then
-            echo "No cost change to commit."
+            echo "No cost or queue change to commit."
             exit 0
           fi
 
@@ -359,4 +404,5 @@ jobs:
         run: |
           echo "Manual blog synchronization failed."
           exit 1
+
 
