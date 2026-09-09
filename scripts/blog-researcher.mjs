@@ -742,6 +742,44 @@ function distinctExternalPageCount(evidence) {
   ).size;
 }
 
+function configuredExternalPageCount(profile) {
+  return Array.isArray(profile?.sources) ? profile.sources.length : 0;
+}
+
+function theoreticalEvidenceItemCapacity(mode, profile = null) {
+  if (mode === "external") {
+    const configuredPages = Math.max(1, configuredExternalPageCount(profile));
+    return Math.min(
+      MAX_EXTERNAL_EVIDENCE_ITEMS,
+      configuredPages * MAX_PASSAGES_PER_SOURCE
+    );
+  }
+
+  if (mode === "hybrid") {
+    const configuredPages = Math.max(1, configuredExternalPageCount(profile));
+    const externalCapacity = Math.min(
+      MAX_EXTERNAL_EVIDENCE_ITEMS,
+      configuredPages * MAX_PASSAGES_PER_SOURCE
+    );
+
+    return externalCapacity + MAX_APXN_EVIDENCE_ITEMS;
+  }
+
+  if (mode === "apxn") {
+    return MAX_APXN_EVIDENCE_ITEMS;
+  }
+
+  return 0;
+}
+
+function effectiveEvidenceItemRequirement(mode, threshold, profile = null) {
+  const requested = Math.max(1, Number(threshold?.evidence_items || 1));
+  const capacity = theoreticalEvidenceItemCapacity(mode, profile);
+
+  if (capacity <= 0) return requested;
+  return Math.min(requested, capacity);
+}
+
 function evaluateResearchSufficiency(metadata, evidence, profile = null) {
   const mode = metadata.content_mode;
   const threshold = MIN_RESEARCH[mode];
@@ -757,11 +795,18 @@ function evaluateResearchSufficiency(metadata, evidence, profile = null) {
   const externalWords = evidenceWords(evidence, "external");
   const apxnWords = evidenceWords(evidence, "apxn");
   const externalPages = distinctExternalPageCount(evidence);
+  const configuredExternalPages = configuredExternalPageCount(profile);
+  const theoreticalEvidenceCapacity = theoreticalEvidenceItemCapacity(mode, profile);
+  const requiredEvidenceItems = effectiveEvidenceItemRequirement(
+    mode,
+    threshold,
+    profile
+  );
   const reasons = [];
 
-  if (evidence.length < threshold.evidence_items) {
+  if (evidence.length < requiredEvidenceItems) {
     reasons.push(
-      `Only ${evidence.length} evidence items were collected; at least ${threshold.evidence_items} are required.`
+      `Only ${evidence.length} evidence items were collected; at least ${requiredEvidenceItems} are required for this source profile.`
     );
   }
 
@@ -797,10 +842,14 @@ function evaluateResearchSufficiency(metadata, evidence, profile = null) {
     reasons,
     metrics: {
       evidence_items: evidence.length,
+      required_evidence_items: requiredEvidenceItems,
+      configured_evidence_item_target: Number(threshold.evidence_items || 0),
+      theoretical_evidence_item_capacity: theoreticalEvidenceCapacity,
       total_words: totalWords,
       external_words: externalWords,
       apxn_words: apxnWords,
-      distinct_external_pages: externalPages
+      distinct_external_pages: externalPages,
+      configured_external_pages: configuredExternalPages
     }
   };
 }
@@ -1184,7 +1233,12 @@ async function runCli() {
 
   if (packet.sufficiency?.metrics) {
     const metrics = packet.sufficiency.metrics;
-    console.log(`Evidence items: ${metrics.evidence_items}`);
+    console.log(
+      `Evidence items: ${metrics.evidence_items} / required ${metrics.required_evidence_items}`
+    );
+    console.log(
+      `Evidence item capacity: ${metrics.theoretical_evidence_item_capacity} from ${metrics.configured_external_pages || 0} configured external page(s)`
+    );
     console.log(`Evidence words: ${metrics.total_words}`);
     console.log(`External evidence words: ${metrics.external_words}`);
     console.log(`APXN evidence words: ${metrics.apxn_words}`);
