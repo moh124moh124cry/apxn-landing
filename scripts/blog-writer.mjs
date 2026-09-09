@@ -42,6 +42,13 @@ const DEFAULT_XAI_ENDPOINT = "/responses";
 const DEFAULT_MODEL = "grok-4.3";
 const COST_TICKS_PER_USD = 10_000_000_000;
 
+// Conservative preflight reserves. These are not provider guarantees; they are
+// safety floors used to avoid starting a paid stage when the remaining monthly
+// or per-article budget is already too small to complete it safely.
+const DEFAULT_GENERATION_COST_RESERVE_USD = 0.05;
+const DEFAULT_VERIFIER_COST_RESERVE_USD = 0.025;
+const COST_PREFLIGHT_EPSILON_USD = 0.000000001;
+
 const API_TIMEOUT_MS = 180_000;
 const SOURCE_FETCH_TIMEOUT_MS = 22_000;
 const MAX_SOURCE_BYTES = 800_000;
@@ -1389,21 +1396,82 @@ function assertCostKnown(config, record) {
   }
 }
 
-function assertBudgetBeforePaidCall(config, costs) {
+function configuredCostReserve(config, field, fallback) {
+  const value = Number(config?.cost_control?.[field]);
+
+  if (Number.isFinite(value) && value > 0) {
+    return value;
+  }
+
+  return fallback;
+}
+
+function assertPaidCallPreflight({
+  config,
+  costs,
+  stage,
+  runCostUsd = 0,
+  reserveUsd,
+  downstreamReserveUsd = 0
+}) {
   if (config?.cost_control?.enabled !== true) return;
 
-  const budget = Number(config?.cost_control?.monthly_budget_usd || 0);
-  const spent = monthSpendUsd(costs, monthKey());
+  const stageReserve = Number(reserveUsd);
+  const downstreamReserve = Number(downstreamReserveUsd);
+
+  if (!Number.isFinite(stageReserve) || stageReserve <= 0) {
+    fail(`Invalid xAI cost reserve for ${stage}.`);
+  }
+
+  if (!Number.isFinite(downstreamReserve) || downstreamReserve < 0) {
+    fail(`Invalid downstream xAI cost reserve for ${stage}.`);
+  }
+
+  const requiredReserve = stageReserve + downstreamReserve;
+  const spentThisRun = Math.max(0, Number(runCostUsd) || 0);
+
+  const monthlyBudget = Number(config?.cost_control?.monthly_budget_usd || 0);
+  const monthlySpent = monthSpendUsd(costs, monthKey());
+  const monthlyRemaining =
+    monthlyBudget > 0 ? Math.max(0, monthlyBudget - monthlySpent) : Infinity;
 
   if (
     config?.cost_control?.stop_when_monthly_budget_reached === true &&
-    budget > 0 &&
-    spent >= budget
+    monthlyBudget > 0 &&
+    monthlyRemaining + COST_PREFLIGHT_EPSILON_USD < requiredReserve
   ) {
     fail(
-      `Monthly xAI budget reached: $${spent.toFixed(6)} / $${budget.toFixed(2)}.`
+      `Cost preflight blocked ${stage}: monthly budget has $${monthlyRemaining.toFixed(6)} remaining, but at least $${requiredReserve.toFixed(3)} is reserved for this stage${
+        downstreamReserve > 0 ? " plus the next paid stage" : ""
+      }.`
     );
   }
+
+  const articleLimit = Number(
+    config?.cost_control?.maximum_cost_per_article_usd || 0
+  );
+  const articleRemaining =
+    articleLimit > 0 ? Math.max(0, articleLimit - spentThisRun) : Infinity;
+
+  if (
+    articleLimit > 0 &&
+    articleRemaining + COST_PREFLIGHT_EPSILON_USD < requiredReserve
+  ) {
+    fail(
+      `Cost preflight blocked ${stage}: article budget has $${articleRemaining.toFixed(6)} remaining, but at least $${requiredReserve.toFixed(3)} is reserved for this stage${
+        downstreamReserve > 0 ? " plus the next paid stage" : ""
+      }.`
+    );
+  }
+
+  console.log(
+    `COST PREFLIGHT PASS: ${stage}; reserved $${requiredReserve.toFixed(3)}; ` +
+      `monthly remaining $${
+        Number.isFinite(monthlyRemaining) ? monthlyRemaining.toFixed(6) : "unlimited"
+      }; article remaining $${
+        Number.isFinite(articleRemaining) ? articleRemaining.toFixed(6) : "unlimited"
+      }.`
+  );
 }
 
 function assertRunCost(config, runCostUsd) {
@@ -2614,8 +2682,25 @@ async function main() {
   const date = todayISO();
   const provisionalSlug = slugify(metadata.topic);
   const guards = combinedEditorialGuard(metadata, sourceFile);
+  const generationCostReserveUsd = configuredCostReserve(
+    config,
+    "generation_cost_reserve_usd",
+    DEFAULT_GENERATION_COST_RESERVE_USD
+  );
+  const verifierCostReserveUsd = configuredCostReserve(
+    config,
+    "verification_cost_reserve_usd",
+    DEFAULT_VERIFIER_COST_RESERVE_USD
+  );
 
-  assertBudgetBeforePaidCall(config, costs);
+  assertPaidCallPreflight({
+    config,
+    costs,
+    stage: "generation",
+    runCostUsd: 0,
+    reserveUsd: generationCostReserveUsd,
+    downstreamReserveUsd: verifierCostReserveUsd
+  });
 
   const generation = await callStructuredXai({
     config,
@@ -2693,7 +2778,13 @@ async function main() {
 
   assertNotDuplicate(article, manifest);
 
-  assertBudgetBeforePaidCall(config, costs);
+  assertPaidCallPreflight({
+    config,
+    costs,
+    stage: "verification",
+    runCostUsd,
+    reserveUsd: verifierCostReserveUsd
+  });
 
   const verification = await callStructuredXai({
     config,
