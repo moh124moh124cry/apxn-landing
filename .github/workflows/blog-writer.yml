@@ -32,6 +32,12 @@ on:
         default: false
         type: boolean
 
+      simple_writer_test:
+        description: "Test the experimental one-call Markdown writer without publishing"
+        required: false
+        default: false
+        type: boolean
+
   schedule:
     - cron: "0 8 * * 1"
     - cron: "0 8 * * 3"
@@ -70,6 +76,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check scripts/blog-writer.mjs
+          node --check scripts/blog-writer-simple.mjs
           node --check scripts/blog-sync.mjs
           node --check scripts/blog-planner.mjs
 
@@ -207,23 +214,28 @@ jobs:
             COUNT=$((COUNT + 1))
           fi
 
+          if [ "${{ inputs.simple_writer_test }}" = "true" ]; then
+            COUNT=$((COUNT + 1))
+          fi
+
           if [ "$COUNT" -gt 1 ]; then
             echo "Choose only one manual mode:"
             echo "- sync_only"
             echo "- planner_only"
             echo "- writer_test"
             echo "- source_test"
+            echo "- simple_writer_test"
             exit 1
           fi
 
       - name: Replenish topic queue
         id: planner
-        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.source_test) }}
+        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.source_test && !inputs.simple_writer_test) }}
         run: node scripts/blog-planner.mjs
 
       - name: Check production automation readiness
         id: gate
-        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test) }}
+        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test && !inputs.simple_writer_test) }}
         shell: bash
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
@@ -265,13 +277,13 @@ jobs:
 
       - name: Sync blog only
         id: sync_only
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test && !inputs.simple_writer_test }}
         continue-on-error: true
         run: node scripts/blog-sync.mjs
 
       - name: Test production official-source routing
         id: source_test
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_test && !inputs.sync_only && !inputs.planner_only && !inputs.writer_test }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_test && !inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.simple_writer_test }}
         continue-on-error: true
         shell: bash
         run: |
@@ -350,12 +362,28 @@ jobs:
 
       - name: Generate private writer test draft
         id: writer_test
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && !inputs.sync_only && !inputs.planner_only && !inputs.source_test }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && !inputs.sync_only && !inputs.planner_only && !inputs.source_test && !inputs.simple_writer_test }}
         continue-on-error: true
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           BLOG_PUBLISH: "false"
         run: node scripts/blog-writer.mjs
+
+      - name: Run simple writer free self-test
+        id: simple_writer_self_test
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.simple_writer_test && !inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test }}
+        env:
+          BLOG_SIMPLE_SELF_TEST: "true"
+        run: node scripts/blog-writer-simple.mjs
+
+      - name: Generate private simple Markdown test draft
+        id: simple_writer_test
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.simple_writer_test && steps.simple_writer_self_test.outcome == 'success' }}
+        continue-on-error: true
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          SIMPLE_TOPIC_ID: "bank-034"
+        run: node scripts/blog-writer-simple.mjs
 
       - name: Generate and publish production article
         id: writer
@@ -372,6 +400,15 @@ jobs:
         with:
           name: apxn-private-draft-${{ github.run_number }}
           path: .workflow-output/drafts/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload simple writer artifact
+        if: ${{ always() && (steps.simple_writer_test.outcome == 'success' || steps.simple_writer_test.outcome == 'failure') }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: apxn-simple-writer-${{ github.run_number }}
+          path: .workflow-output/simple-writer/
           if-no-files-found: ignore
           retention-days: 7
 
@@ -512,6 +549,34 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
+      - name: Preserve simple writer test API cost only
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.simple_writer_test && (steps.simple_writer_test.outcome == 'success' || steps.simple_writer_test.outcome == 'failure') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "APXN Blog Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          if [ -f data/blog-costs.json ]; then
+            git add data/blog-costs.json
+          fi
+
+          if git diff --cached --quiet; then
+            echo "No xAI cost change to commit."
+            git reset --hard HEAD
+            git clean -fd
+            exit 0
+          fi
+
+          git commit -m "chore(blog): record simple Grok test usage"
+
+          git reset --hard HEAD
+          git clean -fd
+
+          git pull --rebase origin main
+          git push origin HEAD:main
+
       - name: Preserve production failure state
         if: ${{ steps.writer.outcome == 'failure' || (steps.writer.outcome == 'success' && steps.sync.outcome == 'failure') }}
         shell: bash
@@ -550,6 +615,13 @@ jobs:
         run: |
           echo "The private evidence-grounded writer test failed."
           echo "Check the Generate private writer test draft step for details."
+          exit 1
+
+      - name: Fail if simple writer test failed
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.simple_writer_test && steps.simple_writer_test.outcome == 'failure' }}
+        run: |
+          echo "The experimental one-call Markdown writer test failed."
+          echo "Check the simple writer artifact and generation step before any retry."
           exit 1
 
       - name: Fail if production generation failed
