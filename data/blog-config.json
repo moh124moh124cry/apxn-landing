@@ -85,7 +85,7 @@
 
   "cost_control": {
     "enabled": true,
-    "monthly_budget_usd": 1.0,
+    "monthly_budget_usd": 1.2,
     "maximum_cost_per_article_usd": 0.1,
     "stop_when_monthly_budget_reached": true,
     "track_exact_api_cost": true,
