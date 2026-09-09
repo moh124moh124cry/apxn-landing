@@ -49,7 +49,7 @@ const MAX_TEST_TOPIC_ATTEMPTS = 1;
 const EVIDENCE_OUTPUT_TOKEN_CAP = 1_600;
 const EVIDENCE_AUDIT_OUTPUT_TOKEN_CAP = 1_100;
 const EVIDENCE_RESEARCH_MAX_TURNS = 1;
-const VERIFIER_OUTPUT_TOKEN_CAP = 1_800;
+const VERIFIER_OUTPUT_TOKEN_CAP = 3_000;
 const MAX_ARTICLE_SENTENCE_INVENTORY = 220;
 const MIN_EXTERNAL_VERIFIED_CLAIMS = 3;
 const MIN_APXN_VERIFIED_CLAIMS = 2;
@@ -891,52 +891,22 @@ function buildVerificationSchema() {
     type: "object",
     additionalProperties: false,
     required: [
-      "verdict", "confidence", "summary", "checked_claims", "issues",
+      "verdict", "confidence", "summary",
       "coverage_complete", "covered_claims", "nonfactual_sentence_ids", "uncovered_claims"
     ],
     properties: {
       verdict: { type: "string", enum: ["pass", "fix"] },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
       summary: { type: "string" },
-      checked_claims: {
-        type: "array",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          required: ["claim", "status", "importance", "source_urls"],
-          properties: {
-            claim: { type: "string" },
-            status: { type: "string", enum: ["verified", "incorrect", "outdated", "uncertain", "not_applicable"] },
-            importance: { type: "string", enum: ["critical", "major", "minor"] },
-            source_urls: { type: "array", items: { type: "string" } }
-          }
-        }
-      },
-      issues: {
-        type: "array",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          required: ["claim", "problem", "correction", "severity", "source_urls"],
-          properties: {
-            claim: { type: "string" },
-            problem: { type: "string" },
-            correction: { type: "string" },
-            severity: { type: "string", enum: ["critical", "major", "minor"] },
-            source_urls: { type: "array", items: { type: "string" } }
-          }
-        }
-      },
       coverage_complete: { type: "boolean" },
       covered_claims: {
         type: "array",
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["sentence_id", "claim", "evidence_ids"],
+          required: ["sentence_id", "evidence_ids"],
           properties: {
             sentence_id: { type: "string" },
-            claim: { type: "string" },
             evidence_ids: { type: "array", items: { type: "string" } }
           }
         }
@@ -950,10 +920,9 @@ function buildVerificationSchema() {
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["sentence_id", "claim", "problem", "correction", "severity", "evidence_ids"],
+          required: ["sentence_id", "problem", "correction", "severity", "evidence_ids"],
           properties: {
             sentence_id: { type: "string" },
-            claim: { type: "string" },
             problem: { type: "string" },
             correction: { type: "string" },
             severity: { type: "string", enum: ["critical", "major", "minor"] },
@@ -1350,9 +1319,13 @@ Check every material factual claim, especially:
 - claims using current, now, latest, today, always, never, guaranteed or typically;
 - APXN project claims against the supplied reviewed knowledge when in APXN mode.
 
-In audited-evidence mode, a claim is verified only if the Evidence Pack directly supports the wording. Use the supporting fact source_urls in checked_claims. If a claim is missing from the evidence, mark it uncertain and request removal rather than filling the gap from memory.
+In audited-evidence mode, a factual sentence is covered only if the Evidence Pack directly supports its wording.
+Keep the response compact:
+- For covered_claims return ONLY sentence_id and evidence_ids. Do not repeat the sentence text.
+- For nonfactual_sentence_ids return ONLY sentence IDs.
+- For uncovered_claims return sentence_id plus a short problem and short correction. Do not repeat the full sentence.
 Historical facts are allowed only when clearly described as historical.
-If wording is too broad, absolute, misleading or unsupported, create an issue with a precise correction or instruct removal.
+If wording is too broad, absolute, misleading or unsupported, place that sentence in uncovered_claims.
 Return JSON only.
 `.trim();
 }
@@ -1581,42 +1554,12 @@ function buildArticleSentenceInventory(article) {
 }
 
 function normalizeVerificationReport(raw, research) {
-  const checkedClaims = (Array.isArray(raw?.checked_claims) ? raw.checked_claims : [])
-    .map((item) => ({
-      claim: normalizeSpace(item?.claim),
-      status: normalizeSpace(item?.status),
-      importance: normalizeSpace(item?.importance),
-      source_urls: uniqueStrings(item?.source_urls, 8).filter((url) => {
-        const safe = safeUrl(url);
-        if (!safe) return false;
-        if (!research.enabled) return true;
-        return research.allowed_domains.some((domain) => domainMatches(hostnameOf(safe), domain));
-      })
-    }))
-    .filter((item) => item.claim);
-
-  const issues = (Array.isArray(raw?.issues) ? raw.issues : [])
-    .map((item) => ({
-      claim: normalizeSpace(item?.claim),
-      problem: normalizeSpace(item?.problem),
-      correction: normalizeSpace(item?.correction),
-      severity: normalizeSpace(item?.severity),
-      source_urls: uniqueStrings(item?.source_urls, 8).filter((url) => {
-        const safe = safeUrl(url);
-        if (!safe) return false;
-        if (!research.enabled) return true;
-        return research.allowed_domains.some((domain) => domainMatches(hostnameOf(safe), domain));
-      })
-    }))
-    .filter((item) => item.claim || item.problem);
-
   const coveredClaims = (Array.isArray(raw?.covered_claims) ? raw.covered_claims : [])
     .map((item) => ({
       sentence_id: normalizeSpace(item?.sentence_id).toUpperCase(),
-      claim: normalizeSpace(item?.claim),
       evidence_ids: uniqueStrings(item?.evidence_ids, 12)
     }))
-    .filter((item) => item.sentence_id && item.claim);
+    .filter((item) => item.sentence_id);
 
   const nonfactualSentenceIds = uniqueStrings(
     (Array.isArray(raw?.nonfactual_sentence_ids) ? raw.nonfactual_sentence_ids : [])
@@ -1627,20 +1570,19 @@ function normalizeVerificationReport(raw, research) {
   const uncoveredClaims = (Array.isArray(raw?.uncovered_claims) ? raw.uncovered_claims : [])
     .map((item) => ({
       sentence_id: normalizeSpace(item?.sentence_id).toUpperCase(),
-      claim: normalizeSpace(item?.claim),
       problem: normalizeSpace(item?.problem),
       correction: normalizeSpace(item?.correction),
       severity: normalizeSpace(item?.severity),
       evidence_ids: uniqueStrings(item?.evidence_ids, 12)
     }))
-    .filter((item) => item.sentence_id && (item.claim || item.problem));
+    .filter((item) => item.sentence_id && item.problem);
 
   return {
     verdict: raw?.verdict === "pass" ? "pass" : "fix",
     confidence: ["high", "medium", "low"].includes(raw?.confidence) ? raw.confidence : "low",
     summary: normalizeSpace(raw?.summary),
-    checked_claims: checkedClaims,
-    issues,
+    checked_claims: [],
+    issues: [],
     coverage_complete: raw?.coverage_complete === true,
     covered_claims: coveredClaims,
     nonfactual_sentence_ids: nonfactualSentenceIds,
@@ -1697,7 +1639,7 @@ function validateClaimCoverage(report, research, evidencePack, sentenceInventory
   for (const item of report?.uncovered_claims || []) {
     markSentence(item.sentence_id, "uncovered_claims");
     errors.push(
-      `Uncovered factual sentence ${item.sentence_id}: ${item.problem || item.claim || "unsupported factual content"}`
+      `Uncovered factual sentence ${item.sentence_id}: ${item.problem || "unsupported factual content"}`
     );
   }
 
@@ -1732,37 +1674,13 @@ function validateClaimCoverage(report, research, evidencePack, sentenceInventory
 
 function verificationPasses(report, research, evidencePack = null) {
   if (!report || report.verdict !== "pass" || report.confidence === "low") return false;
-  if (report.issues.length > 0) return false;
-
-  const bad = report.checked_claims.filter((item) =>
-    ["incorrect", "outdated", "uncertain"].includes(item.status)
-  );
-  if (bad.length > 0) return false;
-
-  const verifiedClaims = report.checked_claims.filter((item) => item.status === "verified");
-  if (verifiedClaims.length < Number(research.minimum_verified_claims || 1)) return false;
-
-  if (research.enabled) {
-    const evidenceSourceKeys = new Set(
-      (evidencePack?.sources || []).map((source) => canonicalUrlKey(source.url)).filter(Boolean)
-    );
-    const sourcedVerified = verifiedClaims.filter((item) =>
-      item.source_urls.some((url) => evidenceSourceKeys.has(canonicalUrlKey(url)))
-    );
-    if (sourcedVerified.length < Number(research.minimum_verified_claims || 1)) return false;
-  }
-
+  if (report.coverage_complete !== true) return false;
+  if ((report.uncovered_claims || []).length > 0) return false;
   return true;
 }
 
 function combinedVerificationSources(resultSources, report) {
-  const reportSources = [];
-  for (const item of [...(report?.checked_claims || []), ...(report?.issues || [])]) {
-    for (const url of item?.source_urls || []) {
-      reportSources.push({ url, title: hostnameOf(url), domain: hostnameOf(url) });
-    }
-  }
-  return mergeSources(resultSources, reportSources);
+  return mergeSources(resultSources);
 }
 
 function detectRiskyLanguage(article) {
@@ -2515,8 +2433,8 @@ function addManifestRecord({
     verification: {
       verdict: verification?.verdict || null,
       confidence: verification?.confidence || null,
-      checked_claims: verification?.checked_claims?.length || 0,
-      issues: verification?.issues?.length || 0,
+      checked_claims: verification?.covered_claims?.length || 0,
+      issues: verification?.uncovered_claims?.length || 0,
       coverage_complete: verification?.coverage_complete === true,
       covered_factual_sentences: verification?.covered_claims?.length || 0,
       uncovered_factual_sentences: verification?.uncovered_claims?.length || 0
@@ -2936,8 +2854,8 @@ async function processTopic({
 
   console.log(`Words: ${quality.words}`);
   console.log(`Verification: ${verification.verdict} / ${verification.confidence}`);
-  console.log(`Verified claims: ${verification.checked_claims.filter((item) => item.status === "verified").length}`);
-  console.log(`Verification issues: ${verification.issues.length}`);
+  console.log(`Verified claims: ${verification.covered_claims.length}`);
+  console.log(`Verification issues: ${verification.uncovered_claims.length}`);
   console.log(`Sentence inventory: ${claimCoverage.sentence_count}`);
   console.log(`Covered factual sentences: ${claimCoverage.covered_factual_sentences}`);
   console.log(`Uncovered factual sentences: ${claimCoverage.uncovered_factual_sentences}`);
@@ -2950,7 +2868,7 @@ async function processTopic({
     const reasons = [
       ...quality.errors,
       ...article.review_reasons,
-      ...verification.issues.map((issue) => `${issue.severity}: ${issue.problem}`),
+      ...verification.uncovered_claims.map((issue) => `${issue.severity}: ${issue.problem}`),
       verification.summary
     ].filter(Boolean);
 
