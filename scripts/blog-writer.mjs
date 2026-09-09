@@ -46,7 +46,7 @@ const MAX_RECORDED_SOURCES = 8;
 const MAX_CORRECTION_ROUNDS = 2;
 const MAX_PRODUCTION_TOPIC_ATTEMPTS = 3;
 const MAX_TEST_TOPIC_ATTEMPTS = 1;
-const EVIDENCE_OUTPUT_TOKEN_CAP = 1_600;
+const EVIDENCE_OUTPUT_TOKEN_CAP = 1_800;
 const EVIDENCE_AUDIT_OUTPUT_TOKEN_CAP = 1_100;
 const EVIDENCE_RESEARCH_MAX_TURNS = 1;
 const VERIFIER_OUTPUT_TOKEN_CAP = 3_000;
@@ -55,6 +55,8 @@ const MIN_EXTERNAL_VERIFIED_CLAIMS = 3;
 const MIN_APXN_VERIFIED_CLAIMS = 2;
 const MIN_REPAIR_BUDGET_USD = 0.012;
 const MAX_EVIDENCE_FACTS = 10;
+const EVIDENCE_TARGET_FACTS = 6;
+const EVIDENCE_TARGET_SOURCE_PAGES = 2;
 
 /* -------------------------------------------------------------------------- */
 /* Utilities                                                                  */
@@ -321,6 +323,85 @@ function buildResearchPlan(topic) {
     minimum_sources: Math.min(2, domains.length || 1),
     minimum_verified_claims: MIN_EXTERNAL_VERIFIED_CLAIMS
   };
+}
+
+function buildEvidenceCoveragePlan(topic) {
+  const text = `${topic?.topic || ""} ${topic?.category || ""}`.toLowerCase();
+
+  if (/\b(bsc|bnb smart chain|bnb chain|bep-?20|gas fee)\b/.test(text)) {
+    return [
+      "current network identity, purpose and relationship to the broader BNB Chain ecosystem",
+      "BEP-20 token standard basics and what the standard defines",
+      "how gas and transaction fees work, including the native asset used for gas when officially documented",
+      "current network behavior or performance details that are directly documented and relevant to users",
+      "wallet/address/network-selection implications that official documentation explicitly supports",
+      "safe transfer or bridge considerations that can be stated without speculation"
+    ];
+  }
+
+  if (/\btelegram\b/.test(text) && /\b(initdata|authentication|auth|mini app security)\b/.test(text)) {
+    return [
+      "what Telegram Mini App authentication data is and where it comes from",
+      "the official validation/signature process",
+      "freshness or expiration guidance documented by Telegram",
+      "server-side trust boundaries and what must not be trusted from the client alone",
+      "relevant security handling guidance for initData or user identity",
+      "practical developer implications supported by Telegram documentation"
+    ];
+  }
+
+  if (/\b(security|phishing|private key|seed phrase|authentication|account security)\b/.test(text)) {
+    return [
+      "the threat or security concept being explained",
+      "officially recommended preventive controls",
+      "credential, private-key, seed-phrase or authentication handling where relevant",
+      "phishing or social-engineering protections where relevant",
+      "recovery, incident-response or account-protection guidance where officially documented",
+      "important limitations or user responsibilities that prevent overpromising security"
+    ];
+  }
+
+  if (/\b(ethereum|smart contract|solidity|evm)\b/.test(text)) {
+    return [
+      "what the technology is and its role",
+      "how accounts, transactions or the execution environment work",
+      "how gas or execution costs are described by official documentation",
+      "smart-contract behavior relevant to the topic",
+      "current protocol or developer constraints that materially affect users",
+      "security or operational considerations supported by primary documentation"
+    ];
+  }
+
+  if (/\b(blockchain|bitcoin|proof of work)\b/.test(text)) {
+    return [
+      "the core concept and terminology",
+      "how transactions are recorded and validated",
+      "the relevant consensus or validation model without oversimplifying it",
+      "fees or resource costs where the official source supports them",
+      "wallet/key implications relevant to users",
+      "network-specific limitations or differences that matter for safe use"
+    ];
+  }
+
+  if (/\b(web3|decentralized|dapp|dapps|wallet)\b/.test(text)) {
+    return [
+      "the core concept and how official documentation defines or describes it",
+      "the main components involved, such as wallets, applications, networks or contracts",
+      "how user authorization or transactions work where relevant",
+      "permissions and trust boundaries",
+      "security or privacy considerations",
+      "practical limitations and safe-use guidance supported by primary sources"
+    ];
+  }
+
+  return [
+    "clear definition and scope of the topic",
+    "how the system, feature or concept works",
+    "the main components or actors involved",
+    "current constraints, limits or status when officially documented",
+    "practical implications for users or developers",
+    "security, reliability or safe-use considerations supported by primary sources"
+  ];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1100,26 +1181,35 @@ async function callStructuredXAI({
 function buildEvidenceResearchInstructions(research) {
   return `
 You are the research librarian for an automated English educational blog.
-Do NOT write an article. Build a compact Evidence Pack from web_search using ONLY these official domains: ${research.allowed_domains.join(", ")}.
+Do NOT write an article. Build a compact but sufficiently rich Evidence Pack from web_search using ONLY these official domains: ${research.allowed_domains.join(", ")}.
 
-RULES:
+RESEARCH STRATEGY:
+- Work within ONE research turn, but use multiple targeted searches/opens in parallel when useful.
+- Do not stop after the first useful page. Aim to inspect at least ${EVIDENCE_TARGET_SOURCE_PAGES} distinct official page URLs when the documentation provides them.
+- Aim for about ${EVIDENCE_TARGET_FACTS} independently useful facts, while never exceeding the configured maximum.
+- Treat the supplied coverage_plan as research QUESTIONS, not assumed facts. Try to gather evidence across as many coverage dimensions as the official documentation safely supports.
+- Before returning, self-check whether you have enough distinct evidence to support a useful article. If you are below the minimum facts, use another targeted official page/search within the same turn before giving up.
+
+EVIDENCE RULES:
 - Prefer current official documentation over old announcements, archived pages, community posts, forums, SEO pages or model memory.
-- Use the smallest research footprint that can answer the topic safely: usually 2-3 official pages total. Do not keep exploring once enough evidence is collected.
 - Every fact must be directly supported by at least one page you actually opened through web_search.
-- For every fact, write supporting_evidence as a concise PARAPHRASE (normally 1-2 sentences) of what the official page supports. Do not copy long passages.
+- Make facts atomic: if one sentence would require two separate pieces of evidence, split it into separate facts.
+- For every fact, supporting_evidence must be a concise but audit-ready paraphrase (usually 20-60 words) that explains exactly what the official page supports. Do not merely say that the documentation confirms the claim.
 - source_urls must contain only URLs you actually used from the allowed official domains.
-- Keep only facts that are materially useful to the requested topic; aim for 5-8 strong facts and never exceed the configured maximum.
+- Prefer several strong facts from authoritative pages over many weak or repetitive facts.
 - For changing facts (versions, fees, speeds, counts, current architecture, feature state), verify what is current as of ${todayISO()}.
 - If a page is historical, label the fact historical and never present it as current.
 - If official sources conflict and you cannot resolve the conflict confidently, put it in conflicts with resolved=false and OMIT that fact from facts.
 - Avoid fragile live metrics unless they are central to the topic.
-- Do not invent or infer unsupported precise values.
-- Mark sufficient=false if you cannot collect enough authoritative evidence to write a useful article safely.
+- Do not invent, infer, interpolate or combine unsupported precise values.
+- Mark sufficient=false only if, after targeted official research, you still cannot collect at least the requested minimum number of directly supported facts for a useful accurate article.
 - Return JSON only.
 `.trim();
 }
 
 function buildEvidenceResearchInput(queueItem, research) {
+  const coveragePlan = buildEvidenceCoveragePlan(queueItem);
+
   return JSON.stringify({
     current_date: todayISO(),
     topic: queueItem.topic,
@@ -1127,7 +1217,10 @@ function buildEvidenceResearchInput(queueItem, research) {
     allowed_domains: research.allowed_domains,
     minimum_sources: research.minimum_sources,
     minimum_facts: research.minimum_verified_claims,
-    maximum_facts: MAX_EVIDENCE_FACTS
+    target_facts: Math.min(MAX_EVIDENCE_FACTS, Math.max(EVIDENCE_TARGET_FACTS, Number(research.minimum_verified_claims || 1) + 2)),
+    target_source_pages: Math.max(EVIDENCE_TARGET_SOURCE_PAGES, Number(research.minimum_sources || 1)),
+    maximum_facts: MAX_EVIDENCE_FACTS,
+    coverage_plan: coveragePlan
   }, null, 2);
 }
 
@@ -1232,13 +1325,16 @@ RULES:
 - Return a REPLACEMENT Evidence Pack, not commentary.
 - Keep a fact only when its supporting_evidence directly supports the exact wording of the claim.
 - Keep only source_urls that are present in source_registry.
-- Tighten or narrow wording when the supporting evidence is narrower than the original claim.
+- Prefer NARROWING a partly overbroad claim to the portion directly supported by its evidence instead of deleting the whole fact when a safe supported core remains.
+- Split nothing and invent nothing: each retained fact must still be supported by the evidence already supplied.
 - Remove unsupported precision, broad generalizations, stale/current ambiguity, or claims that require facts not present in supporting_evidence.
 - Historical facts must remain clearly historical.
 - Current facts must be worded only as strongly as the supporting evidence allows.
 - If two candidate facts conflict and the supplied evidence cannot resolve the conflict, record it as unresolved and omit the disputed fact.
 - Do not invent replacement facts from memory.
-- Mark sufficient=false if the remaining audited facts are not enough for a useful accurate article.
+- The minimum passing target is ${Number(research.minimum_verified_claims || 1)} directly supported facts with no unresolved conflicts.
+- Do not mark sufficient=false merely because every optional coverage dimension was not researched. Mark sufficient=true when at least the minimum facts survive and those facts are coherent enough to support an accurate article that can omit unsupported subtopics.
+- Mark sufficient=false when fewer than the minimum facts survive, the remaining evidence is internally contradictory, or the topic could not be explained accurately without unsupported additions.
 Return JSON only.
 `.trim();
 }
