@@ -46,9 +46,9 @@ const MAX_SOURCE_BYTES = 700_000;
 const MAX_EXCERPT_CHARS = 2_000;
 const MAX_TOTAL_EXCERPT_CHARS = 24_000;
 const MAX_EXCERPTS_PER_SOURCE = 3;
-const MIN_EXTERNAL_EVIDENCE_FACTS = 12;
-const MAX_EXTERNAL_EVIDENCE_FACTS = 18;
-const EVIDENCE_OUTPUT_TOKENS = 2_200;
+const MIN_EXTERNAL_EVIDENCE_FACTS = 16;
+const MAX_EXTERNAL_EVIDENCE_FACTS = 24;
+const EVIDENCE_OUTPUT_TOKENS = 3_200;
 const ARTICLE_OUTPUT_TOKENS = 5_400;
 const VERIFIER_OUTPUT_TOKENS = 2_400;
 const MAX_TARGETED_REPAIR_ROUNDS = 1;
@@ -372,7 +372,11 @@ function nextArticleId(articles) {
 }
 
 function numericTokens(value) {
-  const text = String(value || "").toLowerCase();
+  // Protocol/standard identifiers such as BEP-20, ERC-20 and EIP-20 are
+  // names, not numeric claims. Remove them before checking supported numbers.
+  const text = String(value || "")
+    .toLowerCase()
+    .replace(/\b(?:bep|erc|eip)[ -]?\d+\b/gi, " ");
   const matches = text.match(/(?:[$€£]\s*)?\b\d+(?:[.,]\d+)?(?:\s*%|\s*(?:gwei|wei|bnb|eth|usdt|seconds?|minutes?|hours?|days?|weeks?|months?|years?|blocks?|validators?|transactions?))?/gi) || [];
   return uniqueStrings(matches.map((item) => normalizeSpace(item).toLowerCase().replace(/,/g, "")), 40);
 }
@@ -864,7 +868,7 @@ You receive selected excerpts fetched DIRECTLY from official sources for the top
 
 STRICT RULES:
 - Use ONLY the supplied source excerpts. Never use memory or outside knowledge.
-- Produce ${MIN_EXTERNAL_EVIDENCE_FACTS}-${MAX_EXTERNAL_EVIDENCE_FACTS} useful ATOMIC facts when the excerpts support them.
+- Produce ${MIN_EXTERNAL_EVIDENCE_FACTS}-${MAX_EXTERNAL_EVIDENCE_FACTS} useful ATOMIC facts when the excerpts support them. Prefer the upper half of this range when the official material is rich enough, because each fact will become its own short evidence paragraph.
 - Each fact must contain exactly one material claim.
 - support_quote must be copied VERBATIM from one supplied excerpt and should normally be 30-220 characters.
 - source_url must exactly match the URL attached to that excerpt.
@@ -1003,41 +1007,26 @@ function blockDraftSchema(config) {
 function buildEvidenceBlockPlan({ config, queueItem, evidence }) {
   const facts = (evidence?.facts || []).slice(0, MAX_EXTERNAL_EVIDENCE_FACTS);
   if (facts.length < MIN_EXTERNAL_EVIDENCE_FACTS) {
-    fail(`Cannot build six evidence section packs from only ${facts.length} external evidence facts; at least ${MIN_EXTERNAL_EVIDENCE_FACTS} are required.`);
+    fail(`Cannot build a long-form atomic evidence article from only ${facts.length} external evidence facts; at least ${MIN_EXTERNAL_EVIDENCE_FACTS} are required.`);
   }
 
+  // Accuracy from Run #19 came from one fact per block. Keep that invariant,
+  // but use more atomic facts and group those short paragraphs under 6 headings.
   const sectionCount = 6;
   const target = Number(config?.writer?.target_words || 1500);
-  const bodyTarget = Math.max(1260, target - 180);
-  const perSectionTarget = clampNumber(Math.ceil(bodyTarget / sectionCount), 200, 235);
+  const bodyTarget = Math.max(1120, target - 260);
+  const perBlockTarget = clampNumber(Math.ceil(bodyTarget / facts.length), 58, 82);
 
-  const baseSize = Math.floor(facts.length / sectionCount);
-  const remainder = facts.length % sectionCount;
-  const plan = [];
-  let cursor = 0;
-
-  for (let index = 0; index < sectionCount; index += 1) {
-    const packSize = baseSize + (index < remainder ? 1 : 0);
-    const pack = facts.slice(cursor, cursor + packSize);
-    cursor += packSize;
-
-    if (pack.length < 2 || pack.length > 3) {
-      fail(`Evidence section pack ${index + 1} received ${pack.length} facts; expected 2-3.`);
-    }
-
-    plan.push({
-      block_id: `B${String(index + 1).padStart(2, "0")}`,
-      section_slot: index + 1,
-      desired_words: perSectionTarget,
-      min_words: Math.max(180, perSectionTarget - 25),
-      max_words: Math.min(260, perSectionTarget + 30),
-      evidence_ids: pack.map((fact) => fact.id),
-      evidence: pack,
-      editorial_focus: pack.map((fact) => fact.claim).join(" | ")
-    });
-  }
-
-  return plan;
+  return facts.map((fact, index) => ({
+    block_id: `B${String(index + 1).padStart(2, "0")}`,
+    section_slot: Math.min(sectionCount, Math.floor((index * sectionCount) / facts.length) + 1),
+    desired_words: perBlockTarget,
+    min_words: Math.max(50, perBlockTarget - 10),
+    max_words: Math.min(100, perBlockTarget + 18),
+    evidence_ids: [fact.id],
+    evidence: fact,
+    editorial_focus: fact.claim
+  }));
 }
 
 function buildKnowledgeBlockPlan({ config, queueItem }) {
@@ -1082,20 +1071,20 @@ You are the APXN Blog evidence-block writer.
 Write an accurate ENGLISH-ONLY educational article about:
 "${queueItem.topic}"
 
-IMPORTANT: You are NOT writing a free-form article. You are filling six fixed evidence SECTION PACKS.
+IMPORTANT: You are NOT writing a free-form article. You are filling a fixed set of ATOMIC evidence paragraphs that are grouped under six section headings.
 
-SECTION-PACK RULES:
+ATOMIC BLOCK RULES:
 - Return exactly one block for every supplied block_id, with no missing IDs, no duplicate IDs, and no extra IDs.
-- Each block is one complete section narrative built from 2-3 assigned evidence facts.
+- Each block is one short paragraph built from exactly ONE assigned evidence fact.
 - Never merge two block IDs.
-- Each block must stay inside the evidence assigned to THAT block.
-- You may connect, compare, or sequence the assigned facts only when that connection is directly supported by those same facts.
+- Each block must stay inside the single evidence fact assigned to THAT block.
+- Do not connect this block to facts from another block, even when the connection seems obvious.
 - Do not use facts assigned to a different block.
 - Do not add plausible background knowledge from memory.
 - Do not invent examples, numbers, fees, balances, durations, comparisons, causes, recommendations, security advice, bridge behavior, validator behavior, or current-status claims.
-- A block should explain all of its assigned facts in beginner-friendly language, using the richer 2-3-fact pack to create a coherent section without filler.
-- Every factual sentence must remain a faithful paraphrase or direct synthesis of the assigned evidence.
-- Keep each block near its desired_words and inside its min_words/max_words. Treat min_words as a hard drafting target unless the evidence genuinely cannot support it.
+- A block should explain its one assigned fact in beginner-friendly language without adding implications, recommendations, causes, comparisons, examples, or adjacent facts.
+- Every factual sentence must remain a faithful paraphrase of that one assigned evidence claim/quote.
+- Keep each block near its desired_words and inside its min_words/max_words. Use clarification and careful restatement, not new factual content, to reach the target.
 - Do not repeat a sentence, paragraph, example, or explanation from another block.
 - The blocks are already ordered. Keep that order.
 - Create exactly ${sectionCount} concise section headings, one for every section_slot in the plan.
@@ -1110,7 +1099,7 @@ FAQ RULES:
 
 ${external ? `
 EXTERNAL EVIDENCE MODE:
-- The assigned evidence array for each block is the ONLY authority for that block.
+- The single assigned evidence object for each block is the ONLY authority for that block.
 - source URLs and support quotes are supplied for grounding; do not cite or quote them verbatim in the prose unless natural.
 ` : `
 APXN KNOWLEDGE MODE:
@@ -1148,7 +1137,7 @@ function blockWriterInput({ queueItem, config, knowledge, evidence, blockPlan })
       min_words: item.min_words,
       max_words: item.max_words,
       assigned_evidence_ids: item.evidence_ids,
-      assigned_evidence: evidence ? item.evidence : undefined,
+      assigned_evidence: evidence ? [item.evidence] : undefined,
       editorial_focus: item.editorial_focus
     })),
     apxn_knowledge: evidence ? undefined : knowledge
@@ -1354,11 +1343,11 @@ function localArticleChecks({ article, config, manifest, evidence, knowledge, bl
     const plannedEvidenceIds = blockPlan.flatMap((item) => item.evidence_ids);
     for (const id of plannedEvidenceIds) {
       const uses = bodyEvidenceIds.filter((candidate) => candidate === id).length;
-      if (uses !== 1) errors.push(`Evidence ${id} must be used exactly once in body section packs; found ${uses}.`);
+      if (uses !== 1) errors.push(`Evidence ${id} must be used exactly once in atomic body blocks; found ${uses}.`);
     }
     const unexpectedEvidence = bodyEvidenceIds.filter((id) => !plannedEvidenceIds.includes(id));
     if (unexpectedEvidence.length) {
-      errors.push(`Body section packs reference evidence outside the deterministic plan: ${uniqueStrings(unexpectedEvidence, 30).join(", ")}.`);
+      errors.push(`Atomic body blocks reference evidence outside the deterministic plan: ${uniqueStrings(unexpectedEvidence, 30).join(", ")}.`);
     }
   }
 
@@ -1680,7 +1669,7 @@ RULES:
   ? "Use ONLY assigned_evidence for that unit. Never use other evidence or model memory."
   : "Use ONLY the reviewed APXN knowledge supplied for that unit."}
 - Remove unsupported assertions instead of replacing them with other unsupported advice.
-- If expansion is requested, use ALL assigned evidence facts in the section pack, explain their documented relationship carefully, and add clarification only from those facts; do not introduce adjacent facts.
+- If expansion is requested, use only the unit's single assigned evidence fact. Clarify and faithfully restate that fact without introducing adjacent facts, implications, recommendations, or new examples.
 - Do not invent numbers, examples, comparisons, causes, recommendations, security advice, timings, balances, fee estimates, or current-status claims.
 - Preserve a neutral beginner-friendly English tone.
 - Return JSON only.
@@ -1768,7 +1757,7 @@ function applyUnitRepairs(article, rawRepairs, targets) {
 
 function runBlockArchitectureSelfTest(config) {
   const mockEvidence = {
-    facts: Array.from({ length: 12 }, (_, index) => ({
+    facts: Array.from({ length: 18 }, (_, index) => ({
       id: `E${String(index + 1).padStart(2, "0")}`,
       claim: `Mock supported fact ${index + 1}`,
       kind: "general",
@@ -1787,10 +1776,10 @@ function runBlockArchitectureSelfTest(config) {
     })),
     blocks: blockPlan.map((item, index) => ({
       block_id: item.block_id,
-      text: `This self-test paragraph ${index + 1} exists only to validate deterministic block assembly and evidence mapping.`
+      text: `This self-test paragraph ${index + 1} exists only to validate deterministic atomic block assembly and evidence mapping.`
     })),
     faq: [
-      { question: "What does this test validate?", answer: "It validates block assembly.", source_block_id: "B01" },
+      { question: "What does this test validate?", answer: "It validates atomic block assembly.", source_block_id: "B01" },
       { question: "Does it call xAI?", answer: "No API call is needed for this local structural test.", source_block_id: "B02" }
     ],
     requires_manual_review: false,
@@ -1800,9 +1789,9 @@ function runBlockArchitectureSelfTest(config) {
   const bodyUnits = buildVerificationUnits(article).filter((unit) => unit.id.startsWith("B"));
   const expected = blockPlan.map((item) => item.block_id).join("|");
   const actual = bodyUnits.map((item) => item.id).join("|");
-  if (expected !== actual) fail("Block architecture self-test failed: body unit IDs do not match section-pack plan.");
-  if (bodyUnits.length !== 6 || sectionCount !== 6) {
-    fail(`Block architecture self-test failed: expected 6 section packs, got ${bodyUnits.length} blocks across ${sectionCount} sections.`);
+  if (expected !== actual) fail("Block architecture self-test failed: body unit IDs do not match atomic block plan.");
+  if (bodyUnits.length !== 18 || sectionCount !== 6) {
+    fail(`Block architecture self-test failed: expected 18 atomic blocks across 6 sections, got ${bodyUnits.length} blocks across ${sectionCount} sections.`);
   }
   const bodyEvidence = bodyUnits.flatMap((item) => item.evidence_ids);
   for (const fact of mockEvidence.facts) {
@@ -1811,11 +1800,11 @@ function runBlockArchitectureSelfTest(config) {
     }
   }
   for (const item of blockPlan) {
-    if (item.evidence_ids.length < 2 || item.evidence_ids.length > 3) {
-      fail(`Block architecture self-test failed: ${item.block_id} has ${item.evidence_ids.length} evidence facts instead of 2-3.`);
+    if (item.evidence_ids.length !== 1) {
+      fail(`Block architecture self-test failed: ${item.block_id} must have exactly one evidence fact.`);
     }
   }
-  console.log(`Block architecture self-test: PASS (6 section packs, 6 sections, 2 evidence facts per pack in the 12-fact test, exact evidence mapping).`);
+  console.log(`Block architecture self-test: PASS (18 atomic evidence blocks, 6 sections, one evidence fact per block, exact evidence mapping).`);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -2123,7 +2112,7 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
   }
 
   const blockPlan = buildBlockPlan({ config, queueItem, evidence });
-  console.log(`Deterministic evidence section packs: ${blockPlan.length}`);
+  console.log(`Deterministic atomic evidence blocks: ${blockPlan.length}`);
   console.log(`Deterministic sections: ${Math.max(...blockPlan.map((item) => item.section_slot))}`);
 
   if (!withinPerArticleBudget(config, costEntries, 0.015)) {
@@ -2131,7 +2120,7 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     return { success: false, reason: "budget_before_generation" };
   }
 
-  console.log("Generating six fixed evidence section packs...");
+  console.log("Generating fixed atomic evidence paragraphs...");
   const generation = await generateBlockArticle({ apiKey, model, config, queueItem, knowledge, evidence, blockPlan });
   let article = assembleBlockArticle(generation.generated, queueItem, config, blockPlan);
   let entry = recordCost({
@@ -2397,7 +2386,7 @@ async function main() {
     isTruthyEnv("BLOG_PUBLISH");
   const maxAttempts = publishRequested ? MAX_PRODUCTION_TOPIC_ATTEMPTS : MAX_TEST_TOPIC_ATTEMPTS;
 
-  console.log("APXN Blog Writer — Evidence Block Pipeline");
+  console.log("APXN Blog Writer — Atomic Evidence Pipeline");
   console.log("---------------------------------------------------");
   console.log("Language: English only");
   console.log(`Model: ${model}`);
