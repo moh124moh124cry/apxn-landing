@@ -64,9 +64,10 @@ const VERIFIER_OUTPUT_TOKENS = 1_600;
 const MAX_PRE_AI_TOPIC_ATTEMPTS = 4;
 const MIN_EVIDENCE_WORDS = {
   apxn: 240,
-  external: 320,
-  hybrid: 380
+  external: 800,
+  hybrid: 900
 };
+const MIN_EXTERNAL_EVIDENCE_WORDS = 800;
 
 const CONTENT_MODES = new Set(["apxn", "external", "hybrid", "manual"]);
 
@@ -168,7 +169,7 @@ const ARTICLE_SCHEMA = {
     description: { type: "string" },
     keywords: {
       type: "array",
-      minItems: 0,
+      minItems: 5,
       maxItems: 10,
       items: { type: "string" }
     },
@@ -180,7 +181,7 @@ const ARTICLE_SCHEMA = {
         text: { type: "string" },
         evidence_ids: {
           type: "array",
-          minItems: 0,
+          minItems: 1,
           maxItems: 6,
           items: { type: "string" }
         }
@@ -188,7 +189,7 @@ const ARTICLE_SCHEMA = {
     },
     sections: {
       type: "array",
-      minItems: 0,
+      minItems: 5,
       maxItems: 9,
       items: {
         type: "object",
@@ -220,7 +221,7 @@ const ARTICLE_SCHEMA = {
     },
     faq: {
       type: "array",
-      minItems: 0,
+      minItems: 3,
       maxItems: 5,
       items: {
         type: "object",
@@ -246,7 +247,7 @@ const ARTICLE_SCHEMA = {
         text: { type: "string" },
         evidence_ids: {
           type: "array",
-          minItems: 0,
+          minItems: 1,
           maxItems: 6,
           items: { type: "string" }
         }
@@ -1210,13 +1211,27 @@ function uniqueExternalSourceCount(evidence) {
 
 function validateEvidenceFeasibility(metadata, evidence) {
   const totalWords = totalEvidenceWords(evidence);
-  const required = MIN_EVIDENCE_WORDS[metadata.content_mode] || 320;
+  const externalWords = totalEvidenceWords(
+    evidence.filter((item) => item.kind === "external")
+  );
+  const required = MIN_EVIDENCE_WORDS[metadata.content_mode] || 800;
 
   if (totalWords < required) {
     return {
       ok: false,
       reason:
         `Evidence provides ${totalWords} words; this ${metadata.content_mode} topic requires at least ${required} source/knowledge words before a 1200+ word article is attempted.`
+    };
+  }
+
+  if (
+    ["external", "hybrid"].includes(metadata.content_mode) &&
+    externalWords < MIN_EXTERNAL_EVIDENCE_WORDS
+  ) {
+    return {
+      ok: false,
+      reason:
+        `Official external evidence provides ${externalWords} words; at least ${MIN_EXTERNAL_EVIDENCE_WORDS} external-source words are required before xAI is called.`
     };
   }
 
@@ -1280,6 +1295,45 @@ async function buildEvidence(metadata, knowledge, sourceFile) {
     reason: feasibility.reason,
     evidence: limited,
     diagnostics
+  };
+}
+
+function compactEvidenceDiagnostics(metadata, evidence, diagnostics) {
+  const externalEvidence = evidence.filter((item) => item.kind === "external");
+  const apxnEvidence = evidence.filter((item) => item.kind === "apxn");
+
+  return {
+    topic: metadata.topic,
+    category: metadata.category,
+    content_mode: metadata.content_mode,
+    source_profile: metadata.source_profile,
+    totals: {
+      evidence_items: evidence.length,
+      evidence_words: totalEvidenceWords(evidence),
+      external_passages: externalEvidence.length,
+      external_words: totalEvidenceWords(externalEvidence),
+      apxn_passages: apxnEvidence.length,
+      apxn_words: totalEvidenceWords(apxnEvidence)
+    },
+    external: diagnostics?.external
+      ? {
+          profile_id: diagnostics.external.profile_id || metadata.source_profile || null,
+          fetched_source_count: Number(
+            diagnostics.external.fetched_source_count || 0
+          ),
+          fetch_errors: Array.isArray(diagnostics.external.fetch_errors)
+            ? diagnostics.external.fetch_errors
+            : []
+        }
+      : null,
+    apxn: diagnostics?.apxn
+      ? {
+          evidence_items: Array.isArray(diagnostics.apxn.evidence)
+            ? diagnostics.apxn.evidence.length
+            : apxnEvidence.length,
+          reason: diagnostics.apxn.reason || null
+        }
+      : null
   };
 }
 
@@ -1630,6 +1684,7 @@ async function callStructuredXai({
     return {
       responseJson: json,
       parsed,
+      rawText: text,
       model
     };
   } finally {
@@ -1702,7 +1757,8 @@ function generationInstructions() {
     "The article must be original, educational, useful to a real reader, and natural rather than keyword-stuffed.",
     "Do not pad sections merely to hit a word target.",
     "Each factual paragraph must cite one or more supplied evidence IDs in evidence_ids.",
-    "If the evidence cannot honestly support at least 1200 useful words, return status=insufficient_evidence instead of inventing or repeating material.",
+    "The pre-AI evidence gate has already required a substantial evidence base. Produce a complete schema-compliant draft of at least 1200 useful words when the evidence supports it.",
+    "If the evidence still cannot honestly support the required article, set status=insufficient_evidence rather than inventing facts or repeating material; keep every returned field evidence-grounded.",
     "Separate APXN project-specific statements from general technical statements on hybrid topics.",
     "Avoid financial advice, investment recommendations, guaranteed outcomes and promotional hype.",
     "Return only the requested JSON schema."
@@ -2695,9 +2751,49 @@ async function main() {
     fail(`No topic passed the pre-AI evidence gate. Last reason: ${lastPreAiReason}`);
   }
 
-  const { queueItem, metadata, evidence } = selected;
+  const { queueItem, metadata, evidence, diagnostics } = selected;
   const date = todayISO();
   const provisionalSlug = slugify(metadata.topic);
+  const evidenceDiagnostics = compactEvidenceDiagnostics(
+    metadata,
+    evidence,
+    diagnostics
+  );
+
+  fs.mkdirSync(PATHS.privateDrafts, { recursive: true });
+
+  const evidenceDiagnosticsPath = path.join(
+    PATHS.privateDrafts,
+    `${provisionalSlug}.evidence-diagnostics.json`
+  );
+
+  writeJson(evidenceDiagnosticsPath, {
+    generated_at: date,
+    ...evidenceDiagnostics,
+    evidence
+  });
+
+  console.log(`Evidence items: ${evidenceDiagnostics.totals.evidence_items}`);
+  console.log(`Evidence words: ${evidenceDiagnostics.totals.evidence_words}`);
+  console.log(
+    `External evidence: ${evidenceDiagnostics.totals.external_passages} passage(s), ${evidenceDiagnostics.totals.external_words} words`
+  );
+  console.log(
+    `APXN evidence: ${evidenceDiagnostics.totals.apxn_passages} passage(s), ${evidenceDiagnostics.totals.apxn_words} words`
+  );
+
+  if (evidenceDiagnostics.external) {
+    console.log(
+      `Official pages fetched: ${evidenceDiagnostics.external.fetched_source_count}`
+    );
+    console.log(
+      `Official source fetch errors: ${evidenceDiagnostics.external.fetch_errors.length}`
+    );
+  }
+
+  console.log(
+    `Evidence diagnostics saved: ${path.relative(ROOT, evidenceDiagnosticsPath)}`
+  );
   const guards = combinedEditorialGuard(metadata, sourceFile);
   const generationCostReserveUsd = configuredCostReserve(
     config,
@@ -2747,6 +2843,28 @@ async function main() {
 
   let runCostUsd = Number(generationCost.cost_usd || 0);
   assertRunCost(config, runCostUsd);
+
+  const rawGenerationPath = path.join(
+    PATHS.privateDrafts,
+    `${provisionalSlug}.raw-generation.json`
+  );
+
+  writeJson(rawGenerationPath, {
+    generated_at: date,
+    topic: metadata.topic,
+    category: metadata.category,
+    content_mode: metadata.content_mode,
+    source_profile: metadata.source_profile,
+    model: generation.model,
+    response_id: generation.responseJson?.id || null,
+    generation_cost_usd: Number(generationCost.cost_usd || 0),
+    raw_text: generation.rawText,
+    parsed: generation.parsed
+  });
+
+  console.log(
+    `Raw generation saved: ${path.relative(ROOT, rawGenerationPath)}`
+  );
 
   const article = generation.parsed;
 
@@ -2880,8 +2998,6 @@ async function main() {
     manifest
   });
 
-  fs.mkdirSync(PATHS.privateDrafts, { recursive: true });
-
   const privateHtmlPath = path.join(PATHS.privateDrafts, `${finalSlug}.html`);
   const privateJsonPath = path.join(PATHS.privateDrafts, `${finalSlug}.json`);
 
@@ -2896,6 +3012,7 @@ async function main() {
     word_count: local.word_count,
     run_cost_usd: runCostUsd,
     verifier,
+    evidence_diagnostics: evidenceDiagnostics,
     evidence
   });
 
@@ -2971,5 +3088,6 @@ main().catch((error) => {
   console.error(`\nERROR: ${error.message}`);
   process.exitCode = 1;
 });
+
 
 
