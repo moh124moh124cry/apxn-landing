@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "last_reviewed": "2026-09-09",
+  "purpose": "Allowlisted official-source profiles for APXN Blog automated educational content.",
+  "rules": {
+    "open_web_research_allowed": false,
+    "approved_sources_only": true,
+    "https_required": true,
+    "redirects_must_remain_on_allowed_domain": true,
+    "model_memory_as_source_allowed": false,
+    "third_party_blog_sources_allowed": false,
+    "community_forum_sources_allowed": false,
+    "social_media_sources_allowed": false,
+    "volatile_metrics_allowed": false,
+    "source_failure_behavior": "skip_topic",
+    "minimum_distinct_source_pages_is_profile_specific": true
+  },
+  "profiles": {
+    "crypto_token_basics": {
+      "name": "Crypto token fundamentals",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "ethereum.org",
+        "eips.ethereum.org"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum Token Standards",
+          "url": "https://ethereum.org/developers/docs/standards/tokens/"
+        },
+        {
+          "title": "ERC-20 Token Standard",
+          "url": "https://ethereum.org/developers/docs/standards/tokens/erc-20/"
+        },
+        {
+          "title": "EIP-20",
+          "url": "https://eips.ethereum.org/EIPS/eip-20"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "telegram_auth": {
+      "name": "Telegram Mini App authentication",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "core.telegram.org"
+      ],
+      "sources": [
+        {
+          "title": "Telegram Mini Apps",
+          "url": "https://core.telegram.org/bots/webapps"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "postgres_concurrency": {
+      "name": "PostgreSQL concurrency and row locking",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "postgresql.org"
+      ],
+      "sources": [
+        {
+          "title": "PostgreSQL Explicit Locking",
+          "url": "https://www.postgresql.org/docs/current/explicit-locking.html"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "supabase_backend": {
+      "name": "Supabase backend security",
+      "status": "active",
+      "min_sources": 2,
+      "allowed_domains": [
+        "supabase.com"
+      ],
+      "sources": [
+        {
+          "title": "Supabase Auth",
+          "url": "https://supabase.com/docs/guides/auth"
+        },
+        {
+          "title": "Supabase Row Level Security",
+          "url": "https://supabase.com/docs/guides/database/postgres/row-level-security"
+        },
+        {
+          "title": "Supabase Securing Your Data",
+          "url": "https://supabase.com/docs/guides/database/secure-data"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "wallet_connection": {
+      "name": "Wallet connection and custody distinction",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "ethereum.org"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum Wallets",
+          "url": "https://ethereum.org/wallets/"
+        },
+        {
+          "title": "Ethereum Security",
+          "url": "https://ethereum.org/security/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "wallet_basics": {
+      "name": "Wallet and account basics",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "ethereum.org"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum Wallets",
+          "url": "https://ethereum.org/wallets/"
+        },
+        {
+          "title": "Ethereum Accounts",
+          "url": "https://ethereum.org/developers/docs/accounts/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "wallet_security": {
+      "name": "Wallet key and recovery phrase security",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "ethereum.org"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum Security",
+          "url": "https://ethereum.org/security/"
+        },
+        {
+          "title": "Ethereum Wallets",
+          "url": "https://ethereum.org/wallets/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "web3_security": {
+      "name": "Web3 phishing and user security",
+      "status": "active",
+      "min_sources": 2,
+      "allowed_domains": [
+        "ethereum.org",
+        "cisa.gov"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum Security and Scam Prevention",
+          "url": "https://ethereum.org/security/"
+        },
+        {
+          "title": "CISA Secure Our World",
+          "url": "https://www.cisa.gov/be-cyber-smart/report-incident"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "telegram_security": {
+      "name": "Telegram account, bot and impersonation safety",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "telegram.org",
+        "core.telegram.org"
+      ],
+      "sources": [
+        {
+          "title": "Telegram FAQ",
+          "url": "https://telegram.org/faq/?setln=en"
+        },
+        {
+          "title": "Telegram Bots Introduction",
+          "url": "https://core.telegram.org/bots"
+        },
+        {
+          "title": "Telegram Bots FAQ",
+          "url": "https://core.telegram.org/bots/faq"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "smart_contract_approvals": {
+      "name": "Smart contract token approvals",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "ethereum.org",
+        "eips.ethereum.org"
+      ],
+      "sources": [
+        {
+          "title": "ERC-20 Token Standard",
+          "url": "https://ethereum.org/developers/docs/standards/tokens/erc-20/"
+        },
+        {
+          "title": "EIP-20",
+          "url": "https://eips.ethereum.org/EIPS/eip-20"
+        },
+        {
+          "title": "Ethereum Security",
+          "url": "https://ethereum.org/security/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "bsc": {
+      "name": "BNB Smart Chain fundamentals",
+      "status": "active",
+      "min_sources": 2,
+      "allowed_domains": [
+        "docs.bnbchain.org"
+      ],
+      "sources": [
+        {
+          "title": "BNB Smart Chain Introduction",
+          "url": "https://docs.bnbchain.org/bnb-smart-chain/introduction/"
+        },
+        {
+          "title": "BNB Smart Chain Quick Guide",
+          "url": "https://docs.bnbchain.org/bnb-smart-chain/developers/quick-guide/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "bep20": {
+      "name": "BEP-20 token standard",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "raw.githubusercontent.com",
+        "docs.bnbchain.org"
+      ],
+      "sources": [
+        {
+          "title": "BEP-20 Specification — BNB Chain BEPs Repository",
+          "url": "https://raw.githubusercontent.com/bnb-chain/BEPs/master/BEPs/BEP20.md"
+        },
+        {
+          "title": "BNB Smart Chain Introduction",
+          "url": "https://docs.bnbchain.org/bnb-smart-chain/introduction/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "bsc_gas": {
+      "name": "BNB Smart Chain gas and transaction fees",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "docs.bnbchain.org"
+      ],
+      "sources": [
+        {
+          "title": "BNB Smart Chain Quick Guide",
+          "url": "https://docs.bnbchain.org/bnb-smart-chain/developers/quick-guide/"
+        },
+        {
+          "title": "BNB Smart Chain Introduction",
+          "url": "https://docs.bnbchain.org/bnb-smart-chain/introduction/"
+        }
+      ],
+      "volatile_fact_policy": "reject",
+      "editorial_guard": "Explain what gas and transaction fees are. Do not publish current gas-price, fiat-fee, TVL, staking-yield, validator-count, TPS or block-time figures unless a future explicit freshness rule approves them."
+    },
+    "block_explorers": {
+      "name": "Blockchain explorers",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "ethereum.org",
+        "docs.bnbchain.org"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum Block Explorers",
+          "url": "https://ethereum.org/developers/docs/data-and-analytics/block-explorers/"
+        },
+        {
+          "title": "BNB Smart Chain Transaction Checking FAQ",
+          "url": "https://docs.bnbchain.org/bnb-smart-chain/faq/tokens-not-showing-in-wallet/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "blockchain_transactions": {
+      "name": "Blockchain transaction fundamentals",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "ethereum.org"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum Transactions",
+          "url": "https://ethereum.org/developers/docs/transactions/"
+        },
+        {
+          "title": "Technical Introduction to Ethereum",
+          "url": "https://ethereum.org/developers/docs/intro-to-ethereum/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "testnet_mainnet": {
+      "name": "Testnet and mainnet fundamentals",
+      "status": "active",
+      "min_sources": 1,
+      "allowed_domains": [
+        "ethereum.org",
+        "docs.bnbchain.org"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum Networks",
+          "url": "https://ethereum.org/developers/docs/networks/"
+        },
+        {
+          "title": "BNB Smart Chain Testnet Faucet",
+          "url": "https://docs.bnbchain.org/bnb-smart-chain/developers/faucet/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "exchange_models": {
+      "name": "Centralized and decentralized exchange models",
+      "status": "active",
+      "min_sources": 2,
+      "allowed_domains": [
+        "ethereum.org"
+      ],
+      "sources": [
+        {
+          "title": "Ethereum DEX Design Best Practices",
+          "url": "https://ethereum.org/developers/docs/design-and-ux/dex-design-best-practice/"
+        },
+        {
+          "title": "Ethereum Exchange Listing Guidance",
+          "url": "https://ethereum.org/contributing/adding-exchanges/"
+        }
+      ],
+      "volatile_fact_policy": "reject",
+      "editorial_guard": "Explain structural differences only. Do not rank exchanges, recommend trading venues, quote prices, fees, yields or claim that one model is universally safer."
+    },
+    "telegram_web3": {
+      "name": "Telegram Mini Apps and Web3",
+      "status": "active",
+      "min_sources": 2,
+      "allowed_domains": [
+        "core.telegram.org",
+        "ethereum.org"
+      ],
+      "sources": [
+        {
+          "title": "Telegram Mini Apps",
+          "url": "https://core.telegram.org/bots/webapps"
+        },
+        {
+          "title": "Introduction to Web3",
+          "url": "https://ethereum.org/web3/"
+        }
+      ],
+      "volatile_fact_policy": "reject"
+    },
+    "tge_education": {
+      "name": "Token Generation Event education",
+      "status": "manual_only",
+      "min_sources": 0,
+      "allowed_domains": [],
+      "sources": [],
+      "volatile_fact_policy": "reject",
+      "editorial_guard": "Automatic source fetching and automatic publishing are disabled for this profile. A human must approve both the source set and the final article."
+    }
+  }
+}
