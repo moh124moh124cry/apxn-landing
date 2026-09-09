@@ -46,7 +46,7 @@ const MAX_SOURCE_BYTES = 700_000;
 const MAX_EXCERPT_CHARS = 2_000;
 const MAX_TOTAL_EXCERPT_CHARS = 24_000;
 const MAX_EXCERPTS_PER_SOURCE = 3;
-const MIN_EXTERNAL_EVIDENCE_FACTS = 8;
+const MIN_EXTERNAL_EVIDENCE_FACTS = 12;
 const MAX_EXTERNAL_EVIDENCE_FACTS = 18;
 const EVIDENCE_OUTPUT_TOKENS = 2_200;
 const ARTICLE_OUTPUT_TOKENS = 5_400;
@@ -1001,48 +1001,67 @@ function blockDraftSchema(config) {
 }
 
 function buildEvidenceBlockPlan({ config, queueItem, evidence }) {
-  const facts = (evidence?.facts || []).slice(0, 16);
+  const facts = (evidence?.facts || []).slice(0, MAX_EXTERNAL_EVIDENCE_FACTS);
   if (facts.length < MIN_EXTERNAL_EVIDENCE_FACTS) {
-    fail(`Cannot build article blocks from only ${facts.length} external evidence facts.`);
+    fail(`Cannot build six evidence section packs from only ${facts.length} external evidence facts; at least ${MIN_EXTERNAL_EVIDENCE_FACTS} are required.`);
   }
 
+  const sectionCount = 6;
   const target = Number(config?.writer?.target_words || 1500);
-  const sectionCount = clampNumber(Math.round(facts.length / 2), 6, 8);
-  const bodyTarget = Math.max(1080, target - 180);
-  const perBlockTarget = clampNumber(Math.ceil(bodyTarget / facts.length), 78, 165);
+  const bodyTarget = Math.max(1260, target - 180);
+  const perSectionTarget = clampNumber(Math.ceil(bodyTarget / sectionCount), 200, 235);
 
-  return facts.map((fact, index) => {
-    const sectionSlot = Math.min(
-      sectionCount,
-      Math.floor((index * sectionCount) / facts.length) + 1
-    );
-    return {
+  const baseSize = Math.floor(facts.length / sectionCount);
+  const remainder = facts.length % sectionCount;
+  const plan = [];
+  let cursor = 0;
+
+  for (let index = 0; index < sectionCount; index += 1) {
+    const packSize = baseSize + (index < remainder ? 1 : 0);
+    const pack = facts.slice(cursor, cursor + packSize);
+    cursor += packSize;
+
+    if (pack.length < 2 || pack.length > 3) {
+      fail(`Evidence section pack ${index + 1} received ${pack.length} facts; expected 2-3.`);
+    }
+
+    plan.push({
       block_id: `B${String(index + 1).padStart(2, "0")}`,
-      section_slot: sectionSlot,
-      desired_words: perBlockTarget,
-      min_words: Math.max(65, perBlockTarget - 18),
-      max_words: Math.min(190, perBlockTarget + 28),
-      evidence_ids: [fact.id],
-      evidence: fact,
-      editorial_focus: fact.claim
-    };
-  });
+      section_slot: index + 1,
+      desired_words: perSectionTarget,
+      min_words: Math.max(180, perSectionTarget - 25),
+      max_words: Math.min(260, perSectionTarget + 30),
+      evidence_ids: pack.map((fact) => fact.id),
+      evidence: pack,
+      editorial_focus: pack.map((fact) => fact.claim).join(" | ")
+    });
+  }
+
+  return plan;
 }
 
 function buildKnowledgeBlockPlan({ config, queueItem }) {
   const target = Number(config?.writer?.target_words || 1500);
-  const blockCount = 12;
   const sectionCount = 6;
-  const perBlockTarget = clampNumber(Math.ceil(Math.max(1080, target - 180) / blockCount), 88, 125);
-  return Array.from({ length: blockCount }, (_, index) => ({
+  const perSectionTarget = clampNumber(Math.ceil(Math.max(1260, target - 180) / sectionCount), 200, 235);
+  const focuses = [
+    "Define the topic and establish the current APXN context using only reviewed knowledge.",
+    "Explain the main user-facing mechanics relevant to the topic without adding assumptions.",
+    "Explain operational details, limits, or timing rules explicitly present in reviewed knowledge.",
+    "Explain security, verification, or data-handling details only when the knowledge file supports them.",
+    "Clarify the distinction between current live behavior and planned or UI-only features.",
+    "Summarize practical takeaways and important limitations without promises or speculation."
+  ];
+
+  return Array.from({ length: sectionCount }, (_, index) => ({
     block_id: `B${String(index + 1).padStart(2, "0")}`,
-    section_slot: Math.floor(index / 2) + 1,
-    desired_words: perBlockTarget,
-    min_words: Math.max(72, perBlockTarget - 16),
-    max_words: Math.min(150, perBlockTarget + 24),
+    section_slot: index + 1,
+    desired_words: perSectionTarget,
+    min_words: Math.max(180, perSectionTarget - 25),
+    max_words: Math.min(260, perSectionTarget + 30),
     evidence_ids: ["APXN-KNOWLEDGE"],
     evidence: null,
-    editorial_focus: `Cover one distinct, non-repeating aspect of "${queueItem.topic}" that is explicitly supported by the reviewed APXN knowledge file.`
+    editorial_focus: `${focuses[index]} Topic: "${queueItem.topic}".`
   }));
 }
 
@@ -1063,17 +1082,20 @@ You are the APXN Blog evidence-block writer.
 Write an accurate ENGLISH-ONLY educational article about:
 "${queueItem.topic}"
 
-IMPORTANT: You are NOT writing a free-form article. You are filling a fixed block plan.
+IMPORTANT: You are NOT writing a free-form article. You are filling six fixed evidence SECTION PACKS.
 
-BLOCK RULES:
+SECTION-PACK RULES:
 - Return exactly one block for every supplied block_id, with no missing IDs, no duplicate IDs, and no extra IDs.
-- Never merge two block IDs into one paragraph.
+- Each block is one complete section narrative built from 2-3 assigned evidence facts.
+- Never merge two block IDs.
 - Each block must stay inside the evidence assigned to THAT block.
+- You may connect, compare, or sequence the assigned facts only when that connection is directly supported by those same facts.
 - Do not use facts assigned to a different block.
 - Do not add plausible background knowledge from memory.
 - Do not invent examples, numbers, fees, balances, durations, comparisons, causes, recommendations, security advice, bridge behavior, validator behavior, or current-status claims.
-- A block may explain its assigned fact in beginner-friendly language, but every factual sentence must remain a faithful paraphrase of that assigned evidence.
-- Keep each block near its desired_words and inside its min_words/max_words whenever possible.
+- A block should explain all of its assigned facts in beginner-friendly language, using the richer 2-3-fact pack to create a coherent section without filler.
+- Every factual sentence must remain a faithful paraphrase or direct synthesis of the assigned evidence.
+- Keep each block near its desired_words and inside its min_words/max_words. Treat min_words as a hard drafting target unless the evidence genuinely cannot support it.
 - Do not repeat a sentence, paragraph, example, or explanation from another block.
 - The blocks are already ordered. Keep that order.
 - Create exactly ${sectionCount} concise section headings, one for every section_slot in the plan.
@@ -1088,7 +1110,7 @@ FAQ RULES:
 
 ${external ? `
 EXTERNAL EVIDENCE MODE:
-- The assigned evidence object for each block is the ONLY authority for that block.
+- The assigned evidence array for each block is the ONLY authority for that block.
 - source URLs and support quotes are supplied for grounding; do not cite or quote them verbatim in the prose unless natural.
 ` : `
 APXN KNOWLEDGE MODE:
@@ -1126,7 +1148,7 @@ function blockWriterInput({ queueItem, config, knowledge, evidence, blockPlan })
       min_words: item.min_words,
       max_words: item.max_words,
       assigned_evidence_ids: item.evidence_ids,
-      assigned_evidence: evidence ? [item.evidence] : undefined,
+      assigned_evidence: evidence ? item.evidence : undefined,
       editorial_focus: item.editorial_focus
     })),
     apxn_knowledge: evidence ? undefined : knowledge
@@ -1329,9 +1351,14 @@ function localArticleChecks({ article, config, manifest, evidence, knowledge, bl
 
   if (evidence) {
     const bodyEvidenceIds = bodyUnits.flatMap((unit) => unit.evidence_ids);
-    for (const fact of evidence.facts.slice(0, blockPlan.length)) {
-      const uses = bodyEvidenceIds.filter((id) => id === fact.id).length;
-      if (uses !== 1) errors.push(`Evidence ${fact.id} must be used exactly once in body blocks; found ${uses}.`);
+    const plannedEvidenceIds = blockPlan.flatMap((item) => item.evidence_ids);
+    for (const id of plannedEvidenceIds) {
+      const uses = bodyEvidenceIds.filter((candidate) => candidate === id).length;
+      if (uses !== 1) errors.push(`Evidence ${id} must be used exactly once in body section packs; found ${uses}.`);
+    }
+    const unexpectedEvidence = bodyEvidenceIds.filter((id) => !plannedEvidenceIds.includes(id));
+    if (unexpectedEvidence.length) {
+      errors.push(`Body section packs reference evidence outside the deterministic plan: ${uniqueStrings(unexpectedEvidence, 30).join(", ")}.`);
     }
   }
 
@@ -1653,7 +1680,7 @@ RULES:
   ? "Use ONLY assigned_evidence for that unit. Never use other evidence or model memory."
   : "Use ONLY the reviewed APXN knowledge supplied for that unit."}
 - Remove unsupported assertions instead of replacing them with other unsupported advice.
-- If expansion is requested, add explanation only by clarifying the assigned evidence; do not introduce adjacent facts.
+- If expansion is requested, use ALL assigned evidence facts in the section pack, explain their documented relationship carefully, and add clarification only from those facts; do not introduce adjacent facts.
 - Do not invent numbers, examples, comparisons, causes, recommendations, security advice, timings, balances, fee estimates, or current-status claims.
 - Preserve a neutral beginner-friendly English tone.
 - Return JSON only.
@@ -1773,14 +1800,22 @@ function runBlockArchitectureSelfTest(config) {
   const bodyUnits = buildVerificationUnits(article).filter((unit) => unit.id.startsWith("B"));
   const expected = blockPlan.map((item) => item.block_id).join("|");
   const actual = bodyUnits.map((item) => item.id).join("|");
-  if (expected !== actual) fail("Block architecture self-test failed: body unit IDs do not match block plan.");
+  if (expected !== actual) fail("Block architecture self-test failed: body unit IDs do not match section-pack plan.");
+  if (bodyUnits.length !== 6 || sectionCount !== 6) {
+    fail(`Block architecture self-test failed: expected 6 section packs, got ${bodyUnits.length} blocks across ${sectionCount} sections.`);
+  }
   const bodyEvidence = bodyUnits.flatMap((item) => item.evidence_ids);
   for (const fact of mockEvidence.facts) {
     if (bodyEvidence.filter((id) => id === fact.id).length !== 1) {
       fail(`Block architecture self-test failed: ${fact.id} was not mapped exactly once.`);
     }
   }
-  console.log(`Block architecture self-test: PASS (${bodyUnits.length} body blocks, ${sectionCount} sections, exact evidence mapping).`);
+  for (const item of blockPlan) {
+    if (item.evidence_ids.length < 2 || item.evidence_ids.length > 3) {
+      fail(`Block architecture self-test failed: ${item.block_id} has ${item.evidence_ids.length} evidence facts instead of 2-3.`);
+    }
+  }
+  console.log(`Block architecture self-test: PASS (6 section packs, 6 sections, 2 evidence facts per pack in the 12-fact test, exact evidence mapping).`);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -2088,7 +2123,7 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
   }
 
   const blockPlan = buildBlockPlan({ config, queueItem, evidence });
-  console.log(`Deterministic body blocks: ${blockPlan.length}`);
+  console.log(`Deterministic evidence section packs: ${blockPlan.length}`);
   console.log(`Deterministic sections: ${Math.max(...blockPlan.map((item) => item.section_slot))}`);
 
   if (!withinPerArticleBudget(config, costEntries, 0.015)) {
@@ -2096,7 +2131,7 @@ async function processTopic({ config, knowledge, manifest, topicBank, queueItem,
     return { success: false, reason: "budget_before_generation" };
   }
 
-  console.log("Generating fixed evidence blocks...");
+  console.log("Generating six fixed evidence section packs...");
   const generation = await generateBlockArticle({ apiKey, model, config, queueItem, knowledge, evidence, blockPlan });
   let article = assembleBlockArticle(generation.generated, queueItem, config, blockPlan);
   let entry = recordCost({
