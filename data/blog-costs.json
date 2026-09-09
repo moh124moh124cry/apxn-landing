@@ -1151,9 +1151,27 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 107706000,
           "cost_usd": 0.0107706
+        },
+        {
+          "date": "2026-09-09",
+          "response_id": "ab0d6375-2b65-9bc7-9a57-635c29f3ef9b",
+          "model": "grok-4.3",
+          "topic": "How Telegram Mini Apps Are Bringing Web3 to Everyday Users",
+          "article_slug": "how-telegram-mini-apps-are-bringing-web3-to-everyday-users",
+          "stage": "research_packet_writing",
+          "input_tokens": 4307,
+          "cached_input_tokens": 128,
+          "output_tokens": 1850,
+          "reasoning_tokens": 0,
+          "total_tokens": 6157,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 98743500,
+          "cost_usd": 0.00987435
         }
       ],
-      "total_cost_usd": 1.06175365
+      "total_cost_usd": 1.071628
     }
   },
   "last_updated": "2026-09-09"
