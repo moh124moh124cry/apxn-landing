@@ -189,8 +189,8 @@ const ARTICLE_SCHEMA = {
     },
     sections: {
       type: "array",
-      minItems: 5,
-      maxItems: 9,
+      minItems: 6,
+      maxItems: 6,
       items: {
         type: "object",
         additionalProperties: false,
@@ -200,7 +200,7 @@ const ARTICLE_SCHEMA = {
           paragraphs: {
             type: "array",
             minItems: 2,
-            maxItems: 4,
+            maxItems: 2,
             items: {
               type: "object",
               additionalProperties: false,
@@ -222,7 +222,7 @@ const ARTICLE_SCHEMA = {
     faq: {
       type: "array",
       minItems: 3,
-      maxItems: 5,
+      maxItems: 3,
       items: {
         type: "object",
         additionalProperties: false,
@@ -1693,6 +1693,273 @@ async function callStructuredXai({
 }
 
 /* -------------------------------------------------------------------------- */
+/* Evidence block plan                                                        */
+/* -------------------------------------------------------------------------- */
+
+function evidenceSourceKey(item) {
+  if (item.kind === "external") {
+    return `external:${item.source_url || item.source_title || item.id}`;
+  }
+
+  return `apxn:${item.source_path || item.source_title || item.id}`;
+}
+
+function evidenceGroupsBySource(evidence) {
+  const groups = new Map();
+
+  for (const item of evidence) {
+    const key = evidenceSourceKey(item);
+    if (!groups.has(key)) {
+      groups.set(key, {
+        key,
+        kind: item.kind,
+        source_title: item.source_title,
+        source_url: item.source_url || null,
+        items: []
+      });
+    }
+
+    groups.get(key).items.push(item);
+  }
+
+  return [...groups.values()];
+}
+
+function buildEvidenceBlockPlan(metadata, evidence) {
+  const sourceGroups = evidenceGroupsBySource(evidence);
+
+  if (evidence.length < 4 || sourceGroups.length === 0) {
+    fail(
+      `Evidence block plan requires at least 4 evidence passages; received ${evidence.length}.`
+    );
+  }
+
+  const idsFromItems = (...items) =>
+    uniqueStrings(items.filter(Boolean).map((item) => item.id), 4);
+
+  const groupItem = (group, index) =>
+    group.items[index % group.items.length];
+
+  const sections = [];
+  const usesPerGroup = new Map();
+
+  // Exactly six source-contained sections and two paragraphs per section.
+  // A section never mixes source groups; this prevents the model from turning
+  // adjacent facts from unrelated official documents into an invented causal
+  // or product-integration claim.
+  for (let sectionIndex = 0; sectionIndex < 6; sectionIndex++) {
+    const group = sourceGroups[sectionIndex % sourceGroups.length];
+    const previousUses = usesPerGroup.get(group.key) || 0;
+    const first = groupItem(group, previousUses * 2);
+    const second = groupItem(group, previousUses * 2 + 1);
+    usesPerGroup.set(group.key, previousUses + 1);
+
+    sections.push({
+      section_index: sectionIndex,
+      source_group: {
+        kind: group.kind,
+        source_title: group.source_title,
+        source_url: group.source_url
+      },
+      purpose:
+        "Explain only the concepts, capabilities, constraints or context documented by this one source group. Keep the two paragraphs source-contained and do not bridge them to another product or document.",
+      paragraphs: [
+        {
+          paragraph_index: 0,
+          evidence_ids: idsFromItems(first),
+          rule:
+            "Stay within this assigned passage. Paraphrase or explain what it explicitly states. Do not add examples, implementation steps, benefits, risks, integrations or future uses that the passage does not state."
+        },
+        {
+          paragraph_index: 1,
+          evidence_ids: idsFromItems(second),
+          rule:
+            "Stay within this assigned passage. Paraphrase or explain what it explicitly states. Do not add examples, implementation steps, benefits, risks, integrations or future uses that the passage does not state."
+        }
+      ]
+    });
+  }
+
+  const introItems = sourceGroups.slice(0, 2).map((group) => groupItem(group, 0));
+  if (introItems.length === 1 && sourceGroups[0].items.length > 1) {
+    introItems.push(groupItem(sourceGroups[0], 1));
+  }
+
+  const conclusionItems = sourceGroups.slice(0, 2).map((group) =>
+    groupItem(group, Math.max(0, group.items.length - 1))
+  );
+  if (conclusionItems.length === 1 && sourceGroups[0].items.length > 1) {
+    conclusionItems.push(
+      groupItem(sourceGroups[0], Math.max(0, sourceGroups[0].items.length - 2))
+    );
+  }
+
+  const faq = [];
+  for (let index = 0; index < 3; index++) {
+    const group = sourceGroups[index % sourceGroups.length];
+    const item = groupItem(group, index + 1);
+
+    faq.push({
+      faq_index: index,
+      source_group: {
+        kind: group.kind,
+        source_title: group.source_title,
+        source_url: group.source_url
+      },
+      evidence_ids: idsFromItems(item),
+      rule:
+        index === 2
+          ? "Use this FAQ to clarify a limitation, distinction or directly documented capability. Do not speculate or introduce another source group."
+          : "Answer only what the assigned passage directly supports. Do not introduce another source group."
+    });
+  }
+
+  return {
+    version: 2,
+    topic: metadata.topic,
+    content_mode: metadata.content_mode,
+    global_rules: [
+      "Every factual block may use only the evidence IDs assigned to that block.",
+      "A citation is not permission to infer beyond the cited passage.",
+      "Every section is source-contained. Do not combine its assigned source with facts from another source group.",
+      "Do not convert correlation, coexistence or conceptual similarity into a causal relationship.",
+      "Do not invent wallet behavior, private-key handling, transaction signing, on-chain settlement, blockchain integration, cryptographic operations or custody behavior unless the assigned passage explicitly states it.",
+      "Do not invent future possibilities or roadmap-like claims with phrases such as could later, can later, may eventually, will enable, once users are comfortable, or can help unless that future relationship is explicit in the assigned passage.",
+      "Do not claim that one product removes the need for another product unless the assigned passage explicitly says so.",
+      "For the intro and conclusion, if evidence from two source groups is assigned, state the source-backed facts separately. Do not claim that one source implements, enables, inherits or solves the concept described by the other source unless the evidence explicitly establishes that relationship.",
+      "Use neutral educational language. If the topic wording itself implies more than the evidence proves, narrow the article title and framing to what the evidence actually supports."
+    ],
+    intro: {
+      evidence_ids: idsFromItems(...introItems),
+      rule:
+        "Introduce the assigned source-backed facts separately. Do not announce an integration, benefit, replacement or causal bridge that the passages do not explicitly establish."
+    },
+    sections,
+    faq,
+    conclusion: {
+      evidence_ids: idsFromItems(...conclusionItems),
+      rule:
+        "Summarize the assigned facts separately. Do not predict adoption, price, future integration, reduced friction or technical behavior that is not explicit in the passages."
+    }
+  };
+}
+
+function evidenceBlockPlanForPrompt(plan) {
+  const lines = [
+    "GLOBAL PLAN RULES:",
+    ...plan.global_rules.map((rule) => `- ${rule}`),
+    "",
+    `INTRO: evidence_ids=${plan.intro.evidence_ids.join(",")}`,
+    `INTRO RULE: ${plan.intro.rule}`
+  ];
+
+  for (const section of plan.sections) {
+    lines.push("");
+    lines.push(`SECTION ${section.section_index + 1}: ${section.purpose}`);
+
+    for (const paragraph of section.paragraphs) {
+      lines.push(
+        `- paragraph ${paragraph.paragraph_index + 1}: evidence_ids=${paragraph.evidence_ids.join(",")}`
+      );
+      lines.push(`  rule: ${paragraph.rule}`);
+    }
+  }
+
+  lines.push("");
+
+  for (const item of plan.faq) {
+    lines.push(
+      `FAQ ${item.faq_index + 1}: evidence_ids=${item.evidence_ids.join(",")}`
+    );
+    lines.push(`FAQ ${item.faq_index + 1} RULE: ${item.rule}`);
+  }
+
+  lines.push("");
+  lines.push(`CONCLUSION: evidence_ids=${plan.conclusion.evidence_ids.join(",")}`);
+  lines.push(`CONCLUSION RULE: ${plan.conclusion.rule}`);
+
+  return lines.join("\n");
+}
+
+function sameEvidenceSet(actual, allowed) {
+  const actualSet = new Set(uniqueStrings(actual, 10));
+  const allowedSet = new Set(uniqueStrings(allowed, 10));
+
+  if (actualSet.size === 0) return false;
+
+  for (const id of actualSet) {
+    if (!allowedSet.has(id)) return false;
+  }
+
+  return true;
+}
+
+function validateEvidenceBlockPlanCompliance(article, plan) {
+  const errors = [];
+
+  if (!sameEvidenceSet(article?.intro?.evidence_ids, plan.intro.evidence_ids)) {
+    errors.push("intro uses evidence IDs outside its preassigned evidence block.");
+  }
+
+  if ((article?.sections || []).length !== plan.sections.length) {
+    errors.push(
+      `article has ${(article?.sections || []).length} sections; evidence block plan requires ${plan.sections.length}.`
+    );
+  }
+
+  for (let s = 0; s < Math.min((article?.sections || []).length, plan.sections.length); s++) {
+    const actualSection = article.sections[s];
+    const plannedSection = plan.sections[s];
+
+    if ((actualSection?.paragraphs || []).length !== plannedSection.paragraphs.length) {
+      errors.push(
+        `section ${s + 1} has ${(actualSection?.paragraphs || []).length} paragraphs; plan requires ${plannedSection.paragraphs.length}.`
+      );
+      continue;
+    }
+
+    for (let p = 0; p < plannedSection.paragraphs.length; p++) {
+      if (
+        !sameEvidenceSet(
+          actualSection.paragraphs[p]?.evidence_ids,
+          plannedSection.paragraphs[p].evidence_ids
+        )
+      ) {
+        errors.push(
+          `section ${s + 1} paragraph ${p + 1} uses evidence IDs outside its preassigned block.`
+        );
+      }
+    }
+  }
+
+  if ((article?.faq || []).length !== plan.faq.length) {
+    errors.push(
+      `article has ${(article?.faq || []).length} FAQ items; evidence block plan requires ${plan.faq.length}.`
+    );
+  }
+
+  for (let f = 0; f < Math.min((article?.faq || []).length, plan.faq.length); f++) {
+    if (!sameEvidenceSet(article.faq[f]?.evidence_ids, plan.faq[f].evidence_ids)) {
+      errors.push(`FAQ ${f + 1} uses evidence IDs outside its preassigned block.`);
+    }
+  }
+
+  if (
+    !sameEvidenceSet(
+      article?.conclusion?.evidence_ids,
+      plan.conclusion.evidence_ids
+    )
+  ) {
+    errors.push("conclusion uses evidence IDs outside its preassigned evidence block.");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors
+  };
+}
+
+/* -------------------------------------------------------------------------- */
 /* Prompt construction                                                        */
 /* -------------------------------------------------------------------------- */
 
@@ -1757,6 +2024,10 @@ function generationInstructions() {
     "The article must be original, educational, useful to a real reader, and natural rather than keyword-stuffed.",
     "Do not pad sections merely to hit a word target.",
     "Each factual paragraph must cite one or more supplied evidence IDs in evidence_ids.",
+    "Follow the EVIDENCE BLOCK PLAN exactly: use only the evidence IDs preassigned to each intro/paragraph/FAQ/conclusion block.",
+    "Treat every assigned passage as a hard claim boundary, not as inspiration. Explain and paraphrase what it states; do not invent adjacent use cases, implementation details, technical consequences, future possibilities or product integrations.",
+    "Do not bridge two sources into a new claim merely because their concepts seem compatible. If one source describes a platform capability and another describes a Web3 principle, present those facts separately unless the evidence explicitly documents the integration.",
+    "Do not claim built-in wallet storage, private-key storage, wallet replacement, transaction signing, on-chain settlement, cryptographic processing or blockchain inheritance unless the assigned passage explicitly states that behavior.",
     "The pre-AI evidence gate has already required a substantial evidence base. Produce a complete schema-compliant draft of at least 1200 useful words when the evidence supports it.",
     "If the evidence still cannot honestly support the required article, set status=insufficient_evidence rather than inventing facts or repeating material; keep every returned field evidence-grounded.",
     "Separate APXN project-specific statements from general technical statements on hybrid topics.",
@@ -1765,14 +2036,17 @@ function generationInstructions() {
   ].join("\n");
 }
 
-function generationInput({ metadata, evidence, config, guards }) {
+function generationInput({ metadata, evidence, config, guards, blockPlan }) {
   return [
     `TOPIC: ${metadata.topic}`,
     `CATEGORY: ${metadata.category}`,
     `CONTENT MODE: ${metadata.content_mode}`,
     "",
     `WORD REQUIREMENT: minimum ${config.writer.minimum_words}; target ${config.writer.target_words}; maximum ${config.writer.maximum_words}.`,
-    "Aim for 5-8 substantive sections plus a useful FAQ. Prefer clarity and depth over repetition.",
+    "Produce exactly 6 substantive sections, exactly 2 paragraphs per section, and exactly 3 FAQ items. Prefer clarity and depth over repetition.",
+    "",
+    "EVIDENCE BLOCK PLAN:",
+    evidenceBlockPlanForPrompt(blockPlan),
     "",
     "EDITORIAL GUARDS:",
     ...guards.map((guard) => `- ${guard}`),
@@ -1786,6 +2060,8 @@ function verificationInstructions() {
   return [
     "You are a strict evidence verifier for the Apex Network Editorial pipeline.",
     "Evaluate only whether every factual statement in the supplied article is supported by the assigned evidence IDs.",
+    "Use the PREASSIGNED EVIDENCE BLOCK PLAN as an additional hard boundary: a block must not rely on evidence outside the IDs assigned to that block.",
+    "Treat causal bridges, future possibilities, implied integrations and implementation details as unsupported unless the assigned passage explicitly states them.",
     "Also check that APXN status distinctions and editorial guards are respected.",
     "Do not browse the web and do not use outside knowledge.",
     "Fail if a paragraph materially exceeds what its evidence supports, contains an unsupported number, or turns planned/UI-only material into a live fact.",
@@ -1794,13 +2070,16 @@ function verificationInstructions() {
   ].join("\n");
 }
 
-function verificationInput({ metadata, evidence, article, guards }) {
+function verificationInput({ metadata, evidence, article, guards, blockPlan }) {
   return [
     `TOPIC: ${metadata.topic}`,
     `CONTENT MODE: ${metadata.content_mode}`,
     "",
     "EDITORIAL GUARDS:",
     ...guards.map((guard) => `- ${guard}`),
+    "",
+    "PREASSIGNED EVIDENCE BLOCK PLAN:",
+    evidenceBlockPlanForPrompt(blockPlan),
     "",
     "EVIDENCE:",
     evidenceForPrompt(evidence),
@@ -1908,6 +2187,66 @@ function hasVolatileMetricClaims(text) {
   return patterns.some((pattern) => pattern.test(text));
 }
 
+const HIGH_RISK_INFERENCE_PATTERNS = [
+  {
+    name: "future bridge",
+    regex: /\b(?:could|can|may|might)\s+(?:later|eventually)\b/i
+  },
+  {
+    name: "future-condition bridge",
+    regex: /\bonce\s+(?:users|developers|people|adoption|the ecosystem)\b/i
+  },
+  {
+    name: "removes-the-need claim",
+    regex: /\b(?:removes?|eliminates?)\s+the\s+need\b/i
+  },
+  {
+    name: "without-installing/using claim",
+    regex: /\bwithout\s+(?:requiring|installing|needing|using)\b/i
+  },
+  {
+    name: "private-key behavior",
+    regex: /\bprivate\s+keys?\b/i
+  },
+  {
+    name: "transaction-signing behavior",
+    regex: /\btransaction\s+sign(?:ing|ature|atures)\b/i
+  },
+  {
+    name: "on-chain integration",
+    regex: /\bon[- ]chain\s+(?:settlement|receipt|transaction|transactions|payment|payments)\b/i
+  },
+  {
+    name: "cryptographic processing",
+    regex: /\bcryptographic\s+(?:operation|operations|processing)\b/i
+  },
+  {
+    name: "inheritance claim",
+    regex: /\binherit(?:s|ed)?\s+(?:this|that|the)\b/i
+  },
+  {
+    name: "can-help inference",
+    regex: /\bcan\s+help\s+(?:verify|enable|reduce|improve|avoid|protect)\b/i
+  }
+];
+
+function unsupportedInferencePatterns(blockText, assignedText) {
+  const unsupported = [];
+
+  for (const rule of HIGH_RISK_INFERENCE_PATTERNS) {
+    rule.regex.lastIndex = 0;
+    const appearsInBlock = rule.regex.test(String(blockText || ""));
+    rule.regex.lastIndex = 0;
+    const appearsInEvidence = rule.regex.test(String(assignedText || ""));
+
+    if (appearsInBlock && !appearsInEvidence) {
+      unsupported.push(rule.name);
+    }
+  }
+
+  return unsupported;
+}
+
 function validateArticleLocal({
   article,
   metadata,
@@ -2012,6 +2351,12 @@ function validateArticleLocal({
           `${block.label} contains unsupported numeric token "${token}".`
         );
       }
+    }
+
+    for (const patternName of unsupportedInferencePatterns(block.text, assignedText)) {
+      errors.push(
+        `${block.label} contains unsupported high-risk inference pattern: ${patternName}.`
+      );
     }
   }
 
@@ -2794,6 +3139,22 @@ async function main() {
   console.log(
     `Evidence diagnostics saved: ${path.relative(ROOT, evidenceDiagnosticsPath)}`
   );
+
+  const blockPlan = buildEvidenceBlockPlan(metadata, evidence);
+  const blockPlanPath = path.join(
+    PATHS.privateDrafts,
+    `${provisionalSlug}.evidence-block-plan.json`
+  );
+
+  writeJson(blockPlanPath, {
+    generated_at: date,
+    ...blockPlan
+  });
+
+  console.log(
+    `Evidence block plan saved: ${path.relative(ROOT, blockPlanPath)}`
+  );
+
   const guards = combinedEditorialGuard(metadata, sourceFile);
   const generationCostReserveUsd = configuredCostReserve(
     config,
@@ -2823,7 +3184,8 @@ async function main() {
       metadata,
       evidence,
       config,
-      guards
+      guards,
+      blockPlan
     }),
     schemaName: "apxn_article",
     schema: ARTICLE_SCHEMA,
@@ -2858,6 +3220,7 @@ async function main() {
     model: generation.model,
     response_id: generation.responseJson?.id || null,
     generation_cost_usd: Number(generationCost.cost_usd || 0),
+    evidence_block_plan: blockPlan,
     raw_text: generation.rawText,
     parsed: generation.parsed
   });
@@ -2872,6 +3235,25 @@ async function main() {
     const reason =
       normalizeSpace(article.reason) ||
       "Generator reported insufficient evidence.";
+
+    if (publishRequested) {
+      markQueueItem(manifest, queueItem, "rejected_quality", {
+        rejected_at: date,
+        reject_reason: reason
+      });
+
+      manifest.last_updated = date;
+      refreshStats(manifest);
+      writeJson(PATHS.articles, manifest);
+    }
+
+    fail(reason);
+  }
+
+  const planCompliance = validateEvidenceBlockPlanCompliance(article, blockPlan);
+
+  if (!planCompliance.ok) {
+    const reason = `Evidence block plan failed: ${planCompliance.errors.join(" | ")}`;
 
     if (publishRequested) {
       markQueueItem(manifest, queueItem, "rejected_quality", {
@@ -2929,7 +3311,8 @@ async function main() {
       metadata,
       evidence,
       article,
-      guards
+      guards,
+      blockPlan
     }),
     schemaName: "apxn_article_verification",
     schema: VERIFIER_SCHEMA,
@@ -3012,6 +3395,7 @@ async function main() {
     word_count: local.word_count,
     run_cost_usd: runCostUsd,
     verifier,
+    evidence_block_plan: blockPlan,
     evidence_diagnostics: evidenceDiagnostics,
     evidence
   });
