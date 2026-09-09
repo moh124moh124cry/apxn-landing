@@ -53,7 +53,11 @@ const VERIFIER_OUTPUT_TOKEN_CAP = 3_000;
 const MAX_ARTICLE_SENTENCE_INVENTORY = 220;
 const MIN_EXTERNAL_VERIFIED_CLAIMS = 3;
 const MIN_APXN_VERIFIED_CLAIMS = 2;
-const MIN_REPAIR_BUDGET_USD = 0.012;
+const MIN_PIPELINE_STAGE_BUDGET_USD = 0.012;
+const MIN_CORRECTION_BUDGET_USD = 0.012;
+const MIN_REVERIFY_BUDGET_USD = 0.010;
+const MIN_CORRECTION_AND_REVERIFY_BUDGET_USD =
+  MIN_CORRECTION_BUDGET_USD + MIN_REVERIFY_BUDGET_USD;
 const MAX_EVIDENCE_FACTS = 10;
 const EVIDENCE_TARGET_FACTS = 6;
 const EVIDENCE_TARGET_SOURCE_PAGES = 2;
@@ -471,7 +475,7 @@ function topicSpend(entries) {
   }, 0);
 }
 
-function canContinueTopicBudget(config, entries, minimumReserve = MIN_REPAIR_BUDGET_USD) {
+function canContinueTopicBudget(config, entries, minimumReserve = MIN_PIPELINE_STAGE_BUDGET_USD) {
   const control = config?.cost_control || {};
   if (control.enabled !== true) return true;
 
@@ -479,6 +483,14 @@ function canContinueTopicBudget(config, entries, minimumReserve = MIN_REPAIR_BUD
   if (!(maximum > 0)) return true;
 
   return topicSpend(entries) + minimumReserve <= maximum;
+}
+
+function canStartCorrectionWithReverificationBudget(config, entries) {
+  return canContinueTopicBudget(
+    config,
+    entries,
+    MIN_CORRECTION_AND_REVERIFY_BUDGET_USD
+  );
 }
 
 function responseCost(responseJson) {
@@ -719,6 +731,9 @@ AUDITED EVIDENCE MODE:
 - The supplied evidence_pack was collected from the configured official sources and independently audited before drafting.
 - Treat evidence_pack as the ONLY authority for external technical, numeric, historical, current-status and security claims in this article.
 - Do not add a number, date, version, fee, speed, count, protocol behavior, architecture claim, security recommendation or current-status claim unless the evidence pack supports it.
+- Never invent illustrative transaction amounts, estimated fees, confirmation times, balance buffers, percentages, token quantities, block counts or other numeric examples. A number may appear only when the Evidence Pack directly supports that number and context.
+- Practical examples must remain qualitative unless every factual and numeric detail in the example is explicitly supported by the Evidence Pack.
+- Security, wallet, operational and safety recommendations are factual guidance for this pipeline. Include them only when the Evidence Pack directly supports the recommendation.
 - Every item in factual_claims MUST include evidence_ids pointing to the supporting fact IDs from evidence_pack.
 - If the evidence pack does not support a detail, omit that detail or explain the concept without asserting it as fact.
 - Never substitute model memory for missing evidence.
@@ -750,7 +765,7 @@ ${researchRules}
 WRITING REQUIREMENTS:
 - Target about ${target} words; minimum ${min}; maximum target ${max}.
 - Clear beginner-friendly English with at least 6 substantive sections.
-- Include practical examples when useful and at least 2 FAQ items.
+- Include practical examples when useful, but keep them qualitative unless exact details are supported by allowed evidence; include at least 2 FAQ items.
 - Avoid hype, keyword stuffing, stale numbers, and unsupported certainty.
 - Include a responsible educational disclaimer for financial/token/presale concepts.
 - Return ONE valid JSON object only; no Markdown fences and no HTML.
@@ -1403,6 +1418,9 @@ SENTENCE COVERAGE GATE:
   3. uncovered_claims, when any factual part is unsupported, too broad, outdated, ambiguous, or only partially supported.
 - If one sentence contains multiple factual assertions and even one material assertion is not supported, classify the entire sentence under uncovered_claims.
 - A question with a factual premise must NOT be marked nonfactual unless the premise itself is supported.
+- Advice, warnings, wallet/security instructions, operational recommendations and statements about what a user should, must, can, cannot, needs to, or is expected to do are factual guidance for this gate unless they are purely editorial/navigation text.
+- A sentence containing a number, currency amount, percentage, duration, fee, speed, quantity, network parameter, security instruction or transaction recommendation MUST NOT be classified as nonfactual.
+- Paragraph and FAQ-answer sentences should be treated conservatively: when unsure whether they assert a fact or recommendation, classify them as covered_claims or uncovered_claims, not nonfactual.
 - Set coverage_complete=true only when every supplied sentence_id has been classified exactly once.
 - ${evidenceRule}
 - Never classify a factual sentence as covered merely because it sounds plausible.
@@ -1470,6 +1488,8 @@ You are the APXN Blog correction editor. Rewrite the supplied article JSON so ev
 - Remove unsupported or uncertain claims instead of guessing.
 - Apply the verifier's precise correction when provided.
 - Treat every verifier_report.uncovered_claims item as a mandatory blocker: remove it or rewrite it strictly from allowed evidence.
+- Treat local sentence-coverage errors as mandatory blockers too. Use article_sentence_inventory to locate the exact sentence IDs mentioned by local_quality_errors.
+- Remove invented numeric examples, fee estimates, timing estimates, balance-buffer amounts, unsupported security advice and unsupported operational recommendations instead of trying to preserve them.
 - ${research.enabled ? "Use ONLY the supplied audited Evidence Pack for external facts and preserve valid evidence_ids." : "Use only the supplied reviewed APXN knowledge base for APXN facts."}
 - Do not introduce new changing numbers, dates, versions, fees, current-status claims, security absolutes, or named listings that are not in the allowed evidence.
 - Preserve APXN terminology and safety rules.
@@ -1480,12 +1500,13 @@ You are the APXN Blog correction editor. Rewrite the supplied article JSON so ev
 }
 
 async function correctArticle({
-  apiKey, model, config, article, verification, quality, queueItem, knowledge, research, evidencePack
+  apiKey, model, config, article, sentenceInventory, verification, quality, queueItem, knowledge, research, evidencePack
 }) {
   const input = JSON.stringify({
     current_date: todayISO(),
     topic: queueItem.topic,
     article_to_correct: article,
+    article_sentence_inventory: sentenceInventory,
     verifier_report: verification,
     local_quality_errors: quality.errors,
     local_review_reasons: article.review_reasons,
@@ -1687,10 +1708,40 @@ function normalizeVerificationReport(raw, research) {
   };
 }
 
+function looksMaterialFactualSentence(item) {
+  const text = normalizeSpace(item?.text);
+  const location = String(item?.location || "");
+  if (!text) return false;
+
+  // Headings, a non-assertive title and the standard disclaimer may remain
+  // nonfactual. Questions are still inspected because they can contain factual premises.
+  if (/^section_\d+_heading$/.test(location)) return false;
+  if (location === "disclaimer") return false;
+  if (location === "title" && !/[0-9$€£%]/.test(text) && !/\b(?:current|currently|now|today|latest|live|will|is|are|was|were)\b/i.test(text)) return false;
+  if (/^(?:this|in this)\s+(?:article|guide|section)\b/i.test(text)) return false;
+
+  const hardSignals = [
+    /(?:[$€£]\s*\d|\b\d+(?:\.\d+)?\s*(?:%|seconds?|minutes?|hours?|days?|weeks?|months?|years?|bnb|eth|usdt|gwei|wei|tokens?|coins?|blocks?|validators?|transactions?|bytes?|kb|mb|gb)\b)/i,
+    /\b(?:fee|fees|gas|block time|confirmation|finality|validator|consensus|chain id|network id|bep-?20|erc-?20|transaction|bridge|wallet|private key|seed phrase|recovery phrase|phishing|hardware wallet|authentication|signature|authorization|encryption|security|exploit|attack|risk)\b/i,
+    /\b(?:current|currently|now|today|latest|live|deprecated|planned|supports?|uses?|requires?|allows?|prevents?|protects?|secures?|verifies?|validates?|confirms?|processes?|finalizes?|charges?|costs?)\b/i,
+    /\b(?:should|must|never|always|recommended|recommend|keep|avoid|verify|check|update|protect|store|send|transfer|connect|sign|approve|revoke)\b/i
+  ];
+
+  if (hardSignals.some((regex) => regex.test(text))) return true;
+
+  const proseLocation = /^(?:description|excerpt|section_\d+_paragraph_\d+|faq_\d+_answer)$/.test(location);
+  if (proseLocation && /\b(?:is|are|was|were|can|cannot|does|do|means|works|lets?|enables?|provides?|includes?|contains?)\b/i.test(text)) {
+    return true;
+  }
+
+  return false;
+}
+
 function validateClaimCoverage(report, research, evidencePack, sentenceInventory) {
   const errors = [];
   const inventory = Array.isArray(sentenceInventory) ? sentenceInventory : [];
   const expected = new Set(inventory.map((item) => item.id));
+  const inventoryById = new Map(inventory.map((item) => [item.id, item]));
   const seen = new Set();
   const validEvidenceIds = new Set(
     research.enabled
@@ -1730,6 +1781,13 @@ function validateClaimCoverage(report, research, evidencePack, sentenceInventory
 
   for (const id of report?.nonfactual_sentence_ids || []) {
     markSentence(id, "nonfactual_sentence_ids");
+
+    const item = inventoryById.get(id);
+    if (item && looksMaterialFactualSentence(item)) {
+      errors.push(
+        `Sentence ${id} was classified as nonfactual, but the local safety gate detected factual, numeric, security or operational guidance: ${item.text.slice(0, 180)}`
+      );
+    }
   }
 
   for (const item of report?.uncovered_claims || []) {
@@ -2863,14 +2921,18 @@ async function processTopic({
   costEntries.push(costEntry);
   writeJson(PATHS.costs, costLedger);
 
-  let verified = verificationPasses(verification, research, evidencePack) &&
+  let verificationFreshForCurrentArticle = true;
+  let verified = verificationFreshForCurrentArticle &&
+    verificationPasses(verification, research, evidencePack) &&
     claimCoverage.pass &&
     quality.errors.length === 0 &&
     article.requires_manual_review !== true;
 
   for (let round = 1; !verified && round <= MAX_CORRECTION_ROUNDS; round += 1) {
-    if (!canContinueTopicBudget(config, costEntries)) {
-      console.warn(`Stopping corrections because topic spend is $${topicSpend(costEntries).toFixed(4)}.`);
+    if (!canStartCorrectionWithReverificationBudget(config, costEntries)) {
+      console.warn(
+        `Stopping corrections because topic spend is $${topicSpend(costEntries).toFixed(4)} and the remaining per-article budget does not reserve at least $${MIN_CORRECTION_AND_REVERIFY_BUDGET_USD.toFixed(3)} for correction plus fresh re-verification.`
+      );
       break;
     }
 
@@ -2880,6 +2942,7 @@ async function processTopic({
       model,
       config,
       article,
+      sentenceInventory,
       verification,
       quality,
       queueItem,
@@ -2902,10 +2965,19 @@ async function processTopic({
     costEntries.push(costEntry);
     writeJson(PATHS.costs, costLedger);
 
+    // The article changed after the last verifier response. It is not publishable
+    // until a fresh verifier pass is completed for this exact corrected text.
+    verificationFreshForCurrentArticle = false;
+
     quality = runQualityChecks(article, config, manifest, research, evidencePack);
     sentenceInventory = buildArticleSentenceInventory(article);
 
-    if (!canContinueTopicBudget(config, costEntries)) break;
+    if (!canContinueTopicBudget(config, costEntries, MIN_REVERIFY_BUDGET_USD)) {
+      console.warn(
+        `Correction round ${round} completed, but the remaining per-article budget cannot reserve $${MIN_REVERIFY_BUDGET_USD.toFixed(3)} for mandatory fresh re-verification. The corrected article remains rejected.`
+      );
+      break;
+    }
 
     console.log(`Re-verification round ${round} against the same Evidence Pack...`);
     const recheck = await verifyArticle({
@@ -2931,10 +3003,21 @@ async function processTopic({
     costEntries.push(costEntry);
     writeJson(PATHS.costs, costLedger);
 
-    verified = verificationPasses(verification, research, evidencePack) &&
+    verificationFreshForCurrentArticle = true;
+    verified = verificationFreshForCurrentArticle &&
+      verificationPasses(verification, research, evidencePack) &&
       claimCoverage.pass &&
       quality.errors.length === 0 &&
       article.requires_manual_review !== true;
+  }
+
+  if (!verificationFreshForCurrentArticle) {
+    verified = false;
+    article.requires_manual_review = true;
+    article.review_reasons = uniqueStrings([
+      ...article.review_reasons,
+      "Article text changed after the last completed verification. Fresh re-verification of the exact final article is mandatory before publication."
+    ], 30);
   }
 
   const topicCostUsd = topicSpend(costEntries);
@@ -2956,6 +3039,7 @@ async function processTopic({
   console.log(`Covered factual sentences: ${claimCoverage.covered_factual_sentences}`);
   console.log(`Uncovered factual sentences: ${claimCoverage.uncovered_factual_sentences}`);
   console.log(`Sentence coverage gate: ${claimCoverage.pass ? "pass" : "fail"}`);
+  console.log(`Fresh verification matches final article: ${verificationFreshForCurrentArticle ? "yes" : "no"}`);
   console.log(`Accepted sources: ${research.sources.length}`);
   if (evidencePack) console.log(`Frozen evidence facts: ${evidencePack.facts.length}`);
   console.log(`Topic pipeline cost: $${topicCostUsd.toFixed(6)}`);
