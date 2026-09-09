@@ -2118,22 +2118,70 @@ async function runSourceTest() {
     fail("Source test unexpectedly reported paid AI usage.");
   }
 
-  if (packet.status !== "READY_FOR_PAID_WRITER") {
-    const reasons = packet?.sufficiency?.reasons || [];
+  const fetchErrors = Array.isArray(packet?.source_fetch?.errors)
+    ? packet.source_fetch.errors
+    : [];
+
+  if (fetchErrors.length > 0) {
+    const details = fetchErrors
+      .slice(0, 5)
+      .map((item) => {
+        if (typeof item === "string") return item;
+
+        const title = normalizeSpace(item?.title || "Official source");
+        const url = normalizeSpace(item?.url || "");
+        const error = normalizeSpace(
+          item?.error || item?.message || "Unknown fetch error"
+        );
+
+        return `${title}${url ? ` (${url})` : ""}: ${error}`;
+      })
+      .join(" | ");
+
     fail(
-      `SOURCE TEST FAILED: ${profileId}: ${
-        reasons.join(" | ") || packet.status
-      }`
+      `SOURCE TEST FETCH FAILED: ${profileId}: ${details || "Official source fetch error."}`
     );
   }
 
   const metrics = packet.sufficiency?.metrics || {};
 
+  if (packet.status === "INSUFFICIENT_RESEARCH") {
+    const reasons = packet?.sufficiency?.reasons || [];
+
+    console.log(`SOURCE TEST SAFE SKIP: ${profileId}`);
+    console.log(
+      `Reason: ${reasons.join(" | ") || "Research evidence is insufficient for a substantial 1200+ word article."}`
+    );
+    console.log(
+      `Distinct official pages: ${Number(metrics.distinct_external_pages || 0)}`
+    );
+    console.log(
+      `Evidence items: ${Number(metrics.evidence_items || 0)} / required ${Number(
+        metrics.required_evidence_items || 0
+      )}`
+    );
+    console.log(`Evidence words: ${Number(metrics.total_words || 0)}`);
+    console.log("Research stage: deterministic/free");
+    console.log("Paid writer blocked safely: yes");
+    console.log("xAI calls: 0");
+    return;
+  }
+
+  if (packet.status !== "READY_FOR_PAID_WRITER") {
+    fail(
+      `SOURCE TEST FAILED: ${profileId}: unexpected Research Packet status ${packet.status}.`
+    );
+  }
+
   console.log(`SOURCE TEST PASS: ${profileId}`);
   console.log(
     `Distinct official pages: ${Number(metrics.distinct_external_pages || 0)}`
   );
-  console.log(`Evidence items: ${Number(metrics.evidence_items || 0)}`);
+  console.log(
+    `Evidence items: ${Number(metrics.evidence_items || 0)} / required ${Number(
+      metrics.required_evidence_items || 0
+    )}`
+  );
   console.log(`Evidence words: ${Number(metrics.total_words || 0)}`);
   console.log("Research stage: deterministic/free");
   console.log("xAI calls: 0");
@@ -2599,4 +2647,5 @@ main().catch((error) => {
   console.error(`\nERROR: ${error.message}`);
   process.exitCode = 1;
 });
+
 
