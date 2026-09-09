@@ -1,17 +1,56 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-08",
-  "purpose": "Safe evergreen topic bank for automated APXN Blog publishing.",
+  "last_updated": "2026-09-09",
+  "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
     "avoid_duplicate_topics": true,
-    "allow_external_research": false,
+    "open_web_research_allowed": false,
+    "approved_official_sources_only": true,
     "prefer_educational_topics": true,
+    "require_original_content": true,
+    "require_substantial_user_value": true,
+    "never_pad_to_reach_word_count": true,
     "never_promise_profit": true,
     "never_promise_token_value": true,
     "never_confirm_unverified_listings": true,
-    "never_present_planned_features_as_live": true
+    "never_present_planned_features_as_live": true,
+    "never_present_ui_only_features_as_persisted": true,
+    "manual_topics_must_not_auto_publish": true
+  },
+  "content_modes": {
+    "apxn": "Use only the explicitly listed sections of data/apxn-blog-knowledge.json for project-specific facts.",
+    "external": "Use only the approved official source profile assigned to the topic. No open-web research or model-memory facts.",
+    "hybrid": "Use both the assigned APXN knowledge sections and the approved official source profile. Every factual claim must remain attributable to one side.",
+    "manual": "The topic may be drafted later, but automated publishing is blocked until a human editorial review approves it."
+  },
+  "category_policy": {
+    "APXN News": {
+      "automation": "manual_source_required",
+      "rule": "Do not invent APXN news. Publish only from an approved APXN update/news source added to the knowledge system."
+    },
+    "APXN Guides": {
+      "automation": "allowed"
+    },
+    "Blockchain": {
+      "automation": "allowed"
+    },
+    "Web3": {
+      "automation": "allowed"
+    },
+    "BSC": {
+      "automation": "allowed"
+    },
+    "Security": {
+      "automation": "allowed"
+    },
+    "Education": {
+      "automation": "allowed_with_topic_guards"
+    },
+    "Development": {
+      "automation": "allowed_with_topic_guards"
+    }
   },
   "topics": [
     {
@@ -19,252 +58,446 @@
       "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "hybrid",
+      "source_profile": "crypto_token_basics",
+      "knowledge_sections": [
+        "implemented_product_facts.points_mining"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed."
     },
     {
       "id": "bank-002",
       "topic": "How the 12-Hour APXN Points Claim Cycle Works",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.points_mining"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-003",
       "topic": "How APXN Mining Speed Is Calculated Inside the Telegram Mini App",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.points_mining",
+        "implemented_product_facts.referrals"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use APXN Points terminology and never describe the current claim system as proof-of-work or proof-of-stake blockchain mining."
     },
     {
       "id": "bank-004",
       "topic": "Understanding the APXN 7-Day Daily Check-In Cycle",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.daily_checkin"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-005",
       "topic": "APXN Daily Tasks vs One-Time Social Tasks: What Is the Difference?",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.daily_tasks",
+        "implemented_product_facts.one_time_social_tasks"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-006",
       "topic": "What Makes an APXN Referral an Active Friend?",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.referrals"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-007",
       "topic": "Understanding the APXN 24-Hour Active Friend Window",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.referrals"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-008",
       "topic": "How APXN Referral Mining Boosts Are Calculated",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.referrals"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Explain the in-app APXN Points speed formula only. Do not present the boost as blockchain mining yield or financial return."
     },
     {
       "id": "bank-009",
       "topic": "How APXN Welcome Bonuses Work for New Users",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.registration_and_early_bonus"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-010",
       "topic": "How APXN Telegram Referral Links Work",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.referrals",
+        "implemented_product_facts.registration_and_early_bonus"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-011",
       "topic": "How Telegram Mini App initData Authentication Protects APXN Users",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "hybrid",
+      "source_profile": "telegram_auth",
+      "knowledge_sections": [
+        "implemented_product_facts.telegram_authentication"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-012",
       "topic": "What Is HMAC Verification and Why Telegram Mini Apps Use It",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "telegram_auth",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-013",
       "topic": "Why Server-Side Validation Matters in Telegram Mini Apps",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "telegram_auth",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-014",
       "topic": "How Database Row Locking Helps Protect Point Claim Systems",
       "category": "Development",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "hybrid",
+      "source_profile": "postgres_concurrency",
+      "knowledge_sections": [
+        "implemented_product_facts.points_mining",
+        "implemented_product_facts.daily_checkin"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-015",
       "topic": "How Supabase Can Support Secure Web3 Mini App Backends",
       "category": "Development",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "hybrid",
+      "source_profile": "supabase_backend",
+      "knowledge_sections": [
+        "implemented_product_facts.telegram_authentication",
+        "implemented_product_facts.points_mining",
+        "implemented_product_facts.daily_checkin"
+      ],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-016",
       "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
       "category": "Web3",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "hybrid",
+      "source_profile": "wallet_connection",
+      "knowledge_sections": [
+        "features_not_to_describe_as_live.wallet_linking"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "APXN wallet linking is UI-only in the reviewed implementation. Do not say that a wallet is persistently bound to a Telegram account."
     },
     {
       "id": "bank-017",
       "topic": "How to Read and Verify a Crypto Wallet Address",
       "category": "Education",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "wallet_basics",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-018",
       "topic": "Self-Custody Wallet Basics for Web3 Beginners",
       "category": "Education",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "wallet_basics",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-019",
       "topic": "How to Protect Your Seed Phrase and Private Keys",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "wallet_security",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-020",
       "topic": "Common Web3 Phishing Scams and How to Avoid Them",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "web3_security",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-021",
       "topic": "How to Recognize Fake Telegram Crypto Accounts and Bots",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "telegram_security",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-022",
       "topic": "What Are Smart Contract Approvals and Why Should Users Review Them?",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "smart_contract_approvals",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-023",
       "topic": "What Is BNB Smart Chain and How Does It Work?",
       "category": "BSC",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "bsc",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-024",
       "topic": "What Is a BEP-20 Token? A Beginner-Friendly Guide",
       "category": "BSC",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "bep20",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-025",
       "topic": "Understanding Gas Fees on BNB Smart Chain",
       "category": "BSC",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "bsc_gas",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-026",
       "topic": "How Blockchain Explorers Help Users Verify Transactions",
       "category": "Blockchain",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "block_explorers",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-027",
       "topic": "Blockchain Transactions Explained for Complete Beginners",
       "category": "Blockchain",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "blockchain_transactions",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-028",
       "topic": "Testnet vs Mainnet: What Is the Difference?",
       "category": "Blockchain",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "testnet_mainnet",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-029",
       "topic": "What Is a Token Generation Event (TGE)?",
       "category": "Education",
-      "risk": "safe",
-      "status": "available"
+      "risk": "review",
+      "status": "available",
+      "content_mode": "manual",
+      "source_profile": "tge_education",
+      "knowledge_sections": [],
+      "auto_publish_allowed": false,
+      "editorial_guard": "Manual editorial review is required because TGE terminology can easily drift into investment, price, allocation, or listing claims."
     },
     {
       "id": "bank-030",
       "topic": "DEX vs CEX: Understanding Crypto Exchange Models",
       "category": "Education",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "exchange_models",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-031",
       "topic": "How to Read the APXN Development Roadmap Responsibly",
       "category": "Development",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "roadmap"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Every unfinished roadmap item must be described as planned, targeted, scheduled, or proposed. Roadmap timing must never be presented as guaranteed."
     },
     {
       "id": "bank-032",
       "topic": "Live Features vs Planned Features in the APXN Ecosystem",
       "category": "Development",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts",
+        "features_not_to_describe_as_live",
+        "roadmap"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Keep implemented, UI-only, planned, and verify-before-publish statuses distinct throughout the article."
     },
     {
       "id": "bank-033",
       "topic": "Understanding APXN Tokenomics as a Project Allocation Plan",
       "category": "Education",
-      "risk": "safe",
-      "status": "available"
+      "risk": "review",
+      "status": "available",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "tokenomics_and_contract_content"
+      ],
+      "auto_publish_allowed": false,
+      "editorial_guard": "The reviewed tokenomics data is an official UI claim, not an implemented runtime fact. Manual review is required before publication."
     },
     {
       "id": "bank-034",
       "topic": "How Telegram Mini Apps Make Web3 Applications Easier to Access",
       "category": "Web3",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "telegram_web3",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-035",
       "topic": "What Users Should Check Before Connecting a Wallet to a Web3 App",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "wallet_security",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     },
     {
       "id": "bank-036",
       "topic": "Why Crypto Users Should Never Share Private Keys or Seed Phrases",
       "category": "Security",
       "risk": "safe",
-      "status": "available"
+      "status": "available",
+      "content_mode": "external",
+      "source_profile": "wallet_security",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     }
   ],
   "planner_state": {
