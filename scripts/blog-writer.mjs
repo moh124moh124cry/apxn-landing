@@ -147,7 +147,7 @@ const ARTICLE_SCHEMA = {
       additionalProperties: false,
       required: ["text", "evidence_ids"],
       properties: {
-        text: { type: "string" },
+        text: { type: "string", minLength: 760, maxLength: 980 },
         evidence_ids: {
           type: "array",
           minItems: 1,
@@ -175,7 +175,7 @@ const ARTICLE_SCHEMA = {
               additionalProperties: false,
               required: ["text", "evidence_ids"],
               properties: {
-                text: { type: "string" },
+                text: { type: "string", minLength: 560, maxLength: 700 },
                 evidence_ids: {
                   type: "array",
                   minItems: 1,
@@ -198,7 +198,7 @@ const ARTICLE_SCHEMA = {
         required: ["question", "answer", "evidence_ids"],
         properties: {
           question: { type: "string" },
-          answer: { type: "string" },
+          answer: { type: "string", minLength: 440, maxLength: 620 },
           evidence_ids: {
             type: "array",
             minItems: 1,
@@ -213,7 +213,7 @@ const ARTICLE_SCHEMA = {
       additionalProperties: false,
       required: ["text", "evidence_ids"],
       properties: {
-        text: { type: "string" },
+        text: { type: "string", minLength: 580, maxLength: 800 },
         evidence_ids: {
           type: "array",
           minItems: 1,
@@ -908,7 +908,7 @@ async function callPaidWriter({
   ) {
     body.prompt_cache_key = `${String(
       config.ai.prompt_cache_key
-    )}-research-packet-v2`;
+    )}-research-packet-v3`;
   }
 
   const controller = new AbortController();
@@ -992,6 +992,31 @@ function packetEvidenceForPrompt(packet) {
     .join("\n\n---\n\n");
 }
 
+function numericTokensForEvidenceIds(packet, evidenceIds) {
+  const allowedIds = new Set(uniqueStrings(evidenceIds, 20));
+
+  return uniqueStrings(
+    (packet.evidence || [])
+      .filter((item) => allowedIds.has(item.id))
+      .flatMap((item) =>
+        Array.isArray(item.numeric_tokens)
+          ? item.numeric_tokens
+          : numericTokens(item.text)
+      ),
+    100
+  ).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+}
+
+function numericRuleForBlock(packet, label, evidenceIds) {
+  const tokens = numericTokensForEvidenceIds(packet, evidenceIds);
+
+  return `${label} ALLOWED NUMERIC TOKENS: ${
+    tokens.length
+      ? tokens.join(", ")
+      : "(none — do not write digits, decimals, years or version numbers in this block)"
+  }`;
+}
+
 function writingPlanForPrompt(packet) {
   const plan = packet.writing_plan;
   if (!plan) fail("READY Research Packet has no writing_plan.");
@@ -1002,6 +1027,7 @@ function writingPlanForPrompt(packet) {
     `INTRO: ${plan.intro.min_words}-${plan.intro.max_words} words; target ${plan.intro.target_words}; evidence_ids=${plan.intro.evidence_ids.join(
       ","
     )}`,
+    numericRuleForBlock(packet, "INTRO", plan.intro.evidence_ids),
     `INTRO INSTRUCTION: ${plan.intro.instruction}`
   ];
 
@@ -1011,6 +1037,13 @@ function writingPlanForPrompt(packet) {
       `SECTION ${section.section_index}: ${section.min_words}-${section.max_words} words TOTAL across exactly 2 paragraphs; target ${section.target_words}.`
     );
     lines.push(`SECTION ${section.section_index} EVIDENCE: ${section.evidence_ids.join(",")}`);
+    lines.push(
+      numericRuleForBlock(
+        packet,
+        `SECTION ${section.section_index}`,
+        section.evidence_ids
+      )
+    );
     if (section.focus_terms?.length) {
       lines.push(
         `SECTION ${section.section_index} FOCUS TERMS: ${section.focus_terms.join(
@@ -1030,6 +1063,9 @@ function writingPlanForPrompt(packet) {
         ","
       )}`
     );
+    lines.push(
+      numericRuleForBlock(packet, `FAQ ${faq.faq_index}`, faq.evidence_ids)
+    );
     lines.push(`FAQ ${faq.faq_index} INSTRUCTION: ${faq.instruction}`);
   }
 
@@ -1038,6 +1074,9 @@ function writingPlanForPrompt(packet) {
     `CONCLUSION: ${plan.conclusion.min_words}-${plan.conclusion.max_words} words; target ${plan.conclusion.target_words}; evidence_ids=${plan.conclusion.evidence_ids.join(
       ","
     )}`
+  );
+  lines.push(
+    numericRuleForBlock(packet, "CONCLUSION", plan.conclusion.evidence_ids)
   );
   lines.push(`CONCLUSION INSTRUCTION: ${plan.conclusion.instruction}`);
 
@@ -1052,10 +1091,13 @@ function paidWriterInstructions() {
     "The Research Packet is your ONLY factual authority.",
     "Do not browse. Do not use model memory. Do not add facts from general knowledge.",
     "Do not invent examples, integrations, benefits, risks, causal links or future possibilities that are not explicitly supported by the assigned evidence.",
-    "Follow the writing plan and word ranges. The body must be at least 1200 useful words, preferably near the packet target, without repetition or filler.",
-    "Exactly 6 sections are required. Each section must contain exactly 2 paragraphs.",
+    "Follow every writing-plan word range. The body must be at least 1200 useful words, preferably near the packet target, without repetition or filler.",
+    "The strict JSON schema also enforces minimum and maximum character lengths for article body fields. Do not compress the prose below those structural limits.",
+    "Exactly 6 sections are required. Each section must contain exactly 2 substantial paragraphs; each paragraph should carry roughly half of that section's target words.",
     "Exactly 3 FAQ items are required.",
     "Each intro, paragraph, FAQ answer and conclusion must cite only evidence IDs allowed for that block by the writing plan.",
+    "Numeric rules are block-specific: never write a digit, decimal, year or version number unless that exact token appears in that block's ALLOWED NUMERIC TOKENS.",
+    "If a paragraph uses an allowed numeric token, its evidence_ids must include an assigned evidence ID whose passage contains that token.",
     "When a section has multiple evidence IDs, you may synthesize them only when their passages explicitly support the relationship you state. Otherwise present the facts separately.",
     "Never say one product removes the need for another unless the assigned evidence says that.",
     "Never infer wallet custody, private-key behavior, transaction signing, on-chain settlement, blockchain integration or cryptographic processing unless the assigned evidence says that.",
@@ -1086,9 +1128,6 @@ function paidWriterInput(packet, config) {
     "",
     "APPROVED SOURCES:",
     JSON.stringify(packet.sources || [], null, 2),
-    "",
-    "APPROVED NUMERIC TOKENS:",
-    (packet.allowed_numeric_tokens || []).join(", ") || "(none)",
     "",
     "APPROVED EVIDENCE:",
     packetEvidenceForPrompt(packet),
