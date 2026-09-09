@@ -49,7 +49,8 @@ const MAX_TEST_TOPIC_ATTEMPTS = 1;
 const EVIDENCE_OUTPUT_TOKEN_CAP = 1_600;
 const EVIDENCE_AUDIT_OUTPUT_TOKEN_CAP = 1_100;
 const EVIDENCE_RESEARCH_MAX_TURNS = 1;
-const VERIFIER_OUTPUT_TOKEN_CAP = 1_200;
+const VERIFIER_OUTPUT_TOKEN_CAP = 1_800;
+const MAX_ARTICLE_SENTENCE_INVENTORY = 220;
 const MIN_EXTERNAL_VERIFIED_CLAIMS = 3;
 const MIN_APXN_VERIFIED_CLAIMS = 2;
 const MIN_REPAIR_BUDGET_USD = 0.012;
@@ -889,7 +890,10 @@ function buildVerificationSchema() {
   return {
     type: "object",
     additionalProperties: false,
-    required: ["verdict", "confidence", "summary", "checked_claims", "issues"],
+    required: [
+      "verdict", "confidence", "summary", "checked_claims", "issues",
+      "coverage_complete", "covered_claims", "nonfactual_sentence_ids", "uncovered_claims"
+    ],
     properties: {
       verdict: { type: "string", enum: ["pass", "fix"] },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
@@ -920,6 +924,40 @@ function buildVerificationSchema() {
             correction: { type: "string" },
             severity: { type: "string", enum: ["critical", "major", "minor"] },
             source_urls: { type: "array", items: { type: "string" } }
+          }
+        }
+      },
+      coverage_complete: { type: "boolean" },
+      covered_claims: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["sentence_id", "claim", "evidence_ids"],
+          properties: {
+            sentence_id: { type: "string" },
+            claim: { type: "string" },
+            evidence_ids: { type: "array", items: { type: "string" } }
+          }
+        }
+      },
+      nonfactual_sentence_ids: {
+        type: "array",
+        items: { type: "string" }
+      },
+      uncovered_claims: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["sentence_id", "claim", "problem", "correction", "severity", "evidence_ids"],
+          properties: {
+            sentence_id: { type: "string" },
+            claim: { type: "string" },
+            problem: { type: "string" },
+            correction: { type: "string" },
+            severity: { type: "string", enum: ["critical", "major", "minor"] },
+            evidence_ids: { type: "array", items: { type: "string" } }
           }
         }
       }
@@ -1282,9 +1320,27 @@ function buildVerifierInstructions(research) {
     ? `Use ONLY the supplied audited evidence_pack. Do not browse the web and do not use model memory to supply missing facts.`
     : `Use only the supplied reviewed APXN knowledge base. Do not use outside assumptions to override it.`;
 
+  const evidenceRule = research.enabled
+    ? `For every factual sentence, evidence_ids may contain ONLY fact IDs from the supplied Evidence Pack.`
+    : `For every factual APXN sentence grounded in the reviewed project knowledge, use evidence_ids=["APXN-KNOWLEDGE"].`;
+
   return `
 You are an independent factual verifier. Do NOT rewrite the article.
 ${sourceRule}
+
+The article_sentence_inventory is the exhaustive text inventory produced locally from the article itself.
+Do NOT trust the writer's factual_claims list as a complete inventory. Audit the sentence inventory independently.
+
+SENTENCE COVERAGE GATE:
+- Every sentence_id in article_sentence_inventory MUST appear exactly once in ONE of these outputs:
+  1. covered_claims, when the sentence contains a material factual assertion fully supported by allowed evidence;
+  2. nonfactual_sentence_ids, only when it is purely a heading, question, transition, opinion, generic advice, or disclaimer with no material factual assertion;
+  3. uncovered_claims, when any factual part is unsupported, too broad, outdated, ambiguous, or only partially supported.
+- If one sentence contains multiple factual assertions and even one material assertion is not supported, classify the entire sentence under uncovered_claims.
+- A question with a factual premise must NOT be marked nonfactual unless the premise itself is supported.
+- Set coverage_complete=true only when every supplied sentence_id has been classified exactly once.
+- ${evidenceRule}
+- Never classify a factual sentence as covered merely because it sounds plausible.
 
 Check every material factual claim, especially:
 - numbers, percentages, dates, versions, limits, fees, speeds, block times, counts and defaults;
@@ -1301,7 +1357,7 @@ Return JSON only.
 `.trim();
 }
 
-function buildVerifierInput({ article, queueItem, knowledge, research, evidencePack }) {
+function buildVerifierInput({ article, sentenceInventory, queueItem, knowledge, research, evidencePack }) {
   return JSON.stringify({
     current_date: todayISO(),
     topic: queueItem.topic,
@@ -1310,20 +1366,24 @@ function buildVerifierInput({ article, queueItem, knowledge, research, evidenceP
       allowed_domains: research.allowed_domains,
       minimum_verified_claims: research.minimum_verified_claims
     },
+    valid_evidence_ids: research.enabled
+      ? (evidencePack?.facts || []).map((fact) => fact.id)
+      : ["APXN-KNOWLEDGE"],
     audited_evidence_pack: research.enabled ? evidencePack : undefined,
     apxn_knowledge_base: research.enabled ? undefined : knowledge,
-    article
+    writer_declared_factual_claims: article.factual_claims,
+    article_sentence_inventory: sentenceInventory
   }, null, 2);
 }
 
 async function verifyArticle({
-  apiKey, model, config, article, queueItem, knowledge, research, evidencePack
+  apiKey, model, config, article, sentenceInventory, queueItem, knowledge, research, evidencePack
 }) {
   return callStructuredXAI({
     apiKey,
     model,
     instructions: buildVerifierInstructions(research),
-    input: buildVerifierInput({ article, queueItem, knowledge, research, evidencePack }),
+    input: buildVerifierInput({ article, sentenceInventory, queueItem, knowledge, research, evidencePack }),
     config,
     research: { ...research, enabled: false },
     schema: buildVerificationSchema(),
@@ -1340,6 +1400,7 @@ You are the APXN Blog correction editor. Rewrite the supplied article JSON so ev
 - Keep the article between ${config.writer.minimum_words} and ${config.writer.maximum_words} words when practical.
 - Remove unsupported or uncertain claims instead of guessing.
 - Apply the verifier's precise correction when provided.
+- Treat every verifier_report.uncovered_claims item as a mandatory blocker: remove it or rewrite it strictly from allowed evidence.
 - ${research.enabled ? "Use ONLY the supplied audited Evidence Pack for external facts and preserve valid evidence_ids." : "Use only the supplied reviewed APXN knowledge base for APXN facts."}
 - Do not introduce new changing numbers, dates, versions, fees, current-status claims, security absolutes, or named listings that are not in the allowed evidence.
 - Preserve APXN terminology and safety rules.
@@ -1467,6 +1528,58 @@ function articlePlainText(article) {
   return parts.filter(Boolean).join("\n");
 }
 
+function splitEnglishSentences(value) {
+  const text = normalizeSpace(value);
+  if (!text) return [];
+
+  try {
+    const segmenter = new Intl.Segmenter("en", { granularity: "sentence" });
+    return [...segmenter.segment(text)]
+      .map((item) => normalizeSpace(item.segment))
+      .filter(Boolean);
+  } catch {
+    return [text];
+  }
+}
+
+function buildArticleSentenceInventory(article) {
+  const raw = [];
+  const seen = new Set();
+
+  function add(location, value) {
+    for (const sentence of splitEnglishSentences(value)) {
+      const key = sentence.toLowerCase();
+      if (!sentence || seen.has(key)) continue;
+      seen.add(key);
+      raw.push({ location, text: sentence });
+    }
+  }
+
+  add("title", article.title);
+  add("description", article.description);
+  add("excerpt", article.excerpt);
+
+  article.sections.forEach((section, sectionIndex) => {
+    add(`section_${sectionIndex + 1}_heading`, section.heading);
+    section.paragraphs.forEach((paragraph, paragraphIndex) => {
+      add(`section_${sectionIndex + 1}_paragraph_${paragraphIndex + 1}`, paragraph);
+    });
+  });
+
+  article.faq.forEach((item, faqIndex) => {
+    add(`faq_${faqIndex + 1}_question`, item.question);
+    add(`faq_${faqIndex + 1}_answer`, item.answer);
+  });
+
+  add("disclaimer", article.disclaimer);
+
+  return raw.map((item, index) => ({
+    id: `S${String(index + 1).padStart(3, "0")}`,
+    location: item.location,
+    text: item.text
+  }));
+}
+
 function normalizeVerificationReport(raw, research) {
   const checkedClaims = (Array.isArray(raw?.checked_claims) ? raw.checked_claims : [])
     .map((item) => ({
@@ -1497,13 +1610,123 @@ function normalizeVerificationReport(raw, research) {
     }))
     .filter((item) => item.claim || item.problem);
 
+  const coveredClaims = (Array.isArray(raw?.covered_claims) ? raw.covered_claims : [])
+    .map((item) => ({
+      sentence_id: normalizeSpace(item?.sentence_id).toUpperCase(),
+      claim: normalizeSpace(item?.claim),
+      evidence_ids: uniqueStrings(item?.evidence_ids, 12)
+    }))
+    .filter((item) => item.sentence_id && item.claim);
+
+  const nonfactualSentenceIds = uniqueStrings(
+    (Array.isArray(raw?.nonfactual_sentence_ids) ? raw.nonfactual_sentence_ids : [])
+      .map((value) => normalizeSpace(value).toUpperCase()),
+    MAX_ARTICLE_SENTENCE_INVENTORY + 20
+  );
+
+  const uncoveredClaims = (Array.isArray(raw?.uncovered_claims) ? raw.uncovered_claims : [])
+    .map((item) => ({
+      sentence_id: normalizeSpace(item?.sentence_id).toUpperCase(),
+      claim: normalizeSpace(item?.claim),
+      problem: normalizeSpace(item?.problem),
+      correction: normalizeSpace(item?.correction),
+      severity: normalizeSpace(item?.severity),
+      evidence_ids: uniqueStrings(item?.evidence_ids, 12)
+    }))
+    .filter((item) => item.sentence_id && (item.claim || item.problem));
+
   return {
     verdict: raw?.verdict === "pass" ? "pass" : "fix",
     confidence: ["high", "medium", "low"].includes(raw?.confidence) ? raw.confidence : "low",
     summary: normalizeSpace(raw?.summary),
     checked_claims: checkedClaims,
     issues,
+    coverage_complete: raw?.coverage_complete === true,
+    covered_claims: coveredClaims,
+    nonfactual_sentence_ids: nonfactualSentenceIds,
+    uncovered_claims: uncoveredClaims,
     server_side_tools_used: 0
+  };
+}
+
+function validateClaimCoverage(report, research, evidencePack, sentenceInventory) {
+  const errors = [];
+  const inventory = Array.isArray(sentenceInventory) ? sentenceInventory : [];
+  const expected = new Set(inventory.map((item) => item.id));
+  const seen = new Set();
+  const validEvidenceIds = new Set(
+    research.enabled
+      ? (evidencePack?.facts || []).map((fact) => fact.id)
+      : ["APXN-KNOWLEDGE"]
+  );
+
+  function markSentence(id, bucket) {
+    if (!expected.has(id)) {
+      errors.push(`Verifier returned unknown sentence ID ${id} in ${bucket}.`);
+      return;
+    }
+    if (seen.has(id)) {
+      errors.push(`Sentence ${id} was classified more than once by the verifier.`);
+      return;
+    }
+    seen.add(id);
+  }
+
+  if (report?.coverage_complete !== true) {
+    errors.push("Verifier did not confirm complete sentence-level factual coverage.");
+  }
+
+  for (const item of report?.covered_claims || []) {
+    markSentence(item.sentence_id, "covered_claims");
+
+    if (!Array.isArray(item.evidence_ids) || item.evidence_ids.length === 0) {
+      errors.push(`Covered factual sentence ${item.sentence_id} has no evidence_ids.`);
+      continue;
+    }
+
+    const unknown = item.evidence_ids.filter((id) => !validEvidenceIds.has(id));
+    if (unknown.length > 0) {
+      errors.push(`Covered factual sentence ${item.sentence_id} references unknown evidence IDs: ${unknown.join(", ")}.`);
+    }
+  }
+
+  for (const id of report?.nonfactual_sentence_ids || []) {
+    markSentence(id, "nonfactual_sentence_ids");
+  }
+
+  for (const item of report?.uncovered_claims || []) {
+    markSentence(item.sentence_id, "uncovered_claims");
+    errors.push(
+      `Uncovered factual sentence ${item.sentence_id}: ${item.problem || item.claim || "unsupported factual content"}`
+    );
+  }
+
+  const missing = [...expected].filter((id) => !seen.has(id));
+  if (missing.length > 0) {
+    errors.push(
+      `Verifier left ${missing.length} article sentence(s) unclassified: ${missing.slice(0, 12).join(", ")}${missing.length > 12 ? ", ..." : ""}.`
+    );
+  }
+
+  if (inventory.length > MAX_ARTICLE_SENTENCE_INVENTORY) {
+    errors.push(
+      `Article sentence inventory is too large for safe automatic verification: ${inventory.length}; maximum is ${MAX_ARTICLE_SENTENCE_INVENTORY}.`
+    );
+  }
+
+  if ((report?.covered_claims || []).length < Number(research.minimum_verified_claims || 1)) {
+    errors.push(
+      `Sentence-level verifier covered only ${(report?.covered_claims || []).length} factual sentence(s); minimum is ${research.minimum_verified_claims}.`
+    );
+  }
+
+  return {
+    pass: errors.length === 0,
+    errors: uniqueStrings(errors, 60),
+    sentence_count: inventory.length,
+    covered_factual_sentences: (report?.covered_claims || []).length,
+    nonfactual_sentences: (report?.nonfactual_sentence_ids || []).length,
+    uncovered_factual_sentences: (report?.uncovered_claims || []).length
   };
 }
 
@@ -1708,12 +1931,19 @@ function runQualityChecks(article, config, manifest, research, evidencePack = nu
 
   const plain = articlePlainText(article);
   const words = wordCount(plain);
+  const sentenceInventory = buildArticleSentenceInventory(article);
   const minimum = Number(config.writer.minimum_words || 1200);
   const maximum = Number(config.writer.maximum_words || 1900);
   const hardMaximum = maximum + 200;
 
   if (containsArabicScript(plain)) {
     errors.push("Arabic-script text was detected. APXN Blog publishing is English-only.");
+  }
+
+  if (sentenceInventory.length > MAX_ARTICLE_SENTENCE_INVENTORY) {
+    errors.push(
+      `Article has ${sentenceInventory.length} distinct sentences; automatic factual coverage limit is ${MAX_ARTICLE_SENTENCE_INVENTORY}.`
+    );
   }
 
   if (research.enabled) {
@@ -2286,7 +2516,10 @@ function addManifestRecord({
       verdict: verification?.verdict || null,
       confidence: verification?.confidence || null,
       checked_claims: verification?.checked_claims?.length || 0,
-      issues: verification?.issues?.length || 0
+      issues: verification?.issues?.length || 0,
+      coverage_complete: verification?.coverage_complete === true,
+      covered_factual_sentences: verification?.covered_claims?.length || 0,
+      uncovered_factual_sentences: verification?.uncovered_claims?.length || 0
     },
 
     research: {
@@ -2579,6 +2812,7 @@ async function processTopic({
   writeJson(PATHS.costs, costLedger);
 
   let quality = runQualityChecks(article, config, manifest, research, evidencePack);
+  let sentenceInventory = buildArticleSentenceInventory(article);
 
   if (!canContinueTopicBudget(config, costEntries)) {
     markTopicRejected({
@@ -2593,10 +2827,14 @@ async function processTopic({
 
   console.log("Verifying article against the frozen Evidence Pack...");
   const verificationResult = await verifyArticle({
-    apiKey, model, config, article, queueItem, knowledge, research, evidencePack
+    apiKey, model, config, article, sentenceInventory, queueItem, knowledge, research, evidencePack
   });
   let verification = normalizeVerificationReport(verificationResult.generated, research);
   verification.server_side_tools_used = 0;
+  let claimCoverage = validateClaimCoverage(
+    verification, research, evidencePack, sentenceInventory
+  );
+  quality.errors = uniqueStrings([...quality.errors, ...claimCoverage.errors], 80);
 
   costEntry = recordCost({
     ledger: costLedger,
@@ -2612,6 +2850,7 @@ async function processTopic({
   writeJson(PATHS.costs, costLedger);
 
   let verified = verificationPasses(verification, research, evidencePack) &&
+    claimCoverage.pass &&
     quality.errors.length === 0 &&
     article.requires_manual_review !== true;
 
@@ -2650,15 +2889,20 @@ async function processTopic({
     writeJson(PATHS.costs, costLedger);
 
     quality = runQualityChecks(article, config, manifest, research, evidencePack);
+    sentenceInventory = buildArticleSentenceInventory(article);
 
     if (!canContinueTopicBudget(config, costEntries)) break;
 
     console.log(`Re-verification round ${round} against the same Evidence Pack...`);
     const recheck = await verifyArticle({
-      apiKey, model, config, article, queueItem, knowledge, research, evidencePack
+      apiKey, model, config, article, sentenceInventory, queueItem, knowledge, research, evidencePack
     });
     verification = normalizeVerificationReport(recheck.generated, research);
     verification.server_side_tools_used = 0;
+    claimCoverage = validateClaimCoverage(
+      verification, research, evidencePack, sentenceInventory
+    );
+    quality.errors = uniqueStrings([...quality.errors, ...claimCoverage.errors], 80);
 
     costEntry = recordCost({
       ledger: costLedger,
@@ -2674,6 +2918,7 @@ async function processTopic({
     writeJson(PATHS.costs, costLedger);
 
     verified = verificationPasses(verification, research, evidencePack) &&
+      claimCoverage.pass &&
       quality.errors.length === 0 &&
       article.requires_manual_review !== true;
   }
@@ -2693,6 +2938,10 @@ async function processTopic({
   console.log(`Verification: ${verification.verdict} / ${verification.confidence}`);
   console.log(`Verified claims: ${verification.checked_claims.filter((item) => item.status === "verified").length}`);
   console.log(`Verification issues: ${verification.issues.length}`);
+  console.log(`Sentence inventory: ${claimCoverage.sentence_count}`);
+  console.log(`Covered factual sentences: ${claimCoverage.covered_factual_sentences}`);
+  console.log(`Uncovered factual sentences: ${claimCoverage.uncovered_factual_sentences}`);
+  console.log(`Sentence coverage gate: ${claimCoverage.pass ? "pass" : "fail"}`);
   console.log(`Accepted sources: ${research.sources.length}`);
   if (evidencePack) console.log(`Frozen evidence facts: ${evidencePack.facts.length}`);
   console.log(`Topic pipeline cost: $${topicCostUsd.toFixed(6)}`);
@@ -2769,6 +3018,7 @@ async function processTopic({
       sources: research.sources
     },
     verification,
+    claim_coverage: claimCoverage,
     status: published ? "published" : "draft",
     requires_manual_review: false,
     quality: {
