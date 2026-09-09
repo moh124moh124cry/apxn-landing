@@ -1,5 +1,5 @@
 /**
- * APXN Blog AI Writer — Evidence Block Pipeline
+ * APXN Blog AI Writer — Atomic Evidence Quality Pipeline
  * Path: scripts/blog-writer.mjs
  *
  * Design goals:
@@ -11,7 +11,8 @@
  * - Every body paragraph and FAQ answer is mapped to evidence BEFORE verification.
  * - Local checks reject invented numbers and unknown evidence IDs.
  * - One compact paragraph-level verifier checks the final text against assigned evidence.
- * - At most one evidence-grounded rewrite is allowed, followed by mandatory fresh verification.
+ * - At most one targeted evidence-grounded repair is allowed, followed by mandatory fresh verification.
+ * - Atomic blocks are never padded merely to satisfy per-block word targets.
  * - Publication is allowed only after local checks + fresh verification pass + cost checks.
  *
  * No external npm packages are required.
@@ -44,11 +45,12 @@ const API_TIMEOUT_MS = 180_000;
 const SOURCE_FETCH_TIMEOUT_MS = 20_000;
 const MAX_SOURCE_BYTES = 700_000;
 const MAX_EXCERPT_CHARS = 2_000;
-const MAX_TOTAL_EXCERPT_CHARS = 24_000;
-const MAX_EXCERPTS_PER_SOURCE = 3;
-const MIN_EXTERNAL_EVIDENCE_FACTS = 16;
-const MAX_EXTERNAL_EVIDENCE_FACTS = 24;
-const EVIDENCE_OUTPUT_TOKENS = 3_200;
+const MAX_TOTAL_EXCERPT_CHARS = 30_000;
+const MAX_EXCERPTS_PER_SOURCE = 4;
+const MIN_EXTERNAL_EVIDENCE_FACTS = 24;
+const MAX_EXTERNAL_EVIDENCE_FACTS = 30;
+const EVIDENCE_OUTPUT_TOKENS = 4_000;
+const HARD_MIN_ATOMIC_BLOCK_WORDS = 24;
 const ARTICLE_OUTPUT_TOKENS = 5_400;
 const VERIFIER_OUTPUT_TOKENS = 2_400;
 const MAX_TARGETED_REPAIR_ROUNDS = 1;
@@ -868,8 +870,10 @@ You receive selected excerpts fetched DIRECTLY from official sources for the top
 
 STRICT RULES:
 - Use ONLY the supplied source excerpts. Never use memory or outside knowledge.
-- Produce ${MIN_EXTERNAL_EVIDENCE_FACTS}-${MAX_EXTERNAL_EVIDENCE_FACTS} useful ATOMIC facts when the excerpts support them. Prefer the upper half of this range when the official material is rich enough, because each fact will become its own short evidence paragraph.
+- Produce ${MIN_EXTERNAL_EVIDENCE_FACTS}-${MAX_EXTERNAL_EVIDENCE_FACTS} useful ATOMIC facts when the excerpts support them. Prefer 28-30 genuinely distinct facts when the official material is rich enough.
 - Each fact must contain exactly one material claim.
+- If one excerpt contains several independent facts, split them into separate facts only when each can be directly supported by its own verbatim quote.
+- Never create duplicate or near-duplicate facts just to reach the requested count. If the official material cannot support enough distinct facts, return fewer facts and let the pipeline reject the topic safely.
 - support_quote must be copied VERBATIM from one supplied excerpt and should normally be 30-220 characters.
 - source_url must exactly match the URL attached to that excerpt.
 - If a number appears in claim, the same number and context must appear in support_quote.
@@ -904,6 +908,7 @@ function normalizeEvidence(raw, sourceBundle) {
 
     const key = slugify(claim);
     if (!key || seenClaims.has(key)) continue;
+    if (facts.some((existing) => lexicalClaimSimilarity(existing.claim, claim) >= 0.84)) continue;
     seenClaims.add(key);
 
     facts.push({
@@ -1015,14 +1020,15 @@ function buildEvidenceBlockPlan({ config, queueItem, evidence }) {
   const sectionCount = 6;
   const target = Number(config?.writer?.target_words || 1500);
   const bodyTarget = Math.max(1120, target - 260);
-  const perBlockTarget = clampNumber(Math.ceil(bodyTarget / facts.length), 58, 82);
+  const perBlockTarget = clampNumber(Math.ceil(bodyTarget / facts.length), 40, 58);
 
   return facts.map((fact, index) => ({
     block_id: `B${String(index + 1).padStart(2, "0")}`,
     section_slot: Math.min(sectionCount, Math.floor((index * sectionCount) / facts.length) + 1),
     desired_words: perBlockTarget,
-    min_words: Math.max(50, perBlockTarget - 10),
-    max_words: Math.min(100, perBlockTarget + 18),
+    min_words: Math.max(32, perBlockTarget - 10),
+    hard_min_words: HARD_MIN_ATOMIC_BLOCK_WORDS,
+    max_words: Math.min(82, perBlockTarget + 16),
     evidence_ids: [fact.id],
     evidence: fact,
     editorial_focus: fact.claim
@@ -1047,6 +1053,7 @@ function buildKnowledgeBlockPlan({ config, queueItem }) {
     section_slot: index + 1,
     desired_words: perSectionTarget,
     min_words: Math.max(180, perSectionTarget - 25),
+    hard_min_words: Math.max(140, perSectionTarget - 70),
     max_words: Math.min(260, perSectionTarget + 30),
     evidence_ids: ["APXN-KNOWLEDGE"],
     evidence: null,
@@ -1084,7 +1091,8 @@ ATOMIC BLOCK RULES:
 - Do not invent examples, numbers, fees, balances, durations, comparisons, causes, recommendations, security advice, bridge behavior, validator behavior, or current-status claims.
 - A block should explain its one assigned fact in beginner-friendly language without adding implications, recommendations, causes, comparisons, examples, or adjacent facts.
 - Every factual sentence must remain a faithful paraphrase of that one assigned evidence claim/quote.
-- Keep each block near its desired_words and inside its min_words/max_words. Use clarification and careful restatement, not new factual content, to reach the target.
+- desired_words is a SOFT target, not a reason to pad. If the assigned evidence only supports a shorter paragraph, stop rather than repeat or stretch the same idea.
+- Never repeat the same sentence or materially equivalent sentence inside a block to reach a word target.
 - Do not repeat a sentence, paragraph, example, or explanation from another block.
 - The blocks are already ordered. Keep that order.
 - Create exactly ${sectionCount} concise section headings, one for every section_slot in the plan.
@@ -1135,6 +1143,7 @@ function blockWriterInput({ queueItem, config, knowledge, evidence, blockPlan })
       section_slot: item.section_slot,
       desired_words: item.desired_words,
       min_words: item.min_words,
+      hard_min_words: item.hard_min_words,
       max_words: item.max_words,
       assigned_evidence_ids: item.evidence_ids,
       assigned_evidence: evidence ? [item.evidence] : undefined,
@@ -1286,6 +1295,49 @@ function paragraphFingerprint(text) {
   return normalizeComparable(text).replace(/\b(?:the|a|an|and|or|to|of|in|on|for|with)\b/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function sentenceFingerprints(text) {
+  const sentences = String(text || "")
+    .trim()
+    .split(/(?<=[.!?])\s+(?=[A-Z0-9"'“‘*`])/u);
+  return sentences
+    .map((sentence) => ({
+      raw: normalizeSpace(sentence),
+      fp: normalizeComparable(sentence)
+    }))
+    .filter((item) => item.raw && item.fp.split(/\s+/).length >= 6);
+}
+
+function repeatedSentencePairs(text) {
+  const seen = new Map();
+  const repeats = [];
+  for (const item of sentenceFingerprints(text)) {
+    if (seen.has(item.fp)) {
+      repeats.push({ first: seen.get(item.fp), repeated: item.raw });
+    } else {
+      seen.set(item.fp, item.raw);
+    }
+  }
+  return repeats;
+}
+
+function claimTokenSet(value) {
+  return new Set(
+    normalizeComparable(value)
+      .split(/\s+/)
+      .filter((token) => token.length >= 4 && !["this","that","with","from","into","have","will","their","there","which","when","where"].includes(token))
+  );
+}
+
+function lexicalClaimSimilarity(a, b) {
+  const left = claimTokenSet(a);
+  const right = claimTokenSet(b);
+  if (!left.size || !right.size) return 0;
+  let intersection = 0;
+  for (const token of left) if (right.has(token)) intersection += 1;
+  const union = new Set([...left, ...right]).size;
+  return union ? intersection / union : 0;
+}
+
 function localArticleChecks({ article, config, manifest, evidence, knowledge, blockPlan }) {
   const errors = [];
   const warnings = [];
@@ -1322,6 +1374,11 @@ function localArticleChecks({ article, config, manifest, evidence, knowledge, bl
       else fingerprints.set(fp, unit.id);
     }
 
+    const sentenceRepeats = repeatedSentencePairs(unit.text);
+    if (sentenceRepeats.length) {
+      errors.push(`${unit.id} repeats the same sentence inside the block; remove duplicated wording instead of padding for length.`);
+    }
+
     const plan = planById.get(unit.id);
     if (!unit.text) {
       errors.push(`${unit.id} is empty.`);
@@ -1329,7 +1386,11 @@ function localArticleChecks({ article, config, manifest, evidence, knowledge, bl
     }
     if (plan) {
       const count = wordCount(unit.text);
-      if (count < plan.min_words) errors.push(`${unit.id} is too short: ${count} words; target minimum ${plan.min_words}.`);
+      if (count < Number(plan.hard_min_words || 0)) {
+        errors.push(`${unit.id} is too short to be useful: ${count} words; hard minimum ${plan.hard_min_words}.`);
+      } else if (count < plan.min_words) {
+        warnings.push(`${unit.id} is shorter than the preferred drafting range: ${count} words; preferred minimum ${plan.min_words}.`);
+      }
       if (count > plan.max_words + 25) warnings.push(`${unit.id} is longer than planned: ${count} words.`);
       const assigned = uniqueStrings(unit.evidence_ids, 4);
       if (assigned.join("|") !== plan.evidence_ids.join("|")) {
@@ -1594,38 +1655,6 @@ function targetedRepairSchema() {
   };
 }
 
-function selectLengthRepairTargets(article, blockPlan, config) {
-  const minArticleWords = Number(config?.writer?.minimum_words || 1200);
-  const deficit = Math.max(0, minArticleWords - wordCount(articlePlainText(article)));
-  if (!deficit) return [];
-
-  const planById = new Map(blockPlan.map((item) => [item.block_id, item]));
-  const body = buildVerificationUnits(article)
-    .filter((unit) => unit.id.startsWith("B"))
-    .map((unit) => {
-      const plan = planById.get(unit.id);
-      const currentWords = wordCount(unit.text);
-      const room = plan ? Math.max(0, plan.max_words - currentWords) : 0;
-      return { unit_id: unit.id, currentWords, room, targetMin: plan?.min_words || currentWords };
-    })
-    .sort((a, b) => (b.room - a.room) || (a.currentWords - b.currentWords));
-
-  const targets = [];
-  let remaining = deficit + 40;
-  for (const item of body) {
-    if (remaining <= 0) break;
-    if (item.room <= 0) continue;
-    const add = Math.min(item.room, remaining);
-    targets.push({
-      unit_id: item.unit_id,
-      reason: `Expand this block by about ${add} words using only its assigned evidence. Do not add new facts.`,
-      target_min_words: item.currentWords + add
-    });
-    remaining -= add;
-  }
-  return targets;
-}
-
 function buildRepairTargets({ article, verification, localChecks, blockPlan, config }) {
   const targets = new Map();
 
@@ -1646,15 +1675,6 @@ function buildRepairTargets({ article, verification, localChecks, blockPlan, con
     }
   }
 
-  for (const item of selectLengthRepairTargets(article, blockPlan, config)) {
-    const existing = targets.get(item.unit_id);
-    targets.set(item.unit_id, {
-      unit_id: item.unit_id,
-      reason: existing ? `${existing.reason} ${item.reason}` : item.reason,
-      target_min_words: Math.max(existing?.target_min_words || 0, item.target_min_words || 0) || null
-    });
-  }
-
   return [...targets.values()];
 }
 
@@ -1669,7 +1689,8 @@ RULES:
   ? "Use ONLY assigned_evidence for that unit. Never use other evidence or model memory."
   : "Use ONLY the reviewed APXN knowledge supplied for that unit."}
 - Remove unsupported assertions instead of replacing them with other unsupported advice.
-- If expansion is requested, use only the unit's single assigned evidence fact. Clarify and faithfully restate that fact without introducing adjacent facts, implications, recommendations, or new examples.
+- Do not expand a unit merely to satisfy article length. Repair only the stated factual, structural, duplication, or hard-minimum problem.
+- If a unit is repaired, keep it concise and faithful to its assigned evidence; never pad by restating the same sentence or idea.
 - Do not invent numbers, examples, comparisons, causes, recommendations, security advice, timings, balances, fee estimates, or current-status claims.
 - Preserve a neutral beginner-friendly English tone.
 - Return JSON only.
@@ -1757,7 +1778,7 @@ function applyUnitRepairs(article, rawRepairs, targets) {
 
 function runBlockArchitectureSelfTest(config) {
   const mockEvidence = {
-    facts: Array.from({ length: 18 }, (_, index) => ({
+    facts: Array.from({ length: 24 }, (_, index) => ({
       id: `E${String(index + 1).padStart(2, "0")}`,
       claim: `Mock supported fact ${index + 1}`,
       kind: "general",
@@ -1790,8 +1811,8 @@ function runBlockArchitectureSelfTest(config) {
   const expected = blockPlan.map((item) => item.block_id).join("|");
   const actual = bodyUnits.map((item) => item.id).join("|");
   if (expected !== actual) fail("Block architecture self-test failed: body unit IDs do not match atomic block plan.");
-  if (bodyUnits.length !== 18 || sectionCount !== 6) {
-    fail(`Block architecture self-test failed: expected 18 atomic blocks across 6 sections, got ${bodyUnits.length} blocks across ${sectionCount} sections.`);
+  if (bodyUnits.length !== 24 || sectionCount !== 6) {
+    fail(`Block architecture self-test failed: expected 24 atomic blocks across 6 sections, got ${bodyUnits.length} blocks across ${sectionCount} sections.`);
   }
   const bodyEvidence = bodyUnits.flatMap((item) => item.evidence_ids);
   for (const fact of mockEvidence.facts) {
@@ -1803,8 +1824,17 @@ function runBlockArchitectureSelfTest(config) {
     if (item.evidence_ids.length !== 1) {
       fail(`Block architecture self-test failed: ${item.block_id} must have exactly one evidence fact.`);
     }
+    if (item.hard_min_words !== HARD_MIN_ATOMIC_BLOCK_WORDS) {
+      fail(`Block architecture self-test failed: ${item.block_id} hard minimum is not ${HARD_MIN_ATOMIC_BLOCK_WORDS}.`);
+    }
   }
-  console.log(`Block architecture self-test: PASS (18 atomic evidence blocks, 6 sections, one evidence fact per block, exact evidence mapping).`);
+
+  const duplicateProbe = "This supported test sentence contains enough words for duplicate detection. This supported test sentence contains enough words for duplicate detection.";
+  if (repeatedSentencePairs(duplicateProbe).length !== 1) {
+    fail("Block architecture self-test failed: repeated-sentence guard did not detect an exact duplicate.");
+  }
+
+  console.log(`Block architecture self-test: PASS (24 atomic evidence blocks, 6 sections, one evidence fact per block, exact evidence mapping, duplicate-sentence guard).`);
 }
 
 /* -------------------------------------------------------------------------- */
