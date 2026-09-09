@@ -1,29 +1,21 @@
 /**
- * APXN Blog Writer — Research-Packet-Only Paid Writer
- * Path: scripts/blog-writer.mjs
+ * APXN Blog Researcher — Free Official-Source Research Compiler
+ * Path: scripts/blog-researcher.mjs
  *
- * Architecture:
- *   Official/APXN sources
- *      -> scripts/blog-researcher.mjs (free deterministic research)
- *      -> immutable Research Packet
- *      -> one paid Grok writing call
- *      -> free deterministic local quality/grounding gate
- *      -> private draft or publication
+ * Purpose:
+ * - Perform the research stage without any paid AI/API model.
+ * - Read only allowlisted official sources from data/blog-source-profiles.json.
+ * - Read APXN project facts only from explicitly selected knowledge_sections.
+ * - Build a deterministic Research Packet for the paid writer.
+ * - Refuse topics whose evidence cannot support a substantial 1200+ word article.
  *
- * Important:
- * - This file does NOT fetch official sources itself.
- * - Grok receives facts only from the Research Packet.
- * - No open-web/model-memory research is allowed.
- * - No paid verifier/repair loop is used.
- * - A failed local gate is preserved as an artifact for inspection.
- * - Source-test mode uses the same free researcher and makes zero xAI calls.
+ * This module has no external npm dependencies and uses Node.js built-ins only.
  */
 
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { buildResearchPacketForTopic } from "./blog-researcher.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,203 +23,73 @@ const ROOT = path.resolve(__dirname, "..");
 
 const PATHS = {
   config: path.join(ROOT, "data", "blog-config.json"),
-  articles: path.join(ROOT, "data", "blog-articles.json"),
+  knowledge: path.join(ROOT, "data", "apxn-blog-knowledge.json"),
   topicBank: path.join(ROOT, "data", "blog-topic-bank.json"),
-  costs: path.join(ROOT, "data", "blog-costs.json"),
-  published: path.join(ROOT, "blog", "articles"),
-  privateDrafts: path.join(ROOT, ".workflow-output", "drafts")
+  sourceProfiles: path.join(ROOT, "data", "blog-source-profiles.json"),
+  outputDir: path.join(ROOT, ".workflow-output", "research")
 };
 
-const DEFAULT_XAI_BASE_URL = "https://api.x.ai/v1";
-const DEFAULT_XAI_ENDPOINT = "/responses";
-const DEFAULT_MODEL = "grok-4.3";
-const COST_TICKS_PER_USD = 10_000_000_000;
-const API_TIMEOUT_MS = 180_000;
-const GENERATION_OUTPUT_TOKENS = 6_500;
-const DEFAULT_GENERATION_COST_RESERVE_USD = 0.05;
-const COST_PREFLIGHT_EPSILON_USD = 0.000000001;
-const MAX_PRE_AI_TOPIC_ATTEMPTS = 6;
+const SOURCE_FETCH_TIMEOUT_MS = 22_000;
+const MAX_SOURCE_BYTES = 900_000;
+const MAX_SOURCE_TEXT_CHARS = 140_000;
+const MIN_PASSAGE_WORDS = 55;
+const TARGET_PASSAGE_WORDS = 130;
+const MAX_PASSAGE_WORDS = 210;
+const MAX_PASSAGES_PER_SOURCE = 6;
+const MAX_EXTERNAL_EVIDENCE_ITEMS = 18;
+const MAX_APXN_EVIDENCE_ITEMS = 24;
 
 const CONTENT_MODES = new Set(["apxn", "external", "hybrid", "manual"]);
 
-const SOURCE_PROFILE_ALIASES = {
-  security: "wallet_security",
-  ethereum: "blockchain_transactions",
-  blockchain: "blockchain_transactions",
-  web3: "telegram_web3"
-};
-
-/*
- * Compatibility for the old queue that existed before topic-bank schema v2.
- * These records are deterministic; the writer never guesses content mode from
- * a title. The first composite BSC topic stays retired because the new bank
- * already contains separate BSC / BEP-20 / gas topics.
- */
-const LEGACY_TOPIC_OVERRIDES = {
-  "what is bsc understanding bep 20 tokens and gas fees": {
-    retired: true,
-    retired_reason:
-      "Legacy composite topic retired. BNB Smart Chain, BEP-20 and gas fees now have separate schema-v2 topics."
+const MIN_RESEARCH = {
+  external: {
+    total_words: 900,
+    external_words: 900,
+    apxn_words: 0,
+    evidence_items: 8
   },
-  "how telegram mini apps are bringing web3 to everyday users": {
-    content_mode: "external",
-    source_profile: "telegram_web3",
-    knowledge_sections: [],
-    auto_publish_allowed: true
+  hybrid: {
+    total_words: 950,
+    external_words: 700,
+    apxn_words: 80,
+    evidence_items: 9
   },
-  "web3 security basics protecting your wallet and telegram account": {
-    content_mode: "external",
-    source_profile: "web3_security",
-    knowledge_sections: [],
-    auto_publish_allowed: true
-  },
-  "blockchain explained for beginners from blocks to web3": {
-    content_mode: "external",
-    source_profile: "blockchain_transactions",
-    knowledge_sections: [],
-    auto_publish_allowed: true
-  },
-  "how apxn referrals and active friend mining boosts work": {
-    content_mode: "apxn",
-    source_profile: null,
-    knowledge_sections: ["implemented_product_facts.referrals"],
-    auto_publish_allowed: true,
-    editorial_guard:
-      "Describe the in-app APXN Points referral speed calculation only. Do not present it as blockchain mining yield or financial return."
-  },
-  "understanding the apxn daily check in reward system": {
-    content_mode: "apxn",
-    source_profile: null,
-    knowledge_sections: ["implemented_product_facts.daily_checkin"],
-    auto_publish_allowed: true
-  },
-  "apxn development roadmap live features vs planned milestones": {
-    content_mode: "apxn",
-    source_profile: null,
-    knowledge_sections: [
-      "implemented_product_facts",
-      "features_not_to_describe_as_live",
-      "roadmap"
-    ],
-    auto_publish_allowed: true,
-    editorial_guard:
-      "Keep implemented, UI-only and planned features distinct. Never present roadmap dates or incomplete phases as guaranteed."
-  },
-  "how telegram mini app authentication works and why initdata verification matters": {
-    content_mode: "external",
-    source_profile: "telegram_auth",
-    knowledge_sections: [],
-    auto_publish_allowed: true
+  apxn: {
+    total_words: 450,
+    external_words: 0,
+    apxn_words: 450,
+    evidence_items: 6
   }
 };
 
-const ARTICLE_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [
-    "title",
-    "description",
-    "keywords",
-    "intro",
-    "sections",
-    "faq",
-    "conclusion"
-  ],
-  properties: {
-    title: { type: "string" },
-    description: { type: "string" },
-    keywords: {
-      type: "array",
-      minItems: 5,
-      maxItems: 10,
-      items: { type: "string" }
-    },
-    intro: {
-      type: "object",
-      additionalProperties: false,
-      required: ["text", "evidence_ids"],
-      properties: {
-        text: { type: "string" },
-        evidence_ids: {
-          type: "array",
-          minItems: 1,
-          maxItems: 6,
-          items: { type: "string" }
-        }
-      }
-    },
-    sections: {
-      type: "array",
-      minItems: 6,
-      maxItems: 6,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        required: ["heading", "paragraphs"],
-        properties: {
-          heading: { type: "string" },
-          paragraphs: {
-            type: "array",
-            minItems: 2,
-            maxItems: 2,
-            items: {
-              type: "object",
-              additionalProperties: false,
-              required: ["text", "evidence_ids"],
-              properties: {
-                text: { type: "string" },
-                evidence_ids: {
-                  type: "array",
-                  minItems: 1,
-                  maxItems: 6,
-                  items: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    faq: {
-      type: "array",
-      minItems: 3,
-      maxItems: 3,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        required: ["question", "answer", "evidence_ids"],
-        properties: {
-          question: { type: "string" },
-          answer: { type: "string" },
-          evidence_ids: {
-            type: "array",
-            minItems: 1,
-            maxItems: 6,
-            items: { type: "string" }
-          }
-        }
-      }
-    },
-    conclusion: {
-      type: "object",
-      additionalProperties: false,
-      required: ["text", "evidence_ids"],
-      properties: {
-        text: { type: "string" },
-        evidence_ids: {
-          type: "array",
-          minItems: 1,
-          maxItems: 6,
-          items: { type: "string" }
-        }
-      }
-    }
-  }
+const ARTICLE_WORD_PLAN = {
+  minimum: 1200,
+  target: 1500,
+  maximum: 1900,
+  intro: { min: 120, target: 145, max: 170 },
+  section: { min: 165, target: 190, max: 220 },
+  faq_each: { min: 70, target: 90, max: 110 },
+  conclusion: { min: 90, target: 110, max: 135 }
 };
 
-/* -------------------------------------------------------------------------- */
-/* Basic utilities                                                            */
-/* -------------------------------------------------------------------------- */
+const STOP_WORDS = new Set([
+  "a", "an", "and", "are", "as", "at", "be", "been", "being", "by", "can",
+  "for", "from", "how", "in", "into", "is", "it", "its", "of", "on", "or",
+  "that", "the", "their", "them", "these", "this", "to", "was", "were", "what",
+  "when", "where", "which", "who", "why", "will", "with", "your", "you", "users",
+  "user", "guide", "understanding", "explained", "beginner", "beginners", "important"
+]);
+
+const GLOBAL_FORBIDDEN_CLAIMS = [
+  "Do not invent facts from model memory or open-web knowledge.",
+  "Do not invent integrations, partnerships, listings, prices, yields, profits or investment outcomes.",
+  "Do not present planned or UI-only APXN features as live or persisted.",
+  "Do not infer wallet custody, private-key storage, transaction signing or on-chain settlement unless the packet explicitly contains that fact.",
+  "Do not convert two separate facts into a causal relationship unless an evidence item explicitly states that relationship.",
+  "Do not invent future possibilities such as could later, may eventually, will enable or can help unless an evidence item explicitly supports that future relationship.",
+  "Do not add current volatile metrics such as prices, TVL, APY, gas price, validator count, TPS or market figures unless explicitly approved by the source profile.",
+  "Do not pad the article with repetition, generic motivational language or unsupported examples merely to reach a word count."
+];
 
 function fail(message) {
   throw new Error(message);
@@ -245,23 +107,15 @@ function readJson(filePath) {
   }
 }
 
-function readJsonIfExists(filePath) {
-  return fs.existsSync(filePath) ? readJson(filePath) : null;
-}
-
 function writeTextAtomic(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  const temporary = `${filePath}.tmp-${process.pid}-${Date.now()}`;
-  fs.writeFileSync(temporary, value, "utf8");
-  fs.renameSync(temporary, filePath);
+  const temporaryPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  fs.writeFileSync(temporaryPath, value, "utf8");
+  fs.renameSync(temporaryPath, filePath);
 }
 
 function writeJson(filePath, value) {
   writeTextAtomic(filePath, `${JSON.stringify(value, null, 2)}\n`);
-}
-
-function writeText(filePath, value) {
-  writeTextAtomic(filePath, value);
 }
 
 function normalizeSpace(value) {
@@ -290,6 +144,11 @@ function slugify(value) {
     .slice(0, 90);
 }
 
+function wordCount(value) {
+  const clean = normalizeSpace(value);
+  return clean ? clean.split(/\s+/).filter(Boolean).length : 0;
+}
+
 function uniqueStrings(values, max = 100) {
   const result = [];
   const seen = new Set();
@@ -306,21 +165,6 @@ function uniqueStrings(values, max = 100) {
   return result;
 }
 
-function wordCount(value) {
-  const text = normalizeSpace(value);
-  return text ? text.split(/\s+/).filter(Boolean).length : 0;
-}
-
-function containsArabicScript(value) {
-  return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/u.test(String(value || ""));
-}
-
-function isTruthyEnv(name) {
-  return ["1", "true", "yes", "on"].includes(
-    String(process.env[name] || "").trim().toLowerCase()
-  );
-}
-
 function todayISO() {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Africa/Algiers",
@@ -330,2273 +174,1096 @@ function todayISO() {
   }).format(new Date());
 }
 
-function monthKey(date = todayISO()) {
-  return String(date).slice(0, 7);
+function hostnameOf(value) {
+  try {
+    return new URL(String(value)).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return "";
+  }
 }
 
-function readingMinutes(words) {
-  return Math.max(1, Math.ceil(Number(words || 0) / 220));
+function isAllowedHostname(hostname, allowedDomains) {
+  const clean = String(hostname || "").toLowerCase().replace(/^www\./, "");
+  return (allowedDomains || []).some((domain) => {
+    const allowed = String(domain || "").toLowerCase().replace(/^www\./, "");
+    return clean === allowed || clean.endsWith(`.${allowed}`);
+  });
 }
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function decodeHtmlEntities(value) {
+  return String(value || "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&#x27;/gi, "'")
+    .replace(/&#x2F;/gi, "/")
+    .replace(/&#(\d+);/g, (_, code) => {
+      const valueNumber = Number(code);
+      return Number.isFinite(valueNumber) ? String.fromCodePoint(valueNumber) : " ";
+    })
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => {
+      const valueNumber = Number.parseInt(code, 16);
+      return Number.isFinite(valueNumber) ? String.fromCodePoint(valueNumber) : " ";
+    });
 }
 
-function safeJsonForScript(value) {
-  return JSON.stringify(value, null, 2)
-    .replaceAll("&", "\\u0026")
-    .replaceAll("<", "\\u003c")
-    .replaceAll(">", "\\u003e")
-    .replaceAll("\u2028", "\\u2028")
-    .replaceAll("\u2029", "\\u2029");
+function htmlToTextWithBlocks(html) {
+  let text = String(html || "");
+
+  text = text
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<svg\b[\s\S]*?<\/svg>/gi, " ")
+    .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, " ")
+    .replace(/<(?:br|hr)\b[^>]*>/gi, "\n")
+    .replace(/<\/(?:p|div|section|article|main|li|h1|h2|h3|h4|h5|h6|table|tr|pre|blockquote)>/gi, "\n\n")
+    .replace(/<li\b[^>]*>/gi, "\n")
+    .replace(/<[^>]+>/g, " ");
+
+  text = decodeHtmlEntities(text)
+    .replace(/\r/g, "")
+    .replace(/[ \t]+/g, " ")
+    .replace(/ *\n */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  return text.slice(0, MAX_SOURCE_TEXT_CHARS);
 }
 
-function nextArticleId(articles) {
-  let max = 0;
+function plainTextSourceToBlocks(text) {
+  return String(text || "")
+    .replace(/\r/g, "")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, MAX_SOURCE_TEXT_CHARS);
+}
 
-  for (const article of Array.isArray(articles) ? articles : []) {
-    const match = String(article?.id || "").match(/^apxn-(\d+)$/i);
-    if (match) max = Math.max(max, Number(match[1]));
+function sourceBodyToText(body, contentType, url) {
+  const type = String(contentType || "").toLowerCase();
+  const pathname = (() => {
+    try {
+      return new URL(url).pathname.toLowerCase();
+    } catch {
+      return "";
+    }
+  })();
+
+  if (
+    type.includes("text/html") ||
+    /\.(?:html?|xhtml)$/.test(pathname) ||
+    (!type && /<html|<body|<article|<main/i.test(body))
+  ) {
+    return htmlToTextWithBlocks(body);
   }
 
-  return `apxn-${String(max + 1).padStart(3, "0")}`;
+  return plainTextSourceToBlocks(body);
 }
 
-function numericTokens(value) {
-  const text = String(value || "")
-    .toLowerCase()
-    .replace(/\b(?:bep|erc|eip)[ -]?\d+\b/gi, " ");
-
-  const matches =
-    text.match(
-      /(?:[$€£]\s*)?\b\d+(?:[.,]\d+)?(?:\s*%|\s*(?:gwei|wei|bnb|eth|usdt|seconds?|minutes?|hours?|days?|weeks?|months?|years?|blocks?|validators?|transactions?|points?))?/gi
-    ) || [];
-
-  return uniqueStrings(
-    matches.map((item) => normalizeSpace(item).toLowerCase().replace(/,/g, "")),
-    100
-  );
+function tokenize(value) {
+  return normalizeTopic(value)
+    .split(" ")
+    .filter((token) => token.length >= 3 && !STOP_WORDS.has(token));
 }
 
-function normalizedWordSet(text) {
-  return new Set(
-    normalizeTopic(text)
-      .split(" ")
-      .filter((word) => word.length >= 4)
-  );
+function topicTerms(topic, category = "") {
+  return uniqueStrings([...tokenize(topic), ...tokenize(category)], 30);
 }
 
-function jaccardSimilarity(left, right) {
-  const a = normalizedWordSet(left);
-  const b = normalizedWordSet(right);
-  if (a.size === 0 || b.size === 0) return 0;
+function passageScore(passage, terms, sourceTitle = "") {
+  const lower = String(passage || "").toLowerCase();
+  const passageTokens = new Set(tokenize(passage));
+  const titleTokens = new Set(tokenize(sourceTitle));
+  let score = 0;
+
+  for (const term of terms) {
+    if (passageTokens.has(term)) score += 5;
+    if (lower.includes(term)) score += 2;
+    if (titleTokens.has(term)) score += 1;
+  }
+
+  const words = wordCount(passage);
+  if (words >= 85 && words <= 175) score += 4;
+  else if (words >= MIN_PASSAGE_WORDS && words <= MAX_PASSAGE_WORDS) score += 2;
+
+  if (/\b(?:privacy policy|terms of service|cookie|copyright|all rights reserved|subscribe|newsletter|sign in|log in)\b/i.test(passage)) {
+    score -= 20;
+  }
+
+  if (/\b(?:example|for example|means|defined|works|security|verify|validation|transaction|wallet|network|token|authentication|account|contract|gas|block)\b/i.test(passage)) {
+    score += 2;
+  }
+
+  return score;
+}
+
+function splitLongBlockIntoPassages(block) {
+  const words = normalizeSpace(block).split(/\s+/).filter(Boolean);
+  if (words.length <= MAX_PASSAGE_WORDS) return [normalizeSpace(block)];
+
+  const passages = [];
+  let start = 0;
+
+  while (start < words.length) {
+    const end = Math.min(words.length, start + TARGET_PASSAGE_WORDS);
+    let slice = words.slice(start, end).join(" ");
+
+    if (end < words.length) {
+      const nextExtra = words.slice(end, Math.min(words.length, end + 35)).join(" ");
+      const combined = `${slice} ${nextExtra}`;
+      const sentenceBoundary = Math.max(
+        combined.lastIndexOf(". "),
+        combined.lastIndexOf("? "),
+        combined.lastIndexOf("! ")
+      );
+
+      if (sentenceBoundary > slice.length * 0.7) {
+        slice = combined.slice(0, sentenceBoundary + 1);
+      }
+    }
+
+    const consumed = Math.max(1, wordCount(slice));
+    passages.push(normalizeSpace(slice));
+    start += consumed;
+  }
+
+  return passages;
+}
+
+function extractCandidatePassages(text) {
+  const rawBlocks = String(text || "")
+    .split(/\n{2,}/)
+    .map(normalizeSpace)
+    .filter(Boolean);
+
+  const candidates = [];
+  let carry = "";
+
+  for (const block of rawBlocks) {
+    if (wordCount(block) < 18) {
+      carry = normalizeSpace(`${carry} ${block}`);
+      continue;
+    }
+
+    const merged = normalizeSpace(`${carry} ${block}`);
+    carry = "";
+
+    for (const passage of splitLongBlockIntoPassages(merged)) {
+      const words = wordCount(passage);
+      if (words >= MIN_PASSAGE_WORDS && words <= MAX_PASSAGE_WORDS + 30) {
+        candidates.push(passage);
+      }
+    }
+  }
+
+  if (carry && wordCount(carry) >= MIN_PASSAGE_WORDS) {
+    candidates.push(carry);
+  }
+
+  return candidates;
+}
+
+function tokenJaccard(a, b) {
+  const left = new Set(tokenize(a));
+  const right = new Set(tokenize(b));
+  if (left.size === 0 || right.size === 0) return 0;
 
   let intersection = 0;
-  for (const token of a) {
-    if (b.has(token)) intersection += 1;
+  for (const token of left) {
+    if (right.has(token)) intersection += 1;
   }
 
-  const union = a.size + b.size - intersection;
+  const union = left.size + right.size - intersection;
   return union > 0 ? intersection / union : 0;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Configuration / routing validation                                         */
-/* -------------------------------------------------------------------------- */
-
-function validateConfig(config) {
-  if (config?.writer?.enabled !== true) {
-    fail("Blog writer is disabled in data/blog-config.json.");
-  }
-
-  if (String(config?.site?.default_language || "en").toLowerCase() !== "en") {
-    fail("APXN Blog Writer is English-only.");
-  }
-
-  if (config?.ai?.provider !== "xai") {
-    fail('data/blog-config.json must keep ai.provider="xai".');
-  }
-
-  if (config?.writer?.allow_external_research !== false) {
-    fail("writer.allow_external_research must remain false.");
-  }
-
-  const minWords = Number(config?.writer?.minimum_words || 0);
-  const targetWords = Number(config?.writer?.target_words || 0);
-  const maxWords = Number(config?.writer?.maximum_words || 0);
-
-  if (!(minWords >= 1200 && targetWords >= minWords && maxWords >= targetWords)) {
-    fail("Writer word-count settings are invalid.");
-  }
-
-  if (!Array.isArray(config?.categories) || config.categories.length === 0) {
-    fail("blog-config.json must contain categories.");
-  }
+function isNearDuplicate(candidate, selected) {
+  return selected.some((existing) => {
+    if (candidate.toLowerCase() === existing.toLowerCase()) return true;
+    return tokenJaccard(candidate, existing) >= 0.82;
+  });
 }
 
-function validateTopicBank(bank, config) {
-  if (Number(bank?.schema_version || 0) < 2) {
-    fail("data/blog-topic-bank.json must use schema_version 2 or newer.");
+function selectPassages(text, { topic, category, sourceTitle }) {
+  const terms = topicTerms(topic, category);
+  const candidates = extractCandidatePassages(text)
+    .map((passage, index) => ({
+      passage,
+      index,
+      score: passageScore(passage, terms, sourceTitle)
+    }))
+    .sort((a, b) => b.score - a.score || a.index - b.index);
+
+  const selected = [];
+
+  for (const candidate of candidates) {
+    if (candidate.score < 1 && selected.length >= 3) continue;
+    if (isNearDuplicate(candidate.passage, selected)) continue;
+    selected.push(candidate.passage);
+    if (selected.length >= MAX_PASSAGES_PER_SOURCE) break;
   }
 
-  if (!Array.isArray(bank?.topics)) {
-    fail("data/blog-topic-bank.json must contain topics.");
-  }
-
-  if (bank?.rules?.open_web_research_allowed !== false) {
-    fail("Topic bank must keep open_web_research_allowed=false.");
-  }
-
-  if (bank?.rules?.approved_official_sources_only !== true) {
-    fail("Topic bank must keep approved_official_sources_only=true.");
-  }
-
-  const categories = new Set(config.categories);
-
-  for (const item of bank.topics) {
-    const mode = String(item?.content_mode || "").toLowerCase();
-
-    if (!item?.id || !item?.topic || !item?.category) {
-      fail("A topic-bank entry is missing id, topic or category.");
-    }
-
-    if (!categories.has(item.category)) {
-      fail(`Topic ${item.id} uses unknown category "${item.category}".`);
-    }
-
-    if (!CONTENT_MODES.has(mode)) {
-      fail(`Topic ${item.id} has invalid content_mode.`);
-    }
-
-    if (!Array.isArray(item.knowledge_sections)) {
-      fail(`Topic ${item.id} must contain knowledge_sections.`);
-    }
-  }
+  return selected;
 }
 
-function findTopicBankItem(queueItem, bank) {
-  const explicitId = normalizeSpace(queueItem?.topic_bank_id);
-
-  if (explicitId) {
-    const byId = bank.topics.find((item) => item.id === explicitId);
-    if (byId) return byId;
-  }
-
-  const queueTopic = normalizeTopic(queueItem?.topic);
-
-  return (
-    bank.topics.find((item) => normalizeTopic(item.topic) === queueTopic) || null
-  );
-}
-
-function hydrateTopic(queueItem, bank) {
-  const bankItem = findTopicBankItem(queueItem, bank);
-  const legacy = LEGACY_TOPIC_OVERRIDES[normalizeTopic(queueItem?.topic)] || null;
-
-  if (legacy?.retired === true) {
-    return {
-      ok: false,
-      retired_legacy: true,
-      reason: legacy.retired_reason
-    };
-  }
-
-  const contentMode = String(
-    queueItem?.content_mode ||
-      bankItem?.content_mode ||
-      legacy?.content_mode ||
-      ""
-  ).toLowerCase();
-
-  const sourceProfile =
-    queueItem?.source_profile ??
-    bankItem?.source_profile ??
-    legacy?.source_profile ??
-    null;
-
-  const knowledgeSections = Array.isArray(queueItem?.knowledge_sections)
-    ? queueItem.knowledge_sections
-    : Array.isArray(bankItem?.knowledge_sections)
-      ? bankItem.knowledge_sections
-      : Array.isArray(legacy?.knowledge_sections)
-        ? legacy.knowledge_sections
-        : [];
-
-  const autoPublishAllowed =
-    queueItem?.auto_publish_allowed ??
-    bankItem?.auto_publish_allowed ??
-    legacy?.auto_publish_allowed ??
-    false;
-
-  const editorialGuard = normalizeSpace(
-    queueItem?.editorial_guard ||
-      bankItem?.editorial_guard ||
-      legacy?.editorial_guard ||
-      ""
-  );
-
-  if (!CONTENT_MODES.has(contentMode)) {
-    return {
-      ok: false,
-      reason:
-        "Topic has no valid content_mode metadata. Replenish it through the topic planner."
-    };
-  }
-
-  if (contentMode === "manual") {
-    return { ok: false, reason: "Manual-only topic cannot enter automatic generation." };
-  }
-
-  if (autoPublishAllowed !== true) {
-    return { ok: false, reason: "Topic is not approved for automatic publishing." };
-  }
-
-  if (["external", "hybrid"].includes(contentMode) && !normalizeSpace(sourceProfile)) {
-    return { ok: false, reason: "External/hybrid topic has no source_profile." };
-  }
-
-  if (["apxn", "hybrid"].includes(contentMode) && knowledgeSections.length === 0) {
-    return { ok: false, reason: "APXN/hybrid topic has no knowledge_sections." };
-  }
-
-  return {
-    ok: true,
-    id: bankItem?.id || queueItem?.topic_bank_id || null,
-    topic_bank_id: bankItem?.id || queueItem?.topic_bank_id || null,
-    topic: normalizeSpace(queueItem.topic),
-    category: normalizeSpace(queueItem.category || bankItem?.category),
-    risk: normalizeSpace(queueItem.risk || bankItem?.risk || "safe").toLowerCase(),
-    content_mode: contentMode,
-    source_profile: sourceProfile
-      ? SOURCE_PROFILE_ALIASES[normalizeSpace(sourceProfile)] || normalizeSpace(sourceProfile)
-      : null,
-    knowledge_sections: uniqueStrings(knowledgeSections, 30),
-    auto_publish_allowed: true,
-    editorial_guard: editorialGuard
-  };
-}
-
-/* -------------------------------------------------------------------------- */
-/* Free Research Packet                                                       */
-/* -------------------------------------------------------------------------- */
-
-function researchPacketFilename(topic) {
-  return `${slugify(topic)}.research-packet.json`;
-}
-
-async function researchTopic(metadata) {
-  const packet = await buildResearchPacketForTopic(metadata);
-
-  if (!packet || typeof packet !== "object") {
-    fail("Free researcher returned an invalid Research Packet.");
-  }
-
-  if (Number(packet?.paid_ai_calls || 0) !== 0) {
-    fail("Research Packet claims paid AI usage. Free research stage is required.");
-  }
-
-  if (packet?.policy?.open_web_research_allowed !== false) {
-    fail("Research Packet does not explicitly block open-web research.");
-  }
-
-  if (packet?.policy?.model_memory_as_source_allowed !== false) {
-    fail("Research Packet does not explicitly block model-memory sourcing.");
-  }
-
-  if (packet?.policy?.writer_may_add_facts_outside_packet !== false) {
-    fail("Research Packet does not explicitly forbid facts outside the packet.");
-  }
-
-  return packet;
-}
-
-function saveResearchPacket(packet, slug) {
-  fs.mkdirSync(PATHS.privateDrafts, { recursive: true });
-
-  const filePath = path.join(
-    PATHS.privateDrafts,
-    `${slug}.research-packet.json`
-  );
-
-  writeJson(filePath, packet);
-  return filePath;
-}
-
-function packetSummary(packet) {
-  return {
-    status: packet.status,
-    topic: packet.topic,
-    sufficiency: packet.sufficiency,
-    source_fetch: packet.source_fetch,
-    sources: packet.sources,
-    allowed_numeric_tokens: packet.allowed_numeric_tokens,
-    forbidden_claims: packet.forbidden_claims,
-    writing_plan: packet.writing_plan,
-    evidence_count: Array.isArray(packet.evidence) ? packet.evidence.length : 0
-  };
-}
-
-/* -------------------------------------------------------------------------- */
-/* xAI cost ledger + one paid writing call                                    */
-/* -------------------------------------------------------------------------- */
-
-function ensureCostLedger(existing) {
-  const ledger =
-    existing && typeof existing === "object"
-      ? existing
-      : {
-          schema_version: 1,
-          provider: "xai",
-          currency: "USD",
-          months: {}
-        };
-
-  if (!ledger.months || typeof ledger.months !== "object") {
-    ledger.months = {};
-  }
-
-  return ledger;
-}
-
-function monthRequests(costs, key) {
-  const month = costs?.months?.[key];
-  return Array.isArray(month?.requests) ? month.requests : [];
-}
-
-function monthSpendUsd(costs, key) {
-  return monthRequests(costs, key).reduce(
-    (sum, row) =>
-      sum + (Number.isFinite(Number(row?.cost_usd)) ? Number(row.cost_usd) : 0),
-    0
-  );
-}
-
-function responseCost(responseJson) {
-  const ticks = Number(responseJson?.usage?.cost_in_usd_ticks);
-
-  if (!Number.isFinite(ticks) || ticks < 0) {
-    return { ticks: null, usd: null };
-  }
-
-  return { ticks, usd: ticks / COST_TICKS_PER_USD };
-}
-
-function usageValue(responseJson, key) {
-  const value = Number(responseJson?.usage?.[key]);
-  return Number.isFinite(value) ? value : 0;
-}
-
-function cachedInputTokens(responseJson) {
-  const candidates = [
-    responseJson?.usage?.input_tokens_details?.cached_tokens,
-    responseJson?.usage?.input_tokens_details?.cached_input_tokens,
-    responseJson?.usage?.cached_input_tokens
-  ];
-
-  for (const value of candidates) {
-    const number = Number(value);
-    if (Number.isFinite(number)) return number;
-  }
-
-  return 0;
-}
-
-function appendCostRecord({
-  costs,
-  responseJson,
-  stage,
-  topic,
-  slug,
-  model
-}) {
-  const date = todayISO();
-  const key = monthKey(date);
-
-  if (!costs.months[key]) {
-    costs.months[key] = { requests: [] };
-  }
-
-  if (!Array.isArray(costs.months[key].requests)) {
-    costs.months[key].requests = [];
-  }
-
-  const cost = responseCost(responseJson);
-
-  const record = {
-    date,
-    response_id: responseJson?.id || null,
-    model,
-    topic,
-    article_slug: slug,
-    stage,
-    input_tokens: usageValue(responseJson, "input_tokens"),
-    cached_input_tokens: cachedInputTokens(responseJson),
-    output_tokens: usageValue(responseJson, "output_tokens"),
-    reasoning_tokens:
-      Number(responseJson?.usage?.output_tokens_details?.reasoning_tokens || 0) || 0,
-    total_tokens: usageValue(responseJson, "total_tokens"),
-    server_side_tools_used: 0,
-    web_research_enabled: false,
-    web_source_count: 0,
-    cost_in_usd_ticks: cost.ticks,
-    cost_usd: cost.usd
-  };
-
-  costs.months[key].requests.push(record);
-  costs.months[key].total_cost_usd = Number(
-    monthSpendUsd(costs, key).toFixed(12)
-  );
-  costs.last_updated = date;
-  writeJson(PATHS.costs, costs);
-
-  return record;
-}
-
-function assertCostKnown(config, record) {
-  if (
-    config?.cost_control?.track_exact_api_cost === true &&
-    !Number.isFinite(Number(record?.cost_usd))
-  ) {
-    fail(
-      "xAI did not return exact usage.cost_in_usd_ticks; the article cannot proceed."
-    );
-  }
-}
-
-function generationReserve(config) {
-  const configured = Number(config?.cost_control?.generation_cost_reserve_usd);
-  return Number.isFinite(configured) && configured > 0
-    ? configured
-    : DEFAULT_GENERATION_COST_RESERVE_USD;
-}
-
-function assertGenerationCostPreflight(config, costs) {
-  if (config?.cost_control?.enabled !== true) return;
-
-  const reserve = generationReserve(config);
-  const monthlyBudget = Number(config?.cost_control?.monthly_budget_usd || 0);
-  const monthlySpent = monthSpendUsd(costs, monthKey());
-  const monthlyRemaining =
-    monthlyBudget > 0 ? Math.max(0, monthlyBudget - monthlySpent) : Infinity;
-
-  if (
-    config?.cost_control?.stop_when_monthly_budget_reached === true &&
-    monthlyBudget > 0 &&
-    monthlyRemaining + COST_PREFLIGHT_EPSILON_USD < reserve
-  ) {
-    fail(
-      `Cost preflight blocked generation: monthly budget has $${monthlyRemaining.toFixed(
-        6
-      )} remaining, below the $${reserve.toFixed(3)} generation reserve.`
-    );
-  }
-
-  const articleLimit = Number(
-    config?.cost_control?.maximum_cost_per_article_usd || 0
-  );
-
-  if (
-    articleLimit > 0 &&
-    articleLimit + COST_PREFLIGHT_EPSILON_USD < reserve
-  ) {
-    fail(
-      `Cost preflight blocked generation: per-article limit $${articleLimit.toFixed(
-        3
-      )} is below the $${reserve.toFixed(3)} generation reserve.`
-    );
-  }
-
-  console.log(
-    `COST PREFLIGHT PASS: one paid writing call; reserve $${reserve.toFixed(
-      3
-    )}; monthly remaining $${
-      Number.isFinite(monthlyRemaining)
-        ? monthlyRemaining.toFixed(6)
-        : "unlimited"
-    }.`
-  );
-}
-
-function assertRunCost(config, runCostUsd) {
-  if (config?.cost_control?.enabled !== true) return;
-
-  const max = Number(config?.cost_control?.maximum_cost_per_article_usd || 0);
-
-  if (max > 0 && runCostUsd > max) {
-    fail(
-      `Paid writing call cost $${runCostUsd.toFixed(
-        6
-      )} exceeds the per-article limit $${max.toFixed(2)}.`
-    );
-  }
-}
-
-function extractResponseText(responseJson) {
-  if (
-    typeof responseJson?.output_text === "string" &&
-    responseJson.output_text.trim()
-  ) {
-    return responseJson.output_text.trim();
-  }
-
-  const pieces = [];
-
-  for (const output of Array.isArray(responseJson?.output)
-    ? responseJson.output
-    : []) {
-    for (const item of Array.isArray(output?.content) ? output.content : []) {
-      if (typeof item?.text === "string" && item.text.trim()) {
-        pieces.push(item.text.trim());
-      }
-    }
-  }
-
-  return pieces.join("\n").trim();
-}
-
-async function callPaidWriter({
-  config,
-  apiKey,
-  input
-}) {
-  if (!apiKey) {
-    fail("XAI_API_KEY is missing.");
-  }
-
-  const baseUrl = String(
-    config?.ai?.api_base_url || DEFAULT_XAI_BASE_URL
-  ).replace(/\/+$/, "");
-
-  const endpoint = String(
-    config?.ai?.responses_endpoint || DEFAULT_XAI_ENDPOINT
-  );
-
-  const model = String(
-    process.env.XAI_MODEL ||
-      config?.ai?.default_model ||
-      DEFAULT_MODEL
-  ).trim();
-
-  const body = {
-    model,
-    instructions: paidWriterInstructions(),
-    input,
-    max_output_tokens: GENERATION_OUTPUT_TOKENS,
-    store: false,
-    truncation: "disabled",
-    text: {
-      format: {
-        type: "json_schema",
-        name: "apxn_research_packet_article",
-        schema: ARTICLE_SCHEMA,
-        strict: true
-      }
-    }
-  };
-
-  const effort = String(config?.ai?.reasoning_effort || "none").trim();
-  if (effort) body.reasoning = { effort };
-
-  if (
-    config?.cost_control?.use_prompt_caching === true &&
-    config?.ai?.prompt_cache_key
-  ) {
-    body.prompt_cache_key = `${String(
-      config.ai.prompt_cache_key
-    )}-research-packet-v2`;
-  }
-
+async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), SOURCE_FETCH_TIMEOUT_MS);
 
   try {
-    const response = await fetch(`${baseUrl}${endpoint}`, {
-      method: "POST",
+    return await fetch(url, {
+      ...options,
       signal: controller.signal,
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
+      redirect: "follow"
     });
-
-    const raw = await response.text();
-
-    let responseJson;
-    try {
-      responseJson = JSON.parse(raw);
-    } catch {
-      fail(`xAI returned non-JSON response: ${raw.slice(0, 500)}`);
-    }
-
-    if (!response.ok) {
-      fail(
-        `xAI HTTP ${response.status}: ${JSON.stringify(responseJson).slice(
-          0,
-          900
-        )}`
-      );
-    }
-
-    const outputText = extractResponseText(responseJson);
-    if (!outputText) {
-      fail("xAI response did not contain output text.");
-    }
-
-    let parsed;
-    try {
-      parsed = JSON.parse(outputText);
-    } catch (error) {
-      fail(`Structured xAI output was not valid JSON: ${error.message}`);
-    }
-
-    return {
-      responseJson,
-      rawText: outputText,
-      parsed,
-      model
-    };
   } finally {
     clearTimeout(timer);
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Paid writer prompt — Research Packet is the sole factual authority         */
-/* -------------------------------------------------------------------------- */
+async function readResponseBodyLimited(response) {
+  const declaredLength = Number(response.headers.get("content-length") || 0);
+  if (declaredLength > MAX_SOURCE_BYTES) {
+    fail(`Source response is too large (${declaredLength} bytes).`);
+  }
 
-function packetEvidenceForPrompt(packet) {
-  return (packet.evidence || [])
-    .map((item) => {
-      const source =
-        item.kind === "external"
-          ? `${item.source_title} | ${item.source_url}`
-          : `${item.source_title}${
-              item.source_path ? ` | ${item.source_path}` : ""
-            }`;
+  const buffer = Buffer.from(await response.arrayBuffer());
+  if (buffer.byteLength > MAX_SOURCE_BYTES) {
+    fail(`Source response exceeded ${MAX_SOURCE_BYTES} bytes.`);
+  }
 
-      return [
-        `[${item.id}]`,
-        `TYPE: ${item.kind}`,
-        `SOURCE: ${source}`,
-        `WORDS: ${item.word_count || wordCount(item.text)}`,
-        "APPROVED PASSAGE:",
-        item.text
-      ].join("\n");
-    })
-    .join("\n\n---\n\n");
+  return buffer.toString("utf8");
 }
 
-function writingPlanForPrompt(packet) {
-  const plan = packet.writing_plan;
-  if (!plan) fail("READY Research Packet has no writing_plan.");
+async function fetchOfficialSource(source, profile) {
+  const originalUrl = String(source?.url || "").trim();
+  if (!originalUrl) fail("Approved source is missing its URL.");
 
-  const lines = [
-    `ARTICLE: minimum ${plan.article_word_requirement.minimum}; target ${plan.article_word_requirement.target}; maximum ${plan.article_word_requirement.maximum} words.`,
-    "",
-    `INTRO: ${plan.intro.min_words}-${plan.intro.max_words} words; target ${plan.intro.target_words}; evidence_ids=${plan.intro.evidence_ids.join(
-      ","
-    )}`,
-    `INTRO INSTRUCTION: ${plan.intro.instruction}`
-  ];
+  let parsed;
+  try {
+    parsed = new URL(originalUrl);
+  } catch {
+    fail(`Invalid approved source URL: ${originalUrl}`);
+  }
 
-  for (const section of plan.sections || []) {
-    lines.push("");
-    lines.push(
-      `SECTION ${section.section_index}: ${section.min_words}-${section.max_words} words TOTAL across exactly 2 paragraphs; target ${section.target_words}.`
-    );
-    lines.push(`SECTION ${section.section_index} EVIDENCE: ${section.evidence_ids.join(",")}`);
-    if (section.focus_terms?.length) {
-      lines.push(
-        `SECTION ${section.section_index} FOCUS TERMS: ${section.focus_terms.join(
-          ", "
-        )}`
-      );
+  if (parsed.protocol !== "https:") {
+    fail(`Approved source must use HTTPS: ${originalUrl}`);
+  }
+
+  if (!isAllowedHostname(parsed.hostname, profile.allowed_domains)) {
+    fail(`Approved source host is not allowlisted: ${parsed.hostname}`);
+  }
+
+  const response = await fetchWithTimeout(originalUrl, {
+    headers: {
+      "user-agent": "APXNBlogResearcher/1.0 (+https://apxn.network)",
+      accept: "text/html,text/plain,text/markdown,application/xhtml+xml;q=0.9,*/*;q=0.2"
     }
-    lines.push(
-      `SECTION ${section.section_index} INSTRUCTION: ${section.instruction}`
-    );
+  });
+
+  if (!response.ok) {
+    fail(`HTTP ${response.status} for ${originalUrl}`);
   }
 
-  for (const faq of plan.faq || []) {
-    lines.push("");
-    lines.push(
-      `FAQ ${faq.faq_index}: answer ${faq.min_words}-${faq.max_words} words; target ${faq.target_words}; evidence_ids=${faq.evidence_ids.join(
-        ","
-      )}`
-    );
-    lines.push(`FAQ ${faq.faq_index} INSTRUCTION: ${faq.instruction}`);
+  const finalUrl = response.url || originalUrl;
+  const finalParsed = new URL(finalUrl);
+
+  if (finalParsed.protocol !== "https:") {
+    fail(`Redirect left HTTPS: ${finalUrl}`);
   }
 
-  lines.push("");
-  lines.push(
-    `CONCLUSION: ${plan.conclusion.min_words}-${plan.conclusion.max_words} words; target ${plan.conclusion.target_words}; evidence_ids=${plan.conclusion.evidence_ids.join(
-      ","
-    )}`
-  );
-  lines.push(`CONCLUSION INSTRUCTION: ${plan.conclusion.instruction}`);
-
-  return lines.join("\n");
-}
-
-function paidWriterInstructions() {
-  return [
-    "You are the Apex Network Editorial writer.",
-    "A deterministic research system has already read, ranked and approved the sources.",
-    "Your only job is to turn the supplied Research Packet into a clear, original English article.",
-    "The Research Packet is your ONLY factual authority.",
-    "Do not browse. Do not use model memory. Do not add facts from general knowledge.",
-    "Do not invent examples, integrations, benefits, risks, causal links or future possibilities that are not explicitly supported by the assigned evidence.",
-    "Follow the writing plan and word ranges. The body must be at least 1200 useful words, preferably near the packet target, without repetition or filler.",
-    "Exactly 6 sections are required. Each section must contain exactly 2 paragraphs.",
-    "Exactly 3 FAQ items are required.",
-    "Each intro, paragraph, FAQ answer and conclusion must cite only evidence IDs allowed for that block by the writing plan.",
-    "When a section has multiple evidence IDs, you may synthesize them only when their passages explicitly support the relationship you state. Otherwise present the facts separately.",
-    "Never say one product removes the need for another unless the assigned evidence says that.",
-    "Never infer wallet custody, private-key behavior, transaction signing, on-chain settlement, blockchain integration or cryptographic processing unless the assigned evidence says that.",
-    "Do not turn planned/UI-only APXN material into a live feature.",
-    "Do not promise profit, token value, listings, partnerships, yield or financial outcomes.",
-    "Use a neutral educational tone suitable for a high-quality public blog.",
-    "Avoid keyword stuffing, hype, generic motivational filler and repeated explanations.",
-    "Return only the requested JSON schema."
-  ].join("\n");
-}
-
-function paidWriterInput(packet, config) {
-  return [
-    "RESEARCH PACKET STATUS: READY_FOR_PAID_WRITER",
-    `TOPIC: ${packet.topic.topic}`,
-    `CATEGORY: ${packet.topic.category}`,
-    `CONTENT MODE: ${packet.topic.content_mode}`,
-    `SOURCE PROFILE: ${packet.topic.source_profile || "APXN knowledge only"}`,
-    "",
-    "PACKET POLICY:",
-    JSON.stringify(packet.policy, null, 2),
-    "",
-    "FORBIDDEN CLAIMS:",
-    ...(packet.forbidden_claims || []).map((item) => `- ${item}`),
-    "",
-    "WRITING PLAN:",
-    writingPlanForPrompt(packet),
-    "",
-    "APPROVED SOURCES:",
-    JSON.stringify(packet.sources || [], null, 2),
-    "",
-    "APPROVED NUMERIC TOKENS:",
-    (packet.allowed_numeric_tokens || []).join(", ") || "(none)",
-    "",
-    "APPROVED EVIDENCE:",
-    packetEvidenceForPrompt(packet),
-    "",
-    `FINAL BODY WORD REQUIREMENT FROM CONFIG: minimum ${config.writer.minimum_words}; target ${config.writer.target_words}; maximum ${config.writer.maximum_words}.`,
-    "Do not count the title, meta description, keywords, headings or questions toward the body minimum."
-  ].join("\n");
-}
-
-/* -------------------------------------------------------------------------- */
-/* Free deterministic local validation                                        */
-/* -------------------------------------------------------------------------- */
-
-function articleBodyText(article) {
-  return [
-    article?.intro?.text,
-    ...(article?.sections || []).flatMap((section) =>
-      (section?.paragraphs || []).map((paragraph) => paragraph?.text)
-    ),
-    ...(article?.faq || []).map((item) => item?.answer),
-    article?.conclusion?.text
-  ]
-    .filter(Boolean)
-    .join("\n");
-}
-
-function allArticleBlocks(article) {
-  const blocks = [];
-
-  if (article?.intro?.text) {
-    blocks.push({
-      label: "intro",
-      text: article.intro.text,
-      evidence_ids: article.intro.evidence_ids
-    });
+  if (!isAllowedHostname(finalParsed.hostname, profile.allowed_domains)) {
+    fail(`Redirect left allowlisted domains: ${finalParsed.hostname}`);
   }
 
-  for (let s = 0; s < (article?.sections || []).length; s++) {
-    const section = article.sections[s];
+  const body = await readResponseBodyLimited(response);
+  const text = sourceBodyToText(body, response.headers.get("content-type"), finalUrl);
 
-    for (let p = 0; p < (section?.paragraphs || []).length; p++) {
-      const paragraph = section.paragraphs[p];
+  if (wordCount(text) < 120) {
+    fail(`Official source returned too little readable content (${wordCount(text)} words): ${finalUrl}`);
+  }
 
-      blocks.push({
-        label: `section_${s + 1}_paragraph_${p + 1}`,
-        text: paragraph.text,
-        evidence_ids: paragraph.evidence_ids
+  return {
+    title: normalizeSpace(source.title || finalParsed.hostname),
+    requested_url: originalUrl,
+    final_url: finalUrl,
+    hostname: finalParsed.hostname.toLowerCase().replace(/^www\./, ""),
+    content_type: response.headers.get("content-type") || null,
+    text
+  };
+}
+
+function extractNumericTokens(value) {
+  const matches = String(value || "").match(/\b\d+(?:[.,]\d+)*(?:%|x|k|m|b)?\b/gi) || [];
+  return uniqueStrings(matches.map((item) => item.toLowerCase()), 80);
+}
+
+function makeExternalEvidenceItem({ id, passage, page, score = null }) {
+  return {
+    id,
+    kind: "external",
+    source_title: page.title,
+    source_url: page.final_url,
+    source_hostname: page.hostname,
+    source_path: null,
+    text: normalizeSpace(passage),
+    word_count: wordCount(passage),
+    numeric_tokens: extractNumericTokens(passage),
+    relevance_score: score
+  };
+}
+
+async function collectExternalEvidence(metadata, profile) {
+  const pages = [];
+  const errors = [];
+  const evidence = [];
+
+  for (const source of profile.sources || []) {
+    try {
+      const page = await fetchOfficialSource(source, profile);
+      const selected = selectPassages(page.text, {
+        topic: metadata.topic,
+        category: metadata.category,
+        sourceTitle: page.title
+      });
+
+      pages.push({
+        title: page.title,
+        requested_url: page.requested_url,
+        final_url: page.final_url,
+        hostname: page.hostname,
+        passage_count: selected.length,
+        readable_words: wordCount(page.text)
+      });
+
+      for (const passage of selected) {
+        const score = passageScore(
+          passage,
+          topicTerms(metadata.topic, metadata.category),
+          page.title
+        );
+        evidence.push({ passage, page, score });
+      }
+    } catch (error) {
+      errors.push({
+        title: normalizeSpace(source?.title || "Unknown source"),
+        url: String(source?.url || ""),
+        error: error.message
       });
     }
   }
 
-  for (let f = 0; f < (article?.faq || []).length; f++) {
-    const item = article.faq[f];
+  evidence.sort((a, b) => b.score - a.score);
 
-    blocks.push({
-      label: `faq_${f + 1}`,
-      text: item.answer,
-      evidence_ids: item.evidence_ids
-    });
+  const deduped = [];
+  const selectedTexts = [];
+
+  for (const candidate of evidence) {
+    if (isNearDuplicate(candidate.passage, selectedTexts)) continue;
+    selectedTexts.push(candidate.passage);
+    deduped.push(candidate);
+    if (deduped.length >= MAX_EXTERNAL_EVIDENCE_ITEMS) break;
   }
-
-  if (article?.conclusion?.text) {
-    blocks.push({
-      label: "conclusion",
-      text: article.conclusion.text,
-      evidence_ids: article.conclusion.evidence_ids
-    });
-  }
-
-  return blocks;
-}
-
-function allowedPlanIdsForBlock(packet, label) {
-  const plan = packet.writing_plan;
-
-  if (label === "intro") {
-    return plan?.intro?.evidence_ids || [];
-  }
-
-  if (label === "conclusion") {
-    return plan?.conclusion?.evidence_ids || [];
-  }
-
-  const sectionMatch = label.match(/^section_(\d+)_paragraph_(\d+)$/);
-  if (sectionMatch) {
-    const sectionIndex = Number(sectionMatch[1]) - 1;
-    return plan?.sections?.[sectionIndex]?.evidence_ids || [];
-  }
-
-  const faqMatch = label.match(/^faq_(\d+)$/);
-  if (faqMatch) {
-    const faqIndex = Number(faqMatch[1]) - 1;
-    return plan?.faq?.[faqIndex]?.evidence_ids || [];
-  }
-
-  return [];
-}
-
-function evidenceIdsWithin(actual, allowed) {
-  const actualSet = new Set(uniqueStrings(actual, 20));
-  const allowedSet = new Set(uniqueStrings(allowed, 20));
-
-  if (actualSet.size === 0) return false;
-
-  for (const id of actualSet) {
-    if (!allowedSet.has(id)) return false;
-  }
-
-  return true;
-}
-
-function numericTokenSupported(token, evidenceText) {
-  const normalized = normalizeSpace(token).toLowerCase().replace(/,/g, "");
-  const evidenceNormalized = normalizeSpace(evidenceText)
-    .toLowerCase()
-    .replace(/,/g, "");
-
-  return evidenceNormalized.includes(normalized);
-}
-
-const HIGH_RISK_PATTERNS = [
-  {
-    name: "future bridge",
-    regex: /\b(?:could|can|may|might)\s+(?:later|eventually)\b/i
-  },
-  {
-    name: "future-condition bridge",
-    regex: /\bonce\s+(?:users|developers|people|adoption|the ecosystem)\b/i
-  },
-  {
-    name: "removes-the-need claim",
-    regex: /\b(?:removes?|eliminates?)\s+the\s+need\b/i
-  },
-  {
-    name: "without-installing/using claim",
-    regex: /\bwithout\s+(?:requiring|installing|needing|using)\b/i
-  },
-  {
-    name: "private-key behavior",
-    regex: /\bprivate\s+keys?\b/i
-  },
-  {
-    name: "transaction-signing behavior",
-    regex: /\btransaction\s+sign(?:ing|ature|atures)\b/i
-  },
-  {
-    name: "on-chain integration",
-    regex: /\bon[- ]chain\s+(?:settlement|receipt|transaction|transactions|payment|payments)\b/i
-  },
-  {
-    name: "cryptographic processing",
-    regex: /\bcryptographic\s+(?:operation|operations|processing)\b/i
-  },
-  {
-    name: "inheritance claim",
-    regex: /\binherit(?:s|ed)?\s+(?:this|that|the)\b/i
-  },
-  {
-    name: "can-help inference",
-    regex: /\bcan\s+help\s+(?:verify|enable|reduce|improve|avoid|protect)\b/i
-  }
-];
-
-function unsupportedHighRiskPatterns(blockText, assignedEvidenceText) {
-  const unsupported = [];
-
-  for (const rule of HIGH_RISK_PATTERNS) {
-    rule.regex.lastIndex = 0;
-    const inBlock = rule.regex.test(String(blockText || ""));
-    rule.regex.lastIndex = 0;
-    const inEvidence = rule.regex.test(String(assignedEvidenceText || ""));
-
-    if (inBlock && !inEvidence) {
-      unsupported.push(rule.name);
-    }
-  }
-
-  return unsupported;
-}
-
-function hasDangerousClaims(text) {
-  const patterns = [
-    /\bguaranteed\s+(?:profit|return|value|price|listing)\b/i,
-    /\brisk[- ]free\b/i,
-    /\bwill\s+(?:definitely|certainly)\s+(?:list|rise|increase|profit)\b/i,
-    /\bconfirmed\s+(?:binance|coinbase|exchange)\s+listing\b/i,
-    /\bguaranteed\s+airdrop\b/i
-  ];
-
-  return patterns.some((pattern) => pattern.test(text));
-}
-
-function hasVolatileMetricClaims(text) {
-  const patterns = [
-    /\b(?:tvl|market cap|market capitalization|apy|apr|staking yield)\b/i,
-    /\bcurrent\s+gas\s+price\b/i,
-    /\btoday'?s?\s+(?:price|fee|gas)\b/i,
-    /\bcurrently\s+\d+(?:[.,]\d+)?\s+(?:validators?|tps)\b/i
-  ];
-
-  return patterns.some((pattern) => pattern.test(text));
-}
-
-function planWordRangeErrors(article, packet) {
-  const errors = [];
-  const plan = packet.writing_plan;
-
-  if (!plan) return ["Research Packet writing_plan is missing."];
-
-  const introWords = wordCount(article?.intro?.text);
-  if (
-    introWords < Number(plan.intro.min_words) ||
-    introWords > Number(plan.intro.max_words) + 20
-  ) {
-    errors.push(
-      `intro has ${introWords} words; packet range is ${plan.intro.min_words}-${plan.intro.max_words}.`
-    );
-  }
-
-  for (let index = 0; index < 6; index++) {
-    const section = article?.sections?.[index];
-    const sectionPlan = plan?.sections?.[index];
-
-    const total = (section?.paragraphs || []).reduce(
-      (sum, paragraph) => sum + wordCount(paragraph?.text),
-      0
-    );
-
-    if (!sectionPlan) {
-      errors.push(`writing plan is missing section ${index + 1}.`);
-      continue;
-    }
-
-    if (
-      total < Number(sectionPlan.min_words) ||
-      total > Number(sectionPlan.max_words) + 30
-    ) {
-      errors.push(
-        `section ${index + 1} has ${total} paragraph words; packet range is ${sectionPlan.min_words}-${sectionPlan.max_words}.`
-      );
-    }
-  }
-
-  for (let index = 0; index < 3; index++) {
-    const faq = article?.faq?.[index];
-    const faqPlan = plan?.faq?.[index];
-    const total = wordCount(faq?.answer);
-
-    if (!faqPlan) {
-      errors.push(`writing plan is missing FAQ ${index + 1}.`);
-      continue;
-    }
-
-    if (
-      total < Number(faqPlan.min_words) ||
-      total > Number(faqPlan.max_words) + 20
-    ) {
-      errors.push(
-        `FAQ ${index + 1} answer has ${total} words; packet range is ${faqPlan.min_words}-${faqPlan.max_words}.`
-      );
-    }
-  }
-
-  const conclusionWords = wordCount(article?.conclusion?.text);
-  if (
-    conclusionWords < Number(plan.conclusion.min_words) ||
-    conclusionWords > Number(plan.conclusion.max_words) + 20
-  ) {
-    errors.push(
-      `conclusion has ${conclusionWords} words; packet range is ${plan.conclusion.min_words}-${plan.conclusion.max_words}.`
-    );
-  }
-
-  return errors;
-}
-
-function repeatedBlockErrors(article) {
-  const errors = [];
-  const blocks = allArticleBlocks(article).filter(
-    (block) => wordCount(block.text) >= 45
-  );
-
-  for (let left = 0; left < blocks.length; left++) {
-    for (let right = left + 1; right < blocks.length; right++) {
-      const similarity = jaccardSimilarity(blocks[left].text, blocks[right].text);
-
-      if (similarity >= 0.72) {
-        errors.push(
-          `${blocks[left].label} and ${blocks[right].label} are too repetitive (${similarity.toFixed(
-            2
-          )} lexical similarity).`
-        );
-      }
-    }
-  }
-
-  return errors.slice(0, 8);
-}
-
-function validateArticleAgainstPacket({
-  article,
-  packet,
-  config
-}) {
-  const errors = [];
-  const evidence = Array.isArray(packet.evidence) ? packet.evidence : [];
-  const evidenceMap = new Map(evidence.map((item) => [item.id, item]));
-  const bodyText = articleBodyText(article);
-  const bodyWords = wordCount(bodyText);
-
-  if (packet.status !== "READY_FOR_PAID_WRITER") {
-    errors.push(`Research Packet status is ${packet.status}.`);
-  }
-
-  if (containsArabicScript(bodyText)) {
-    errors.push("Article body contains Arabic-script text; the blog is English-only.");
-  }
-
-  if (bodyWords < Number(config.writer.minimum_words)) {
-    errors.push(
-      `Article body has ${bodyWords} words; minimum is ${config.writer.minimum_words}.`
-    );
-  }
-
-  if (bodyWords > Number(config.writer.maximum_words)) {
-    errors.push(
-      `Article body has ${bodyWords} words; maximum is ${config.writer.maximum_words}.`
-    );
-  }
-
-  if (!normalizeSpace(article?.title) || article.title.length > 120) {
-    errors.push("Article title is missing or longer than 120 characters.");
-  }
-
-  const descriptionLength = normalizeSpace(article?.description).length;
-  if (descriptionLength < 90 || descriptionLength > 180) {
-    errors.push(
-      `Meta description has ${descriptionLength} characters; required range is 90-180.`
-    );
-  }
-
-  if (
-    !Array.isArray(article?.keywords) ||
-    article.keywords.length < 5 ||
-    article.keywords.length > 10
-  ) {
-    errors.push("Article must contain 5-10 useful keywords.");
-  }
-
-  if (!Array.isArray(article?.sections) || article.sections.length !== 6) {
-    errors.push("Article must contain exactly 6 sections.");
-  }
-
-  for (let index = 0; index < (article?.sections || []).length; index++) {
-    if ((article.sections[index]?.paragraphs || []).length !== 2) {
-      errors.push(`Section ${index + 1} must contain exactly 2 paragraphs.`);
-    }
-  }
-
-  if (!Array.isArray(article?.faq) || article.faq.length !== 3) {
-    errors.push("Article must contain exactly 3 FAQ items.");
-  }
-
-  if (hasDangerousClaims(bodyText)) {
-    errors.push("Article contains a prohibited guaranteed/promotional claim.");
-  }
-
-  if (hasVolatileMetricClaims(bodyText)) {
-    errors.push("Article contains a blocked volatile metric claim.");
-  }
-
-  if (["apxn", "hybrid"].includes(packet?.topic?.content_mode)) {
-    if (/\bcurrent\s+apxn\s+token\s+balance\b/i.test(bodyText)) {
-      errors.push("Current in-app balance must be described as APXN Points.");
-    }
-
-    if (/\bproof[- ]of[- ]work\s+mining\b/i.test(bodyText)) {
-      errors.push(
-        "Current APXN Points accumulation must not be called proof-of-work mining."
-      );
-    }
-  }
-
-  errors.push(...planWordRangeErrors(article, packet));
-
-  for (const block of allArticleBlocks(article)) {
-    const actualIds = uniqueStrings(block.evidence_ids, 20);
-    const allowedIds = allowedPlanIdsForBlock(packet, block.label);
-
-    if (!evidenceIdsWithin(actualIds, allowedIds)) {
-      errors.push(
-        `${block.label} uses evidence IDs outside its Research Packet writing-plan allowance.`
-      );
-      continue;
-    }
-
-    const unknown = actualIds.filter((id) => !evidenceMap.has(id));
-    if (unknown.length > 0) {
-      errors.push(
-        `${block.label} references unknown evidence IDs: ${unknown.join(", ")}.`
-      );
-      continue;
-    }
-
-    const assignedText = actualIds
-      .map((id) => evidenceMap.get(id)?.text || "")
-      .join("\n");
-
-    for (const token of numericTokens(block.text)) {
-      if (!numericTokenSupported(token, assignedText)) {
-        errors.push(
-          `${block.label} contains numeric token "${token}" that is not present in its assigned evidence.`
-        );
-      }
-    }
-
-    for (const patternName of unsupportedHighRiskPatterns(
-      block.text,
-      assignedText
-    )) {
-      errors.push(
-        `${block.label} contains unsupported high-risk inference pattern: ${patternName}.`
-      );
-    }
-  }
-
-  errors.push(...repeatedBlockErrors(article));
 
   return {
-    ok: errors.length === 0,
+    pages,
     errors,
-    body_word_count: bodyWords,
-    research_packet_status: packet.status,
-    research_evidence_count: evidence.length,
-    research_evidence_words: Number(packet?.sufficiency?.metrics?.total_words || 0)
+    evidence: deduped.map((item, index) =>
+      makeExternalEvidenceItem({
+        id: `EXT-${String(index + 1).padStart(2, "0")}`,
+        passage: item.passage,
+        page: item.page,
+        score: item.score
+      })
+    )
   };
 }
 
-/* -------------------------------------------------------------------------- */
-/* Duplicate protection                                                       */
-/* -------------------------------------------------------------------------- */
-
-function assertNotDuplicate(article, manifest) {
-  const title = normalizeTopic(article.title);
-  const slug = slugify(article.title);
-
-  for (const existing of Array.isArray(manifest.articles)
-    ? manifest.articles
-    : []) {
-    if (normalizeTopic(existing.title) === title) {
-      fail(`Duplicate article title rejected: ${article.title}`);
-    }
-
-    if (slugify(existing.slug || existing.title) === slug) {
-      fail(`Duplicate article slug rejected: ${slug}`);
-    }
-  }
+function humanizeKey(value) {
+  return String(value || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-/* -------------------------------------------------------------------------- */
-/* HTML rendering                                                              */
-/* -------------------------------------------------------------------------- */
+function getAtPath(root, dottedPath) {
+  let current = root;
 
-function sourceCatalog(packet) {
-  const catalog = [];
-  const sourceToNumber = new Map();
+  for (const part of String(dottedPath || "").split(".").filter(Boolean)) {
+    if (!current || typeof current !== "object" || !(part in current)) {
+      return undefined;
+    }
+    current = current[part];
+  }
 
-  for (const evidence of packet.evidence || []) {
-    const key =
-      evidence.kind === "external"
-        ? `external:${evidence.source_url}`
-        : `apxn:${evidence.source_path || evidence.source_title}`;
+  return current;
+}
 
-    if (sourceToNumber.has(key)) continue;
+function scalarToText(pathParts, value) {
+  const label = humanizeKey(pathParts.at(-1));
 
-    const number = catalog.length + 1;
-    sourceToNumber.set(key, number);
+  if (typeof value === "boolean") {
+    return `${label}: ${value ? "Yes" : "No"}.`;
+  }
 
-    catalog.push({
-      number,
-      key,
-      kind: evidence.kind,
-      title: evidence.source_title,
-      url: evidence.source_url || null,
-      source_path: evidence.source_path || null,
-      project_source_paths: evidence.project_source_paths || []
+  if (typeof value === "number") {
+    return `${label}: ${value}.`;
+  }
+
+  const clean = normalizeSpace(value);
+  if (!clean) return "";
+
+  if (/^[A-Z][\s\S]*[.!?]$/.test(clean) || clean.split(/\s+/).length >= 10) {
+    return clean;
+  }
+
+  return `${label}: ${clean}.`;
+}
+
+function flattenKnowledgeValue(value, pathParts = [], result = []) {
+  if (result.length >= MAX_APXN_EVIDENCE_ITEMS * 2) return result;
+
+  if (value === null || value === undefined) return result;
+
+  if (["string", "number", "boolean"].includes(typeof value)) {
+    const text = scalarToText(pathParts, value);
+    if (text) {
+      result.push({
+        source_path: pathParts.join("."),
+        text
+      });
+    }
+    return result;
+  }
+
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index++) {
+      const item = value[index];
+
+      if (["string", "number", "boolean"].includes(typeof item)) {
+        const text = scalarToText([...pathParts, String(index + 1)], item);
+        if (text) {
+          result.push({
+            source_path: pathParts.join("."),
+            text
+          });
+        }
+      } else {
+        flattenKnowledgeValue(item, [...pathParts, String(index + 1)], result);
+      }
+    }
+    return result;
+  }
+
+  if (typeof value === "object") {
+    for (const [key, child] of Object.entries(value)) {
+      if (key === "source_paths" || key === "source_path") continue;
+      flattenKnowledgeValue(child, [...pathParts, key], result);
+    }
+  }
+
+  return result;
+}
+
+function sourcePathsFromKnowledgeNode(node) {
+  if (!node || typeof node !== "object") return [];
+  const values = [];
+
+  if (Array.isArray(node.source_paths)) values.push(...node.source_paths);
+  if (typeof node.source_path === "string") values.push(node.source_path);
+
+  return uniqueStrings(values, 20);
+}
+
+function collectApxnEvidence(metadata, knowledge) {
+  const evidence = [];
+
+  for (const knowledgePath of metadata.knowledge_sections || []) {
+    const node = getAtPath(knowledge, knowledgePath);
+    if (node === undefined) {
+      fail(`Unknown APXN knowledge section: ${knowledgePath}`);
+    }
+
+    const sourcePaths = sourcePathsFromKnowledgeNode(node);
+    const flattened = flattenKnowledgeValue(node, knowledgePath.split("."), []);
+
+    for (const item of flattened) {
+      const clean = normalizeSpace(item.text);
+      if (!clean || wordCount(clean) < 2) continue;
+
+      evidence.push({
+        id: "",
+        kind: "apxn",
+        source_title: `APXN verified knowledge: ${knowledgePath}`,
+        source_url: null,
+        source_hostname: null,
+        source_path: item.source_path || knowledgePath,
+        project_source_paths: sourcePaths,
+        text: clean,
+        word_count: wordCount(clean),
+        numeric_tokens: extractNumericTokens(clean),
+        relevance_score: passageScore(clean, topicTerms(metadata.topic, metadata.category), knowledgePath)
+      });
+    }
+  }
+
+  evidence.sort((a, b) => b.relevance_score - a.relevance_score);
+
+  const selected = [];
+  const selectedTexts = [];
+
+  for (const item of evidence) {
+    if (isNearDuplicate(item.text, selectedTexts)) continue;
+    selectedTexts.push(item.text);
+    selected.push(item);
+    if (selected.length >= MAX_APXN_EVIDENCE_ITEMS) break;
+  }
+
+  return selected.map((item, index) => ({
+    ...item,
+    id: `APXN-${String(index + 1).padStart(2, "0")}`
+  }));
+}
+
+function evidenceWords(evidence, kind = null) {
+  return (evidence || [])
+    .filter((item) => !kind || item.kind === kind)
+    .reduce((sum, item) => sum + Number(item.word_count || 0), 0);
+}
+
+function distinctExternalPageCount(evidence) {
+  return new Set(
+    (evidence || [])
+      .filter((item) => item.kind === "external" && item.source_url)
+      .map((item) => item.source_url)
+  ).size;
+}
+
+function configuredExternalPageCount(profile) {
+  return Array.isArray(profile?.sources) ? profile.sources.length : 0;
+}
+
+function theoreticalEvidenceItemCapacity(mode, profile = null) {
+  if (mode === "external") {
+    const configuredPages = Math.max(1, configuredExternalPageCount(profile));
+    return Math.min(
+      MAX_EXTERNAL_EVIDENCE_ITEMS,
+      configuredPages * MAX_PASSAGES_PER_SOURCE
+    );
+  }
+
+  if (mode === "hybrid") {
+    const configuredPages = Math.max(1, configuredExternalPageCount(profile));
+    const externalCapacity = Math.min(
+      MAX_EXTERNAL_EVIDENCE_ITEMS,
+      configuredPages * MAX_PASSAGES_PER_SOURCE
+    );
+
+    return externalCapacity + MAX_APXN_EVIDENCE_ITEMS;
+  }
+
+  if (mode === "apxn") {
+    return MAX_APXN_EVIDENCE_ITEMS;
+  }
+
+  return 0;
+}
+
+function effectiveEvidenceItemRequirement(mode, threshold, profile = null) {
+  const requested = Math.max(1, Number(threshold?.evidence_items || 1));
+  const capacity = theoreticalEvidenceItemCapacity(mode, profile);
+
+  if (capacity <= 0) return requested;
+  return Math.min(requested, capacity);
+}
+
+function evaluateResearchSufficiency(metadata, evidence, profile = null) {
+  const mode = metadata.content_mode;
+  const threshold = MIN_RESEARCH[mode];
+
+  if (!threshold) {
+    return {
+      ready: false,
+      reasons: [`Content mode ${mode} is not eligible for automatic research.`]
+    };
+  }
+
+  const totalWords = evidenceWords(evidence);
+  const externalWords = evidenceWords(evidence, "external");
+  const apxnWords = evidenceWords(evidence, "apxn");
+  const externalPages = distinctExternalPageCount(evidence);
+  const configuredExternalPages = configuredExternalPageCount(profile);
+  const theoreticalEvidenceCapacity = theoreticalEvidenceItemCapacity(mode, profile);
+  const requiredEvidenceItems = effectiveEvidenceItemRequirement(
+    mode,
+    threshold,
+    profile
+  );
+  const reasons = [];
+
+  if (evidence.length < requiredEvidenceItems) {
+    reasons.push(
+      `Only ${evidence.length} evidence items were collected; at least ${requiredEvidenceItems} are required for this source profile.`
+    );
+  }
+
+  if (totalWords < threshold.total_words) {
+    reasons.push(
+      `Only ${totalWords} evidence words were collected; at least ${threshold.total_words} are required.`
+    );
+  }
+
+  if (externalWords < threshold.external_words) {
+    reasons.push(
+      `Only ${externalWords} external evidence words were collected; at least ${threshold.external_words} are required.`
+    );
+  }
+
+  if (apxnWords < threshold.apxn_words) {
+    reasons.push(
+      `Only ${apxnWords} APXN evidence words were collected; at least ${threshold.apxn_words} are required.`
+    );
+  }
+
+  if (["external", "hybrid"].includes(mode)) {
+    const requiredPages = Math.max(1, Number(profile?.min_sources || 1));
+    if (externalPages < requiredPages) {
+      reasons.push(
+        `Only ${externalPages} distinct approved source pages contributed evidence; profile requires ${requiredPages}.`
+      );
+    }
+  }
+
+  return {
+    ready: reasons.length === 0,
+    reasons,
+    metrics: {
+      evidence_items: evidence.length,
+      required_evidence_items: requiredEvidenceItems,
+      configured_evidence_item_target: Number(threshold.evidence_items || 0),
+      theoretical_evidence_item_capacity: theoreticalEvidenceCapacity,
+      total_words: totalWords,
+      external_words: externalWords,
+      apxn_words: apxnWords,
+      distinct_external_pages: externalPages,
+      configured_external_pages: configuredExternalPages
+    }
+  };
+}
+
+function evidenceSourceKey(item) {
+  if (item.kind === "external") return `external:${item.source_url}`;
+  return `apxn:${item.source_title}`;
+}
+
+function distributeEvidenceAcrossSections(evidence) {
+  const groups = new Map();
+
+  for (const item of evidence) {
+    const key = evidenceSourceKey(item);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+
+  const groupList = [...groups.values()].sort((a, b) => {
+    const left = a.reduce((sum, item) => sum + item.word_count, 0);
+    const right = b.reduce((sum, item) => sum + item.word_count, 0);
+    return right - left;
+  });
+
+  const sections = Array.from({ length: 6 }, () => []);
+  const sourceIndex = Array.from({ length: 6 }, () => new Set());
+
+  const sortedEvidence = [...evidence].sort((a, b) => {
+    return (b.relevance_score || 0) - (a.relevance_score || 0) || b.word_count - a.word_count;
+  });
+
+  for (let index = 0; index < sortedEvidence.length; index++) {
+    const item = sortedEvidence[index];
+    const key = evidenceSourceKey(item);
+
+    const candidates = sections
+      .map((items, sectionIndex) => ({
+        sectionIndex,
+        words: items.reduce((sum, current) => sum + current.word_count, 0),
+        sameSource: sourceIndex[sectionIndex].has(key)
+      }))
+      .sort((a, b) => {
+        if (a.sameSource !== b.sameSource) return a.sameSource ? -1 : 1;
+        return a.words - b.words || a.sectionIndex - b.sectionIndex;
+      });
+
+    const destination = candidates[0].sectionIndex;
+    if (sections[destination].length < 4) {
+      sections[destination].push(item);
+      sourceIndex[destination].add(key);
+    }
+  }
+
+  // Guarantee every section has at least one evidence item by borrowing the
+  // highest-ranked evidence. Reuse is permitted in the plan; invention is not.
+  for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
+    if (sections[sectionIndex].length === 0 && sortedEvidence.length > 0) {
+      sections[sectionIndex].push(sortedEvidence[sectionIndex % sortedEvidence.length]);
+    }
+  }
+
+  return sections;
+}
+
+function focusTermsForEvidence(items, topic) {
+  const topicTokenSet = new Set(tokenize(topic));
+  const counts = new Map();
+
+  for (const item of items) {
+    for (const token of tokenize(item.text)) {
+      if (topicTokenSet.has(token) || STOP_WORDS.has(token) || token.length < 4) continue;
+      counts.set(token, (counts.get(token) || 0) + 1);
+    }
+  }
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 5)
+    .map(([token]) => token);
+}
+
+function buildWritingPlan(metadata, evidence) {
+  const sectionEvidence = distributeEvidenceAcrossSections(evidence);
+  const topEvidence = [...evidence].sort((a, b) => (b.relevance_score || 0) - (a.relevance_score || 0));
+
+  const sections = sectionEvidence.map((items, index) => ({
+    section_index: index + 1,
+    target_words: ARTICLE_WORD_PLAN.section.target,
+    min_words: ARTICLE_WORD_PLAN.section.min,
+    max_words: ARTICLE_WORD_PLAN.section.max,
+    evidence_ids: uniqueStrings(items.map((item) => item.id), 4),
+    focus_terms: focusTermsForEvidence(items, metadata.topic),
+    instruction:
+      "Explain only the facts supported by these evidence IDs. You may clarify terminology and relationships already stated inside the assigned evidence, but you may not add a new product behavior, implementation detail, benefit, risk, example or future use from outside the packet."
+  }));
+
+  const introEvidence = uniqueStrings(topEvidence.slice(0, 3).map((item) => item.id), 3);
+  const conclusionEvidence = uniqueStrings(topEvidence.slice(0, 4).map((item) => item.id), 4);
+
+  const faq = Array.from({ length: 3 }, (_, index) => ({
+    faq_index: index + 1,
+    target_words: ARTICLE_WORD_PLAN.faq_each.target,
+    min_words: ARTICLE_WORD_PLAN.faq_each.min,
+    max_words: ARTICLE_WORD_PLAN.faq_each.max,
+    evidence_ids: uniqueStrings(
+      [topEvidence[(index * 2) % topEvidence.length], topEvidence[(index * 2 + 1) % topEvidence.length]]
+        .filter(Boolean)
+        .map((item) => item.id),
+      2
+    ),
+    instruction: "Answer a practical question using only the assigned evidence IDs."
+  }));
+
+  return {
+    article_word_requirement: ARTICLE_WORD_PLAN,
+    intro: {
+      target_words: ARTICLE_WORD_PLAN.intro.target,
+      min_words: ARTICLE_WORD_PLAN.intro.min,
+      max_words: ARTICLE_WORD_PLAN.intro.max,
+      evidence_ids: introEvidence,
+      instruction:
+        "Introduce the topic using only the assigned evidence. Do not promise benefits or integrations that the evidence does not state."
+    },
+    sections,
+    faq,
+    conclusion: {
+      target_words: ARTICLE_WORD_PLAN.conclusion.target,
+      min_words: ARTICLE_WORD_PLAN.conclusion.min,
+      max_words: ARTICLE_WORD_PLAN.conclusion.max,
+      evidence_ids: conclusionEvidence,
+      instruction:
+        "Summarize only the evidence-backed takeaways. Do not add a prediction, recommendation, price claim or future integration."
+    }
+  };
+}
+
+function packetSources(evidence) {
+  const seen = new Set();
+  const result = [];
+
+  for (const item of evidence) {
+    const key = item.kind === "external" ? item.source_url : item.source_title;
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+
+    result.push({
+      kind: item.kind,
+      title: item.source_title,
+      url: item.source_url || null,
+      source_path: item.source_path || null,
+      project_source_paths: item.project_source_paths || []
     });
   }
 
-  return { catalog, sourceToNumber };
+  return result;
 }
 
-function citationMarkup(evidenceIds, evidenceMap, sourceToNumber) {
-  const numbers = [];
+function buildForbiddenClaims(metadata, profile) {
+  const guards = [...GLOBAL_FORBIDDEN_CLAIMS];
 
-  for (const id of uniqueStrings(evidenceIds, 20)) {
-    const evidence = evidenceMap.get(id);
-    if (!evidence) continue;
+  if (metadata.editorial_guard) guards.push(metadata.editorial_guard);
+  if (profile?.editorial_guard) guards.push(profile.editorial_guard);
 
-    const key =
-      evidence.kind === "external"
-        ? `external:${evidence.source_url}`
-        : `apxn:${evidence.source_path || evidence.source_title}`;
+  if (metadata.content_mode === "apxn") {
+    guards.push("Do not introduce general blockchain facts unless they are present in the selected APXN knowledge evidence.");
+  }
 
-    const number = sourceToNumber.get(key);
+  if (metadata.content_mode === "hybrid") {
+    guards.push(
+      "Keep APXN project facts and external educational facts attributable to their own evidence. Do not imply that APXN implements an external technology merely because both appear in the packet."
+    );
+  }
 
-    if (number && !numbers.includes(number)) {
-      numbers.push(number);
+  return uniqueStrings(guards, 30);
+}
+
+function collectAllowedNumericTokens(evidence) {
+  return uniqueStrings(
+    evidence.flatMap((item) => item.numeric_tokens || []),
+    120
+  ).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+}
+
+function validateTopicMetadata(metadata, sourceFile, knowledge) {
+  const mode = String(metadata?.content_mode || "").toLowerCase();
+
+  if (!CONTENT_MODES.has(mode)) {
+    fail(`Invalid content_mode for ${metadata?.id || metadata?.topic}: ${mode}`);
+  }
+
+  if (mode === "manual") {
+    return { mode, profile: null };
+  }
+
+  let profile = null;
+
+  if (["external", "hybrid"].includes(mode)) {
+    const profileId = String(metadata?.source_profile || "").trim();
+    if (!profileId) fail(`${metadata.topic}: missing source_profile.`);
+
+    profile = sourceFile?.profiles?.[profileId];
+    if (!profile) fail(`${metadata.topic}: unknown source_profile ${profileId}.`);
+    if (profile.status !== "active") {
+      fail(`${metadata.topic}: source_profile ${profileId} is not active.`);
     }
   }
 
-  if (numbers.length === 0) return "";
+  if (["apxn", "hybrid"].includes(mode)) {
+    if (!Array.isArray(metadata.knowledge_sections) || metadata.knowledge_sections.length === 0) {
+      fail(`${metadata.topic}: APXN/hybrid topic has no knowledge_sections.`);
+    }
 
-  return `<sup class="ml-1 text-yellow-400">${numbers
-    .map(
-      (number) =>
-        `<a href="#source-${number}" aria-label="Source ${number}">[${number}]</a>`
-    )
-    .join("")}</sup>`;
+    for (const knowledgePath of metadata.knowledge_sections) {
+      if (getAtPath(knowledge, knowledgePath) === undefined) {
+        fail(`${metadata.topic}: unknown APXN knowledge section ${knowledgePath}.`);
+      }
+    }
+  }
+
+  return { mode, profile };
 }
 
-function renderArticleHtml({
-  article,
-  packet,
-  config,
-  date,
-  slug,
-  words,
-  manifest
-}) {
-  const baseUrl = String(
-    config?.site?.base_url || "https://apxn.network"
-  ).replace(/\/+$/, "");
+export function loadTopicByIdOrTitle(selector, topicBank = readJson(PATHS.topicBank)) {
+  const topics = Array.isArray(topicBank?.topics) ? topicBank.topics : [];
+  const cleanSelector = normalizeSpace(selector);
 
-  const url = `${baseUrl}/blog/articles/${slug}.html`;
-  const image =
-    config?.seo?.default_og_image || `${baseUrl}/logo2%20(1).png`;
-  const author = config?.site?.author || "Apex Network Editorial";
+  if (cleanSelector) {
+    const byId = topics.find((topic) => topic.id === cleanSelector);
+    if (byId) return byId;
 
-  const evidenceMap = new Map(
-    (packet.evidence || []).map((item) => [item.id, item])
+    const normalized = normalizeTopic(cleanSelector);
+    const byTitle = topics.find((topic) => normalizeTopic(topic.topic) === normalized);
+    if (byTitle) return byTitle;
+
+    fail(`No topic-bank entry matches: ${cleanSelector}`);
+  }
+
+  const automatic = topics.find(
+    (topic) =>
+      topic.status === "available" &&
+      topic.auto_publish_allowed === true &&
+      ["apxn", "external", "hybrid"].includes(String(topic.content_mode || "").toLowerCase())
   );
 
-  const { catalog, sourceToNumber } = sourceCatalog(packet);
+  if (!automatic) fail("No eligible automatic topic is available in the topic bank.");
+  return automatic;
+}
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.description,
-    image,
-    mainEntityOfPage: url,
-    datePublished: date,
-    dateModified: date,
-    author: {
-      "@type": "Organization",
-      name: author
+export async function buildResearchPacketForTopic(metadata, options = {}) {
+  const sourceFile = options.sourceFile || readJson(PATHS.sourceProfiles);
+  const knowledge = options.knowledge || readJson(PATHS.knowledge);
+  const config = options.config || readJson(PATHS.config);
+
+  if (sourceFile?.rules?.open_web_research_allowed !== false) {
+    fail("Source profile rules must keep open_web_research_allowed=false.");
+  }
+
+  if (sourceFile?.rules?.approved_sources_only !== true) {
+    fail("Source profile rules must keep approved_sources_only=true.");
+  }
+
+  const { mode, profile } = validateTopicMetadata(metadata, sourceFile, knowledge);
+
+  if (mode === "manual" || metadata.auto_publish_allowed === false) {
+    return {
+      schema_version: 1,
+      generated_at: new Date().toISOString(),
+      generated_date: todayISO(),
+      status: "MANUAL_REVIEW_REQUIRED",
+      topic: metadata,
+      reason: "This topic is not eligible for automatic research/writing.",
+      paid_ai_calls: 0
+    };
+  }
+
+  const externalResult = ["external", "hybrid"].includes(mode)
+    ? await collectExternalEvidence(metadata, profile)
+    : { pages: [], errors: [], evidence: [] };
+
+  const apxnEvidence = ["apxn", "hybrid"].includes(mode)
+    ? collectApxnEvidence(metadata, knowledge)
+    : [];
+
+  const evidence = [...apxnEvidence, ...externalResult.evidence];
+  const sufficiency = evaluateResearchSufficiency(metadata, evidence, profile);
+  const writingPlan = sufficiency.ready ? buildWritingPlan(metadata, evidence) : null;
+
+  const packet = {
+    schema_version: 1,
+    generated_at: new Date().toISOString(),
+    generated_date: todayISO(),
+    status: sufficiency.ready ? "READY_FOR_PAID_WRITER" : "INSUFFICIENT_RESEARCH",
+    paid_ai_calls: 0,
+    topic: {
+      id: metadata.id || null,
+      topic: metadata.topic,
+      slug: slugify(metadata.topic),
+      category: metadata.category,
+      risk: metadata.risk || "safe",
+      content_mode: mode,
+      source_profile: metadata.source_profile || null,
+      knowledge_sections: metadata.knowledge_sections || [],
+      auto_publish_allowed: metadata.auto_publish_allowed === true,
+      editorial_guard: metadata.editorial_guard || null
     },
-    publisher: {
-      "@type": "Organization",
-      name: config?.site?.brand || "Apex Network",
-      url: baseUrl,
-      logo: {
-        "@type": "ImageObject",
-        url: image
-      }
-    }
+    policy: {
+      open_web_research_allowed: false,
+      model_memory_as_source_allowed: false,
+      approved_official_sources_only: true,
+      writer_may_add_facts_outside_packet: false,
+      minimum_article_words: Number(config?.writer?.minimum_words || ARTICLE_WORD_PLAN.minimum),
+      target_article_words: Number(config?.writer?.target_words || ARTICLE_WORD_PLAN.target),
+      maximum_article_words: Number(config?.writer?.maximum_words || ARTICLE_WORD_PLAN.maximum)
+    },
+    sufficiency,
+    source_fetch: {
+      approved_profile: profile
+        ? {
+            id: metadata.source_profile,
+            name: profile.name,
+            min_sources: profile.min_sources,
+            allowed_domains: profile.allowed_domains,
+            volatile_fact_policy: profile.volatile_fact_policy
+          }
+        : null,
+      pages: externalResult.pages,
+      errors: externalResult.errors
+    },
+    sources: packetSources(evidence),
+    allowed_numeric_tokens: collectAllowedNumericTokens(evidence),
+    forbidden_claims: buildForbiddenClaims(metadata, profile),
+    evidence,
+    writing_plan: writingPlan
   };
 
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: (article.faq || []).map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer
-      }
-    }))
+  return packet;
+}
+
+function parseCliArguments(argv) {
+  const result = {
+    topicSelector: process.env.BLOG_RESEARCH_TOPIC_ID || process.env.BLOG_RESEARCH_TOPIC || "",
+    output: process.env.BLOG_RESEARCH_OUTPUT || ""
   };
 
-  const sectionsHtml = article.sections
-    .map((section) => {
-      const paragraphs = section.paragraphs
-        .map(
-          (paragraph) =>
-            `<p>${escapeHtml(paragraph.text)}${citationMarkup(
-              paragraph.evidence_ids,
-              evidenceMap,
-              sourceToNumber
-            )}</p>`
-        )
-        .join("\n");
+  for (let index = 0; index < argv.length; index++) {
+    const arg = argv[index];
 
-      return `<section>
-        <h2>${escapeHtml(section.heading)}</h2>
-        ${paragraphs}
-      </section>`;
-    })
-    .join("\n");
-
-  const faqHtml = article.faq
-    .map(
-      (item) => `<div class="info-box">
-        <h3>${escapeHtml(item.question)}</h3>
-        <p>${escapeHtml(item.answer)}${citationMarkup(
-          item.evidence_ids,
-          evidenceMap,
-          sourceToNumber
-        )}</p>
-      </div>`
-    )
-    .join("\n");
-
-  const sourcesHtml = catalog
-    .map((source) => {
-      if (source.kind === "external") {
-        return `<li id="source-${source.number}">
-          <a href="${escapeHtml(
-            source.url
-          )}" target="_blank" rel="noopener noreferrer">${escapeHtml(
-            source.title
-          )}</a>
-          <span> — official documentation</span>
-        </li>`;
-      }
-
-      return `<li id="source-${source.number}">
-        <strong>${escapeHtml(source.title)}</strong>
-        <span> — reviewed APXN project knowledge</span>
-      </li>`;
-    })
-    .join("\n");
-
-  const related = (manifest.articles || [])
-    .filter((item) => item?.status === "published" && item?.slug !== slug)
-    .slice(-3)
-    .reverse();
-
-  const relatedHtml =
-    related.length > 0
-      ? `<section>
-          <h2>Related reading</h2>
-          <ul>
-            ${related
-              .map(
-                (item) =>
-                  `<li><a href="./${escapeHtml(
-                    item.slug
-                  )}.html">${escapeHtml(item.title)}</a></li>`
-              )
-              .join("\n")}
-          </ul>
-        </section>`
-      : "";
-
-  const disclaimer = ["apxn", "hybrid"].includes(packet.topic.content_mode)
-    ? "APXN Points are the current in-app point balance described by reviewed project knowledge. This article does not promise future token value, profit, listing or withdrawal value."
-    : "This article is educational and does not provide financial, investment or trading advice.";
-
-  return `<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>${escapeHtml(article.title)}</title>
-  <meta name="description" content="${escapeHtml(article.description)}">
-  <meta name="keywords" content="${escapeHtml(article.keywords.join(", "))}">
-  <meta name="robots" content="${escapeHtml(
-    config?.seo?.robots || "index, follow"
-  )}">
-  <meta name="author" content="${escapeHtml(author)}">
-
-  <link rel="canonical" href="${escapeHtml(url)}">
-  <link rel="icon" href="../../logo2%20(1).png" type="image/png">
-
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="${escapeHtml(article.title)}">
-  <meta property="og:description" content="${escapeHtml(article.description)}">
-  <meta property="og:url" content="${escapeHtml(url)}">
-  <meta property="og:image" content="${escapeHtml(image)}">
-  <meta property="og:site_name" content="${escapeHtml(
-    config?.site?.brand || "Apex Network"
-  )}">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${escapeHtml(article.title)}">
-  <meta name="twitter:description" content="${escapeHtml(
-    article.description
-  )}">
-  <meta name="twitter:image" content="${escapeHtml(image)}">
-
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <style>
-    html { background: #020617; }
-    .gold-text {
-      background: linear-gradient(90deg, #fde047, #f59e0b, #fb923c);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    if (arg === "--topic-id" || arg === "--topic") {
+      result.topicSelector = argv[index + 1] || "";
+      index += 1;
+    } else if (arg === "--output") {
+      result.output = argv[index + 1] || "";
+      index += 1;
     }
-    .article-body p {
-      color: #cbd5e1;
-      line-height: 1.9;
-      margin: 1rem 0 1.5rem;
-    }
-    .article-body h2 {
-      color: #fff;
-      font-size: 1.75rem;
-      font-weight: 900;
-      margin-top: 2.7rem;
-      margin-bottom: 1rem;
-      line-height: 1.25;
-    }
-    .article-body h3 {
-      color: #facc15;
-      font-size: 1.2rem;
-      font-weight: 900;
-      margin-top: 1rem;
-      margin-bottom: .75rem;
-    }
-    .article-body ul, .article-body ol {
-      color: #cbd5e1;
-      margin: 1rem 0 1.5rem 1.5rem;
-      line-height: 1.9;
-    }
-    .article-body ul { list-style: disc; }
-    .article-body ol { list-style: decimal; }
-    .article-body strong { color: #fff; }
-    .article-body a { color: #facc15; font-weight: 800; }
-    .article-body a:hover { color: #fde047; }
-    .info-box {
-      background: rgba(15, 23, 42, .8);
-      border: 1px solid rgba(234, 179, 8, .25);
-      border-radius: 1rem;
-      padding: 1.25rem;
-      margin: 1.5rem 0;
-    }
-  </style>
-
-  <script type="application/ld+json">
-${safeJsonForScript(articleSchema)}
-  </script>
-
-  <script type="application/ld+json">
-${safeJsonForScript(faqSchema)}
-  </script>
-</head>
-
-<body class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950">
-  <header class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
-    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5">
-      <a href="../index.html" class="flex items-center gap-3 min-w-0">
-        <div class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50">
-          <img src="../../logo2%20(1).png" alt="Apex Network Logo" class="w-full h-full object-cover" width="44" height="44">
-        </div>
-        <div>
-          <div class="font-black tracking-wider gold-text text-base sm:text-lg">APEX NETWORK</div>
-          <div class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]">APXN Blog</div>
-        </div>
-      </a>
-
-      <a href="https://t.me/ApxMinerBot" target="_blank" rel="noopener noreferrer"
-         class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl">
-        Open APXN App
-      </a>
-    </div>
-  </header>
-
-  <main>
-    <article>
-      <section class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent">
-        <div class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <nav aria-label="Breadcrumb" class="text-xs text-gray-500 font-bold mb-7">
-            <a href="../../index.html" class="hover:text-yellow-400">Home</a>
-            <span class="mx-2">/</span>
-            <a href="../index.html" class="hover:text-yellow-400">Blog</a>
-            <span class="mx-2">/</span>
-            <span class="text-yellow-400">${escapeHtml(
-              packet.topic.category
-            )}</span>
-          </nav>
-
-          <span class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5">
-            ${escapeHtml(packet.topic.category)}
-          </span>
-
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6">
-            ${escapeHtml(article.title)}
-          </h1>
-
-          <p class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7">
-            ${escapeHtml(article.description)}
-          </p>
-
-          <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500">
-            <span class="font-bold text-gray-300">${escapeHtml(author)}</span>
-            <span>•</span>
-            <time datetime="${escapeHtml(date)}">${escapeHtml(date)}</time>
-            <span>•</span>
-            <span>${readingMinutes(words)} min read</span>
-          </div>
-        </div>
-      </section>
-
-      <div class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div class="article-body">
-          <p class="text-lg">${escapeHtml(
-            article.intro.text
-          )}${citationMarkup(
-            article.intro.evidence_ids,
-            evidenceMap,
-            sourceToNumber
-          )}</p>
-
-          ${sectionsHtml}
-
-          <section>
-            <h2>Frequently asked questions</h2>
-            ${faqHtml}
-          </section>
-
-          <section>
-            <h2>Conclusion</h2>
-            <p>${escapeHtml(
-              article.conclusion.text
-            )}${citationMarkup(
-              article.conclusion.evidence_ids,
-              evidenceMap,
-              sourceToNumber
-            )}</p>
-          </section>
-
-          ${relatedHtml}
-
-          <section>
-            <h2>Sources and methodology</h2>
-            <p>
-              A free deterministic research stage collected and screened the evidence before the paid writer was called.
-              The writing model received only this approved Research Packet and no web-search tools.
-            </p>
-            <ol>
-              ${sourcesHtml}
-            </ol>
-          </section>
-
-          <div class="info-box">
-            <strong>Editorial note:</strong>
-            <p>${escapeHtml(disclaimer)}</p>
-          </div>
-        </div>
-      </div>
-    </article>
-  </main>
-
-  <footer class="border-t border-slate-800">
-    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 flex flex-wrap gap-4 justify-between">
-      <span>© ${new Date().getUTCFullYear()} Apex Network</span>
-      <a href="../index.html" class="hover:text-yellow-400">APXN Blog</a>
-    </div>
-  </footer>
-</body>
-</html>
-`;
-}
-
-/* -------------------------------------------------------------------------- */
-/* Manifest / queue state                                                     */
-/* -------------------------------------------------------------------------- */
-
-function sortWaitingQueue(manifest) {
-  return (manifest.generation_queue || [])
-    .filter((item) => item?.status === "waiting")
-    .sort(
-      (a, b) =>
-        Number(a?.priority || 999999) - Number(b?.priority || 999999)
-    );
-}
-
-function queueItemIndex(manifest, target) {
-  return (manifest.generation_queue || []).findIndex((item) => item === target);
-}
-
-function markQueueItem(manifest, queueItem, status, details = {}) {
-  const index = queueItemIndex(manifest, queueItem);
-  if (index < 0) return;
-
-  manifest.generation_queue[index] = {
-    ...manifest.generation_queue[index],
-    status,
-    ...details
-  };
-}
-
-function markBankItem(bank, metadata, status, details = {}) {
-  if (!metadata.topic_bank_id) return;
-
-  const item = bank.topics.find(
-    (candidate) => candidate.id === metadata.topic_bank_id
-  );
-
-  if (!item) return;
-
-  Object.assign(item, {
-    status,
-    ...details
-  });
-}
-
-function refreshStats(manifest) {
-  const articles = Array.isArray(manifest.articles) ? manifest.articles : [];
-
-  manifest.stats = {
-    total_articles: articles.length,
-    published: articles.filter((item) => item.status === "published").length,
-    drafts: articles.filter((item) => item.status === "draft").length,
-    featured: articles.filter((item) => item.featured === true).length
-  };
-
-  const nextWaiting = sortWaitingQueue(manifest)[0];
-
-  manifest.automation_state = manifest.automation_state || {};
-  manifest.automation_state.next_queue_priority = nextWaiting?.priority ?? null;
-  manifest.automation_state.automatic_generation =
-    manifest.automation_state.automatic_generation === true;
-  manifest.automation_state.automatic_publishing =
-    manifest.automation_state.automatic_publishing === true;
-}
-
-function articleManifestRecord({
-  article,
-  packet,
-  config,
-  date,
-  slug,
-  words,
-  articleId
-}) {
-  const baseUrl = String(
-    config?.site?.base_url || "https://apxn.network"
-  ).replace(/\/+$/, "");
-
-  const url = `${baseUrl}/blog/articles/${slug}.html`;
-
-  return {
-    id: articleId,
-    slug,
-    title: article.title,
-    description: article.description,
-    category: packet.topic.category,
-    language: "en",
-    author: config?.site?.author || "Apex Network Editorial",
-    status: "published",
-    featured: false,
-    indexable: true,
-    published_at: date,
-    updated_at: date,
-    reading_minutes: readingMinutes(words),
-    word_count: words,
-    path: `blog/articles/${slug}.html`,
-    url,
-    image:
-      config?.seo?.default_og_image ||
-      `${baseUrl}/logo2%20(1).png`,
-    keywords: uniqueStrings(article.keywords, 10),
-    source: "automated_research_packet_pipeline",
-    content_mode: packet.topic.content_mode,
-    source_profile: packet.topic.source_profile,
-    topic_bank_id: packet.topic.id || null,
-    research_packet_schema_version: packet.schema_version,
-    deterministic_local_quality_gate: true,
-    paid_ai_calls_for_article: 1,
-    seo: {
-      canonical: url,
-      robots: "index, follow",
-      article_schema: true,
-      faq_schema: true
-    }
-  };
-}
-
-/* -------------------------------------------------------------------------- */
-/* Free source-test compatibility                                             */
-/* -------------------------------------------------------------------------- */
-
-async function runSourceTest() {
-  const requestedRaw = normalizeSpace(
-    process.env.TEST_ID ||
-      process.env.BLOG_SOURCE_PROFILE ||
-      process.env.SOURCE_PROFILE
-  );
-
-  if (!requestedRaw) {
-    fail(
-      "BLOG_SOURCE_TEST requires TEST_ID, BLOG_SOURCE_PROFILE or SOURCE_PROFILE."
-    );
   }
 
-  const profileId = SOURCE_PROFILE_ALIASES[requestedRaw] || requestedRaw;
-  const topic = normalizeSpace(
-    process.env.TEST_TOPIC || `Official source research test for ${profileId}`
-  );
+  return result;
+}
 
-  const metadata = {
-    id: `source-test-${profileId}`,
-    topic,
-    category: normalizeSpace(process.env.TEST_CATEGORY || "Education"),
-    risk: "safe",
-    status: "available",
-    content_mode: "external",
-    source_profile: profileId,
-    knowledge_sections: [],
-    auto_publish_allowed: true
-  };
+async function runCli() {
+  const args = parseCliArguments(process.argv.slice(2));
+  const topicBank = readJson(PATHS.topicBank);
+  const metadata = loadTopicByIdOrTitle(args.topicSelector, topicBank);
+
+  console.log("APXN Free Research Compiler");
+  console.log("---------------------------");
+  console.log(`Topic: ${metadata.topic}`);
+  console.log(`Mode: ${metadata.content_mode}`);
+  console.log(`Source profile: ${metadata.source_profile || "APXN knowledge only"}`);
+  console.log("Paid AI calls: 0");
 
   const packet = await buildResearchPacketForTopic(metadata);
+  const outputPath = args.output
+    ? path.resolve(ROOT, args.output)
+    : path.join(PATHS.outputDir, `${slugify(metadata.topic)}.research-packet.json`);
 
-  if (Number(packet?.paid_ai_calls || 0) !== 0) {
-    fail("Source test unexpectedly reported paid AI usage.");
-  }
+  writeJson(outputPath, packet);
 
-  if (packet.status !== "READY_FOR_PAID_WRITER") {
-    const reasons = packet?.sufficiency?.reasons || [];
-    fail(
-      `SOURCE TEST FAILED: ${profileId}: ${
-        reasons.join(" | ") || packet.status
-      }`
+  console.log(`Research status: ${packet.status}`);
+  console.log(`Research packet: ${path.relative(ROOT, outputPath)}`);
+
+  if (packet.sufficiency?.metrics) {
+    const metrics = packet.sufficiency.metrics;
+    console.log(
+      `Evidence items: ${metrics.evidence_items} / required ${metrics.required_evidence_items}`
     );
+    console.log(
+      `Evidence item capacity: ${metrics.theoretical_evidence_item_capacity} from ${metrics.configured_external_pages || 0} configured external page(s)`
+    );
+    console.log(`Evidence words: ${metrics.total_words}`);
+    console.log(`External evidence words: ${metrics.external_words}`);
+    console.log(`APXN evidence words: ${metrics.apxn_words}`);
+    console.log(`Distinct external pages: ${metrics.distinct_external_pages}`);
   }
 
-  const metrics = packet.sufficiency?.metrics || {};
-
-  console.log(`SOURCE TEST PASS: ${profileId}`);
-  console.log(
-    `Distinct official pages: ${Number(metrics.distinct_external_pages || 0)}`
-  );
-  console.log(`Evidence items: ${Number(metrics.evidence_items || 0)}`);
-  console.log(`Evidence words: ${Number(metrics.total_words || 0)}`);
-  console.log("Research stage: deterministic/free");
-  console.log("xAI calls: 0");
+  if (packet.status === "INSUFFICIENT_RESEARCH") {
+    for (const reason of packet.sufficiency?.reasons || []) {
+      console.log(`SKIP: ${reason}`);
+    }
+  }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Offline self-test                                                          */
-/* -------------------------------------------------------------------------- */
-
-function runSelfTest() {
-  const allowed = ["E1", "E2"];
-
-  if (!evidenceIdsWithin(["E1"], allowed)) {
-    fail("SELF TEST: evidence subset check failed.");
+const isDirectRun = (() => {
+  try {
+    return path.resolve(process.argv[1] || "") === __filename;
+  } catch {
+    return false;
   }
+})();
 
-  if (evidenceIdsWithin(["E3"], allowed)) {
-    fail("SELF TEST: outside evidence ID was incorrectly accepted.");
-  }
-
-  if (!numericTokenSupported("24 hours", "The window lasts 24 hours.")) {
-    fail("SELF TEST: supported numeric token was rejected.");
-  }
-
-  if (numericTokenSupported("12 hours", "The window lasts 24 hours.")) {
-    fail("SELF TEST: unsupported numeric token was accepted.");
-  }
-
-  const unsupported = unsupportedHighRiskPatterns(
-    "This removes the need for another wallet.",
-    "The source describes account access."
-  );
-
-  if (!unsupported.includes("removes-the-need claim")) {
-    fail("SELF TEST: high-risk inference detection failed.");
-  }
-
-  if (jaccardSimilarity("alpha beta gamma delta", "alpha beta gamma delta") < 0.99) {
-    fail("SELF TEST: repetition similarity check failed.");
-  }
-
-  console.log("APXN BLOG WRITER SELF TEST PASS");
-  console.log("Paid AI calls: 0");
+if (isDirectRun) {
+  runCli().catch((error) => {
+    console.error(`\nERROR: ${error.message}`);
+    process.exitCode = 1;
+  });
 }
-
-/* -------------------------------------------------------------------------- */
-/* Main pipeline                                                              */
-/* -------------------------------------------------------------------------- */
-
-async function main() {
-  if (isTruthyEnv("BLOG_WRITER_SELF_TEST")) {
-    runSelfTest();
-    return;
-  }
-
-  const config = readJson(PATHS.config);
-  const manifest = readJson(PATHS.articles);
-  const bank = readJson(PATHS.topicBank);
-  const costs = ensureCostLedger(readJsonIfExists(PATHS.costs));
-
-  validateConfig(config);
-  validateTopicBank(bank, config);
-
-  if (isTruthyEnv("BLOG_SOURCE_TEST")) {
-    await runSourceTest();
-    return;
-  }
-
-  const publishRequested = isTruthyEnv("BLOG_PUBLISH");
-
-  if (
-    publishRequested &&
-    config?.automation?.auto_publish_enabled !== true
-  ) {
-    fail(
-      "BLOG_PUBLISH=true was requested while automation.auto_publish_enabled=false. Publication is blocked safely."
-    );
-  }
-
-  if (
-    publishRequested &&
-    config?.automation?.auto_generate_enabled !== true
-  ) {
-    fail(
-      "BLOG_PUBLISH=true was requested while automation.auto_generate_enabled=false. Generation is blocked safely."
-    );
-  }
-
-  const apiKey = String(process.env.XAI_API_KEY || "").trim();
-  if (!apiKey) {
-    fail("XAI_API_KEY is missing.");
-  }
-
-  const waiting = sortWaitingQueue(manifest);
-  if (waiting.length === 0) {
-    fail("No waiting topics are available.");
-  }
-
-  const maxAttempts = Math.min(MAX_PRE_AI_TOPIC_ATTEMPTS, waiting.length);
-  let selected = null;
-  let lastPreAiReason = "No eligible topic.";
-
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const queueItem = waiting[attempt];
-    const metadata = hydrateTopic(queueItem, bank);
-
-    if (!metadata.ok) {
-      lastPreAiReason = metadata.reason;
-
-      console.log(
-        `Free preflight skip: ${queueItem.topic}: ${metadata.reason}`
-      );
-
-      if (publishRequested) {
-        markQueueItem(
-          manifest,
-          queueItem,
-          metadata.retired_legacy ? "retired_legacy" : "skipped_metadata",
-          {
-            skipped_at: todayISO(),
-            skip_reason: metadata.reason
-          }
-        );
-      }
-
-      continue;
-    }
-
-    if (!config.categories.includes(metadata.category)) {
-      lastPreAiReason = `Unknown category: ${metadata.category}`;
-
-      if (publishRequested) {
-        markQueueItem(manifest, queueItem, "skipped_metadata", {
-          skipped_at: todayISO(),
-          skip_reason: lastPreAiReason
-        });
-      }
-
-      continue;
-    }
-
-    console.log(`FREE RESEARCH: ${metadata.topic}`);
-    console.log(`Content mode: ${metadata.content_mode}`);
-    console.log(
-      `Source profile: ${metadata.source_profile || "APXN knowledge only"}`
-    );
-    console.log("Paid AI calls before research: 0");
-
-    let packet;
-
-    try {
-      packet = await researchTopic(metadata);
-    } catch (error) {
-      lastPreAiReason = `Free researcher failed: ${error.message}`;
-
-      console.log(`Safe skip before xAI: ${lastPreAiReason}`);
-
-      if (publishRequested) {
-        markQueueItem(manifest, queueItem, "skipped_research_error", {
-          skipped_at: todayISO(),
-          skip_reason: lastPreAiReason
-        });
-      }
-
-      continue;
-    }
-
-    const provisionalSlug = slugify(metadata.topic);
-    const packetPath = saveResearchPacket(packet, provisionalSlug);
-
-    console.log(
-      `Research Packet saved: ${path.relative(ROOT, packetPath)}`
-    );
-    console.log(`Research status: ${packet.status}`);
-
-    if (packet.sufficiency?.metrics) {
-      const metrics = packet.sufficiency.metrics;
-      console.log(`Research evidence items: ${metrics.evidence_items}`);
-      console.log(`Research evidence words: ${metrics.total_words}`);
-      console.log(`External evidence words: ${metrics.external_words}`);
-      console.log(`APXN evidence words: ${metrics.apxn_words}`);
-      console.log(
-        `Distinct external pages: ${metrics.distinct_external_pages}`
-      );
-    }
-
-    if (packet.status !== "READY_FOR_PAID_WRITER") {
-      const reasons = packet?.sufficiency?.reasons || [];
-      lastPreAiReason =
-        reasons.join(" | ") ||
-        `Research Packet status is ${packet.status}.`;
-
-      console.log(`Safe skip before xAI: ${lastPreAiReason}`);
-
-      if (publishRequested) {
-        markQueueItem(
-          manifest,
-          queueItem,
-          "skipped_insufficient_research",
-          {
-            skipped_at: todayISO(),
-            skip_reason: lastPreAiReason,
-            content_mode: metadata.content_mode,
-            source_profile: metadata.source_profile,
-            topic_bank_id: metadata.topic_bank_id
-          }
-        );
-
-        markBankItem(bank, metadata, "needs_evidence", {
-          last_evidence_failure: todayISO(),
-          last_evidence_failure_reason: lastPreAiReason
-        });
-      }
-
-      continue;
-    }
-
-    selected = {
-      queueItem,
-      metadata,
-      packet,
-      provisionalSlug
-    };
-
-    break;
-  }
-
-  if (!selected) {
-    if (publishRequested) {
-      manifest.last_updated = todayISO();
-      bank.last_updated = todayISO();
-      refreshStats(manifest);
-      writeJson(PATHS.articles, manifest);
-      writeJson(PATHS.topicBank, bank);
-    }
-
-    fail(
-      `No topic passed the FREE Research Packet gate. Last reason: ${lastPreAiReason}`
-    );
-  }
-
-  const { queueItem, metadata, packet, provisionalSlug } = selected;
-  const date = todayISO();
-
-  console.log("FREE RESEARCH PASS");
-  console.log("Research Packet is now frozen as the writer's sole factual input.");
-  console.log("Paid AI calls so far: 0");
-
-  assertGenerationCostPreflight(config, costs);
-
-  const generation = await callPaidWriter({
-    config,
-    apiKey,
-    input: paidWriterInput(packet, config)
-  });
-
-  const generationCost = appendCostRecord({
-    costs,
-    responseJson: generation.responseJson,
-    stage: "research_packet_writing",
-    topic: metadata.topic,
-    slug: provisionalSlug,
-    model: generation.model
-  });
-
-  assertCostKnown(config, generationCost);
-
-  const runCostUsd = Number(generationCost.cost_usd || 0);
-  assertRunCost(config, runCostUsd);
-
-  fs.mkdirSync(PATHS.privateDrafts, { recursive: true });
-
-  const rawGenerationPath = path.join(
-    PATHS.privateDrafts,
-    `${provisionalSlug}.raw-generation.json`
-  );
-
-  writeJson(rawGenerationPath, {
-    generated_at: date,
-    architecture: "free_research_packet_then_one_paid_writer_call",
-    paid_ai_calls: 1,
-    topic: metadata.topic,
-    category: metadata.category,
-    content_mode: metadata.content_mode,
-    source_profile: metadata.source_profile,
-    model: generation.model,
-    response_id: generation.responseJson?.id || null,
-    generation_cost_usd: runCostUsd,
-    research_packet_summary: packetSummary(packet),
-    raw_text: generation.rawText,
-    parsed: generation.parsed
-  });
-
-  console.log(
-    `Raw paid-writer output saved: ${path.relative(
-      ROOT,
-      rawGenerationPath
-    )}`
-  );
-
-  const article = generation.parsed;
-
-  const local = validateArticleAgainstPacket({
-    article,
-    packet,
-    config
-  });
-
-  const validationPath = path.join(
-    PATHS.privateDrafts,
-    `${provisionalSlug}.local-validation.json`
-  );
-
-  writeJson(validationPath, {
-    generated_at: date,
-    ...local
-  });
-
-  console.log(
-    `Local validation saved: ${path.relative(ROOT, validationPath)}`
-  );
-  console.log(`Article body words: ${local.body_word_count}`);
-
-  if (!local.ok) {
-    const reason = `FREE local quality gate failed: ${local.errors.join(
-      " | "
-    )}`;
-
-    if (publishRequested) {
-      markQueueItem(manifest, queueItem, "rejected_quality", {
-        rejected_at: date,
-        reject_reason: reason
-      });
-
-      manifest.last_updated = date;
-      refreshStats(manifest);
-      writeJson(PATHS.articles, manifest);
-    }
-
-    fail(reason);
-  }
-
-  assertNotDuplicate(article, manifest);
-
-  const finalSlug = slugify(article.title);
-  if (!finalSlug) {
-    fail("Generated article title could not produce a valid slug.");
-  }
-
-  const html = renderArticleHtml({
-    article,
-    packet,
-    config,
-    date,
-    slug: finalSlug,
-    words: local.body_word_count,
-    manifest
-  });
-
-  const privateHtmlPath = path.join(
-    PATHS.privateDrafts,
-    `${finalSlug}.html`
-  );
-
-  const privateJsonPath = path.join(
-    PATHS.privateDrafts,
-    `${finalSlug}.json`
-  );
-
-  writeText(privateHtmlPath, html);
-
-  writeJson(privateJsonPath, {
-    generated_at: date,
-    architecture: "free_research_packet_then_one_paid_writer_call",
-    paid_ai_calls: 1,
-    topic: metadata.topic,
-    category: metadata.category,
-    content_mode: metadata.content_mode,
-    source_profile: metadata.source_profile,
-    knowledge_sections: metadata.knowledge_sections,
-    word_count: local.body_word_count,
-    run_cost_usd: runCostUsd,
-    local_validation: local,
-    research_packet: packet
-  });
-
-  if (!publishRequested) {
-    console.log("PRIVATE WRITER TEST PASS");
-    console.log(`Draft: ${path.relative(ROOT, privateHtmlPath)}`);
-    console.log(`Words: ${local.body_word_count}`);
-    console.log(
-      `Research evidence items: ${packet.evidence.length}; research words: ${packet.sufficiency.metrics.total_words}`
-    );
-    console.log("Paid AI calls: 1");
-    console.log(`Exact tracked run cost: $${runCostUsd.toFixed(6)}`);
-    return;
-  }
-
-  fs.mkdirSync(PATHS.published, { recursive: true });
-
-  const publishedPath = path.join(
-    PATHS.published,
-    `${finalSlug}.html`
-  );
-
-  writeText(publishedPath, html);
-
-  const articleId = nextArticleId(manifest.articles);
-
-  manifest.articles.push(
-    articleManifestRecord({
-      article,
-      packet,
-      config,
-      date,
-      slug: finalSlug,
-      words: local.body_word_count,
-      articleId
-    })
-  );
-
-  markQueueItem(manifest, queueItem, "published", {
-    article_id: articleId,
-    generated_at: date,
-    published_at: date,
-    content_mode: metadata.content_mode,
-    source_profile: metadata.source_profile,
-    knowledge_sections: metadata.knowledge_sections,
-    topic_bank_id: metadata.topic_bank_id,
-    auto_publish_allowed: true
-  });
-
-  markBankItem(bank, metadata, "published", {
-    published_at: date,
-    article_id: articleId,
-    article_slug: finalSlug
-  });
-
-  manifest.last_updated = date;
-  manifest.automation_state = manifest.automation_state || {};
-  manifest.automation_state.last_generated_article = articleId;
-  manifest.automation_state.last_published_article = articleId;
-  manifest.automation_state.automatic_generation = true;
-  manifest.automation_state.automatic_publishing = true;
-
-  refreshStats(manifest);
-
-  bank.last_updated = date;
-
-  writeJson(PATHS.articles, manifest);
-  writeJson(PATHS.topicBank, bank);
-
-  console.log("PRODUCTION WRITER PASS");
-  console.log(`Published file: ${path.relative(ROOT, publishedPath)}`);
-  console.log(`Article ID: ${articleId}`);
-  console.log(`Words: ${local.body_word_count}`);
-  console.log(`Research evidence items: ${packet.evidence.length}`);
-  console.log("Paid AI calls: 1");
-  console.log(`Exact tracked run cost: $${runCostUsd.toFixed(6)}`);
-}
-
-main().catch((error) => {
-  console.error(`\nERROR: ${error.message}`);
-  process.exitCode = 1;
-});
 
