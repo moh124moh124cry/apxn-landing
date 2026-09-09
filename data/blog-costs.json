@@ -377,9 +377,45 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 66390000,
           "cost_usd": 0.006639
+        },
+        {
+          "date": "2026-09-09",
+          "response_id": "beb755e7-06c5-9f79-b151-a60a6f5492b0",
+          "model": "grok-4.3",
+          "topic": "What Is BSC? Understanding BEP-20 Tokens and Gas Fees",
+          "article_slug": "what-is-bsc-understanding-bep-20-tokens-and-gas-fees",
+          "stage": "evidence_research",
+          "input_tokens": 14413,
+          "cached_input_tokens": 1344,
+          "output_tokens": 1079,
+          "reasoning_tokens": 0,
+          "total_tokens": 15492,
+          "server_side_tools_used": 4,
+          "web_research_enabled": true,
+          "web_source_count": 1,
+          "cost_in_usd_ticks": 393025500,
+          "cost_usd": 0.03930255
+        },
+        {
+          "date": "2026-09-09",
+          "response_id": "825dc12f-df46-9c6d-ba2f-0248995d8cb8",
+          "model": "grok-4.3",
+          "topic": "What Is BSC? Understanding BEP-20 Tokens and Gas Fees",
+          "article_slug": "what-is-bsc-understanding-bep-20-tokens-and-gas-fees",
+          "stage": "evidence_audit",
+          "input_tokens": 1256,
+          "cached_input_tokens": 704,
+          "output_tokens": 358,
+          "reasoning_tokens": 0,
+          "total_tokens": 1614,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 17258000,
+          "cost_usd": 0.0017258
         }
       ],
-      "total_cost_usd": 0.5650258499999998
+      "total_cost_usd": 0.6060541999999999
     }
   },
   "last_updated": "2026-09-09"
