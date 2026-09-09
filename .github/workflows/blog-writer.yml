@@ -46,7 +46,6 @@ jobs:
     timeout-minutes: 20
 
     env:
-      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
       TZ: "Africa/Algiers"
 
     steps:
@@ -108,6 +107,8 @@ jobs:
         id: gate
         if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test) }}
         shell: bash
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
           AUTO_GENERATE="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('data/blog-config.json','utf8'));process.stdout.write(String(c?.automation?.auto_generate_enabled===true));")"
 
@@ -143,20 +144,83 @@ jobs:
         continue-on-error: true
         run: node scripts/blog-sync.mjs
 
-      - name: Test direct official sources
+      - name: Test all direct official source profiles
         id: source_test
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_test && !inputs.sync_only && !inputs.planner_only && !inputs.writer_test }}
         continue-on-error: true
+        shell: bash
         env:
           BLOG_SOURCE_TEST: "true"
           BLOG_PUBLISH: "false"
-        run: node scripts/blog-writer.mjs
+        run: |
+          set -euo pipefail
+
+          MANIFEST="data/blog-articles.json"
+          BACKUP="$RUNNER_TEMP/blog-articles.source-test.backup.json"
+
+          cp "$MANIFEST" "$BACKUP"
+
+          restore_manifest() {
+            cp "$BACKUP" "$MANIFEST"
+          }
+
+          trap restore_manifest EXIT
+
+          TESTS=(
+            "bsc|What Is BSC? Understanding BEP-20 Tokens and Gas Fees|BSC"
+            "telegram_auth|How Telegram Mini App Authentication and initData Verification Work|Security"
+            "telegram_web3|How Telegram Mini Apps Bring Web3 to Everyday Users|Web3"
+            "security|Web3 Security Basics: Phishing, Private Keys, Seed Phrases and MFA|Security"
+            "ethereum|Ethereum, the EVM and Smart Contracts Explained|Blockchain"
+            "blockchain|Blockchain Explained: Blocks, Transactions and Consensus|Blockchain"
+            "web3|What Is Web3? Decentralized Applications and dApps Explained|Web3"
+          )
+
+          for ITEM in "${TESTS[@]}"; do
+            IFS='|' read -r TEST_ID TEST_TOPIC TEST_CATEGORY <<< "$ITEM"
+
+            echo "::group::Source profile test: $TEST_ID"
+            echo "Test topic: $TEST_TOPIC"
+
+            TEST_ID="$TEST_ID"             TEST_TOPIC="$TEST_TOPIC"             TEST_CATEGORY="$TEST_CATEGORY"             node <<'NODE'
+          const fs = require("fs");
+
+          const manifestPath = "data/blog-articles.json";
+          const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+          manifest.generation_queue = [
+            {
+              id: `source-test-${process.env.TEST_ID}`,
+              topic: process.env.TEST_TOPIC,
+              category: process.env.TEST_CATEGORY,
+              language: "en",
+              priority: 1,
+              status: "waiting",
+              verify_before_publish: false,
+              blocked_auto_publish: false
+            }
+          ];
+
+          fs.writeFileSync(
+            manifestPath,
+            `${JSON.stringify(manifest, null, 2)}\n`,
+            "utf8"
+          );
+          NODE
+
+            node scripts/blog-writer.mjs
+            echo "::endgroup::"
+          done
+
+          echo "All direct official source profiles passed."
+          echo "No xAI API key was exposed to this step and no xAI API call was made."
 
       - name: Generate private Grok test draft
         id: writer_test
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && !inputs.sync_only && !inputs.planner_only && !inputs.source_test }}
         continue-on-error: true
         env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           BLOG_PUBLISH: "false"
         run: node scripts/blog-writer.mjs
 
@@ -174,6 +238,7 @@ jobs:
         if: ${{ steps.gate.outputs.ready == 'true' }}
         continue-on-error: true
         env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           BLOG_PUBLISH: "true"
         run: node scripts/blog-writer.mjs
 
