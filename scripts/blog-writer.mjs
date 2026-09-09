@@ -549,26 +549,22 @@ function topicKeywords(queueItem, profile) {
 }
 
 function chunkSourceText(text, maxChars = 1_700) {
-  const blocks = String(text || "")
-    .split(/\n{2,}|(?=^#{1,4}\s)/m)
-    .map((part) => normalizeSpace(part))
-    .filter((part) => part.length >= 60);
-
+  // Keep each excerpt contiguous in the original normalized source. Dropping
+  // short headings before joining paragraphs invalidates verbatim matching.
+  const source = normalizeSpace(text);
   const chunks = [];
-  let current = "";
-  for (const block of blocks) {
-    if (!current) {
-      current = block;
-      continue;
+  let start = 0;
+  while (start < source.length) {
+    let end = Math.min(start + maxChars, source.length);
+    if (end < source.length) {
+      const boundary = source.lastIndexOf(" ", end);
+      if (boundary > start) end = boundary;
     }
-    if (current.length + 2 + block.length <= maxChars) {
-      current += `\n${block}`;
-    } else {
-      chunks.push(current.slice(0, maxChars));
-      current = block;
-    }
+    const chunk = source.slice(start, end).trim();
+    if (chunk.length >= 60) chunks.push(chunk);
+    start = end;
+    while (source[start] === " ") start += 1;
   }
-  if (current) chunks.push(current.slice(0, maxChars));
   return chunks;
 }
 
@@ -2315,7 +2311,14 @@ async function main() {
     console.log(`Official pages fetched: ${bundle.sources.length}`);
     console.log(`Relevant excerpts selected: ${bundle.excerpts.length}`);
     console.log(`Excerpt characters: ${bundle.excerpts.reduce((sum, item) => sum + item.excerpt.length, 0)}`);
-    console.log("Source test: PASS (no xAI API call was made).");
+    const evidence = evidenceFromSourceBundle(bundle);
+    console.log(`Validated source passages: ${evidence.facts.length}`);
+    console.log(`Validated source pages: ${evidence.sources.length}`);
+    if (evidence.facts.length < MIN_EXTERNAL_EVIDENCE_FACTS || evidence.sources.length < profile.minSources) {
+      fail(`Source test failed at the production evidence gate: ${evidence.facts.length} passages from ${evidence.sources.length} pages.`);
+    }
+    buildEvidenceBlockPlan({ config, queueItem, evidence });
+    console.log("Source test: PASS (production evidence gate passed; no xAI API call was made).");
     return;
   }
 
@@ -2381,5 +2384,7 @@ main().catch((error) => {
   console.error(`\nERROR: ${error.message}`);
   process.exitCode = 1;
 });
+
+
 
 
