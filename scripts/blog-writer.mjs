@@ -4,10 +4,10 @@
  *
  * Purpose:
  * - Uses the APXN knowledge base as the source of truth for APXN project facts.
- * - Uses xAI Web Search only in bounded verification passes for external/current facts.
- * - Restricts web research to curated official/primary domains.
- * - Generates English-only structured long-form articles with Grok.
- * - Runs generation -> bounded verification -> auto-fix -> bounded re-verification.
+ * - Builds an audited Evidence Pack from curated official/primary sources before drafting external topics.
+ * - Generates English-only articles from the audited Evidence Pack instead of model memory.
+ * - Verifies and auto-fixes the article against the same frozen evidence.
+ * - Keeps APXN-specific facts grounded in the reviewed internal APXN knowledge base.
  * - Runs local quality, risk, duplicate, source and cost checks.
  * - Never auto-publishes risky, unsourced or review-required content.
  * - Keeps private drafts outside the public Git tree.
@@ -45,12 +45,15 @@ const MAX_RECORDED_SOURCES = 12;
 const MAX_CORRECTION_ROUNDS = 2;
 const MAX_PRODUCTION_TOPIC_ATTEMPTS = 3;
 const MAX_TEST_TOPIC_ATTEMPTS = 1;
-const VERIFIER_OUTPUT_TOKEN_CAP = 1_800;
-const INITIAL_VERIFIER_MAX_TURNS = 1;
-const FINAL_VERIFIER_MAX_TURNS = 1;
+const EVIDENCE_OUTPUT_TOKEN_CAP = 1_600;
+const EVIDENCE_AUDIT_OUTPUT_TOKEN_CAP = 1_400;
+const EVIDENCE_RESEARCH_MAX_TURNS = 1;
+const EVIDENCE_AUDIT_MAX_TURNS = 1;
+const VERIFIER_OUTPUT_TOKEN_CAP = 1_200;
 const MIN_EXTERNAL_VERIFIED_CLAIMS = 3;
 const MIN_APXN_VERIFIED_CLAIMS = 2;
 const MIN_REPAIR_BUDGET_USD = 0.012;
+const MAX_EVIDENCE_FACTS = 18;
 
 /* -------------------------------------------------------------------------- */
 /* Utilities                                                                  */
@@ -237,6 +240,19 @@ function domainMatches(hostname, allowedDomain) {
   // forums, community hosts, archives, or marketing sites when only official docs
   // were intended. Add a subdomain explicitly to the research plan when trusted.
   return host === allowed;
+}
+
+function canonicalUrlKey(value) {
+  try {
+    const parsed = new URL(String(value || "").trim());
+    parsed.hash = "";
+    parsed.search = "";
+    let pathname = parsed.pathname.replace(/\/+$/, "");
+    if (!pathname) pathname = "/";
+    return `${parsed.protocol}//${parsed.hostname.toLowerCase().replace(/^www\./, "")}${pathname}`;
+  } catch {
+    return "";
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -610,26 +626,29 @@ function compactApXnContext(knowledge) {
   };
 }
 
-function buildInstructions(config, research) {
+function buildInstructions(config, research, evidencePack = null) {
   const min = Number(config.writer.minimum_words || 1200);
   const target = Number(config.writer.target_words || 1500);
   const max = Number(config.writer.maximum_words || 1900);
 
   const researchRules = research.enabled
     ? `
-EXTERNAL FACTS WILL BE VERIFIED AFTER THE DRAFT:
-- Draft WITHOUT web_search. A separate independent verifier will use current official sources after you finish.
-- Prefer stable educational explanations over volatile metrics, versions, fees, counts, release states or time-sensitive details.
-- When a changing/current fact is genuinely important to the topic, state it cautiously and include it in factual_claims so the verifier can check it.
-- Never invent a precise number, date, version, fee, security recommendation or live feature status merely to make the article sound authoritative.
-- Clearly distinguish historical context from current behavior.
-- Do not place raw citation markup inside the article text; verified source metadata is attached later.
+AUDITED EVIDENCE MODE:
+- The supplied evidence_pack was collected from the configured official sources and independently audited before drafting.
+- Treat evidence_pack as the ONLY authority for external technical, numeric, historical, current-status and security claims in this article.
+- Do not add a number, date, version, fee, speed, count, protocol behavior, architecture claim, security recommendation or current-status claim unless the evidence pack supports it.
+- Every item in factual_claims MUST include evidence_ids pointing to the supporting fact IDs from evidence_pack.
+- If the evidence pack does not support a detail, omit that detail or explain the concept without asserting it as fact.
+- Never substitute model memory for missing evidence.
+- Historical facts must remain clearly historical; current facts must remain current as described by the evidence.
+- Do not place raw citation markup in the article body. Source links are attached later from the Evidence Pack.
 `
     : `
 APXN KNOWLEDGE MODE:
 - Use the supplied reviewed APXN knowledge JSON as the source of truth for APXN facts.
 - Do not use outside memory to override reviewed APXN behavior.
 - If project sources conflict or a claim is marked verify_before_publish/blocked_auto_publish, omit the claim or mark it for correction.
+- For APXN factual_claims, use evidence_ids=["APXN-KNOWLEDGE"] to show that the claim is grounded in the reviewed project knowledge base.
 `;
 
   return `
@@ -654,11 +673,11 @@ WRITING REQUIREMENTS:
 - Include a responsible educational disclaimer for financial/token/presale concepts.
 - Return ONE valid JSON object only; no Markdown fences and no HTML.
 
-For factual_claims, list the important technical/current/project claims that a separate verifier should check. Include numbers, dates, versions, feature status, protocol behavior, security guidance, and named entities when material.
+For factual_claims, list every material technical/current/project claim made in the article, and attach the evidence_ids that support it.
 `.trim();
 }
 
-function buildInput(topic, config, knowledge, manifest, research) {
+function buildInput(topic, config, knowledge, manifest, research, evidencePack = null) {
   const existing = manifest.articles.map((article) => ({
     id: article.id,
     slug: article.slug,
@@ -671,6 +690,7 @@ function buildInput(topic, config, knowledge, manifest, research) {
     {
       current_date: todayISO(),
       apxn_context: research.enabled ? compactApXnContext(knowledge) : knowledge,
+      evidence_pack: research.enabled ? evidencePack : undefined,
       configured_categories: config.categories,
       writer_settings: {
         language: "en",
@@ -805,17 +825,61 @@ function buildArticleSchema(config) {
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["claim", "kind", "time_sensitive"],
+          required: ["claim", "kind", "time_sensitive", "evidence_ids"],
           properties: {
             claim: { type: "string" },
             kind: {
               type: "string",
               enum: ["project", "technical", "numeric", "security", "historical", "current_status", "general"]
             },
-            time_sensitive: { type: "boolean" }
+            time_sensitive: { type: "boolean" },
+            evidence_ids: { type: "array", items: { type: "string" } }
           }
         }
       }
+    }
+  };
+}
+
+function buildEvidencePackSchema() {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["as_of_date", "summary", "sufficient", "facts", "conflicts", "warnings"],
+    properties: {
+      as_of_date: { type: "string" },
+      summary: { type: "string" },
+      sufficient: { type: "boolean" },
+      facts: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["id", "claim", "kind", "temporal_status", "confidence", "source_urls"],
+          properties: {
+            id: { type: "string" },
+            claim: { type: "string" },
+            kind: { type: "string", enum: ["technical", "numeric", "security", "historical", "current_status", "general"] },
+            temporal_status: { type: "string", enum: ["current", "stable", "historical"] },
+            confidence: { type: "string", enum: ["high", "medium", "low"] },
+            source_urls: { type: "array", items: { type: "string" } }
+          }
+        }
+      },
+      conflicts: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["claim", "details", "resolved"],
+          properties: {
+            claim: { type: "string" },
+            details: { type: "string" },
+            resolved: { type: "boolean" }
+          }
+        }
+      },
+      warnings: { type: "array", items: { type: "string" } }
     }
   };
 }
@@ -1025,49 +1089,202 @@ async function callStructuredXAI({
   };
 }
 
-async function generateArticle({ apiKey, model, config, knowledge, manifest, queueItem, research }) {
+function buildEvidenceResearchInstructions(research) {
+  return `
+You are the research librarian for an automated English educational blog.
+Do NOT write an article. Build a compact Evidence Pack from web_search using ONLY these official domains: ${research.allowed_domains.join(", ")}.
+
+RULES:
+- Prefer current official documentation over old announcements, archived pages, community posts, forums, SEO pages or model memory.
+- Every fact must be directly supported by at least one page you actually opened through web_search.
+- source_urls must contain only URLs you actually used from the allowed official domains.
+- Keep only facts that are materially useful to the requested topic.
+- For changing facts (versions, fees, speeds, counts, current architecture, feature state), verify what is current as of ${todayISO()}.
+- If a page is historical, label the fact historical and never present it as current.
+- If official sources conflict and you cannot resolve the conflict confidently, put it in conflicts with resolved=false and OMIT that fact from facts.
+- Avoid fragile live metrics unless they are central to the topic.
+- Do not invent or infer unsupported precise values.
+- Mark sufficient=false if you cannot collect enough authoritative evidence to write a useful article safely.
+- Return JSON only.
+`.trim();
+}
+
+function buildEvidenceResearchInput(queueItem, research) {
+  return JSON.stringify({
+    current_date: todayISO(),
+    topic: queueItem.topic,
+    category: queueItem.category,
+    allowed_domains: research.allowed_domains,
+    minimum_sources: research.minimum_sources,
+    minimum_facts: research.minimum_verified_claims,
+    maximum_facts: MAX_EVIDENCE_FACTS
+  }, null, 2);
+}
+
+function normalizeEvidencePack(raw, research, toolSources = []) {
+  const acceptedToolSources = (Array.isArray(toolSources) ? toolSources : [])
+    .filter((source) => source?.url && research.allowed_domains.some((domain) => domainMatches(source.domain, domain)));
+  const returnedKeys = new Set(acceptedToolSources.map((source) => canonicalUrlKey(source.url)).filter(Boolean));
+
+  const facts = (Array.isArray(raw?.facts) ? raw.facts : [])
+    .map((item, index) => {
+      const id = safeFilename(item?.id || `fact-${index + 1}`).toUpperCase();
+      const sourceUrls = uniqueStrings(item?.source_urls, 6).filter((url) => {
+        const safe = safeUrl(url);
+        if (!safe) return false;
+        if (!research.allowed_domains.some((domain) => domainMatches(hostnameOf(safe), domain))) return false;
+        const key = canonicalUrlKey(safe);
+        return key && returnedKeys.has(key);
+      });
+      return {
+        id,
+        claim: normalizeSpace(item?.claim),
+        kind: ["technical", "numeric", "security", "historical", "current_status", "general"].includes(item?.kind)
+          ? item.kind
+          : "general",
+        temporal_status: ["current", "stable", "historical"].includes(item?.temporal_status)
+          ? item.temporal_status
+          : "stable",
+        confidence: ["high", "medium", "low"].includes(item?.confidence) ? item.confidence : "low",
+        source_urls: sourceUrls
+      };
+    })
+    .filter((item) => item.claim && item.confidence !== "low" && item.source_urls.length > 0)
+    .slice(0, MAX_EVIDENCE_FACTS);
+
+  const conflicts = (Array.isArray(raw?.conflicts) ? raw.conflicts : [])
+    .map((item) => ({
+      claim: normalizeSpace(item?.claim),
+      details: normalizeSpace(item?.details),
+      resolved: item?.resolved === true
+    }))
+    .filter((item) => item.claim || item.details);
+
+  const usedUrls = new Set();
+  for (const fact of facts) {
+    for (const url of fact.source_urls) usedUrls.add(canonicalUrlKey(url));
+  }
+  const sources = acceptedToolSources.filter((source) => usedUrls.has(canonicalUrlKey(source.url)));
+
+  return {
+    as_of_date: normalizeSpace(raw?.as_of_date || todayISO()),
+    summary: normalizeSpace(raw?.summary),
+    sufficient: raw?.sufficient === true,
+    facts,
+    conflicts,
+    warnings: uniqueStrings(raw?.warnings, 20),
+    sources,
+    server_side_tools_used: 0
+  };
+}
+
+function evidencePackPasses(pack, research) {
+  if (!research.enabled) return true;
+  if (!pack || pack.sufficient !== true) return false;
+  if (pack.facts.length < Number(research.minimum_verified_claims || 1)) return false;
+  if (pack.sources.length < Number(research.minimum_sources || 1)) return false;
+  if (pack.conflicts.some((item) => item.resolved !== true)) return false;
+  if (pack.facts.some((fact) => fact.source_urls.length === 0 || fact.confidence === "low")) return false;
+  return true;
+}
+
+async function researchEvidence({ apiKey, model, config, queueItem, research }) {
   return callStructuredXAI({
     apiKey,
     model,
-    instructions: buildInstructions(config, research),
-    input: buildInput(queueItem, config, knowledge, manifest, research),
+    instructions: buildEvidenceResearchInstructions(research),
+    input: buildEvidenceResearchInput(queueItem, research),
     config,
     research,
+    schema: buildEvidencePackSchema(),
+    schemaName: "apxn_external_evidence_pack",
+    maxOutputTokens: EVIDENCE_OUTPUT_TOKEN_CAP,
+    useWebSearch: true,
+    maxTurns: EVIDENCE_RESEARCH_MAX_TURNS
+  });
+}
+
+function buildEvidenceAuditInstructions(research) {
+  return `
+You are the independent Evidence Pack auditor for an automated blog.
+Use web_search ONLY on these official domains: ${research.allowed_domains.join(", ")}.
+Do NOT write an article.
+
+Audit the supplied candidate Evidence Pack against current official documentation as of ${todayISO()}.
+- Return a REPLACEMENT Evidence Pack, not commentary.
+- Keep a fact only if you directly verified it from a page you opened in this audit.
+- Correct stale wording, old names, outdated metrics and historical/current confusion.
+- Remove any fact you cannot directly support.
+- source_urls must be URLs you actually used in this audit.
+- If official evidence conflicts and the conflict cannot be resolved, record unresolved conflict and omit the disputed fact.
+- Prefer stable facts; include volatile facts only when central to the topic and clearly current.
+- Mark sufficient=false if the remaining audited facts are not enough for a useful accurate article.
+Return JSON only.
+`.trim();
+}
+
+async function auditEvidence({ apiKey, model, config, queueItem, research, evidencePack }) {
+  return callStructuredXAI({
+    apiKey,
+    model,
+    instructions: buildEvidenceAuditInstructions(research),
+    input: JSON.stringify({
+      current_date: todayISO(),
+      topic: queueItem.topic,
+      category: queueItem.category,
+      allowed_domains: research.allowed_domains,
+      candidate_evidence_pack: evidencePack
+    }, null, 2),
+    config,
+    research,
+    schema: buildEvidencePackSchema(),
+    schemaName: "apxn_audited_evidence_pack",
+    maxOutputTokens: EVIDENCE_AUDIT_OUTPUT_TOKEN_CAP,
+    useWebSearch: true,
+    maxTurns: EVIDENCE_AUDIT_MAX_TURNS
+  });
+}
+
+async function generateArticle({ apiKey, model, config, knowledge, manifest, queueItem, research, evidencePack }) {
+  return callStructuredXAI({
+    apiKey,
+    model,
+    instructions: buildInstructions(config, research, evidencePack),
+    input: buildInput(queueItem, config, knowledge, manifest, research, evidencePack),
+    config,
+    research: { ...research, enabled: false },
     schema: buildArticleSchema(config),
     schemaName: "apxn_blog_article",
     maxOutputTokens: outputTokenLimit(config),
-    // Cost control: drafting never searches the web. Current facts are checked
-    // by the independent verifier below, which is much cheaper than letting
-    // both the writer and verifier run agentic web-search loops.
     useWebSearch: false
   });
 }
 
 function buildVerifierInstructions(research) {
   const sourceRule = research.enabled
-    ? `Use web_search and only the configured official domains. Current documentation outranks blogs, memory, forum posts, and historical pages. Verify changing facts against what is current now.`
+    ? `Use ONLY the supplied audited evidence_pack. Do not browse the web and do not use model memory to supply missing facts.`
     : `Use only the supplied reviewed APXN knowledge base. Do not use outside assumptions to override it.`;
 
   return `
 You are an independent factual verifier. Do NOT rewrite the article.
 ${sourceRule}
 
-Check all material factual claims, especially:
+Check every material factual claim, especially:
 - numbers, percentages, dates, versions, limits, fees, speeds, block times, counts and defaults;
 - current/live/planned/deprecated feature status;
 - protocol/network/product names and architecture;
 - wallet, authentication and security guidance;
-- claims using words such as current, now, latest, today, always, never, guaranteed or typically;
+- claims using current, now, latest, today, always, never, guaranteed or typically;
 - APXN project claims against the supplied reviewed knowledge when in APXN mode.
 
-Historical facts are allowed only when clearly described as historical. If current and historical sources conflict, current official documentation wins.
-A claim is "verified" only when the available authoritative evidence directly supports the wording.
-If wording is too broad, absolute, outdated, misleading or unsupported, create an issue with a precise correction or instruct removal.
+In audited-evidence mode, a claim is verified only if the Evidence Pack directly supports the wording. Use the supporting fact source_urls in checked_claims. If a claim is missing from the evidence, mark it uncertain and request removal rather than filling the gap from memory.
+Historical facts are allowed only when clearly described as historical.
+If wording is too broad, absolute, misleading or unsupported, create an issue with a precise correction or instruct removal.
 Return JSON only.
 `.trim();
 }
 
-function buildVerifierInput({ article, queueItem, knowledge, research }) {
+function buildVerifierInput({ article, queueItem, knowledge, research, evidencePack }) {
   return JSON.stringify({
     current_date: todayISO(),
     topic: queueItem.topic,
@@ -1076,41 +1293,38 @@ function buildVerifierInput({ article, queueItem, knowledge, research }) {
       allowed_domains: research.allowed_domains,
       minimum_verified_claims: research.minimum_verified_claims
     },
+    audited_evidence_pack: research.enabled ? evidencePack : undefined,
     apxn_knowledge_base: research.enabled ? undefined : knowledge,
     article
   }, null, 2);
 }
 
 async function verifyArticle({
-  apiKey, model, config, article, queueItem, knowledge, research,
-  maxTurns = INITIAL_VERIFIER_MAX_TURNS
+  apiKey, model, config, article, queueItem, knowledge, research, evidencePack
 }) {
   return callStructuredXAI({
     apiKey,
     model,
     instructions: buildVerifierInstructions(research),
-    input: buildVerifierInput({ article, queueItem, knowledge, research }),
+    input: buildVerifierInput({ article, queueItem, knowledge, research, evidencePack }),
     config,
-    research,
+    research: { ...research, enabled: false },
     schema: buildVerificationSchema(),
     schemaName: "apxn_article_verification",
     maxOutputTokens: VERIFIER_OUTPUT_TOKEN_CAP,
-    useWebSearch: research.enabled === true,
-    // One agentic turn can contain multiple parallel web searches. Limiting
-    // turns prevents the verifier from repeatedly browsing the same docs and
-    // keeps the automatic pipeline inside the per-article budget.
-    maxTurns: research.enabled ? maxTurns : null
+    useWebSearch: false
   });
 }
 
-function buildCorrectionInstructions(config) {
+function buildCorrectionInstructions(config, research) {
   return `
 You are the APXN Blog correction editor. Rewrite the supplied article JSON so every verifier issue and local quality blocker is resolved.
 - Preserve the same topic and English-only language.
 - Keep the article between ${config.writer.minimum_words} and ${config.writer.maximum_words} words when practical.
 - Remove unsupported or uncertain claims instead of guessing.
 - Apply the verifier's precise correction when provided.
-- Do not introduce new changing numbers, dates, versions, fees, current-status claims, security absolutes, or named listings unless they are explicitly supported in the verifier report.
+- ${research.enabled ? "Use ONLY the supplied audited Evidence Pack for external facts and preserve valid evidence_ids." : "Use only the supplied reviewed APXN knowledge base for APXN facts."}
+- Do not introduce new changing numbers, dates, versions, fees, current-status claims, security absolutes, or named listings that are not in the allowed evidence.
 - Preserve APXN terminology and safety rules.
 - Keep at least 6 substantive sections and 2 FAQ entries.
 - Set requires_manual_review=false only when all supplied issues are actually resolved.
@@ -1119,7 +1333,7 @@ You are the APXN Blog correction editor. Rewrite the supplied article JSON so ev
 }
 
 async function correctArticle({
-  apiKey, model, config, article, verification, quality, queueItem, knowledge, research
+  apiKey, model, config, article, verification, quality, queueItem, knowledge, research, evidencePack
 }) {
   const input = JSON.stringify({
     current_date: todayISO(),
@@ -1128,21 +1342,20 @@ async function correctArticle({
     verifier_report: verification,
     local_quality_errors: quality.errors,
     local_review_reasons: article.review_reasons,
+    audited_evidence_pack: research.enabled ? evidencePack : undefined,
     apxn_knowledge_base: research.enabled ? undefined : knowledge
   }, null, 2);
 
   return callStructuredXAI({
     apiKey,
     model,
-    instructions: buildCorrectionInstructions(config),
+    instructions: buildCorrectionInstructions(config, research),
     input,
     config,
     research: { ...research, enabled: false },
     schema: buildArticleSchema(config),
     schemaName: "apxn_corrected_article",
     maxOutputTokens: outputTokenLimit(config),
-    // Corrections use the verifier's evidence and precise corrections. They do
-    // not perform another search; the corrected result is re-verified after.
     useWebSearch: false
   });
 }
@@ -1193,7 +1406,8 @@ function normalizeGeneratedArticle(raw, topic, config) {
     .map((item) => ({
       claim: normalizeSpace(item?.claim),
       kind: normalizeSpace(item?.kind || "general"),
-      time_sensitive: item?.time_sensitive === true
+      time_sensitive: item?.time_sensitive === true,
+      evidence_ids: uniqueStrings(item?.evidence_ids, 12)
     }))
     .filter((item) => item.claim)
     .slice(0, 40);
@@ -1276,10 +1490,9 @@ function normalizeVerificationReport(raw, research) {
   };
 }
 
-function verificationPasses(report, research) {
+function verificationPasses(report, research, evidencePack = null) {
   if (!report || report.verdict !== "pass" || report.confidence === "low") return false;
   if (report.issues.length > 0) return false;
-  if (research.enabled && Number(report.server_side_tools_used || 0) < 1) return false;
 
   const bad = report.checked_claims.filter((item) =>
     ["incorrect", "outdated", "uncertain"].includes(item.status)
@@ -1290,7 +1503,12 @@ function verificationPasses(report, research) {
   if (verifiedClaims.length < Number(research.minimum_verified_claims || 1)) return false;
 
   if (research.enabled) {
-    const sourcedVerified = verifiedClaims.filter((item) => item.source_urls.length > 0);
+    const evidenceSourceKeys = new Set(
+      (evidencePack?.sources || []).map((source) => canonicalUrlKey(source.url)).filter(Boolean)
+    );
+    const sourcedVerified = verifiedClaims.filter((item) =>
+      item.source_urls.some((url) => evidenceSourceKeys.has(canonicalUrlKey(url)))
+    );
     if (sourcedVerified.length < Number(research.minimum_verified_claims || 1)) return false;
   }
 
@@ -1447,7 +1665,7 @@ function applyResearchChecks(article, research) {
   article.review_reasons = uniqueStrings(article.review_reasons, 30);
 }
 
-function runQualityChecks(article, config, manifest, research) {
+function runQualityChecks(article, config, manifest, research, evidencePack = null) {
   const errors = [];
   const warnings = [];
 
@@ -1479,6 +1697,23 @@ function runQualityChecks(article, config, manifest, research) {
 
   if (containsArabicScript(plain)) {
     errors.push("Arabic-script text was detected. APXN Blog publishing is English-only.");
+  }
+
+  if (research.enabled) {
+    const validEvidenceIds = new Set((evidencePack?.facts || []).map((fact) => fact.id));
+    if (article.factual_claims.length < Number(research.minimum_verified_claims || 1)) {
+      errors.push("External article did not declare enough material factual claims for evidence checking.");
+    }
+    for (const claim of article.factual_claims) {
+      if (!Array.isArray(claim.evidence_ids) || claim.evidence_ids.length === 0) {
+        errors.push(`Factual claim has no evidence_ids: ${claim.claim}`);
+        continue;
+      }
+      const unknown = claim.evidence_ids.filter((id) => !validEvidenceIds.has(id));
+      if (unknown.length > 0) {
+        errors.push(`Factual claim references unknown evidence IDs (${unknown.join(", ")}): ${claim.claim}`);
+      }
+    }
   }
 
   if (words < minimum) {
@@ -2185,31 +2420,124 @@ async function processTopic({
     sources: [],
     server_side_tools_used: 0
   };
+  let evidencePack = null;
 
   console.log("\nTopic attempt");
   console.log("-------------");
   console.log(`Topic: ${queueItem.topic}`);
   console.log(`Category: ${queueItem.category}`);
   console.log(`Research mode: ${research.mode}`);
-  if (research.enabled) {
-    console.log(`Allowed domains: ${research.allowed_domains.join(", ")}`);
-    console.log(`Verifier web-search max turns: ${INITIAL_VERIFIER_MAX_TURNS}`);
-  }
 
   ensureBudgetAvailable(config, costLedger);
-  console.log("Generating article...");
 
-  console.log(
-    research.enabled
-      ? "Draft web search: disabled; current facts will be checked by the verifier."
-      : "Draft web search: not required for reviewed APXN knowledge mode."
-  );
+  if (research.enabled) {
+    console.log(`Allowed domains: ${research.allowed_domains.join(", ")}`);
+    console.log(`Evidence research max turns: ${EVIDENCE_RESEARCH_MAX_TURNS}`);
+    console.log("Building official Evidence Pack...");
 
+    const evidenceResearch = await researchEvidence({
+      apiKey, model, config, queueItem, research
+    });
+    let candidateEvidence = normalizeEvidencePack(
+      evidenceResearch.generated,
+      research,
+      evidenceResearch.sources
+    );
+    candidateEvidence.server_side_tools_used = evidenceResearch.serverSideToolsUsed;
+
+    let costEntry = recordCost({
+      ledger: costLedger,
+      response: evidenceResearch.response,
+      model,
+      topic: queueItem.topic,
+      articleSlug: safeFilename(queueItem.topic),
+      date,
+      research: {
+        ...research,
+        sources: candidateEvidence.sources,
+        server_side_tools_used: evidenceResearch.serverSideToolsUsed
+      },
+      stage: "evidence_research"
+    });
+    costEntries.push(costEntry);
+    writeJson(PATHS.costs, costLedger);
+
+    if (!canContinueTopicBudget(config, costEntries)) {
+      markTopicRejected({
+        manifest,
+        bank: topicBank,
+        queueItem,
+        date,
+        reasons: [`Evidence research cost reached $${topicSpend(costEntries).toFixed(4)} before evidence audit.`]
+      });
+      return { success: false, reason: "budget_after_evidence_research" };
+    }
+
+    console.log("Auditing Evidence Pack independently...");
+    const evidenceAudit = await auditEvidence({
+      apiKey, model, config, queueItem, research, evidencePack: candidateEvidence
+    });
+    evidencePack = normalizeEvidencePack(
+      evidenceAudit.generated,
+      research,
+      evidenceAudit.sources
+    );
+    evidencePack.server_side_tools_used = evidenceAudit.serverSideToolsUsed;
+
+    costEntry = recordCost({
+      ledger: costLedger,
+      response: evidenceAudit.response,
+      model,
+      topic: queueItem.topic,
+      articleSlug: safeFilename(queueItem.topic),
+      date,
+      research: {
+        ...research,
+        sources: evidencePack.sources,
+        server_side_tools_used: evidenceAudit.serverSideToolsUsed
+      },
+      stage: "evidence_audit"
+    });
+    costEntries.push(costEntry);
+    writeJson(PATHS.costs, costLedger);
+
+    research.sources = evidencePack.sources;
+    research.server_side_tools_used =
+      Number(evidenceResearch.serverSideToolsUsed || 0) + Number(evidenceAudit.serverSideToolsUsed || 0);
+
+    console.log(`Audited evidence facts: ${evidencePack.facts.length}`);
+    console.log(`Audited evidence sources: ${evidencePack.sources.length}`);
+    console.log(`Unresolved evidence conflicts: ${evidencePack.conflicts.filter((item) => !item.resolved).length}`);
+
+    if (!evidencePackPasses(evidencePack, research)) {
+      const reasons = [
+        "Official Evidence Pack did not pass the automated sufficiency/audit gate.",
+        ...evidencePack.warnings,
+        ...evidencePack.conflicts.filter((item) => !item.resolved).map((item) => item.details || item.claim)
+      ].filter(Boolean);
+      markTopicRejected({ manifest, bank: topicBank, queueItem, date, reasons });
+      console.warn("Topic skipped because trustworthy audited evidence was insufficient.");
+      return { success: false, reason: "evidence_failed", evidencePack };
+    }
+  } else {
+    console.log("APXN knowledge mode: using the reviewed internal project knowledge base.");
+  }
+
+  if (!canContinueTopicBudget(config, costEntries)) {
+    markTopicRejected({
+      manifest,
+      bank: topicBank,
+      queueItem,
+      date,
+      reasons: [`Topic cost reached $${topicSpend(costEntries).toFixed(4)} before article generation.`]
+    });
+    return { success: false, reason: "budget_before_generation" };
+  }
+
+  console.log("Generating article from frozen evidence...");
   const generation = await generateArticle({
-    apiKey, model, config, knowledge, manifest, queueItem, research
+    apiKey, model, config, knowledge, manifest, queueItem, research, evidencePack
   });
-  research.sources = [];
-  research.server_side_tools_used = 0;
 
   let article = normalizeGeneratedArticle(generation.generated, queueItem, config);
   let costEntry = recordCost({
@@ -2222,7 +2550,7 @@ async function processTopic({
     research: {
       ...research,
       enabled: false,
-      mode: research.enabled ? "draft_without_web_search" : research.mode,
+      mode: research.enabled ? "generation_from_audited_evidence" : research.mode,
       sources: [],
       server_side_tools_used: 0
     },
@@ -2231,7 +2559,7 @@ async function processTopic({
   costEntries.push(costEntry);
   writeJson(PATHS.costs, costLedger);
 
-  let quality = runQualityChecks(article, config, manifest, research);
+  let quality = runQualityChecks(article, config, manifest, research, evidencePack);
 
   if (!canContinueTopicBudget(config, costEntries)) {
     markTopicRejected({
@@ -2239,22 +2567,17 @@ async function processTopic({
       bank: topicBank,
       queueItem,
       date,
-      reasons: [`Topic cost reached $${topicSpend(costEntries).toFixed(4)} before independent verification.`]
+      reasons: [`Topic cost reached $${topicSpend(costEntries).toFixed(4)} before article verification.`]
     });
     return { success: false, reason: "budget_after_generation" };
   }
 
-  console.log("Running independent verification...");
+  console.log("Verifying article against the frozen Evidence Pack...");
   const verificationResult = await verifyArticle({
-    apiKey, model, config, article, queueItem, knowledge, research
+    apiKey, model, config, article, queueItem, knowledge, research, evidencePack
   });
   let verification = normalizeVerificationReport(verificationResult.generated, research);
-  verification.server_side_tools_used = verificationResult.serverSideToolsUsed;
-  research.sources = mergeSources(
-    research.sources,
-    combinedVerificationSources(verificationResult.sources, verification)
-  );
-  research.server_side_tools_used += verificationResult.serverSideToolsUsed;
+  verification.server_side_tools_used = 0;
 
   costEntry = recordCost({
     ledger: costLedger,
@@ -2263,13 +2586,13 @@ async function processTopic({
     topic: queueItem.topic,
     articleSlug: article.slug,
     date,
-    research,
+    research: { ...research, enabled: false, sources: [], server_side_tools_used: 0 },
     stage: "verification_0"
   });
   costEntries.push(costEntry);
   writeJson(PATHS.costs, costLedger);
 
-  let verified = verificationPasses(verification, research) &&
+  let verified = verificationPasses(verification, research, evidencePack) &&
     quality.errors.length === 0 &&
     article.requires_manual_review !== true;
 
@@ -2279,7 +2602,7 @@ async function processTopic({
       break;
     }
 
-    console.log(`Auto-correction round ${round}...`);
+    console.log(`Auto-correction round ${round} from frozen evidence...`);
     const correction = await correctArticle({
       apiKey,
       model,
@@ -2289,7 +2612,8 @@ async function processTopic({
       quality,
       queueItem,
       knowledge,
-      research
+      research,
+      evidencePack
     });
 
     article = normalizeGeneratedArticle(correction.generated, queueItem, config);
@@ -2300,28 +2624,22 @@ async function processTopic({
       topic: queueItem.topic,
       articleSlug: article.slug,
       date,
-      research: { ...research, enabled: false, sources: [] },
+      research: { ...research, enabled: false, sources: [], server_side_tools_used: 0 },
       stage: `correction_${round}`
     });
     costEntries.push(costEntry);
     writeJson(PATHS.costs, costLedger);
 
-    quality = runQualityChecks(article, config, manifest, research);
+    quality = runQualityChecks(article, config, manifest, research, evidencePack);
 
     if (!canContinueTopicBudget(config, costEntries)) break;
 
-    console.log(`Re-verification round ${round}...`);
+    console.log(`Re-verification round ${round} against the same Evidence Pack...`);
     const recheck = await verifyArticle({
-      apiKey, model, config, article, queueItem, knowledge, research,
-      maxTurns: FINAL_VERIFIER_MAX_TURNS
+      apiKey, model, config, article, queueItem, knowledge, research, evidencePack
     });
     verification = normalizeVerificationReport(recheck.generated, research);
-    verification.server_side_tools_used = recheck.serverSideToolsUsed;
-    research.sources = mergeSources(
-      research.sources,
-      combinedVerificationSources(recheck.sources, verification)
-    );
-    research.server_side_tools_used += recheck.serverSideToolsUsed;
+    verification.server_side_tools_used = 0;
 
     costEntry = recordCost({
       ledger: costLedger,
@@ -2330,13 +2648,13 @@ async function processTopic({
       topic: queueItem.topic,
       articleSlug: article.slug,
       date,
-      research,
+      research: { ...research, enabled: false, sources: [], server_side_tools_used: 0 },
       stage: `verification_${round}`
     });
     costEntries.push(costEntry);
     writeJson(PATHS.costs, costLedger);
 
-    verified = verificationPasses(verification, research) &&
+    verified = verificationPasses(verification, research, evidencePack) &&
       quality.errors.length === 0 &&
       article.requires_manual_review !== true;
   }
@@ -2357,6 +2675,7 @@ async function processTopic({
   console.log(`Verified claims: ${verification.checked_claims.filter((item) => item.status === "verified").length}`);
   console.log(`Verification issues: ${verification.issues.length}`);
   console.log(`Accepted sources: ${research.sources.length}`);
+  if (evidencePack) console.log(`Frozen evidence facts: ${evidencePack.facts.length}`);
   console.log(`Topic pipeline cost: $${topicCostUsd.toFixed(6)}`);
 
   if (!verified) {
@@ -2389,6 +2708,7 @@ async function processTopic({
       model,
       pipeline_cost_usd: topicCostUsd,
       quality,
+      evidence_pack: evidencePack,
       verification,
       research,
       article
@@ -2396,8 +2716,8 @@ async function processTopic({
     writeText(paths.html, html);
 
     markTopicRejected({ manifest, bank: topicBank, queueItem, date, reasons });
-    console.warn("Topic rejected after automated correction/verification. Moving to the next topic when allowed.");
-    return { success: false, reason: "verification_failed", article, verification };
+    console.warn("Topic rejected after automated evidence/verification pipeline. Moving to the next topic when allowed.");
+    return { success: false, reason: "verification_failed", article, verification, evidencePack };
   }
 
   article.requires_manual_review = false;
@@ -2420,6 +2740,7 @@ async function processTopic({
     provider: "xai",
     pipeline_cost_usd: topicCostUsd,
     cost_entries: costEntries,
+    evidence_pack: evidencePack,
     research: {
       mode: research.mode,
       required: research.enabled,
@@ -2488,7 +2809,7 @@ async function processTopic({
 
   console.log(`Article ${manifestRecord.id} passed automated verification.`);
   console.log(`Status: ${manifestRecord.status}`);
-  return { success: true, published, manifestRecord, article, verification };
+  return { success: true, published, manifestRecord, article, verification, evidencePack };
 }
 
 async function main() {
@@ -2517,7 +2838,7 @@ async function main() {
     ? MAX_PRODUCTION_TOPIC_ATTEMPTS
     : MAX_TEST_TOPIC_ATTEMPTS;
 
-  console.log("APXN Blog AI Writer + Auto Verifier");
+  console.log("APXN Blog AI Writer + Audited Evidence Pipeline");
   console.log("-----------------------------------");
   console.log("Language: English only");
   console.log(`Model: ${model}`);
