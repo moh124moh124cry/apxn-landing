@@ -21,6 +21,12 @@ on:
         default: false
         type: boolean
 
+      source_test:
+        description: "Test direct official sources without calling xAI"
+        required: false
+        default: false
+        type: boolean
+
   schedule:
     - cron: "0 8 * * 1"
     - cron: "0 8 * * 3"
@@ -80,22 +86,27 @@ jobs:
             COUNT=$((COUNT + 1))
           fi
 
+          if [ "${{ inputs.source_test }}" = "true" ]; then
+            COUNT=$((COUNT + 1))
+          fi
+
           if [ "$COUNT" -gt 1 ]; then
             echo "Choose only one manual mode:"
             echo "- sync_only"
             echo "- planner_only"
             echo "- writer_test"
+            echo "- source_test"
             exit 1
           fi
 
       - name: Replenish topic queue
         id: planner
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.sync_only }}
+        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.source_test) }}
         run: node scripts/blog-planner.mjs
 
       - name: Check automation readiness
         id: gate
-        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only && !inputs.writer_test) }}
+        if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test) }}
         shell: bash
         run: |
           AUTO_GENERATE="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('data/blog-config.json','utf8'));process.stdout.write(String(c?.automation?.auto_generate_enabled===true));")"
@@ -128,13 +139,22 @@ jobs:
 
       - name: Sync blog only
         id: sync_only
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && !inputs.planner_only && !inputs.writer_test }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_only && !inputs.planner_only && !inputs.writer_test && !inputs.source_test }}
         continue-on-error: true
         run: node scripts/blog-sync.mjs
 
+      - name: Test direct official sources
+        id: source_test
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_test && !inputs.sync_only && !inputs.planner_only && !inputs.writer_test }}
+        continue-on-error: true
+        env:
+          BLOG_SOURCE_TEST: "true"
+          BLOG_PUBLISH: "false"
+        run: node scripts/blog-writer.mjs
+
       - name: Generate private Grok test draft
         id: writer_test
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && !inputs.sync_only && !inputs.planner_only }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && !inputs.sync_only && !inputs.planner_only && !inputs.source_test }}
         continue-on-error: true
         env:
           BLOG_PUBLISH: "false"
@@ -243,6 +263,13 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
+      - name: Fail if source test failed
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_test && steps.source_test.outcome == 'failure' }}
+        run: |
+          echo "The direct official source test failed."
+          echo "No xAI API request was required for this test."
+          exit 1
+
       - name: Fail if writer test failed
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.writer_test && steps.writer_test.outcome == 'failure' }}
         run: |
@@ -267,3 +294,4 @@ jobs:
         run: |
           echo "Manual blog synchronization failed."
           exit 1
+
