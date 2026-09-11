@@ -160,6 +160,114 @@
                 transparent;
         }
 
+        .coin-logo-wrap {
+            width:
+                116px;
+            height:
+                116px;
+            margin:
+                0 auto 1.25rem;
+            padding:
+                7px;
+            border-radius:
+                9999px;
+            border:
+                1px solid
+                rgba(
+                    250,
+                    204,
+                    21,
+                    0.48
+                );
+            background:
+                radial-gradient(
+                    circle at 35% 25%,
+                    rgba(
+                        253,
+                        224,
+                        71,
+                        0.18
+                    ),
+                    rgba(
+                        15,
+                        23,
+                        42,
+                        0.92
+                    ) 58%,
+                    rgba(
+                        2,
+                        6,
+                        23,
+                        0.98
+                    ) 100%
+                );
+            box-shadow:
+                0 0 0 7px
+                    rgba(
+                        250,
+                        204,
+                        21,
+                        0.045
+                    ),
+                0 18px 45px
+                    rgba(
+                        245,
+                        158,
+                        11,
+                        0.18
+                    ),
+                inset
+                0 1px 0
+                    rgba(
+                        255,
+                        255,
+                        255,
+                        0.08
+                    );
+        }
+
+        .coin-logo {
+            width:
+                100%;
+            height:
+                100%;
+            display:
+                block;
+            object-fit:
+                cover;
+            border-radius:
+                9999px;
+        }
+
+        .points-logo {
+            width:
+                34px;
+            height:
+                34px;
+            flex:
+                0 0 auto;
+            border-radius:
+                9999px;
+            border:
+                1px solid
+                rgba(
+                    250,
+                    204,
+                    21,
+                    0.35
+                );
+            object-fit:
+                cover;
+            box-shadow:
+                0 0 20px
+                    rgba(
+                        245,
+                        158,
+                        11,
+                        0.14
+                    );
+        }
+
         .panel-3d {
             position:
                 relative;
@@ -698,6 +806,19 @@
                 OFFICIAL APXN POINTS ACTIVITY CENTER
             </span>
 
+            <div
+                class="coin-logo-wrap"
+                aria-label="APXN logo"
+            >
+                <img
+                    src="logo2%20(1).png"
+                    alt="APXN"
+                    class="coin-logo"
+                    width="116"
+                    height="116"
+                >
+            </div>
+
             <h1
                 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-4"
             >
@@ -810,9 +931,21 @@
                         class="hidden-section rounded-2xl border border-yellow-500/25 bg-yellow-500/5 px-5 py-4 min-w-[190px]"
                     >
                         <div
-                            class="text-[10px] uppercase tracking-widest text-gray-500 font-black"
+                            class="flex items-center gap-3 mb-2"
                         >
-                            APXN Points
+                            <img
+                                src="logo2%20(1).png"
+                                alt="APXN"
+                                class="points-logo"
+                                width="34"
+                                height="34"
+                            >
+
+                            <div
+                                class="text-[10px] uppercase tracking-widest text-gray-500 font-black"
+                            >
+                                APXN Points
+                            </div>
                         </div>
 
                         <div
