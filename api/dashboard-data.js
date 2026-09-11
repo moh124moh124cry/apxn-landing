@@ -244,7 +244,7 @@ function verifySession(
 ) {
     if (
         typeof token !==
-            'string' ||
+        'string' ||
         !token ||
         token.length >
             4096
@@ -453,6 +453,22 @@ async function readJson(
 }
 
 
+function supabaseHeaders(
+    config
+) {
+    return {
+        apikey:
+            config.supabaseKey,
+
+        Authorization:
+            `Bearer ${config.supabaseKey}`,
+
+        Accept:
+            'application/json'
+    };
+}
+
+
 async function getMiningUser(
     config,
     telegramId
@@ -499,17 +515,10 @@ async function getMiningUser(
                 method:
                     'GET',
 
-                headers: {
-                    apikey:
+                headers:
+                    supabaseHeaders(
                         config
-                            .supabaseKey,
-
-                    Authorization:
-                        `Bearer ${config.supabaseKey}`,
-
-                    Accept:
-                        'application/json'
-                }
+                    )
             }
         );
 
@@ -524,12 +533,12 @@ async function getMiningUser(
         !response.ok
     ) {
         console.error(
-            'dashboard-data Supabase error:',
+            'dashboard-data users error:',
             response.status
         );
 
         throw new Error(
-            'SUPABASE_REQUEST_FAILED'
+            'SUPABASE_USERS_REQUEST_FAILED'
         );
     }
 
@@ -546,6 +555,87 @@ async function getMiningUser(
 
 
     return data[0];
+}
+
+
+async function getUserAllocations(
+    config,
+    telegramId
+) {
+    const url =
+        new URL(
+            `${config.supabaseUrl}/rest/v1/user_allocations`
+        );
+
+
+    url.searchParams.set(
+        'select',
+
+        [
+            'id',
+            'allocation_type',
+            'amount',
+            'asset_symbol',
+            'status',
+            'note',
+            'created_at',
+            'updated_at'
+        ].join(',')
+    );
+
+
+    url.searchParams.set(
+        'telegram_id',
+        `eq.${telegramId}`
+    );
+
+
+    url.searchParams.set(
+        'order',
+        'created_at.desc'
+    );
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                method:
+                    'GET',
+
+                headers:
+                    supabaseHeaders(
+                        config
+                    )
+            }
+        );
+
+
+    const data =
+        await readJson(
+            response
+        );
+
+
+    if (
+        !response.ok
+    ) {
+        console.error(
+            'dashboard-data allocations error:',
+            response.status
+        );
+
+        throw new Error(
+            'SUPABASE_ALLOCATIONS_REQUEST_FAILED'
+        );
+    }
+
+
+    return Array.isArray(
+        data
+    )
+        ? data
+        : [];
 }
 
 
@@ -574,6 +664,25 @@ function cleanUsername(
             /^@/,
             ''
         );
+}
+
+
+function cleanText(
+    value
+) {
+    if (
+        typeof value !==
+        'string'
+    ) {
+        return null;
+    }
+
+
+    const text =
+        value.trim();
+
+
+    return text || null;
 }
 
 
@@ -625,6 +734,78 @@ function publicUser(
 
         lastClaim:
             row.last_claim ??
+            null
+    };
+}
+
+
+function isIcoAllocation(
+    row
+) {
+    const type =
+        String(
+            row?.allocation_type ??
+            ''
+        )
+            .trim()
+            .toLowerCase();
+
+
+    if (!type) {
+        return false;
+    }
+
+
+    return (
+        type.includes('ico') ||
+        type.includes('voucher') ||
+        type.includes('ticket')
+    );
+}
+
+
+function publicIcoVoucher(
+    row
+) {
+    if (!row) {
+        return null;
+    }
+
+
+    return {
+        allocationType:
+            cleanText(
+                row.allocation_type
+            ) ||
+            'ICO Voucher',
+
+        amount:
+            row.amount ??
+            null,
+
+        assetSymbol:
+            cleanText(
+                row.asset_symbol
+            ) ||
+            'APXN',
+
+        status:
+            cleanText(
+                row.status
+            ) ||
+            'reserved',
+
+        note:
+            cleanText(
+                row.note
+            ),
+
+        createdAt:
+            row.created_at ??
+            null,
+
+        updatedAt:
+            row.updated_at ??
             null
     };
 }
@@ -750,6 +931,19 @@ export default async function handler(
         }
 
 
+        const allocations =
+            await getUserAllocations(
+                config,
+                session.telegramId
+            );
+
+
+        const icoAllocation =
+            allocations.find(
+                isIcoAllocation
+            ) || null;
+
+
         return json(
             res,
             200,
@@ -760,6 +954,11 @@ export default async function handler(
                 user:
                     publicUser(
                         user
+                    ),
+
+                icoVoucher:
+                    publicIcoVoucher(
+                        icoAllocation
                     )
             }
         );
@@ -782,3 +981,4 @@ export default async function handler(
         );
     }
 }
+
