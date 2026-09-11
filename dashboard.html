@@ -219,6 +219,110 @@
                 </div>
             </div>
 
+            <!-- ICO VOUCHER -->
+            <section
+                id="ico-voucher-section"
+                class="hidden-section mb-6"
+            >
+                <div class="relative overflow-hidden rounded-3xl border border-amber-400/40 bg-gradient-to-br from-amber-500/10 via-slate-900 to-orange-500/10 shadow-[0_0_40px_rgba(245,158,11,0.10)]">
+                    <div class="absolute -top-20 -right-20 w-56 h-56 rounded-full bg-amber-400/10 blur-3xl pointer-events-none"></div>
+
+                    <div class="relative p-6 md:p-8">
+                        <div class="flex flex-col md:flex-row md:items-start justify-between gap-5 mb-7">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 rounded-2xl flex items-center justify-center bg-amber-400/10 border border-amber-400/30 text-3xl">
+                                    🎟️
+                                </div>
+
+                                <div>
+                                    <div class="text-xs uppercase tracking-[0.2em] text-amber-400 font-black mb-1">
+                                        Official Allocation
+                                    </div>
+
+                                    <h3 class="text-2xl md:text-3xl font-black">
+                                        APXN ICO Voucher
+                                    </h3>
+                                </div>
+                            </div>
+
+                            <span
+                                id="ico-status"
+                                class="inline-flex self-start items-center rounded-full border border-amber-400/30 bg-amber-400/10 text-amber-300 px-4 py-2 text-xs font-black uppercase tracking-wider"
+                            >
+                                Reserved
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div class="rounded-2xl border border-amber-400/20 bg-slate-950/40 p-5">
+                                <div class="text-xs uppercase tracking-widest text-gray-500 font-black mb-2">
+                                    Voucher Amount
+                                </div>
+
+                                <div class="flex items-baseline gap-2 flex-wrap">
+                                    <span
+                                        id="ico-amount"
+                                        class="text-3xl md:text-4xl font-black text-white"
+                                    >
+                                        0
+                                    </span>
+
+                                    <span
+                                        id="ico-symbol"
+                                        class="text-lg font-black text-amber-400"
+                                    >
+                                        APXN
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-5">
+                                <div class="text-xs uppercase tracking-widest text-gray-500 font-black mb-2">
+                                    Allocation Type
+                                </div>
+
+                                <div
+                                    id="ico-type"
+                                    class="text-xl font-black text-white"
+                                >
+                                    ICO Voucher
+                                </div>
+
+                                <div
+                                    id="ico-created"
+                                    class="text-xs text-gray-500 mt-2"
+                                >
+                                    —
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            id="ico-note-wrap"
+                            class="hidden-section rounded-2xl border border-slate-800 bg-slate-950/30 p-4 mb-5"
+                        >
+                            <div class="text-xs uppercase tracking-widest text-gray-500 font-black mb-2">
+                                Note
+                            </div>
+
+                            <div
+                                id="ico-note"
+                                class="text-sm text-gray-300 leading-relaxed"
+                            >
+                                —
+                            </div>
+                        </div>
+
+                        <div class="rounded-2xl border border-amber-400/20 bg-amber-400/5 p-4">
+                            <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
+                                This ICO allocation is a separate project record.
+                                It is not APXN Points and is not a conversion of your mining balance.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="glass border border-slate-800 rounded-2xl p-6">
                     <h3 class="text-lg font-black mb-5">Account Information</h3>
@@ -355,6 +459,146 @@
             element.textContent = value ?? '—';
         }
 
+        function setIcoStatus(status) {
+            const element =
+                document.getElementById('ico-status');
+
+            if (!element) {
+                return;
+            }
+
+            const normalized =
+                String(status || 'reserved')
+                    .trim()
+                    .toLowerCase();
+
+            const labels = {
+                reserved: 'Reserved',
+                eligible: 'Eligible',
+                claimed: 'Claimed',
+                cancelled: 'Cancelled'
+            };
+
+            element.textContent =
+                labels[normalized] ||
+                normalized;
+
+            element.className =
+                'inline-flex self-start items-center rounded-full border px-4 py-2 text-xs font-black uppercase tracking-wider';
+
+            if (normalized === 'eligible') {
+                element.classList.add(
+                    'border-emerald-400/30',
+                    'bg-emerald-400/10',
+                    'text-emerald-300'
+                );
+                return;
+            }
+
+            if (normalized === 'claimed') {
+                element.classList.add(
+                    'border-sky-400/30',
+                    'bg-sky-400/10',
+                    'text-sky-300'
+                );
+                return;
+            }
+
+            if (normalized === 'cancelled') {
+                element.classList.add(
+                    'border-red-400/30',
+                    'bg-red-400/10',
+                    'text-red-300'
+                );
+                return;
+            }
+
+            element.classList.add(
+                'border-amber-400/30',
+                'bg-amber-400/10',
+                'text-amber-300'
+            );
+        }
+
+        function populateIcoVoucher(voucher) {
+            const section =
+                document.getElementById(
+                    'ico-voucher-section'
+                );
+
+            const noteWrap =
+                document.getElementById(
+                    'ico-note-wrap'
+                );
+
+            if (!section) {
+                return;
+            }
+
+            if (!voucher) {
+                section.style.display =
+                    'none';
+
+                if (noteWrap) {
+                    noteWrap.style.display =
+                        'none';
+                }
+
+                return;
+            }
+
+            setText(
+                'ico-amount',
+                formatNumber(
+                    voucher.amount
+                )
+            );
+
+            setText(
+                'ico-symbol',
+                voucher.assetSymbol ||
+                'APXN'
+            );
+
+            setText(
+                'ico-type',
+                voucher.allocationType ||
+                'ICO Voucher'
+            );
+
+            setText(
+                'ico-created',
+                voucher.createdAt
+                    ? `Issued: ${formatDate(
+                        voucher.createdAt
+                    )}`
+                    : '—'
+            );
+
+            setIcoStatus(
+                voucher.status
+            );
+
+            if (
+                voucher.note &&
+                noteWrap
+            ) {
+                setText(
+                    'ico-note',
+                    voucher.note
+                );
+
+                noteWrap.style.display =
+                    'block';
+            } else if (noteWrap) {
+                noteWrap.style.display =
+                    'none';
+            }
+
+            section.style.display =
+                'block';
+        }
+
         function populateDashboard(data) {
             const user = data?.user || {};
 
@@ -417,6 +661,11 @@
                     user.lastClaim ??
                     user.last_claim
                 )
+            );
+
+            populateIcoVoucher(
+                data?.icoVoucher ||
+                null
             );
         }
 
