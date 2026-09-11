@@ -4,51 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Earn APXN Points | Apex Network</title>
+    <title>Apex Network (APXN) | Official Ecosystem Hub</title>
+    <meta name="description" content="The official Apex Network hub for APXN Points, blockchain updates, APXN token information, project roadmap, blog, dashboard, and future distribution and withdrawal updates.">
+    <meta name="keywords" content="Apex Network, APXN, APXN Points, BSC, BEP-20, Web3, blockchain, Telegram Mini App, APXN Dashboard">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Apex Network">
 
-    <meta
-        name="description"
-        content="Complete APXN ecosystem activities and earn APXN Points from the official Apex Network website."
-    >
+    <link rel="canonical" href="https://apxn.network">
 
-    <meta
-        name="robots"
-        content="index, follow"
-    >
+    <meta property="og:title" content="Apex Network (APXN) | Official Ecosystem Hub">
+    <meta property="og:description" content="Explore APXN Points, Apex Network, official project channels, blockchain information, roadmap, blog and dashboard.">
+    <meta property="og:url" content="https://apxn.network">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://apxn.network/logo2%20(1).png">
+    <meta property="og:site_name" content="Apex Network">
 
-    <link
-        rel="canonical"
-        href="https://apxn.network/earn.html"
-    >
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Apex Network (APXN) | Official Ecosystem Hub">
+    <meta name="twitter:description" content="The official hub for APXN Points, Apex Network, project updates, roadmap, blog and dashboard.">
+    <meta name="twitter:image" content="https://apxn.network/logo2%20(1).png">
 
-    <link
-        rel="icon"
-        href="logo2%20(1).png"
-        type="image/png"
-    >
+    <link rel="icon" href="logo2%20(1).png" type="image/png">
 
     <script>
-        window.va =
-            window.va ||
-            function () {
-                (
-                    window.vaq =
-                        window.vaq ||
-                        []
-                ).push(
-                    arguments
-                );
-            };
+        window.va = window.va || function () {
+            (window.vaq = window.vaq || []).push(arguments);
+        };
     </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 
-    <script
-        defer
-        src="/_vercel/insights/script.js"
-    ></script>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="preload" as="image" href="logo2%20(1).png">
 
-    <script
-        src="https://cdn.tailwindcss.com"
-    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
         tailwind.config = {
@@ -56,13 +45,13 @@
                 extend: {
                     colors: {
                         slate: {
-                            800:
-                                '#1e293b',
-                            900:
-                                '#0f172a',
-                            950:
-                                '#020617'
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617'
                         }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
                     }
                 }
             }
@@ -74,2142 +63,851 @@
             --gold: #facc15;
             --gold-deep: #ca8a04;
             --orange: #f59e0b;
+            --panel: rgba(15, 23, 42, 0.88);
+            --panel-2: rgba(2, 6, 23, 0.92);
         }
 
-        html {
-            background:
-                #020617;
-        }
-
-        body {
-            min-height:
-                100vh;
-        }
+        html { background: #020617; }
+        body { min-height: 100vh; }
 
         .hero-glow {
-            position:
-                fixed;
-            top:
-                -220px;
-            left:
-                50%;
-            width:
-                700px;
-            height:
-                700px;
-            transform:
-                translateX(-50%);
-            border-radius:
-                9999px;
-            background:
-                rgba(
-                    202,
-                    138,
-                    4,
-                    0.12
-                );
-            filter:
-                blur(125px);
-            pointer-events:
-                none;
-            z-index:
-                0;
-        }
-
-        .blue-glow {
-            position:
-                fixed;
-            right:
-                -170px;
-            top:
-                40%;
-            width:
-                430px;
-            height:
-                430px;
-            border-radius:
-                9999px;
-            background:
-                rgba(
-                    14,
-                    165,
-                    233,
-                    0.055
-                );
-            filter:
-                blur(120px);
-            pointer-events:
-                none;
-            z-index:
-                0;
+            position: absolute;
+            top: 46%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(720px, 92vw);
+            height: min(720px, 92vw);
+            border-radius: 9999px;
+            background: rgba(202, 138, 4, 0.13);
+            filter: blur(115px);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .gold-text {
-            background:
-                linear-gradient(
-                    90deg,
-                    #fde047,
-                    #f59e0b,
-                    #fb923c
-                );
-            -webkit-background-clip:
-                text;
-            background-clip:
-                text;
-            color:
-                transparent;
+            background: linear-gradient(90deg, #fde047, #f59e0b, #fb923c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
-        .coin-logo-wrap {
-            width:
-                116px;
-            height:
-                116px;
-            margin:
-                0 auto 1.25rem;
-            padding:
-                7px;
-            border-radius:
-                9999px;
-            border:
-                1px solid
-                rgba(
-                    250,
-                    204,
-                    21,
-                    0.48
-                );
-            background:
-                radial-gradient(
-                    circle at 35% 25%,
-                    rgba(
-                        253,
-                        224,
-                        71,
-                        0.18
-                    ),
-                    rgba(
-                        15,
-                        23,
-                        42,
-                        0.92
-                    ) 58%,
-                    rgba(
-                        2,
-                        6,
-                        23,
-                        0.98
-                    ) 100%
-                );
+        .glass {
+            background: rgba(15, 23, 42, 0.80);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .nav-3d {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0.65rem 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 0.9rem;
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.96));
+            color: #cbd5e1;
+            font-weight: 800;
             box-shadow:
-                0 0 0 7px
-                    rgba(
-                        250,
-                        204,
-                        21,
-                        0.045
-                    ),
-                0 18px 45px
-                    rgba(
-                        245,
-                        158,
-                        11,
-                        0.18
-                    ),
-                inset
-                0 1px 0
-                    rgba(
-                        255,
-                        255,
-                        255,
-                        0.08
-                    );
+                0 6px 0 #020617,
+                0 10px 24px rgba(0, 0, 0, 0.28),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transform: translateY(0);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, color .18s ease;
+            text-decoration: none;
         }
 
-        .coin-logo {
-            width:
-                100%;
-            height:
-                100%;
-            display:
-                block;
-            object-fit:
-                cover;
-            border-radius:
-                9999px;
-        }
-
-        .points-logo {
-            width:
-                34px;
-            height:
-                34px;
-            flex:
-                0 0 auto;
-            border-radius:
-                9999px;
-            border:
-                1px solid
-                rgba(
-                    250,
-                    204,
-                    21,
-                    0.35
-                );
-            object-fit:
-                cover;
+        .nav-3d:hover {
+            color: #fde047;
+            border-color: rgba(250, 204, 21, 0.40);
+            transform: translateY(-2px);
             box-shadow:
-                0 0 20px
-                    rgba(
-                        245,
-                        158,
-                        11,
-                        0.14
-                    );
+                0 8px 0 #020617,
+                0 15px 30px rgba(0, 0, 0, 0.34),
+                0 0 26px rgba(234, 179, 8, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.11);
         }
 
-        .panel-3d {
-            position:
-                relative;
-            overflow:
-                hidden;
-            border:
-                1px solid
-                rgba(
-                    148,
-                    163,
-                    184,
-                    0.18
-                );
+        .nav-3d:active {
+            transform: translateY(4px);
+            box-shadow:
+                0 2px 0 #020617,
+                0 6px 14px rgba(0, 0, 0, 0.26),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-3d.primary {
+            color: #020617;
+            border-color: rgba(253, 224, 71, 0.85);
+            background: linear-gradient(180deg, #fde047 0%, #f59e0b 70%, #d97706 100%);
+            box-shadow:
+                0 6px 0 #92400e,
+                0 12px 30px rgba(245, 158, 11, 0.24),
+                inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        }
+
+        .nav-3d.primary:hover {
+            color: #020617;
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 0 #92400e,
+                0 17px 36px rgba(245, 158, 11, 0.34),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-3d.primary:active {
+            transform: translateY(4px);
+            box-shadow:
+                0 2px 0 #92400e,
+                0 7px 18px rgba(245, 158, 11, 0.26);
+        }
+
+        .section-3d {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 1.6rem;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.96), rgba(2, 6, 23, 0.96));
+            box-shadow:
+                0 12px 0 rgba(2, 6, 23, 1),
+                0 26px 54px rgba(0, 0, 0, 0.30),
+                inset 0 1px 0 rgba(255, 255, 255, 0.07);
+            transform: perspective(1000px) translateY(0) rotateX(0deg);
+            transition: transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+        }
+
+        .section-3d::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(115deg, rgba(255, 255, 255, 0.06), transparent 28%, transparent 72%, rgba(250, 204, 21, 0.025));
+        }
+
+        .section-3d:hover {
+            transform: perspective(1000px) translateY(-8px) rotateX(1.2deg);
+            border-color: rgba(250, 204, 21, 0.36);
+            box-shadow:
+                0 18px 0 rgba(2, 6, 23, 1),
+                0 38px 70px rgba(0, 0, 0, 0.40),
+                0 0 34px rgba(234, 179, 8, 0.07),
+                inset 0 1px 0 rgba(255, 255, 255, 0.10);
+        }
+
+        .section-3d:active {
+            transform: perspective(1000px) translateY(4px);
+            box-shadow:
+                0 6px 0 rgba(2, 6, 23, 1),
+                0 16px 32px rgba(0, 0, 0, 0.28),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .section-3d.gold {
+            border-color: rgba(250, 204, 21, 0.28);
             background:
-                linear-gradient(
-                    145deg,
-                    rgba(
-                        30,
-                        41,
-                        59,
-                        0.96
-                    ),
-                    rgba(
-                        2,
-                        6,
-                        23,
-                        0.98
-                    )
-                );
-            box-shadow:
-                0 10px 0
-                    rgba(
-                        2,
-                        6,
-                        23,
-                        1
-                    ),
-                0 24px 50px
-                    rgba(
-                        0,
-                        0,
-                        0,
-                        0.30
-                    ),
-                inset
-                0 1px 0
-                    rgba(
-                        255,
-                        255,
-                        255,
-                        0.06
-                    );
+                radial-gradient(circle at 85% 10%, rgba(234, 179, 8, 0.15), transparent 36%),
+                linear-gradient(145deg, rgba(30, 41, 59, 0.98), rgba(2, 6, 23, 0.98));
         }
 
-        .task-card {
-            position:
-                relative;
-            display:
-                flex;
-            flex-direction:
-                column;
-            min-height:
-                100%;
-            overflow:
-                hidden;
-            border:
-                1px solid
-                rgba(
-                    71,
-                    85,
-                    105,
-                    0.58
-                );
-            border-radius:
-                1.35rem;
+        .section-3d.blue {
+            border-color: rgba(56, 189, 248, 0.22);
             background:
-                linear-gradient(
-                    145deg,
-                    rgba(
-                        30,
-                        41,
-                        59,
-                        0.93
-                    ),
-                    rgba(
-                        2,
-                        6,
-                        23,
-                        0.97
-                    )
-                );
-            box-shadow:
-                0 7px 0
-                    rgba(
-                        2,
-                        6,
-                        23,
-                        0.98
-                    ),
-                0 14px 28px
-                    rgba(
-                        0,
-                        0,
-                        0,
-                        0.22
-                    ),
-                inset
-                0 1px 0
-                    rgba(
-                        255,
-                        255,
-                        255,
-                        0.04
-                    );
-            transition:
-                transform .18s ease,
-                border-color .18s ease,
-                box-shadow .18s ease;
+                radial-gradient(circle at 85% 10%, rgba(14, 165, 233, 0.13), transparent 36%),
+                linear-gradient(145deg, rgba(30, 41, 59, 0.98), rgba(2, 6, 23, 0.98));
         }
 
-        .task-card:hover {
-            transform:
-                translateY(-4px);
-            border-color:
-                rgba(
-                    250,
-                    204,
-                    21,
-                    0.30
-                );
-            box-shadow:
-                0 11px 0
-                    rgba(
-                        2,
-                        6,
-                        23,
-                        0.98
-                    ),
-                0 22px 40px
-                    rgba(
-                        0,
-                        0,
-                        0,
-                        0.30
-                    ),
-                inset
-                0 1px 0
-                    rgba(
-                        255,
-                        255,
-                        255,
-                        0.06
-                    );
-        }
-
-        .nav-btn,
-        .open-btn,
-        .claim-btn {
-            display:
-                inline-flex;
-            align-items:
-                center;
-            justify-content:
-                center;
-            gap:
-                .5rem;
-            min-height:
-                46px;
-            border-radius:
-                .9rem;
-            padding:
-                .75rem 1rem;
-            font-weight:
-                900;
-            font-size:
-                .82rem;
-            text-decoration:
-                none;
-            transition:
-                transform .16s ease,
-                border-color .16s ease,
-                color .16s ease,
-                opacity .16s ease;
-        }
-
-        .nav-btn,
-        .open-btn {
-            border:
-                1px solid
-                rgba(
-                    148,
-                    163,
-                    184,
-                    0.18
-                );
+        .section-3d.green {
+            border-color: rgba(52, 211, 153, 0.22);
             background:
-                linear-gradient(
-                    180deg,
-                    rgba(
-                        30,
-                        41,
-                        59,
-                        0.96
-                    ),
-                    rgba(
-                        15,
-                        23,
-                        42,
-                        0.96
-                    )
-                );
-            color:
-                #e2e8f0;
-            box-shadow:
-                0 5px 0
-                    #020617,
-                0 10px 18px
-                    rgba(
-                        0,
-                        0,
-                        0,
-                        0.24
-                    );
+                radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.12), transparent 36%),
+                linear-gradient(145deg, rgba(30, 41, 59, 0.98), rgba(2, 6, 23, 0.98));
         }
 
-        .nav-btn:hover,
-        .open-btn:hover {
-            transform:
-                translateY(-2px);
-            color:
-                #fde047;
-            border-color:
-                rgba(
-                    250,
-                    204,
-                    21,
-                    0.38
-                );
+        .status-dot {
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 9999px;
+            flex: 0 0 auto;
         }
 
-        .claim-btn {
-            border:
-                1px solid
-                rgba(
-                    253,
-                    224,
-                    71,
-                    0.78
-                );
-            background:
-                linear-gradient(
-                    180deg,
-                    #fde047,
-                    #f59e0b
-                );
-            color:
-                #020617;
-            box-shadow:
-                0 5px 0
-                    #92400e,
-                0 10px 20px
-                    rgba(
-                        245,
-                        158,
-                        11,
-                        0.20
-                    );
-            cursor:
-                pointer;
+        .future-step { position: relative; }
+
+        .future-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 2.1rem;
+            right: -1rem;
+            width: 2rem;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.35), rgba(100, 116, 139, 0.18));
         }
 
-        .claim-btn:hover:not(:disabled) {
-            transform:
-                translateY(-2px);
+        @media (max-width: 1023px) {
+            .future-step:not(:last-child)::after { display: none; }
         }
 
-        .claim-btn:disabled {
-            opacity:
-                .42;
-            cursor:
-                not-allowed;
-            transform:
-                none;
-        }
-
-        .claim-btn.claimed {
-            border-color:
-                rgba(
-                    52,
-                    211,
-                    153,
-                    .45
-                );
-            background:
-                rgba(
-                    16,
-                    185,
-                    129,
-                    .10
-                );
-            color:
-                #6ee7b7;
-            box-shadow:
-                none;
-        }
-
-        .tab-btn {
-            min-height:
-                54px;
-            border-radius:
-                1rem;
-            border:
-                1px solid
-                rgba(
-                    71,
-                    85,
-                    105,
-                    0.65
-                );
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(
-                        30,
-                        41,
-                        59,
-                        0.96
-                    ),
-                    rgba(
-                        15,
-                        23,
-                        42,
-                        0.96
-                    )
-                );
-            color:
-                #94a3b8;
-            font-weight:
-                900;
-            box-shadow:
-                0 6px 0
-                    #020617,
-                0 12px 24px
-                    rgba(
-                        0,
-                        0,
-                        0,
-                        0.24
-                    );
-            transition:
-                transform .16s ease,
-                border-color .16s ease,
-                color .16s ease;
-        }
-
-        .tab-btn:hover {
-            color:
-                #fde047;
-            border-color:
-                rgba(
-                    250,
-                    204,
-                    21,
-                    0.36
-                );
-            transform:
-                translateY(-2px);
-        }
-
-        .tab-btn.active {
-            color:
-                #020617;
-            border-color:
-                rgba(
-                    253,
-                    224,
-                    71,
-                    0.90
-                );
-            background:
-                linear-gradient(
-                    180deg,
-                    #fde047 0%,
-                    #f59e0b 72%,
-                    #d97706 100%
-                );
-            box-shadow:
-                0 6px 0
-                    #92400e,
-                0 14px 30px
-                    rgba(
-                        245,
-                        158,
-                        11,
-                        0.24
-                    );
-        }
-
-        .reward-badge {
-            display:
-                inline-flex;
-            align-items:
-                center;
-            gap:
-                .35rem;
-            border:
-                1px solid
-                rgba(
-                    250,
-                    204,
-                    21,
-                    0.28
-                );
-            background:
-                rgba(
-                    250,
-                    204,
-                    21,
-                    0.08
-                );
-            color:
-                #fde047;
-            border-radius:
-                9999px;
-            padding:
-                .45rem .7rem;
-            font-size:
-                .70rem;
-            font-weight:
-                900;
-            letter-spacing:
-                .05em;
-        }
-
-        .status-message {
-            min-height:
-                24px;
-        }
-
-        .hidden-section {
-            display:
-                none;
-        }
-
-        @media (
-            prefers-reduced-motion:
-            reduce
-        ) {
-            *,
-            *::before,
-            *::after {
-                transition-duration:
-                    .01ms !important;
-                animation-duration:
-                    .01ms !important;
-                animation-iteration-count:
-                    1 !important;
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
             }
         }
     </style>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Apex Network",
+        "url": "https://apxn.network",
+        "logo": "https://apxn.network/logo2%20(1).png",
+        "sameAs": [
+            "https://x.com/APXNPOINTS",
+            "https://x.com/ApexNetworkApp",
+            "https://t.me/ApexMiner_Official",
+            "https://t.me/ApexMinerGroup"
+        ]
+    }
+    </script>
 </head>
 
-<body
-    class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950"
->
-    <div
-        class="hero-glow"
-    ></div>
+<body class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950">
 
-    <div
-        class="blue-glow"
-    ></div>
-
-    <nav
-        class="relative z-20 border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl"
-    >
-        <div
-            class="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between gap-4"
-        >
-            <a
-                href="/"
-                class="flex items-center gap-3 min-w-0"
-            >
-                <img
-                    src="logo2%20(1).png"
-                    alt="Apex Network"
-                    class="w-11 h-11 rounded-full border border-yellow-500/40 shrink-0"
-                >
-
-                <div
-                    class="min-w-0"
-                >
-                    <div
-                        class="gold-text font-black tracking-wide truncate"
-                    >
-                        APEX NETWORK
+    <nav class="fixed top-0 inset-x-0 z-50 bg-slate-950/92 backdrop-blur-xl border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+            <div class="flex items-center justify-between gap-4">
+                <a href="#home" class="flex items-center gap-3 min-w-0">
+                    <div class="w-11 h-11 rounded-full overflow-hidden border border-yellow-500/50 shadow-[0_0_18px_rgba(234,179,8,0.28)] shrink-0">
+                        <img src="logo2%20(1).png" alt="Apex Network Logo" width="44" height="44" class="w-full h-full object-cover">
                     </div>
-
-                    <div
-                        class="text-[10px] text-gray-500 uppercase tracking-widest"
-                    >
-                        APXN Activity Center
+                    <div class="min-w-0">
+                        <div class="font-black tracking-wider gold-text text-base sm:text-lg truncate">APEX NETWORK</div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-[0.18em] font-bold">Official Ecosystem Hub</div>
                     </div>
+                </a>
+
+                <button type="button" aria-label="Toggle navigation menu" aria-controls="nav-menu" aria-expanded="false" id="menu-button" onclick="toggleMenu()" class="lg:hidden nav-3d px-4 py-2 text-sm">
+                    Menu
+                </button>
+
+                <div id="nav-menu" class="hidden lg:flex lg:items-center lg:justify-end gap-3 flex-wrap">
+                    <a href="#ecosystem" class="nav-3d text-xs">Ecosystem</a>
+                    <a href="#status" class="nav-3d text-xs">Status</a>
+                    <a href="#token" class="nav-3d text-xs">Token</a>
+                    <a href="#roadmap" class="nav-3d text-xs">Roadmap</a>
+                    <a href="blog/" class="nav-3d text-xs">Blog</a>
+                    <a href="earn.html" class="nav-3d text-xs">🪙 Earn APXN Points</a>
+                    <a href="dashboard.html" class="nav-3d primary text-xs">My Dashboard</a>
                 </div>
-            </a>
-
-            <div
-                class="flex gap-2 flex-wrap justify-end"
-            >
-                <a
-                    href="dashboard.html"
-                    class="nav-btn"
-                >
-                    My Dashboard
-                </a>
-
-                <a
-                    href="/"
-                    class="nav-btn"
-                >
-                    Website
-                </a>
             </div>
         </div>
     </nav>
 
-    <main
-        class="relative z-10 max-w-7xl mx-auto px-5 py-12 sm:py-16"
-    >
-        <section
-            class="text-center max-w-4xl mx-auto mb-10"
-        >
-            <span
-                class="reward-badge mb-5"
-            >
-                OFFICIAL APXN POINTS ACTIVITY CENTER
+    <section id="home" class="relative pt-36 sm:pt-40 pb-20 px-5 sm:px-6 min-h-[90vh] flex items-center overflow-hidden">
+        <div class="hero-glow"></div>
+        <div class="max-w-6xl mx-auto w-full relative z-10 text-center">
+            <span class="inline-flex items-center gap-2 border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-4 py-2 rounded-full text-xs font-black uppercase tracking-[0.18em] mb-7">
+                Apex Network • APXN Ecosystem
             </span>
 
-            <div
-                class="coin-logo-wrap"
-                aria-label="APXN logo"
-            >
-                <img
-                    src="logo2%20(1).png"
-                    alt="APXN"
-                    class="coin-logo"
-                    width="116"
-                    height="116"
-                >
-            </div>
-
-            <h1
-                class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-4"
-            >
-                Earn
-                <span
-                    class="gold-text"
-                >
-                    APXN Points
-                </span>
-            </h1>
-
-            <p
-                class="text-2xl font-black mb-3"
-            >
-                اربح نقاط APXN من هنا
-            </p>
-
-            <p
-                class="text-gray-400 leading-relaxed max-w-3xl mx-auto"
-            >
-                Open a task, complete the activity, return to this page
-                and claim your APXN Points.
-            </p>
-        </section>
-
-        <section
-            class="panel-3d rounded-3xl p-6 sm:p-8 mb-8"
-        >
-            <div
-                class="grid lg:grid-cols-[1fr_auto] gap-6 items-center"
-            >
-                <div>
-                    <div
-                        class="text-[10px] uppercase tracking-[0.2em] text-yellow-500 font-black mb-2"
-                    >
-                        Your APXN Account
-                    </div>
-
-                    <div
-                        id="account-loading"
-                    >
-                        <h2
-                            class="text-2xl font-black"
-                        >
-                            Checking your account...
-                        </h2>
-                    </div>
-
-                    <div
-                        id="account-logged"
-                        class="hidden-section"
-                    >
-                        <h2
-                            id="account-name"
-                            class="text-2xl font-black"
-                        >
-                            APXN Member
-                        </h2>
-
-                        <p
-                            id="account-username"
-                            class="text-yellow-400 text-sm mt-1"
-                        >
-                            —
-                        </p>
-                    </div>
-
-                    <div
-                        id="account-login"
-                        class="hidden-section"
-                    >
-                        <h2
-                            class="text-2xl font-black mb-2"
-                        >
-                            Sign in to claim rewards
-                        </h2>
-
-                        <p
-                            class="text-sm text-gray-500"
-                        >
-                            Use the same Telegram identity connected to
-                            My APXN Dashboard.
-                        </p>
-                    </div>
-
-                    <div
-                        id="account-missing"
-                        class="hidden-section"
-                    >
-                        <h2
-                            class="text-2xl font-black mb-2"
-                        >
-                            No APXN Mining Account Found
-                        </h2>
-
-                        <p
-                            class="text-sm text-gray-500"
-                        >
-                            Your Telegram login is valid, but no APXN Points
-                            account was found for this Telegram ID.
-                        </p>
+            <div class="flex justify-center mb-8">
+                <div class="w-36 h-36 sm:w-40 sm:h-40 rounded-full p-[4px] bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-800 shadow-[0_0_55px_rgba(234,179,8,0.34)]">
+                    <div class="w-full h-full rounded-full border-[6px] border-slate-950 bg-slate-900 overflow-hidden">
+                        <img src="logo2%20(1).png" alt="Apex Network" width="160" height="160" fetchpriority="high" class="w-full h-full object-cover rounded-full">
                     </div>
                 </div>
+            </div>
 
-                <div
-                    class="flex items-center gap-3 flex-wrap"
+            <h1 class="text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6">
+                One Ecosystem.<br>
+                <span class="gold-text">Clear Roles. Built for the Future.</span>
+            </h1>
+
+            <div class="flex justify-center mb-9">
+                <a
+                    href="earn.html"
+                    class="nav-3d primary w-full max-w-md sm:w-auto px-6 sm:px-8 py-4 gap-3 text-base sm:text-lg"
+                    aria-label="Earn APXN Points"
                 >
-                    <div
-                        id="points-box"
-                        class="hidden-section rounded-2xl border border-yellow-500/25 bg-yellow-500/5 px-5 py-4 min-w-[190px]"
+                    <img
+                        src="logo2%20(1).png"
+                        alt="APXN"
+                        width="38"
+                        height="38"
+                        class="w-9 h-9 rounded-full border border-slate-950/30 shrink-0"
                     >
-                        <div
-                            class="flex items-center gap-3 mb-2"
-                        >
-                            <img
-                                src="logo2%20(1).png"
-                                alt="APXN"
-                                class="points-logo"
-                                width="34"
-                                height="34"
-                            >
+                    <span class="flex flex-col items-start leading-tight">
+                        <span>Earn APXN Points</span>
+                        <span class="text-[10px] sm:text-xs font-black uppercase tracking-widest opacity-70 mt-1">
+                            Start Earning →
+                        </span>
+                    </span>
+                </a>
+            </div>
 
-                            <div
-                                class="text-[10px] uppercase tracking-widest text-gray-500 font-black"
-                            >
-                                APXN Points
+            <p class="text-gray-400 text-base sm:text-lg md:text-xl leading-relaxed max-w-4xl mx-auto mb-10">
+                Apex Network brings together the APXN Points community experience and the wider blockchain project under one official website, while keeping each part clearly separated for users, future eligibility, distribution and withdrawal stages.
+            </p>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto text-left">
+                <a href="https://x.com/ApexNetworkApp/status/2098306962504970666" target="_blank" rel="noopener noreferrer" class="section-3d gold p-6 group" aria-label="Open the official APXN project structure and APXN Points guide">
+                    <div class="relative z-10">
+                        <div class="flex items-start justify-between gap-4 mb-5">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-yellow-500/10 border border-yellow-500/25 text-2xl">⛏️</div>
+                            <span class="text-[10px] uppercase tracking-widest font-black text-emerald-400 border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 rounded-full">Active</span>
+                        </div>
+                        <p class="text-xs uppercase tracking-[0.2em] font-black text-yellow-400 mb-2">APXN Points</p>
+                        <h2 class="text-2xl font-black mb-3">Mining & Community</h2>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            Mining activity, APXN Points, daily check-ins, tasks, referrals, leaderboard and community updates.
+                        </p>
+                        <span class="inline-flex items-center gap-2 text-yellow-300 font-black text-sm">
+                            Open APXN Points Guide <span aria-hidden="true">→</span>
+                        </span>
+                    </div>
+                </a>
+
+                <a href="https://x.com/ApexNetworkApp" target="_blank" rel="noopener noreferrer" class="section-3d blue p-6 group" aria-label="Open Apex Network official X account">
+                    <div class="relative z-10">
+                        <div class="flex items-start justify-between gap-4 mb-5">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-sky-500/10 border border-sky-500/25 text-2xl">🌐</div>
+                            <span class="text-[10px] uppercase tracking-widest font-black text-sky-400 border border-sky-500/25 bg-sky-500/10 px-3 py-1.5 rounded-full">Official</span>
+                        </div>
+                        <p class="text-xs uppercase tracking-[0.2em] font-black text-sky-400 mb-2">Apex Network</p>
+                        <h2 class="text-2xl font-black mb-3">Blockchain & Token</h2>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            Blockchain development, APXN token information, listing updates, distribution, withdrawals and website announcements.
+                        </p>
+                        <span class="inline-flex items-center gap-2 text-sky-300 font-black text-sm">
+                            Follow Apex Network <span aria-hidden="true">→</span>
+                        </span>
+                    </div>
+                </a>
+
+                <a href="dashboard.html" class="section-3d green p-6 group sm:col-span-2 lg:col-span-1" aria-label="Open My APXN Dashboard">
+                    <div class="relative z-10">
+                        <div class="flex items-start justify-between gap-4 mb-5">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-500/10 border border-emerald-500/25 text-2xl">🔐</div>
+                            <span class="text-[10px] uppercase tracking-widest font-black text-emerald-400 border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 rounded-full">Secure</span>
+                        </div>
+                        <p class="text-xs uppercase tracking-[0.2em] font-black text-emerald-400 mb-2">Account Area</p>
+                        <h2 class="text-2xl font-black mb-3">My APXN Dashboard</h2>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            Verify your Telegram identity and view your existing APXN Points account information through the official website.
+                        </p>
+                        <span class="inline-flex items-center gap-2 text-emerald-300 font-black text-sm">
+                            Open Dashboard <span aria-hidden="true">→</span>
+                        </span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="ecosystem" class="py-20 sm:py-24 px-5 sm:px-6 border-t border-slate-800 bg-slate-900/20">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-14">
+                <p class="text-yellow-500 text-xs font-black uppercase tracking-[0.22em] mb-3">Official Structure</p>
+                <h2 class="text-3xl sm:text-5xl font-black mb-5">A Clear Ecosystem for Every Stage</h2>
+                <p class="text-gray-400 leading-relaxed">
+                    APXN Points and Apex Network are connected parts of the same ecosystem, but they serve different functions. This separation keeps community activity clear today and prepares the project for future verification, distribution and withdrawal processes.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-7">
+                <div class="section-3d gold p-7 sm:p-9">
+                    <div class="relative z-10">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+                            <div>
+                                <p class="text-yellow-400 text-xs font-black uppercase tracking-[0.2em] mb-2">Community Layer</p>
+                                <h3 class="text-3xl font-black">APXN Points</h3>
+                            </div>
+                            <span class="inline-flex w-fit items-center gap-2 text-xs font-black text-emerald-400 border border-emerald-500/25 bg-emerald-500/10 px-4 py-2 rounded-full">
+                                <span class="status-dot bg-emerald-400"></span> Active
+                            </span>
+                        </div>
+
+                        <p class="text-gray-400 leading-relaxed mb-7">
+                            APXN Points represent user activity inside the community experience. Users can earn points through available app mechanics such as claims, check-ins, tasks and referrals.
+                        </p>
+
+                        <div class="grid sm:grid-cols-2 gap-3 mb-7 text-sm">
+                            <div class="rounded-xl border border-slate-700 bg-slate-950/45 p-4">
+                                <span class="text-gray-500 block text-xs mb-1">Official X</span>
+                                <span class="font-black">@APXNPOINTS</span>
+                            </div>
+                            <div class="rounded-xl border border-slate-700 bg-slate-950/45 p-4">
+                                <span class="text-gray-500 block text-xs mb-1">Focus</span>
+                                <span class="font-black">Points & Community</span>
                             </div>
                         </div>
 
-                        <div
-                            id="points-value"
-                            class="text-2xl font-black mt-1"
-                        >
-                            0
+                        <a href="https://x.com/APXNPOINTS" target="_blank" rel="noopener noreferrer" class="nav-3d primary w-full sm:w-auto">
+                            APXN Points on X
+                        </a>
+                    </div>
+                </div>
+
+                <div class="section-3d blue p-7 sm:p-9">
+                    <div class="relative z-10">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+                            <div>
+                                <p class="text-sky-400 text-xs font-black uppercase tracking-[0.2em] mb-2">Project Layer</p>
+                                <h3 class="text-3xl font-black">Apex Network</h3>
+                            </div>
+                            <span class="inline-flex w-fit items-center gap-2 text-xs font-black text-sky-400 border border-sky-500/25 bg-sky-500/10 px-4 py-2 rounded-full">
+                                <span class="status-dot bg-sky-400"></span> Official
+                            </span>
                         </div>
 
-                        <div
-                            class="text-[10px] text-gray-600 mt-1"
-                        >
-                            Synced account balance
+                        <p class="text-gray-400 leading-relaxed mb-7">
+                            Apex Network covers the blockchain project, APXN token information, smart contract, roadmap, listing information and future distribution and withdrawal announcements.
+                        </p>
+
+                        <div class="grid sm:grid-cols-2 gap-3 mb-7 text-sm">
+                            <div class="rounded-xl border border-slate-700 bg-slate-950/45 p-4">
+                                <span class="text-gray-500 block text-xs mb-1">Official X</span>
+                                <span class="font-black">@ApexNetworkApp</span>
+                            </div>
+                            <div class="rounded-xl border border-slate-700 bg-slate-950/45 p-4">
+                                <span class="text-gray-500 block text-xs mb-1">Focus</span>
+                                <span class="font-black">Network & Token</span>
+                            </div>
                         </div>
+
+                        <a href="https://x.com/ApexNetworkApp" target="_blank" rel="noopener noreferrer" class="nav-3d w-full sm:w-auto">
+                            Apex Network on X
+                        </a>
                     </div>
-
-                    <a
-                        id="login-button"
-                        href="/api/dashboard-login"
-                        class="hidden-section claim-btn"
-                    >
-                        Continue with Telegram
-                    </a>
                 </div>
             </div>
-        </section>
 
-        <section
-            class="panel-3d rounded-3xl p-6 sm:p-8 mb-8"
-        >
-            <div
-                class="grid lg:grid-cols-2 gap-6 items-center"
-            >
-                <div>
-                    <div
-                        class="text-[10px] uppercase tracking-[0.2em] text-amber-400 font-black mb-2"
-                    >
-                        One APXN Ecosystem
+            <div class="mt-8 glass border border-amber-500/20 rounded-2xl p-5 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-amber-500/10 border border-amber-500/20">ℹ️</div>
+                    <div>
+                        <h3 class="font-black text-amber-300 mb-2">Important distinction</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            APXN Points are ecosystem activity points. They are displayed separately from any APXN token allocation. Any future eligibility, distribution or withdrawal process will be announced through official Apex Network channels and this website.
+                        </p>
                     </div>
-
-                    <h2
-                        class="text-2xl sm:text-3xl font-black mb-3"
-                    >
-                        APXN Points are not a separate coin.
-                    </h2>
-
-                    <p
-                        class="text-sm text-gray-400 leading-relaxed"
-                    >
-                        APXN Points are ecosystem activity points connected
-                        to your participation in the APXN project. Your balance
-                        appears through the APXN website Dashboard and the
-                        Telegram Mini App. APXN Points will be an important
-                        factor in future eligibility and APXN allocation when
-                        the official distribution phase begins.
-                    </p>
-                </div>
-
-                <div
-                    class="rounded-2xl border border-amber-400/20 bg-amber-400/5 p-5"
-                >
-                    <div
-                        class="font-black text-amber-300 mb-2"
-                    >
-                        Important
-                    </div>
-
-                    <p
-                        class="text-xs text-gray-400 leading-relaxed"
-                    >
-                        APXN Points are not currently an on-chain token balance.
-                        Final allocation, distribution and conversion rules will
-                        be announced officially before withdrawals are activated.
-                        No fixed conversion rate is active today.
-                    </p>
                 </div>
             </div>
-        </section>
-
-        <section
-            class="grid sm:grid-cols-3 gap-4 mb-8"
-        >
-            <div
-                class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-            >
-                <div
-                    class="text-[10px] uppercase tracking-widest text-gray-500 font-black"
-                >
-                    Available Activities
-                </div>
-
-                <div
-                    id="available-count"
-                    class="text-3xl font-black mt-2"
-                >
-                    0
-                </div>
-            </div>
-
-            <div
-                class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-            >
-                <div
-                    class="text-[10px] uppercase tracking-widest text-gray-500 font-black"
-                >
-                    Available Rewards
-                </div>
-
-                <div
-                    id="available-rewards"
-                    class="text-3xl font-black text-yellow-400 mt-2"
-                >
-                    0
-                </div>
-            </div>
-
-            <div
-                class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-            >
-                <div
-                    class="text-[10px] uppercase tracking-widest text-gray-500 font-black"
-                >
-                    Reward System
-                </div>
-
-                <div
-                    class="text-lg font-black mt-2"
-                >
-                    Open → Return → Claim
-                </div>
-            </div>
-        </section>
-
-        <section
-            class="mb-8"
-        >
-            <div
-                class="grid grid-cols-2 gap-3 max-w-2xl mx-auto"
-            >
-                <button
-                    type="button"
-                    id="tasks-tab"
-                    class="tab-btn active px-4"
-                    onclick="showTab('task')"
-                >
-                    ⚡ Tasks • 50 Points
-                </button>
-
-                <button
-                    type="button"
-                    id="join-tab"
-                    class="tab-btn px-4"
-                    onclick="showTab('join')"
-                >
-                    🤝 Join • 100 Points
-                </button>
-            </div>
-        </section>
-
-        <section
-            id="task-section"
-        >
-            <div
-                class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5"
-            >
-                <div>
-                    <div
-                        class="text-[10px] uppercase tracking-[0.2em] text-yellow-500 font-black mb-1"
-                    >
-                        Tasks Branch
-                    </div>
-
-                    <h2
-                        class="text-2xl sm:text-3xl font-black"
-                    >
-                        Post & Content Tasks
-                    </h2>
-
-                    <p
-                        class="text-sm text-gray-500 mt-2"
-                    >
-                        Each available task rewards 50 APXN Points.
-                    </p>
-                </div>
-
-                <span
-                    class="reward-badge"
-                >
-                    +50 APXN POINTS
-                </span>
-            </div>
-
-            <div
-                id="task-grid"
-                class="grid sm:grid-cols-2 xl:grid-cols-4 gap-5"
-            ></div>
-
-            <div
-                id="task-empty"
-                class="hidden-section rounded-2xl border border-slate-800 bg-slate-900/45 p-6 text-center text-sm text-gray-500"
-            >
-                No task links are active yet. Add the task links in Vercel
-                Environment Variables.
-            </div>
-        </section>
-
-        <section
-            id="join-section"
-            class="hidden-section"
-        >
-            <div
-                class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5"
-            >
-                <div>
-                    <div
-                        class="text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-black mb-1"
-                    >
-                        Join Branch
-                    </div>
-
-                    <h2
-                        class="text-2xl sm:text-3xl font-black"
-                    >
-                        Join & Follow Activities
-                    </h2>
-
-                    <p
-                        class="text-sm text-gray-500 mt-2"
-                    >
-                        Each available join or follow activity rewards
-                        100 APXN Points.
-                    </p>
-                </div>
-
-                <span
-                    class="reward-badge"
-                >
-                    +100 APXN POINTS
-                </span>
-            </div>
-
-            <div
-                id="join-grid"
-                class="grid sm:grid-cols-2 xl:grid-cols-4 gap-5"
-            ></div>
-
-            <div
-                id="join-empty"
-                class="hidden-section rounded-2xl border border-slate-800 bg-slate-900/45 p-6 text-center text-sm text-gray-500"
-            >
-                No join links are active yet. Add the join links in Vercel
-                Environment Variables.
-            </div>
-        </section>
-
-        <section
-            class="mt-10 rounded-3xl border border-slate-800 bg-slate-900/55 p-6 sm:p-8"
-        >
-            <div
-                class="grid lg:grid-cols-3 gap-6"
-            >
-                <div>
-                    <div
-                        class="text-[10px] uppercase tracking-widest text-yellow-500 font-black mb-2"
-                    >
-                        01 • OPEN
-                    </div>
-
-                    <h3
-                        class="font-black mb-2"
-                    >
-                        Open the activity
-                    </h3>
-
-                    <p
-                        class="text-xs text-gray-500 leading-relaxed"
-                    >
-                        Tap Open Task or Join / Follow.
-                    </p>
-                </div>
-
-                <div>
-                    <div
-                        class="text-[10px] uppercase tracking-widest text-sky-400 font-black mb-2"
-                    >
-                        02 • RETURN
-                    </div>
-
-                    <h3
-                        class="font-black mb-2"
-                    >
-                        Return to this page
-                    </h3>
-
-                    <p
-                        class="text-xs text-gray-500 leading-relaxed"
-                    >
-                        The Claim button becomes available after opening
-                        the activity.
-                    </p>
-                </div>
-
-                <div>
-                    <div
-                        class="text-[10px] uppercase tracking-widest text-emerald-400 font-black mb-2"
-                    >
-                        03 • CLAIM
-                    </div>
-
-                    <h3
-                        class="font-black mb-2"
-                    >
-                        Receive APXN Points
-                    </h3>
-
-                    <p
-                        class="text-xs text-gray-500 leading-relaxed"
-                    >
-                        The reward is added to the same APXN Points balance
-                        connected to your Telegram identity.
-                    </p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer
-        class="relative z-10 border-t border-slate-900 mt-8 py-8 px-5 text-center text-xs text-gray-600"
-    >
-        <div>
-            Apex Network — APXN
         </div>
+    </section>
 
-        <div
-            class="flex items-center justify-center gap-4 flex-wrap mt-3"
-        >
-            <a
-                href="/"
-                class="hover:text-white"
-            >
-                Website
-            </a>
+    <section id="status" class="py-20 sm:py-24 px-5 sm:px-6 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <p class="text-yellow-500 text-xs font-black uppercase tracking-[0.22em] mb-3">Project Status</p>
+                <h2 class="text-3xl sm:text-5xl font-black mb-5">Know What Is Active</h2>
+                <p class="text-gray-400 leading-relaxed">
+                    This section helps users distinguish current features from future stages. If a feature is not marked active here, users should not trust third-party claims that it is available.
+                </p>
+            </div>
 
-            <a
-                href="dashboard.html"
-                class="hover:text-yellow-400"
-            >
-                Dashboard
-            </a>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="section-3d green p-7">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-500/10 border border-emerald-500/25 text-2xl">⛏️</div>
+                            <span class="inline-flex items-center gap-2 text-xs font-black text-emerald-400">
+                                <span class="status-dot bg-emerald-400"></span> ACTIVE
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-black mb-2">APXN Points</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Community activity, mining-style claims, tasks, referrals and points tracking are active through the APXN Points experience.
+                        </p>
+                    </div>
+                </div>
 
-            <a
-                href="blog/"
-                class="hover:text-white"
-            >
-                Blog
+                <div class="section-3d gold p-7">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-yellow-500/10 border border-yellow-500/25 text-2xl">🎯</div>
+                            <span class="inline-flex items-center gap-2 text-xs font-black text-amber-300">
+                                <span class="status-dot bg-amber-300"></span> PLANNED
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-black mb-2">Token Distribution</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Distribution is not active yet. Eligibility rules and official distribution instructions will be published before activation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="section-3d p-7">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-800 border border-slate-700 text-2xl">💳</div>
+                            <span class="inline-flex items-center gap-2 text-xs font-black text-gray-400">
+                                <span class="status-dot bg-gray-500"></span> NOT ACTIVE
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-black mb-2">Withdrawals</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Withdrawals are not active. The official website and Apex Network X account will announce when the withdrawal stage becomes available.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 sm:py-24 px-5 sm:px-6 border-t border-slate-800 bg-slate-900/20">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <p class="text-yellow-500 text-xs font-black uppercase tracking-[0.22em] mb-3">Future-Ready Architecture</p>
+                <h2 class="text-3xl sm:text-5xl font-black mb-5">Prepared for Distribution & Withdrawals</h2>
+                <p class="text-gray-400 leading-relaxed">
+                    The website is being organized now so future account verification, eligibility, allocation, wallet and withdrawal stages can be added without mixing them with the APXN Points balance.
+                </p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="future-step section-3d p-6">
+                    <div class="relative z-10">
+                        <div class="text-3xl mb-4">1️⃣</div>
+                        <h3 class="font-black text-lg mb-2">Verify Identity</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">Secure Telegram verification identifies the correct existing user account.</p>
+                    </div>
+                </div>
+
+                <div class="future-step section-3d p-6">
+                    <div class="relative z-10">
+                        <div class="text-3xl mb-4">2️⃣</div>
+                        <h3 class="font-black text-lg mb-2">Check Eligibility</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">Future eligibility rules can be evaluated independently from the points display.</p>
+                    </div>
+                </div>
+
+                <div class="future-step section-3d p-6">
+                    <div class="relative z-10">
+                        <div class="text-3xl mb-4">3️⃣</div>
+                        <h3 class="font-black text-lg mb-2">Show Allocation</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">Approved token allocations can be shown separately from APXN Points.</p>
+                    </div>
+                </div>
+
+                <div class="future-step section-3d p-6">
+                    <div class="relative z-10">
+                        <div class="text-3xl mb-4">4️⃣</div>
+                        <h3 class="font-black text-lg mb-2">Wallet & Withdrawal</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">Wallet and withdrawal features remain disabled until the official stage is activated.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-10">
+                <a href="dashboard.html" class="nav-3d primary text-sm sm:text-base px-7 py-4">Open My APXN Dashboard →</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="token" class="py-20 sm:py-24 px-5 sm:px-6 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-14">
+                <p class="text-yellow-500 text-xs font-black uppercase tracking-[0.22em] mb-3">APXN Token</p>
+                <h2 class="text-3xl sm:text-5xl font-black mb-5">Tokenomics & Public Contract</h2>
+                <p class="text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                    Public token information for the Apex Network project. APXN Points remain a separate community activity balance unless and until an official distribution mechanism is announced.
+                </p>
+            </div>
+
+            <div class="section-3d green p-6 sm:p-8 mb-10">
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div>
+                        <p class="text-emerald-400 text-xs font-black uppercase tracking-[0.2em] mb-2">BEP-20 Contract</p>
+                        <h3 class="text-2xl font-black mb-2">Public APXN Smart Contract</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed max-w-2xl">
+                            The APXN token contract is publicly viewable on BscScan. Explorer verification makes the source information visible; it should not be confused with a third-party security audit.
+                        </p>
+                    </div>
+
+                    <div class="lg:text-right min-w-0">
+                        <code class="block text-yellow-300 font-mono text-xs sm:text-sm bg-black/40 border border-slate-700 px-4 py-3 rounded-xl break-all mb-3">
+                            0x88074bA197BBB0a3AFF891E52d05764F98509956
+                        </code>
+
+                        <a href="https://bscscan.com/token/0x88074bA197BBB0a3AFF891E52d05764F98509956" target="_blank" rel="noopener noreferrer" class="nav-3d text-xs">
+                            Verify on BscScan ↗
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="section-3d gold p-6 md:col-span-2 lg:col-span-3 text-center">
+                    <div class="relative z-10">
+                        <span class="text-4xl block mb-3">💎</span>
+                        <div class="text-yellow-400 text-4xl sm:text-5xl font-black mb-2">100,000,000 APXN</div>
+                        <p class="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Total Fixed Supply</p>
+                    </div>
+                </div>
+
+                <div class="section-3d p-6">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <span class="font-black">Community & Airdrop</span>
+                            <span class="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">63%</span>
+                        </div>
+                        <p class="text-sm text-gray-500 leading-relaxed">Reserved for community-oriented distribution under future eligibility and distribution rules.</p>
+                    </div>
+                </div>
+
+                <div class="section-3d p-6">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <span class="font-black">DEX & CEX Liquidity</span>
+                            <span class="bg-purple-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">20%</span>
+                        </div>
+                        <p class="text-sm text-gray-500 leading-relaxed">Allocation intended for liquidity and future exchange-related needs.</p>
+                    </div>
+                </div>
+
+                <div class="section-3d p-6">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <span class="font-black">Marketing & Partners</span>
+                            <span class="bg-green-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">10%</span>
+                        </div>
+                        <p class="text-sm text-gray-500 leading-relaxed">Strategic allocation for ecosystem growth, campaigns and partnerships.</p>
+                    </div>
+                </div>
+
+                <div class="section-3d p-6">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <span class="font-black">Core Team</span>
+                            <span class="bg-orange-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">6%</span>
+                        </div>
+                        <p class="text-sm text-gray-500 leading-relaxed">Development allocation planned for the project team and long-term operations.</p>
+                    </div>
+                </div>
+
+                <div class="section-3d gold p-6 lg:col-span-2">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <span class="font-black">Phased Presale / ICO</span>
+                            <span class="bg-red-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">1%</span>
+                        </div>
+                        <p class="text-sm text-gray-500 leading-relaxed">Limited project allocation intended for phased early participation before broader listing stages.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="blog-preview" class="py-20 sm:py-24 px-5 sm:px-6 border-t border-slate-800 bg-slate-900/20">
+        <div class="max-w-7xl mx-auto">
+            <a href="blog/" class="section-3d gold p-7 sm:p-10 lg:p-12 block">
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                    <div class="max-w-3xl">
+                        <p class="text-yellow-400 text-xs font-black uppercase tracking-[0.22em] mb-3">APXN Knowledge Hub</p>
+                        <h2 class="text-3xl sm:text-5xl font-black mb-4">Official Blog & Project Education</h2>
+                        <p class="text-gray-400 leading-relaxed">
+                            Read APXN Points guides, Apex Network updates, blockchain explainers, BSC information, security articles and development news. The blog will keep live features, community points and future roadmap stages clearly distinguished.
+                        </p>
+                    </div>
+                    <span class="nav-3d primary shrink-0 px-7 py-4">Explore the Blog →</span>
+                </div>
             </a>
+        </div>
+    </section>
+
+    <section id="roadmap" class="py-20 sm:py-24 px-5 sm:px-6 border-t border-slate-800">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-14">
+                <p class="text-yellow-500 text-xs font-black uppercase tracking-[0.22em] mb-3">Roadmap</p>
+                <h2 class="text-3xl sm:text-5xl font-black mb-5">The Apex Network Path</h2>
+                <p class="text-gray-400 leading-relaxed max-w-3xl mx-auto">
+                    Planned roadmap milestones describe the project's direction and may evolve as development, security, infrastructure and market requirements change.
+                </p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="section-3d gold p-7">
+                    <div class="relative z-10">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                            <h3 class="text-xl sm:text-2xl font-black text-yellow-300">2026 — Genesis & Community Foundation</h3>
+                            <span class="text-[10px] uppercase tracking-widest font-black bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full w-fit">Current Foundation</span>
+                        </div>
+                        <ul class="text-sm text-gray-400 leading-relaxed list-disc ml-5 space-y-2">
+                            <li>APXN Points community experience and mining-style claim system</li>
+                            <li>Daily check-ins, social tasks and referrals</li>
+                            <li>Official website, project dashboard and identity verification foundation</li>
+                            <li>Clear separation between APXN Points and token/project communications</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-3d p-7">
+                    <div class="relative z-10">
+                        <h3 class="text-xl sm:text-2xl font-black text-purple-300 mb-4">2027 — Growth & Infrastructure</h3>
+                        <ul class="text-sm text-gray-400 leading-relaxed list-disc ml-5 space-y-2">
+                            <li>Community growth and ecosystem upgrades</li>
+                            <li>Account, eligibility and security infrastructure improvements</li>
+                            <li>Phased project development and strategic partnerships</li>
+                            <li>Preparation for future token-related stages</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-3d blue p-7">
+                    <div class="relative z-10">
+                        <h3 class="text-xl sm:text-2xl font-black text-sky-300 mb-4">2028 — Token Generation & Testnet</h3>
+                        <ul class="text-sm text-gray-400 leading-relaxed list-disc ml-5 space-y-2">
+                            <li>Platform optimization and final tokenomics preparation</li>
+                            <li>Official listing and TGE stages when project requirements are met</li>
+                            <li>Distribution and withdrawal systems activated only through official announcements</li>
+                            <li>Apex Network testnet development stage</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-3d green p-7">
+                    <div class="relative z-10">
+                        <h3 class="text-xl sm:text-2xl font-black text-emerald-300 mb-4">2029 — Mainnet Era</h3>
+                        <ul class="text-sm text-gray-400 leading-relaxed list-disc ml-5 space-y-2">
+                            <li>Testnet expansion and infrastructure maturity</li>
+                            <li>Security review and validator preparation</li>
+                            <li>Planned Apex Network mainnet stage</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="support" class="border-t border-slate-800 bg-slate-950 pt-16 pb-8 px-5 sm:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-3 gap-8 pb-12 border-b border-slate-800">
+                <div>
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-11 h-11 rounded-full overflow-hidden border border-yellow-500/50">
+                            <img src="logo2%20(1).png" alt="Apex Network Footer Logo" width="44" height="44" loading="lazy" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <div class="font-black tracking-wider text-lg">APEX NETWORK</div>
+                            <div class="text-[10px] uppercase tracking-[0.2em] text-gray-600 font-bold">Official Ecosystem Hub</div>
+                        </div>
+                    </div>
+
+                    <div class="glass border border-slate-800 rounded-2xl p-5 max-w-sm">
+                        <p class="text-yellow-500 font-black text-xs uppercase tracking-widest mb-2">Founder</p>
+                        <p class="text-white font-black text-xl">M.C</p>
+                        <p class="text-gray-500 text-xs mt-2">Crypto & Blockchain Developer</p>
+                        <p class="text-gray-600 text-[11px] mt-1">📍 Canada</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-black mb-5">Official Project Links</h3>
+                    <div class="grid gap-3">
+                        <a href="https://x.com/APXNPOINTS" target="_blank" rel="noopener noreferrer" class="nav-3d justify-start text-sm">⛏️ APXN Points — @APXNPOINTS</a>
+                        <a href="https://x.com/ApexNetworkApp" target="_blank" rel="noopener noreferrer" class="nav-3d justify-start text-sm">🌐 Apex Network — @ApexNetworkApp</a>
+                        <a href="blog/" class="nav-3d justify-start text-sm">📰 APXN Blog</a>
+                        <a href="dashboard.html" class="nav-3d justify-start text-sm">🔐 My APXN Dashboard</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-black mb-5">Community & Support</h3>
+                    <div class="grid gap-3">
+                        <a href="https://t.me/ApexMiner_Official" target="_blank" rel="noopener noreferrer" class="nav-3d justify-start text-sm">📢 Telegram Channel</a>
+                        <a href="https://t.me/ApexMinerGroup" target="_blank" rel="noopener noreferrer" class="nav-3d justify-start text-sm">💬 Telegram Group</a>
+                        <a href="mailto:contact@apxn.network" class="nav-3d justify-start text-sm">✉️ contact@apxn.network</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 text-xs text-gray-600">
+                <p>&copy; 2026 Apex Network. All rights reserved.</p>
+                <div class="flex flex-wrap gap-x-4 gap-y-2">
+                    <a href="privacy.html" class="hover:text-yellow-400 transition-colors">Privacy Policy</a>
+                    <a href="terms.html" class="hover:text-yellow-400 transition-colors">Terms & Conditions</a>
+                    <a href="disclaimer.html" class="hover:text-yellow-400 transition-colors">Disclaimer</a>
+                    <a href="editorial-policy.html" class="hover:text-yellow-400 transition-colors">Editorial Policy</a>
+                </div>
+                <p>Project information only. Not financial advice.</p>
+            </div>
         </div>
     </footer>
 
     <script>
-        let accountReady =
-            false;
+        function toggleMenu() {
+            const menu = document.getElementById('nav-menu');
+            const button = document.getElementById('menu-button');
+            const isHidden = menu.classList.contains('hidden');
 
-        let currentTasks =
-            [];
-
-        function show(
-            id,
-            display
-        ) {
-            const element =
-                document.getElementById(
-                    id
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                menu.classList.add(
+                    'flex',
+                    'absolute',
+                    'top-[72px]',
+                    'left-4',
+                    'right-4',
+                    'flex-col',
+                    'bg-slate-950',
+                    'border',
+                    'border-slate-800',
+                    'rounded-2xl',
+                    'p-4',
+                    'shadow-2xl'
                 );
-
-            if (element) {
-                element.style.display =
-                    display;
+                button.setAttribute('aria-expanded', 'true');
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove(
+                    'flex',
+                    'absolute',
+                    'top-[72px]',
+                    'left-4',
+                    'right-4',
+                    'flex-col',
+                    'bg-slate-950',
+                    'border',
+                    'border-slate-800',
+                    'rounded-2xl',
+                    'p-4',
+                    'shadow-2xl'
+                );
+                button.setAttribute('aria-expanded', 'false');
             }
         }
 
-        function formatNumber(
-            value
-        ) {
-            const number =
-                Number(
-                    value
-                );
-
-            if (
-                !Number.isFinite(
-                    number
-                )
-            ) {
-                return '0';
-            }
-
-            return number
-                .toLocaleString(
-                    'en-US',
-                    {
-                        maximumFractionDigits:
-                            8
-                    }
-                );
-        }
-
-        function showTab(
-            category
-        ) {
-            const taskActive =
-                category ===
-                'task';
-
-            show(
-                'task-section',
-                taskActive
-                    ? 'block'
-                    : 'none'
-            );
-
-            show(
-                'join-section',
-                taskActive
-                    ? 'none'
-                    : 'block'
-            );
-
-            document
-                .getElementById(
-                    'tasks-tab'
-                )
-                .classList
-                .toggle(
-                    'active',
-                    taskActive
-                );
-
-            document
-                .getElementById(
-                    'join-tab'
-                )
-                .classList
-                .toggle(
-                    'active',
-                    !taskActive
-                );
-        }
-
-        function openStorageKey(
-            key,
-            url
-        ) {
-            return (
-                'apxn_earn_opened_' +
-                key +
-                '_' +
-                encodeURIComponent(
-                    url
-                )
-            );
-        }
-
-        function wasOpened(
-            task
-        ) {
-            try {
-                return (
-                    sessionStorage
-                        .getItem(
-                            openStorageKey(
-                                task.key,
-                                task.url
-                            )
-                        ) ===
-                    '1'
-                );
-            } catch {
-                return false;
-            }
-        }
-
-        function markOpened(
-            task
-        ) {
-            try {
-                sessionStorage
-                    .setItem(
-                        openStorageKey(
-                            task.key,
-                            task.url
-                        ),
-                        '1'
+        document.querySelectorAll('#nav-menu a').forEach((link) => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) {
+                    const menu = document.getElementById('nav-menu');
+                    const button = document.getElementById('menu-button');
+                    menu.classList.add('hidden');
+                    menu.classList.remove(
+                        'flex',
+                        'absolute',
+                        'top-[72px]',
+                        'left-4',
+                        'right-4',
+                        'flex-col',
+                        'bg-slate-950',
+                        'border',
+                        'border-slate-800',
+                        'rounded-2xl',
+                        'p-4',
+                        'shadow-2xl'
                     );
-            } catch {
-                // Ignore storage errors.
-            }
-        }
-
-        function iconForTask(
-            task
-        ) {
-            if (
-                task.key.includes(
-                    'x_'
-                ) ||
-                task.key.includes(
-                    'join_x'
-                )
-            ) {
-                return '𝕏';
-            }
-
-            if (
-                task.key.includes(
-                    'telegram'
-                )
-            ) {
-                return '✈';
-            }
-
-            if (
-                task.key.includes(
-                    'article'
-                )
-            ) {
-                return '▤';
-            }
-
-            if (
-                task.key.includes(
-                    'website'
-                )
-            ) {
-                return '⌂';
-            }
-
-            return '◆';
-        }
-
-        function descriptionForTask(
-            task
-        ) {
-            const descriptions = {
-                x_points_post:
-                    'Open the current APXN Points post and support the community activity.',
-
-                x_network_post:
-                    'Open the current Apex Network project post and complete the activity.',
-
-                telegram_post:
-                    'Open the current official Telegram post and view the update.',
-
-                article:
-                    'Open the current APXN article and read the official content.',
-
-                join_x_points:
-                    'Follow the official APXN Points account on X.',
-
-                join_x_network:
-                    'Follow the official Apex Network project account on X.',
-
-                join_telegram_channel:
-                    'Join the official APXN Telegram channel.',
-
-                join_telegram_group:
-                    'Join the official APXN community group.',
-
-                join_website:
-                    'Visit the official APXN website.'
-            };
-
-            return (
-                descriptions[
-                    task.key
-                ] ||
-                'Complete this APXN ecosystem activity.'
-            );
-        }
-
-        function openLabel(
-            task
-        ) {
-            if (
-                task.category ===
-                'join'
-            ) {
-                return 'Join / Follow ↗';
-            }
-
-            return 'Open Task ↗';
-        }
-
-        function createTaskCard(
-            task
-        ) {
-            const article =
-                document.createElement(
-                    'article'
-                );
-
-            article.className =
-                'task-card p-5';
-
-            const opened =
-                wasOpened(
-                    task
-                );
-
-            article.innerHTML =
-                `
-                <div class="flex items-start justify-between gap-3 mb-5">
-                    <div class="w-11 h-11 rounded-xl border border-yellow-500/20 bg-yellow-500/10 flex items-center justify-center text-xl font-black">
-                        ${iconForTask(task)}
-                    </div>
-
-                    <span class="reward-badge">
-                        +${task.reward}
-                    </span>
-                </div>
-
-                <h3 class="text-lg font-black mb-2">
-                    ${escapeHtml(task.title)}
-                </h3>
-
-                <p class="text-xs text-gray-500 leading-relaxed mb-5">
-                    ${escapeHtml(descriptionForTask(task))}
-                </p>
-
-                <div class="status-message text-[11px] text-gray-600 mb-3" data-status>
-                    ${
-                        opened
-                            ? 'Activity opened. You can claim your reward.'
-                            : 'Open the activity first.'
-                    }
-                </div>
-
-                <div class="mt-auto grid grid-cols-2 gap-2">
-                    <a
-                        class="open-btn"
-                        href="${escapeAttribute(task.url)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        data-open
-                    >
-                        ${escapeHtml(openLabel(task))}
-                    </a>
-
-                    <button
-                        type="button"
-                        class="claim-btn"
-                        data-claim
-                        ${opened ? '' : 'disabled'}
-                    >
-                        Claim +${task.reward}
-                    </button>
-                </div>
-                `;
-
-            const openButton =
-                article.querySelector(
-                    '[data-open]'
-                );
-
-            const claimButton =
-                article.querySelector(
-                    '[data-claim]'
-                );
-
-            const status =
-                article.querySelector(
-                    '[data-status]'
-                );
-
-            openButton
-                .addEventListener(
-                    'click',
-                    () => {
-                        markOpened(
-                            task
-                        );
-
-                        status.textContent =
-                            'Activity opened. Return and claim your reward.';
-
-                        claimButton.disabled =
-                            false;
-                    }
-                );
-
-            claimButton
-                .addEventListener(
-                    'click',
-                    () => {
-                        claimTask(
-                            task,
-                            claimButton,
-                            status
-                        );
-                    }
-                );
-
-            return article;
-        }
-
-        function escapeHtml(
-            value
-        ) {
-            return String(
-                value ??
-                ''
-            )
-                .replace(
-                    /&/g,
-                    '&amp;'
-                )
-                .replace(
-                    /</g,
-                    '&lt;'
-                )
-                .replace(
-                    />/g,
-                    '&gt;'
-                )
-                .replace(
-                    /"/g,
-                    '&quot;'
-                )
-                .replace(
-                    /'/g,
-                    '&#039;'
-                );
-        }
-
-        function escapeAttribute(
-            value
-        ) {
-            return escapeHtml(
-                value
-            );
-        }
-
-        function renderTasks(
-            tasks
-        ) {
-            currentTasks =
-                Array.isArray(
-                    tasks
-                )
-                    ? tasks
-                    : [];
-
-            const taskGrid =
-                document.getElementById(
-                    'task-grid'
-                );
-
-            const joinGrid =
-                document.getElementById(
-                    'join-grid'
-                );
-
-            taskGrid.innerHTML =
-                '';
-
-            joinGrid.innerHTML =
-                '';
-
-            const taskItems =
-                currentTasks
-                    .filter(
-                        (task) =>
-                            task.category ===
-                            'task'
-                    );
-
-            const joinItems =
-                currentTasks
-                    .filter(
-                        (task) =>
-                            task.category ===
-                            'join'
-                    );
-
-            for (
-                const task of
-                taskItems
-            ) {
-                taskGrid
-                    .appendChild(
-                        createTaskCard(
-                            task
-                        )
-                    );
-            }
-
-            for (
-                const task of
-                joinItems
-            ) {
-                joinGrid
-                    .appendChild(
-                        createTaskCard(
-                            task
-                        )
-                    );
-            }
-
-            show(
-                'task-empty',
-                taskItems.length
-                    ? 'none'
-                    : 'block'
-            );
-
-            show(
-                'join-empty',
-                joinItems.length
-                    ? 'none'
-                    : 'block'
-            );
-
-            const totalRewards =
-                currentTasks
-                    .reduce(
-                        (
-                            sum,
-                            task
-                        ) =>
-                            sum +
-                            Number(
-                                task.reward ||
-                                0
-                            ),
-                        0
-                    );
-
-            document
-                .getElementById(
-                    'available-count'
-                )
-                .textContent =
-                    String(
-                        currentTasks.length
-                    );
-
-            document
-                .getElementById(
-                    'available-rewards'
-                )
-                .textContent =
-                    `${formatNumber(totalRewards)} APXN`;
-        }
-
-        async function loadTasks() {
-            try {
-                const response =
-                    await fetch(
-                        '/api/earn-tasks',
-                        {
-                            method:
-                                'GET',
-
-                            headers: {
-                                Accept:
-                                    'application/json'
-                            },
-
-                            cache:
-                                'no-store'
-                        }
-                    );
-
-                const data =
-                    await response
-                        .json();
-
-                renderTasks(
-                    data?.tasks ||
-                    []
-                );
-            } catch {
-                renderTasks(
-                    []
-                );
-            }
-        }
-
-        async function loadAccount() {
-            try {
-                const response =
-                    await fetch(
-                        '/api/dashboard-data',
-                        {
-                            method:
-                                'GET',
-
-                            credentials:
-                                'same-origin',
-
-                            headers: {
-                                Accept:
-                                    'application/json'
-                            },
-
-                            cache:
-                                'no-store'
-                        }
-                    );
-
-                let data =
-                    null;
-
-                try {
-                    data =
-                        await response
-                            .json();
-                } catch {
-                    data =
-                        null;
+                    button.setAttribute('aria-expanded', 'false');
                 }
-
-                show(
-                    'account-loading',
-                    'none'
-                );
-
-                if (
-                    response.status ===
-                    401
-                ) {
-                    accountReady =
-                        false;
-
-                    show(
-                        'account-login',
-                        'block'
-                    );
-
-                    show(
-                        'login-button',
-                        'inline-flex'
-                    );
-
-                    return;
-                }
-
-                if (
-                    response.status ===
-                    404
-                ) {
-                    accountReady =
-                        false;
-
-                    show(
-                        'account-missing',
-                        'block'
-                    );
-
-                    return;
-                }
-
-                if (
-                    !response.ok ||
-                    !data?.user
-                ) {
-                    accountReady =
-                        false;
-
-                    show(
-                        'account-login',
-                        'block'
-                    );
-
-                    show(
-                        'login-button',
-                        'inline-flex'
-                    );
-
-                    return;
-                }
-
-                accountReady =
-                    true;
-
-                const user =
-                    data.user;
-
-                document
-                    .getElementById(
-                        'account-name'
-                    )
-                    .textContent =
-                        user.firstName ||
-                        user.first_name ||
-                        'APXN Member';
-
-                document
-                    .getElementById(
-                        'account-username'
-                    )
-                    .textContent =
-                        user.username
-                            ? (
-                                '@' +
-                                String(
-                                    user.username
-                                ).replace(
-                                    /^@/,
-                                    ''
-                                )
-                            )
-                            : 'Verified Telegram account';
-
-                document
-                    .getElementById(
-                        'points-value'
-                    )
-                    .textContent =
-                        formatNumber(
-                            user.balance
-                        );
-
-                show(
-                    'account-logged',
-                    'block'
-                );
-
-                show(
-                    'points-box',
-                    'block'
-                );
-            } catch {
-                accountReady =
-                    false;
-
-                show(
-                    'account-loading',
-                    'none'
-                );
-
-                show(
-                    'account-login',
-                    'block'
-                );
-
-                show(
-                    'login-button',
-                    'inline-flex'
-                );
-            }
-        }
-
-        async function claimTask(
-            task,
-            button,
-            status
-        ) {
-            if (
-                !accountReady
-            ) {
-                status.textContent =
-                    'Sign in with Telegram first.';
-
-                return;
-            }
-
-            if (
-                !wasOpened(
-                    task
-                )
-            ) {
-                status.textContent =
-                    'Open the activity first.';
-
-                return;
-            }
-
-            button.disabled =
-                true;
-
-            button.textContent =
-                'Claiming...';
-
-            status.textContent =
-                'Adding APXN Points to your account...';
-
-            try {
-                const response =
-                    await fetch(
-                        '/api/earn-tasks',
-                        {
-                            method:
-                                'POST',
-
-                            credentials:
-                                'same-origin',
-
-                            headers: {
-                                Accept:
-                                    'application/json',
-
-                                'Content-Type':
-                                    'application/json'
-                            },
-
-                            body:
-                                JSON.stringify({
-                                    key:
-                                        task.key
-                                })
-                        }
-                    );
-
-                let data =
-                    null;
-
-                try {
-                    data =
-                        await response
-                            .json();
-                } catch {
-                    data =
-                        null;
-                }
-
-                if (
-                    response.status ===
-                    401
-                ) {
-                    accountReady =
-                        false;
-
-                    button.disabled =
-                        false;
-
-                    button.textContent =
-                        `Claim +${task.reward}`;
-
-                    status.textContent =
-                        'Your session expired. Sign in again.';
-
-                    return;
-                }
-
-                if (
-                    !response.ok
-                ) {
-                    button.disabled =
-                        false;
-
-                    button.textContent =
-                        `Claim +${task.reward}`;
-
-                    status.textContent =
-                        'Could not claim this reward. Please try again.';
-
-                    return;
-                }
-
-                if (
-                    data?.alreadyClaimed ===
-                    true
-                ) {
-                    button.disabled =
-                        true;
-
-                    button.classList
-                        .add(
-                            'claimed'
-                        );
-
-                    button.textContent =
-                        'Already Claimed';
-
-                    status.textContent =
-                        'You already received the reward for this activity.';
-
-                    if (
-                        data.balance !==
-                        undefined
-                    ) {
-                        document
-                            .getElementById(
-                                'points-value'
-                            )
-                            .textContent =
-                                formatNumber(
-                                    data.balance
-                                );
-                    }
-
-                    return;
-                }
-
-                if (
-                    data?.success ===
-                    true
-                ) {
-                    button.disabled =
-                        true;
-
-                    button.classList
-                        .add(
-                            'claimed'
-                        );
-
-                    button.textContent =
-                        `+${task.reward} Added ✓`;
-
-                    status.textContent =
-                        `${task.reward} APXN Points added to your account.`;
-
-                    if (
-                        data.balance !==
-                        undefined
-                    ) {
-                        document
-                            .getElementById(
-                                'points-value'
-                            )
-                            .textContent =
-                                formatNumber(
-                                    data.balance
-                                );
-                    }
-
-                    return;
-                }
-
-                button.disabled =
-                    false;
-
-                button.textContent =
-                    `Claim +${task.reward}`;
-
-                status.textContent =
-                    'Reward could not be claimed.';
-            } catch {
-                button.disabled =
-                    false;
-
-                button.textContent =
-                    `Claim +${task.reward}`;
-
-                status.textContent =
-                    'Connection error. Please try again.';
-            }
-        }
-
-        window
-            .addEventListener(
-                'DOMContentLoaded',
-                async () => {
-                    showTab(
-                        'task'
-                    );
-
-                    await Promise.all([
-                        loadAccount(),
-                        loadTasks()
-                    ]);
-                }
-            );
+            });
+        });
     </script>
 </body>
 </html>
