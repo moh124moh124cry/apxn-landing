@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My APXN Dashboard | Apex Network</title>
+
+    <meta
+        name="description"
+        content="Secure APXN account dashboard for Apex Network community members."
+    >
+
+    <meta
+        name="robots"
+        content="noindex, nofollow"
+    >
+
+    <link
+        rel="icon"
+        href="logo2%20(1).png"
+        type="image/png"
+    >
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        body {
+            min-height: 100vh;
+        }
+
+        .dashboard-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 9999px;
+            background:
+                rgba(234, 179, 8, 0.10);
+            filter: blur(120px);
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glass {
+            background:
+                rgba(15, 23, 42, 0.82);
+            backdrop-filter:
+                blur(14px);
+        }
+
+        .hidden-section {
+            display: none;
+        }
+    </style>
+</head>
+
+<body
+    class="
+        bg-slate-950
+        text-white
+        font-sans
+        overflow-x-hidden
+        selection:bg-yellow-500
+        selection:text-slate-950
+    "
+>
+
+    <div class="dashboard-glow"></div>
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav
+        class="
+            relative
+            z-20
+            border-b
+            border-slate-800
+            bg-slate-950/90
+            backdrop-blur-md
+        "
+    >
+        <div
+            class="
+                max-w-6xl
+                mx-auto
+                px-5
+                py-4
+                flex
+                items-center
+                justify-between
+                gap-4
+            "
+        >
+
+            <a
+                href="/"
+                class="
+                    flex
+                    items-center
+                    gap-3
+                "
+            >
+                <div
+                    class="
+                        w-11
+                        h-11
+                        rounded-full
+                        overflow-hidden
+                        border
+                        border-yellow-500/50
+                        shadow-[0_0_15px_rgba(234,179,8,0.35)]
+                    "
+                >
+                    <img
+                        src="logo2%20(1).png"
+                        alt="Apex Network"
+                        class="
+                            w-full
+                            h-full
+                            object-cover
+                        "
+                    >
+                </div>
+
+                <div>
+                    <div
+                        class="
+                            text-yellow-400
+                            font-black
+                            tracking-wide
+                        "
+                    >
+                        APEX NETWORK
+                    </div>
+
+                    <div
+                        class="
+                            text-[11px]
+                            text-gray-500
+                        "
+                    >
+                        My APXN Dashboard
+                    </div>
+                </div>
+            </a>
+
+            <a
+                href="/"
+                class="
+                    text-sm
+                    font-bold
+                    text-gray-300
+                    hover:text-yellow-400
+                    transition-colors
+                "
+            >
+                ← Back to Website
+            </a>
+
+        </div>
+    </nav>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main
+        class="
+            relative
+            z-10
+            max-w-6xl
+            mx-auto
+            px-5
+            py-12
+        "
+    >
+
+        <!-- PAGE HEADER -->
+
+        <div
+            class="
+                text-center
+                mb-10
+            "
+        >
+
+            <div
+                class="
+                    inline-flex
+                    items-center
+                    gap-2
+                    border
+                    border-yellow-500/30
+                    bg-yellow-500/10
+                    text-yellow-400
+                    px-4
+                    py-2
+                    rounded-full
+                    text-xs
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    mb-5
+                "
+            >
+                Secure Account Area
+            </div>
+
+            <h1
+                class="
+                    text-4xl
+                    md:text-5xl
+                    font-black
+                    mb-4
+                "
+            >
+                My
+                <span
+                    class="
+                        text-transparent
+                        bg-clip-text
+                        bg-gradient-to-r
+                        from-yellow-400
+                        to-orange-500
+                    "
+                >
+                    APXN Dashboard
+                </span>
+            </h1>
+
+            <p
+                class="
+                    text-gray-400
+                    max-w-2xl
+                    mx-auto
+                    leading-relaxed
+                "
+            >
+                Sign in securely with Telegram to view
+                your personal APXN activity and mining
+                account information.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             LOADING STATE
+        ========================== -->
+
+        <section
+            id="loading-section"
+            class="
+                max-w-xl
+                mx-auto
+                glass
+                border
+                border-slate-800
+                rounded-3xl
+                p-10
+                text-center
+                shadow-2xl
+            "
+        >
+
+            <div
+                class="
+                    w-12
+                    h-12
+                    border-4
+                    border-slate-700
+                    border-t-yellow-400
+                    rounded-full
+                    animate-spin
+                    mx-auto
+                    mb-5
+                "
+            ></div>
+
+            <h2
+                class="
+                    text-xl
+                    font-black
+                    mb-2
+                "
+            >
+                Checking your session
+            </h2>
+
+            <p
+                class="
+                    text-sm
+                    text-gray-500
+                "
+            >
+                Please wait...
+            </p>
+
+        </section>
+
+
+        <!-- =========================
+             LOGIN STATE
+        ========================== -->
+
+        <section
+            id="login-section"
+            class="
+                hidden-section
+                max-w-xl
+                mx-auto
+                glass
+                border
+                border-slate-800
+                rounded-3xl
+                p-7
+                md:p-10
+                shadow-2xl
+                text-center
+            "
+        >
+
+            <div
+                class="
+                    w-24
+                    h-24
+                    rounded-full
+                    mx-auto
+                    mb-6
+                    bg-slate-900
+                    border
+                    border-yellow-500/40
+                    p-2
+                    shadow-[0_0_35px_rgba(234,179,8,0.20)]
+                "
+            >
+                <img
+                    src="logo2%20(1).png"
+                    alt="APXN"
+                    class="
+                        w-full
+                        h-full
+                        object-cover
+                        rounded-full
+                    "
+                >
+            </div>
+
+            <h2
+                class="
+                    text-2xl
+                    md:text-3xl
+                    font-black
+                    mb-3
+                "
+            >
+                Access Your Dashboard
+            </h2>
+
+            <p
+                class="
+                    text-gray-400
+                    text-sm
+                    leading-relaxed
+                    mb-8
+                "
+            >
+                Telegram is used only to verify your
+                identity and locate your existing
+                APXN mining account.
+            </p>
+
+            <a
+                href="/api/dashboard-login"
+                class="
+                    w-full
+                    flex
+                    items-center
+                    justify-center
+                    gap-3
+                    bg-[#229ED9]
+                    hover:bg-[#1b8cc4]
+                    text-white
+                    font-black
+                    py-4
+                    px-6
+                    rounded-2xl
+                    transition-all
+                    hover:scale-[1.02]
+                    shadow-lg
+                "
+            >
+
+                <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    width="23"
+                    height="23"
+                    fill="currentColor"
+                >
+                    <path
+                        d="M21.944 2.506a1.5 1.5 0 0 0-1.56-.227L2.631 9.22c-1.15.45-1.13 2.087.03 2.508l4.495 1.635 1.72 5.568c.349 1.13 1.78 1.48 2.606.636l2.523-2.58 4.88 3.59c.965.71 2.34.183 2.59-1.003L23.47 4.08a1.5 1.5 0 0 0-1.526-1.574ZM8.318 12.25l9.832-6.177-7.965 7.357-.31 3.318-1.557-4.498Z"
+                    />
+                </svg>
+
+                Continue with Telegram
+
+            </a>
+
+            <div
+                class="
+                    mt-6
+                    text-xs
+                    text-gray-600
+                    leading-relaxed
+                "
+            >
+                Signing in does not create a mining
+                account and does not change your APXN
+                Points balance.
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             NO MINING ACCOUNT
+        ========================== -->
+
+        <section
+            id="no-account-section"
+            class="
+                hidden-section
+                max-w-xl
+                mx-auto
+                glass
+                border
+                border-slate-800
+                rounded-3xl
+                p-8
+                md:p-10
+                shadow-2xl
+                text-center
+            "
+        >
+
+            <div
+                class="
+                    w-16
+                    h-16
+                    mx-auto
+                    rounded-full
+                    flex
+                    items-center
+                    justify-center
+                    bg-slate-900
+                    border
+                    border-slate-700
+                    text-3xl
+                    mb-5
+                "
+            >
+                👤
+            </div>
+
+            <h2
+                class="
+                    text-2xl
+                    font-black
+                    mb-3
+                "
+            >
+                No APXN Mining Account Found
+            </h2>
+
+            <p
+                class="
+                    text-gray-400
+                    leading-relaxed
+                    mb-7
+                "
+            >
+                Your Telegram account was verified
+                successfully, but no existing APXN
+                mining account is associated with
+                this Telegram ID.
+            </p>
+
+            <p
+                class="
+                    text-sm
+                    text-gray-500
+                    mb-7
+                "
+            >
+                No mining data or APXN Points will be
+                displayed for this account.
+            </p>
+
+            <button
+                type="button"
+                onclick="logout()"
+                class="
+                    border
+                    border-slate-700
+                    bg-slate-900
+                    hover:bg-slate-800
+                    text-gray-300
+                    font-bold
+                    px-7
+                    py-3
+                    rounded-xl
+                    transition-colors
+                "
+            >
+                Sign Out
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             MINER DASHBOARD
+        ========================== -->
+
+        <section
+            id="dashboard-section"
+            class="hidden-section"
+        >
+
+            <!-- ACCOUNT HEADER -->
+
+            <div
+                class="
+                    glass
+                    border
+                    border-slate-800
+                    rounded-3xl
+                    p-6
+                    md:p-8
+                    mb-6
+                    shadow-xl
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        flex-col
+                        md:flex-row
+                        md:items-center
+                        justify-between
+                        gap-6
+                    "
+                >
+
+                    <div
+                        class="
+                            flex
+                            items-center
+                            gap-4
