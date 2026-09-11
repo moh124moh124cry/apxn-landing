@@ -649,6 +649,74 @@ async function getUserWallet(
     return data[0];
 }
 
+async function getUserBadges(
+    config,
+    telegramId
+) {
+    const url =
+        new URL(
+            `${config.supabaseUrl}/rest/v1/user_badges`
+        );
+
+    url.searchParams.set(
+        'select',
+
+        [
+            'badge_code',
+            'awarded_at',
+            'note'
+        ].join(',')
+    );
+
+    url.searchParams.set(
+        'telegram_id',
+        `eq.${telegramId}`
+    );
+
+    url.searchParams.set(
+        'order',
+        'awarded_at.desc'
+    );
+
+    const response =
+        await fetch(
+            url,
+            {
+                method:
+                    'GET',
+
+                headers:
+                    supabaseHeaders(
+                        config
+                    )
+            }
+        );
+
+    const data =
+        await readJson(
+            response
+        );
+
+    if (
+        !response.ok
+    ) {
+        console.error(
+            'dashboard-data badges error:',
+            response.status
+        );
+
+        throw new Error(
+            'SUPABASE_BADGES_REQUEST_FAILED'
+        );
+    }
+
+    return Array.isArray(
+        data
+    )
+        ? data
+        : [];
+}
+
 function cleanUsername(
     value
 ) {
@@ -850,6 +918,30 @@ function publicWallet(
     };
 }
 
+function publicBadge(
+    row
+) {
+    if (!row) {
+        return null;
+    }
+
+    return {
+        badgeCode:
+            cleanText(
+                row.badge_code
+            ),
+
+        awardedAt:
+            row.awarded_at ??
+            null,
+
+        note:
+            cleanText(
+                row.note
+            )
+    };
+}
+
 function buildStageStatus(
     allocations,
     wallet
@@ -1016,7 +1108,8 @@ export default async function handler(
 
         const [
             allocations,
-            wallet
+            wallet,
+            badges
         ] =
             await Promise.all([
                 getUserAllocations(
@@ -1025,6 +1118,11 @@ export default async function handler(
                 ),
 
                 getUserWallet(
+                    config,
+                    session.telegramId
+                ),
+
+                getUserBadges(
                     config,
                     session.telegramId
                 )
@@ -1057,6 +1155,15 @@ export default async function handler(
                         wallet
                     ),
 
+                badges:
+                    badges
+                        .map(
+                            publicBadge
+                        )
+                        .filter(
+                            Boolean
+                        ),
+
                 stages:
                     buildStageStatus(
                         allocations,
@@ -1082,4 +1189,5 @@ export default async function handler(
         );
     }
 }
+
 
