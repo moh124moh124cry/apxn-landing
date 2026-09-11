@@ -26,20 +26,39 @@
     </script>
 
     <style>
+        :root {
+            --gold: #facc15;
+            --gold-deep: #a16207;
+            --panel: rgba(15, 23, 42, 0.82);
+        }
+
         body {
             min-height: 100vh;
         }
 
         .dashboard-glow {
             position: fixed;
-            width: 500px;
-            height: 500px;
+            width: 560px;
+            height: 560px;
             border-radius: 9999px;
             background: rgba(234, 179, 8, 0.10);
-            filter: blur(120px);
-            top: -120px;
+            filter: blur(125px);
+            top: -150px;
             left: 50%;
             transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .dashboard-glow-blue {
+            position: fixed;
+            width: 420px;
+            height: 420px;
+            border-radius: 9999px;
+            background: rgba(14, 165, 233, 0.055);
+            filter: blur(120px);
+            right: -170px;
+            top: 38%;
             pointer-events: none;
             z-index: 0;
         }
@@ -47,16 +66,107 @@
         .glass {
             background: rgba(15, 23, 42, 0.82);
             backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
         }
 
         .hidden-section {
             display: none;
+        }
+
+        .panel-3d {
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 8px 0 rgba(2, 6, 23, 0.98),
+                0 18px 38px rgba(0, 0, 0, 0.24),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            transition:
+                transform .2s ease,
+                border-color .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .panel-3d::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(
+                120deg,
+                rgba(255,255,255,.035),
+                transparent 28%,
+                transparent 72%,
+                rgba(250,204,21,.018)
+            );
+        }
+
+        .panel-3d:hover {
+            transform: translateY(-3px);
+            border-color: rgba(250, 204, 21, 0.25);
+            box-shadow:
+                0 11px 0 rgba(2, 6, 23, 0.98),
+                0 24px 46px rgba(0, 0, 0, 0.30),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .stage-card {
+            position: relative;
+            min-height: 100%;
+            border-radius: 1.15rem;
+            border: 1px solid rgba(71, 85, 105, .58);
+            background:
+                linear-gradient(145deg, rgba(30,41,59,.88), rgba(2,6,23,.92));
+            box-shadow:
+                0 7px 0 rgba(2,6,23,.96),
+                0 14px 28px rgba(0,0,0,.22),
+                inset 0 1px 0 rgba(255,255,255,.04);
+            transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+        }
+
+        .stage-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(250,204,21,.28);
+            box-shadow:
+                0 10px 0 rgba(2,6,23,.96),
+                0 20px 36px rgba(0,0,0,.30),
+                inset 0 1px 0 rgba(255,255,255,.06);
+        }
+
+        .status-dot {
+            width: .5rem;
+            height: .5rem;
+            border-radius: 9999px;
+            flex: 0 0 auto;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 1.43rem;
+            top: 3.4rem;
+            bottom: -1.25rem;
+            width: 1px;
+            background: linear-gradient(
+                to bottom,
+                rgba(250,204,21,.4),
+                rgba(71,85,105,.18)
+            );
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+            }
         }
     </style>
 </head>
 
 <body class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950">
     <div class="dashboard-glow"></div>
+    <div class="dashboard-glow-blue"></div>
 
     <nav class="relative z-20 border-b border-slate-800 bg-slate-950/90 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
@@ -90,8 +200,8 @@
                 </span>
             </h1>
 
-            <p class="text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                Sign in securely with Telegram to view your personal APXN activity and mining account information.
+            <p class="text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                Securely verify your Telegram identity, view your APXN Points account and follow the official status of future eligibility, allocation, wallet and withdrawal stages.
             </p>
         </div>
 
@@ -163,10 +273,12 @@
         </section>
 
         <section id="dashboard-section" class="hidden-section">
-            <div class="glass border border-slate-800 rounded-3xl p-6 md:p-8 mb-6 shadow-xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+            <!-- ACCOUNT HEADER -->
+            <div class="glass panel-3d border border-slate-800 rounded-3xl p-6 md:p-8 mb-6">
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-full overflow-hidden border border-yellow-500/40 bg-slate-900">
+                        <div class="w-16 h-16 rounded-full overflow-hidden border border-yellow-500/40 bg-slate-900 shadow-[0_0_25px_rgba(234,179,8,0.12)]">
                             <img src="logo2%20(1).png" alt="APXN Account" class="w-full h-full object-cover">
                         </div>
 
@@ -193,36 +305,165 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="glass border border-yellow-500/30 rounded-2xl p-6">
-                    <div class="text-xs text-yellow-500 uppercase tracking-widest font-black mb-3">APXN Points</div>
-                    <div id="points-value" class="text-3xl font-black text-white">0</div>
-                    <div class="text-xs text-gray-500 mt-2">Community activity balance</div>
+            <!-- CURRENT APXN POINTS DATA -->
+            <div class="mb-4 flex items-end justify-between gap-4">
+                <div>
+                    <div class="text-[10px] uppercase tracking-[0.22em] text-yellow-500 font-black mb-1">Current Account</div>
+                    <h3 class="text-xl font-black">APXN Points Activity</h3>
                 </div>
 
-                <div class="glass border border-slate-800 rounded-2xl p-6">
-                    <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Mining Rate</div>
-                    <div id="mining-rate-value" class="text-2xl font-black">—</div>
-                    <div class="text-xs text-gray-500 mt-2">Current account rate</div>
+                <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-emerald-400">
+                    <span class="status-dot bg-emerald-400"></span>
+                    Active
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="glass panel-3d border border-yellow-500/30 rounded-2xl p-6">
+                    <div class="relative z-10">
+                        <div class="text-xs text-yellow-500 uppercase tracking-widest font-black mb-3">APXN Points</div>
+                        <div id="points-value" class="text-3xl font-black text-white">0</div>
+                        <div class="text-xs text-gray-500 mt-2">Community activity balance</div>
+                    </div>
                 </div>
 
-                <div class="glass border border-slate-800 rounded-2xl p-6">
-                    <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Check-In Streak</div>
-                    <div id="streak-value" class="text-2xl font-black">0</div>
-                    <div class="text-xs text-gray-500 mt-2">Consecutive activity</div>
+                <div class="glass panel-3d border border-slate-800 rounded-2xl p-6">
+                    <div class="relative z-10">
+                        <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Mining Rate</div>
+                        <div id="mining-rate-value" class="text-2xl font-black">—</div>
+                        <div class="text-xs text-gray-500 mt-2">Current account rate</div>
+                    </div>
                 </div>
 
-                <div class="glass border border-slate-800 rounded-2xl p-6">
-                    <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Country</div>
-                    <div id="country-value" class="text-2xl font-black">—</div>
-                    <div class="text-xs text-gray-500 mt-2">Account region</div>
+                <div class="glass panel-3d border border-slate-800 rounded-2xl p-6">
+                    <div class="relative z-10">
+                        <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Check-In Streak</div>
+                        <div id="streak-value" class="text-2xl font-black">0</div>
+                        <div class="text-xs text-gray-500 mt-2">Consecutive activity</div>
+                    </div>
+                </div>
+
+                <div class="glass panel-3d border border-slate-800 rounded-2xl p-6">
+                    <div class="relative z-10">
+                        <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Country</div>
+                        <div id="country-value" class="text-2xl font-black">—</div>
+                        <div class="text-xs text-gray-500 mt-2">Account region</div>
+                    </div>
                 </div>
             </div>
+
+            <!-- FUTURE STAGES STATUS -->
+            <section class="mb-8">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5">
+                    <div>
+                        <div class="text-[10px] uppercase tracking-[0.22em] text-sky-400 font-black mb-1">Official Status Center</div>
+                        <h3 class="text-2xl font-black">Distribution & Withdrawal Readiness</h3>
+                        <p class="text-sm text-gray-500 mt-2 max-w-3xl leading-relaxed">
+                            These stages are intentionally separated from APXN Points. A stage becomes active only when Apex Network officially enables it.
+                        </p>
+                    </div>
+
+                    <a
+                        href="https://x.com/ApexNetworkApp"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-sm font-black text-sky-400 hover:text-sky-300 transition-colors shrink-0"
+                    >
+                        Official Project Updates ↗
+                    </a>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="stage-card p-5 border-emerald-500/25">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">✓</div>
+                            <span class="text-[10px] uppercase tracking-widest font-black text-emerald-400">Verified</span>
+                        </div>
+                        <div class="text-[10px] uppercase tracking-widest text-gray-600 font-black mb-1">Stage 01</div>
+                        <h4 class="font-black mb-2">Identity</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Telegram identity verified for this dashboard session.
+                        </p>
+                    </div>
+
+                    <div class="stage-card p-5 border-emerald-500/25">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">⛏️</div>
+                            <span class="text-[10px] uppercase tracking-widest font-black text-emerald-400">Active</span>
+                        </div>
+                        <div class="text-[10px] uppercase tracking-widest text-gray-600 font-black mb-1">Stage 02</div>
+                        <h4 class="font-black mb-2">APXN Points</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Your community activity balance remains separate from token records.
+                        </p>
+                    </div>
+
+                    <div class="stage-card p-5">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">◎</div>
+                            <span
+                                id="eligibility-stage-status"
+                                class="text-[10px] uppercase tracking-widest font-black text-gray-500"
+                            >
+                                Not Active
+                            </span>
+                        </div>
+                        <div class="text-[10px] uppercase tracking-widest text-gray-600 font-black mb-1">Stage 03</div>
+                        <h4 class="font-black mb-2">Eligibility</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Future eligibility rules will be shown here after official activation.
+                        </p>
+                    </div>
+
+                    <div class="stage-card p-5">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">◇</div>
+                            <span
+                                id="allocation-stage-status"
+                                class="text-[10px] uppercase tracking-widest font-black text-gray-500"
+                            >
+                                No Record
+                            </span>
+                        </div>
+                        <div class="text-[10px] uppercase tracking-widest text-gray-600 font-black mb-1">Stage 04</div>
+                        <h4 class="font-black mb-2">Allocation</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Official token allocations appear separately when a valid project record exists.
+                        </p>
+                    </div>
+
+                    <div class="stage-card p-5">
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center">↗</div>
+                            <span
+                                id="withdrawal-stage-status"
+                                class="text-[10px] uppercase tracking-widest font-black text-gray-500"
+                            >
+                                Not Active
+                            </span>
+                        </div>
+                        <div class="text-[10px] uppercase tracking-widest text-gray-600 font-black mb-1">Stage 05</div>
+                        <h4 class="font-black mb-2">Wallet & Withdrawal</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Wallet linking and withdrawals remain disabled until officially launched.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-5 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+                    <div class="flex gap-3">
+                        <div class="text-amber-300 shrink-0">⚠️</div>
+                        <p class="text-xs sm:text-sm text-gray-400 leading-relaxed">
+                            Withdrawals are not active. Never trust a third-party message claiming that APXN withdrawals are live unless this dashboard and the official Apex Network channels confirm it.
+                        </p>
+                    </div>
+                </div>
+            </section>
 
             <!-- ICO VOUCHER -->
             <section
                 id="ico-voucher-section"
-                class="hidden-section mb-6"
+                class="hidden-section mb-8"
             >
                 <div class="relative overflow-hidden rounded-3xl border border-amber-400/40 bg-gradient-to-br from-amber-500/10 via-slate-900 to-orange-500/10 shadow-[0_0_40px_rgba(245,158,11,0.10)]">
                     <div class="absolute -top-20 -right-20 w-56 h-56 rounded-full bg-amber-400/10 blur-3xl pointer-events-none"></div>
@@ -323,42 +564,47 @@
                 </div>
             </section>
 
+            <!-- ACCOUNT DETAILS -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass border border-slate-800 rounded-2xl p-6">
-                    <h3 class="text-lg font-black mb-5">Account Information</h3>
+                <div class="glass panel-3d border border-slate-800 rounded-2xl p-6">
+                    <div class="relative z-10">
+                        <h3 class="text-lg font-black mb-5">Account Information</h3>
 
-                    <div class="space-y-4 text-sm">
-                        <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
-                            <span class="text-gray-500">Telegram ID</span>
-                            <span id="telegram-id-value" class="font-mono text-gray-300">—</span>
-                        </div>
+                        <div class="space-y-4 text-sm">
+                            <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
+                                <span class="text-gray-500">Telegram ID</span>
+                                <span id="telegram-id-value" class="font-mono text-gray-300">—</span>
+                            </div>
 
-                        <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
-                            <span class="text-gray-500">Mining Since</span>
-                            <span id="created-at-value" class="text-gray-300 text-right">—</span>
-                        </div>
+                            <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
+                                <span class="text-gray-500">Mining Since</span>
+                                <span id="created-at-value" class="text-gray-300 text-right">—</span>
+                            </div>
 
-                        <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
-                            <span class="text-gray-500">Last Claim</span>
-                            <span id="last-claim-value" class="text-gray-300 text-right">—</span>
+                            <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
+                                <span class="text-gray-500">Last Claim</span>
+                                <span id="last-claim-value" class="text-gray-300 text-right">—</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="glass border border-slate-800 rounded-2xl p-6">
-                    <h3 class="text-lg font-black mb-5">Account Security</h3>
+                <div class="glass panel-3d border border-slate-800 rounded-2xl p-6">
+                    <div class="relative z-10">
+                        <h3 class="text-lg font-black mb-5">Account Security</h3>
 
-                    <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-4">
-                        <div class="text-emerald-400 font-black mb-1">✓ Telegram Verified</div>
-                        <div class="text-xs text-gray-400 leading-relaxed">
-                            Your dashboard session is linked to your verified Telegram identity.
+                        <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-4">
+                            <div class="text-emerald-400 font-black mb-1">✓ Telegram Verified</div>
+                            <div class="text-xs text-gray-400 leading-relaxed">
+                                Your dashboard session is linked to your verified Telegram identity.
+                            </div>
                         </div>
-                    </div>
 
-                    <p class="text-xs text-gray-500 leading-relaxed">
-                        APXN mining information shown here is read from your existing mining account.
-                        The dashboard cannot create points or modify your mining balance.
-                    </p>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            APXN mining information shown here is read from your existing mining account.
+                            The dashboard cannot create points or modify your mining balance.
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -385,9 +631,13 @@
     </main>
 
     <footer class="relative z-10 border-t border-slate-900 mt-12 py-8 px-5 text-center text-xs text-gray-600">
-        Apex Network — APXN
-        <br>
-        Secure community account dashboard
+        <div class="mb-2">Apex Network — APXN</div>
+        <div>Secure community account dashboard</div>
+        <div class="mt-3 flex items-center justify-center gap-4 flex-wrap">
+            <a href="https://x.com/APXNPOINTS" target="_blank" rel="noopener noreferrer" class="hover:text-yellow-400 transition-colors">APXN Points</a>
+            <a href="https://x.com/ApexNetworkApp" target="_blank" rel="noopener noreferrer" class="hover:text-sky-400 transition-colors">Apex Network</a>
+            <a href="/" class="hover:text-white transition-colors">Website</a>
+        </div>
     </footer>
 
     <script>
@@ -520,6 +770,97 @@
             );
         }
 
+        function setFutureStageState(voucher) {
+            const eligibility =
+                document.getElementById(
+                    'eligibility-stage-status'
+                );
+
+            const allocation =
+                document.getElementById(
+                    'allocation-stage-status'
+                );
+
+            const withdrawal =
+                document.getElementById(
+                    'withdrawal-stage-status'
+                );
+
+            if (eligibility) {
+                eligibility.textContent =
+                    'Not Active';
+
+                eligibility.className =
+                    'text-[10px] uppercase tracking-widest font-black text-gray-500';
+            }
+
+            if (withdrawal) {
+                withdrawal.textContent =
+                    'Not Active';
+
+                withdrawal.className =
+                    'text-[10px] uppercase tracking-widest font-black text-gray-500';
+            }
+
+            if (!allocation) {
+                return;
+            }
+
+            if (!voucher) {
+                allocation.textContent =
+                    'No Record';
+
+                allocation.className =
+                    'text-[10px] uppercase tracking-widest font-black text-gray-500';
+
+                return;
+            }
+
+            const normalized =
+                String(voucher.status || 'reserved')
+                    .trim()
+                    .toLowerCase();
+
+            const labels = {
+                reserved: 'Reserved',
+                eligible: 'Eligible',
+                claimed: 'Claimed',
+                cancelled: 'Cancelled'
+            };
+
+            allocation.textContent =
+                labels[normalized] ||
+                'Record Found';
+
+            allocation.className =
+                'text-[10px] uppercase tracking-widest font-black';
+
+            if (normalized === 'eligible') {
+                allocation.classList.add(
+                    'text-emerald-400'
+                );
+                return;
+            }
+
+            if (normalized === 'claimed') {
+                allocation.classList.add(
+                    'text-sky-400'
+                );
+                return;
+            }
+
+            if (normalized === 'cancelled') {
+                allocation.classList.add(
+                    'text-red-400'
+                );
+                return;
+            }
+
+            allocation.classList.add(
+                'text-amber-400'
+            );
+        }
+
         function populateIcoVoucher(voucher) {
             const section =
                 document.getElementById(
@@ -530,6 +871,10 @@
                 document.getElementById(
                     'ico-note-wrap'
                 );
+
+            setFutureStageState(
+                voucher || null
+            );
 
             if (!section) {
                 return;
