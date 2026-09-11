@@ -4,14 +4,10 @@ import {
     timingSafeEqual
 } from 'node:crypto';
 
-
 const SESSION_COOKIE =
     'apxn_dashboard_session';
 
-
-function noStore(
-    res
-) {
+function noStore(res) {
     res.setHeader(
         'Cache-Control',
         'no-store, max-age=0'
@@ -38,21 +34,17 @@ function noStore(
     );
 }
 
-
 function json(
     res,
     status,
     body
 ) {
-    noStore(
-        res
-    );
+    noStore(res);
 
     return res
         .status(status)
         .json(body);
 }
-
 
 function getConfig() {
     const telegramClientSecret =
@@ -69,7 +61,6 @@ function getConfig() {
         process.env
             .SUPABASE_SECRET_KEY;
 
-
     if (
         !telegramClientSecret ||
         !supabaseUrl ||
@@ -77,7 +68,6 @@ function getConfig() {
     ) {
         return null;
     }
-
 
     return {
         telegramClientSecret:
@@ -88,11 +78,10 @@ function getConfig() {
         supabaseUrl:
             String(
                 supabaseUrl
-            )
-                .replace(
-                    /\/$/,
-                    ''
-                ),
+            ).replace(
+                /\/$/,
+                ''
+            ),
 
         supabaseKey:
             String(
@@ -101,15 +90,11 @@ function getConfig() {
     };
 }
 
-
-function parseCookies(
-    req
-) {
+function parseCookies(req) {
     const header =
         req.headers.cookie || '';
 
     const cookies = {};
-
 
     for (
         const part of
@@ -118,13 +103,11 @@ function parseCookies(
         const index =
             part.indexOf('=');
 
-
         if (
             index === -1
         ) {
             continue;
         }
-
 
         const key =
             part
@@ -134,7 +117,6 @@ function parseCookies(
                 )
                 .trim();
 
-
         const rawValue =
             part
                 .slice(
@@ -142,11 +124,9 @@ function parseCookies(
                 )
                 .trim();
 
-
         if (!key) {
             continue;
         }
-
 
         try {
             cookies[key] =
@@ -159,10 +139,8 @@ function parseCookies(
         }
     }
 
-
     return cookies;
 }
-
 
 function safeEqual(
     first,
@@ -177,7 +155,6 @@ function safeEqual(
         return false;
     }
 
-
     const a =
         Buffer.from(
             first,
@@ -190,7 +167,6 @@ function safeEqual(
             'utf8'
         );
 
-
     if (
         a.length !==
         b.length
@@ -198,17 +174,13 @@ function safeEqual(
         return false;
     }
 
-
     return timingSafeEqual(
         a,
         b
     );
 }
 
-
-function clearSessionCookie(
-    res
-) {
+function clearSessionCookie(res) {
     res.setHeader(
         'Set-Cookie',
 
@@ -223,7 +195,6 @@ function clearSessionCookie(
     );
 }
 
-
 function sessionKey(
     clientSecret
 ) {
@@ -237,14 +208,13 @@ function sessionKey(
         .digest();
 }
 
-
 function verifySession(
     token,
     config
 ) {
     if (
         typeof token !==
-        'string' ||
+            'string' ||
         !token ||
         token.length >
             4096
@@ -252,10 +222,8 @@ function verifySession(
         return null;
     }
 
-
     const parts =
         token.split('.');
-
 
     if (
         parts.length !==
@@ -264,12 +232,10 @@ function verifySession(
         return null;
     }
 
-
     const [
         encodedPayload,
         receivedSignature
     ] = parts;
-
 
     if (
         !encodedPayload ||
@@ -277,7 +243,6 @@ function verifySession(
     ) {
         return null;
     }
-
 
     const expectedSignature =
         createHmac(
@@ -295,7 +260,6 @@ function verifySession(
                 'base64url'
             );
 
-
     if (
         !safeEqual(
             receivedSignature,
@@ -305,9 +269,7 @@ function verifySession(
         return null;
     }
 
-
     let payload = null;
-
 
     try {
         payload =
@@ -325,7 +287,6 @@ function verifySession(
         return null;
     }
 
-
     if (
         !payload ||
         typeof payload !==
@@ -337,7 +298,6 @@ function verifySession(
         return null;
     }
 
-
     if (
         payload.version !==
         1
@@ -345,13 +305,11 @@ function verifySession(
         return null;
     }
 
-
     const telegramId =
         String(
             payload.telegramId ??
             ''
         ).trim();
-
 
     if (
         !/^\d+$/.test(
@@ -360,7 +318,6 @@ function verifySession(
     ) {
         return null;
     }
-
 
     const issuedAt =
         Number(
@@ -371,7 +328,6 @@ function verifySession(
         Number(
             payload.expiresAt
         );
-
 
     if (
         !Number.isFinite(
@@ -384,13 +340,11 @@ function verifySession(
         return null;
     }
 
-
     const now =
         Math.floor(
             Date.now() /
             1000
         );
-
 
     if (
         issuedAt >
@@ -399,7 +353,6 @@ function verifySession(
         return null;
     }
 
-
     if (
         expiresAt <=
         now
@@ -407,14 +360,12 @@ function verifySession(
         return null;
     }
 
-
     if (
         expiresAt <=
         issuedAt
     ) {
         return null;
     }
-
 
     if (
         expiresAt -
@@ -424,12 +375,10 @@ function verifySession(
         return null;
     }
 
-
     return {
         telegramId
     };
 }
-
 
 async function readJson(
     response
@@ -437,11 +386,9 @@ async function readJson(
     const text =
         await response.text();
 
-
     if (!text) {
         return null;
     }
-
 
     try {
         return JSON.parse(
@@ -451,7 +398,6 @@ async function readJson(
         return null;
     }
 }
-
 
 function supabaseHeaders(
     config
@@ -468,7 +414,6 @@ function supabaseHeaders(
     };
 }
 
-
 async function getMiningUser(
     config,
     telegramId
@@ -477,7 +422,6 @@ async function getMiningUser(
         new URL(
             `${config.supabaseUrl}/rest/v1/users`
         );
-
 
     url.searchParams.set(
         'select',
@@ -495,18 +439,15 @@ async function getMiningUser(
         ].join(',')
     );
 
-
     url.searchParams.set(
         'telegram_id',
         `eq.${telegramId}`
     );
 
-
     url.searchParams.set(
         'limit',
         '1'
     );
-
 
     const response =
         await fetch(
@@ -522,12 +463,10 @@ async function getMiningUser(
             }
         );
 
-
     const data =
         await readJson(
             response
         );
-
 
     if (
         !response.ok
@@ -542,7 +481,6 @@ async function getMiningUser(
         );
     }
 
-
     if (
         !Array.isArray(
             data
@@ -553,10 +491,8 @@ async function getMiningUser(
         return null;
     }
 
-
     return data[0];
 }
-
 
 async function getUserAllocations(
     config,
@@ -566,7 +502,6 @@ async function getUserAllocations(
         new URL(
             `${config.supabaseUrl}/rest/v1/user_allocations`
         );
-
 
     url.searchParams.set(
         'select',
@@ -583,18 +518,15 @@ async function getUserAllocations(
         ].join(',')
     );
 
-
     url.searchParams.set(
         'telegram_id',
         `eq.${telegramId}`
     );
 
-
     url.searchParams.set(
         'order',
         'created_at.desc'
     );
-
 
     const response =
         await fetch(
@@ -610,12 +542,10 @@ async function getUserAllocations(
             }
         );
 
-
     const data =
         await readJson(
             response
         );
-
 
     if (
         !response.ok
@@ -630,7 +560,6 @@ async function getUserAllocations(
         );
     }
 
-
     return Array.isArray(
         data
     )
@@ -638,6 +567,87 @@ async function getUserAllocations(
         : [];
 }
 
+async function getUserWallet(
+    config,
+    telegramId
+) {
+    const url =
+        new URL(
+            `${config.supabaseUrl}/rest/v1/user_wallets`
+        );
+
+    url.searchParams.set(
+        'select',
+
+        [
+            'wallet_address',
+            'chain_id',
+            'wallet_verified',
+            'verified_at',
+            'created_at',
+            'updated_at'
+        ].join(',')
+    );
+
+    url.searchParams.set(
+        'telegram_id',
+        `eq.${telegramId}`
+    );
+
+    url.searchParams.set(
+        'order',
+        'updated_at.desc'
+    );
+
+    url.searchParams.set(
+        'limit',
+        '1'
+    );
+
+    const response =
+        await fetch(
+            url,
+            {
+                method:
+                    'GET',
+
+                headers:
+                    supabaseHeaders(
+                        config
+                    )
+            }
+        );
+
+    const data =
+        await readJson(
+            response
+        );
+
+    if (
+        !response.ok
+    ) {
+        console.error(
+            'dashboard-data wallet error:',
+            response.status
+        );
+
+        throw new Error(
+            'SUPABASE_WALLET_REQUEST_FAILED'
+        );
+    }
+
+    if (
+        !Array.isArray(
+            data
+        ) ||
+        data.length ===
+            0
+    ) {
+        return null;
+    }
+
+    return data[0];
+}
 
 function cleanUsername(
     value
@@ -649,15 +659,12 @@ function cleanUsername(
         return null;
     }
 
-
     const username =
         value.trim();
-
 
     if (!username) {
         return null;
     }
-
 
     return username
         .replace(
@@ -665,7 +672,6 @@ function cleanUsername(
             ''
         );
 }
-
 
 function cleanText(
     value
@@ -677,14 +683,11 @@ function cleanText(
         return null;
     }
 
-
     const text =
         value.trim();
 
-
     return text || null;
 }
-
 
 function publicUser(
     row
@@ -738,7 +741,6 @@ function publicUser(
     };
 }
 
-
 function isIcoAllocation(
     row
 ) {
@@ -750,11 +752,9 @@ function isIcoAllocation(
             .trim()
             .toLowerCase();
 
-
     if (!type) {
         return false;
     }
-
 
     return (
         type.includes('ico') ||
@@ -763,14 +763,12 @@ function isIcoAllocation(
     );
 }
 
-
 function publicIcoVoucher(
     row
 ) {
     if (!row) {
         return null;
     }
-
 
     return {
         allocationType:
@@ -810,6 +808,105 @@ function publicIcoVoucher(
     };
 }
 
+function publicWallet(
+    row
+) {
+    if (!row) {
+        return null;
+    }
+
+    return {
+        address:
+            cleanText(
+                row.wallet_address
+            ),
+
+        chainId:
+            Number.isFinite(
+                Number(
+                    row.chain_id
+                )
+            )
+                ? Number(
+                    row.chain_id
+                )
+                : 56,
+
+        verified:
+            row.wallet_verified ===
+                true,
+
+        verifiedAt:
+            row.verified_at ??
+            null,
+
+        createdAt:
+            row.created_at ??
+            null,
+
+        updatedAt:
+            row.updated_at ??
+            null
+    };
+}
+
+function buildStageStatus(
+    allocations,
+    wallet
+) {
+    const allocationCount =
+        Array.isArray(
+            allocations
+        )
+            ? allocations.length
+            : 0;
+
+    return {
+        identity: {
+            status:
+                'verified'
+        },
+
+        points: {
+            status:
+                'active'
+        },
+
+        eligibility: {
+            status:
+                'not_active'
+        },
+
+        allocation: {
+            status:
+                allocationCount >
+                    0
+                    ? 'record_found'
+                    : 'no_record',
+
+            recordCount:
+                allocationCount
+        },
+
+        wallet: {
+            status:
+                wallet
+                    ? (
+                        wallet
+                            .wallet_verified ===
+                            true
+                            ? 'verified'
+                            : 'linked'
+                    )
+                    : 'not_linked'
+        },
+
+        withdrawal: {
+            status:
+                'not_active'
+        }
+    };
+}
 
 export default async function handler(
     req,
@@ -819,7 +916,6 @@ export default async function handler(
         res
     );
 
-
     if (
         req.method !==
         'GET'
@@ -828,7 +924,6 @@ export default async function handler(
             'Allow',
             'GET'
         );
-
 
         return json(
             res,
@@ -840,16 +935,13 @@ export default async function handler(
         );
     }
 
-
     const config =
         getConfig();
-
 
     if (!config) {
         console.error(
             'dashboard-data: missing server configuration'
         );
-
 
         return json(
             res,
@@ -861,18 +953,15 @@ export default async function handler(
         );
     }
 
-
     const cookies =
         parseCookies(
             req
         );
 
-
     const sessionToken =
         cookies[
             SESSION_COOKIE
         ];
-
 
     if (!sessionToken) {
         return json(
@@ -885,19 +974,16 @@ export default async function handler(
         );
     }
 
-
     const session =
         verifySession(
             sessionToken,
             config
         );
 
-
     if (!session) {
         clearSessionCookie(
             res
         );
-
 
         return json(
             res,
@@ -909,7 +995,6 @@ export default async function handler(
         );
     }
 
-
     try {
         const user =
             await getMiningUser(
@@ -917,7 +1002,6 @@ export default async function handler(
                 session
                     .telegramId
             );
-
 
         if (!user) {
             return json(
@@ -930,19 +1014,26 @@ export default async function handler(
             );
         }
 
+        const [
+            allocations,
+            wallet
+        ] =
+            await Promise.all([
+                getUserAllocations(
+                    config,
+                    session.telegramId
+                ),
 
-        const allocations =
-            await getUserAllocations(
-                config,
-                session.telegramId
-            );
-
+                getUserWallet(
+                    config,
+                    session.telegramId
+                )
+            ]);
 
         const icoAllocation =
             allocations.find(
                 isIcoAllocation
             ) || null;
-
 
         return json(
             res,
@@ -959,6 +1050,17 @@ export default async function handler(
                 icoVoucher:
                     publicIcoVoucher(
                         icoAllocation
+                    ),
+
+                wallet:
+                    publicWallet(
+                        wallet
+                    ),
+
+                stages:
+                    buildStageStatus(
+                        allocations,
+                        wallet
                     )
             }
         );
@@ -969,7 +1071,6 @@ export default async function handler(
             error?.message ||
             error
         );
-
 
         return json(
             res,
