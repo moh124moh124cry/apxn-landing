@@ -461,6 +461,38 @@
             </section>
 
 
+            <!-- ACCOUNT BADGES -->
+            <section
+                id="badges-section"
+                class="hidden-section mb-8"
+            >
+                <div class="mb-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                    <div>
+                        <div class="text-[10px] uppercase tracking-[0.22em] text-violet-400 font-black mb-1">
+                            Account Recognition
+                        </div>
+                        <h3 class="text-2xl font-black">
+                            APXN Badges
+                        </h3>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Official recognition records associated with your verified APXN account.
+                        </p>
+                    </div>
+
+                    <span
+                        id="badges-count"
+                        class="inline-flex self-start sm:self-auto items-center rounded-full border border-violet-400/25 bg-violet-400/10 text-violet-300 px-4 py-2 text-xs font-black uppercase tracking-wider"
+                    >
+                        0 Badges
+                    </span>
+                </div>
+
+                <div
+                    id="badges-list"
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                ></div>
+            </section>
+
             <!-- WALLET RECORD -->
             <section
                 id="wallet-record-section"
@@ -988,6 +1020,228 @@
             );
         }
 
+        function badgeDisplayName(code) {
+            const normalized =
+                String(code || '')
+                    .trim()
+                    .toUpperCase();
+
+            const labels = {
+                EARLY_MINER: 'Early Miner',
+                FOUNDING_MINER: 'Founding Miner',
+                COMMUNITY_PIONEER: 'Community Pioneer',
+                VERIFIED_MEMBER: 'Verified Member',
+                TOP_MINER: 'Top Miner'
+            };
+
+            if (labels[normalized]) {
+                return labels[normalized];
+            }
+
+            if (!normalized) {
+                return 'APXN Badge';
+            }
+
+            return normalized
+                .toLowerCase()
+                .split('_')
+                .filter(Boolean)
+                .map(
+                    (word) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1)
+                )
+                .join(' ');
+        }
+
+        function badgeIcon(code) {
+            const normalized =
+                String(code || '')
+                    .trim()
+                    .toUpperCase();
+
+            const icons = {
+                EARLY_MINER: '⛏️',
+                FOUNDING_MINER: '◆',
+                COMMUNITY_PIONEER: '★',
+                VERIFIED_MEMBER: '✓',
+                TOP_MINER: '🏆'
+            };
+
+            return icons[normalized] || '🏅';
+        }
+
+        function populateBadges(badges) {
+            const section =
+                document.getElementById(
+                    'badges-section'
+                );
+
+            const list =
+                document.getElementById(
+                    'badges-list'
+                );
+
+            const count =
+                document.getElementById(
+                    'badges-count'
+                );
+
+            if (
+                !section ||
+                !list
+            ) {
+                return;
+            }
+
+            const records =
+                Array.isArray(badges)
+                    ? badges.filter(
+                        (badge) =>
+                            badge &&
+                            badge.badgeCode
+                    )
+                    : [];
+
+            list.replaceChildren();
+
+            if (
+                records.length ===
+                0
+            ) {
+                section.style.display =
+                    'none';
+                return;
+            }
+
+            if (count) {
+                count.textContent =
+                    `${records.length} ${
+                        records.length === 1
+                            ? 'Badge'
+                            : 'Badges'
+                    }`;
+            }
+
+            for (
+                const badge of
+                records
+            ) {
+                const card =
+                    document.createElement(
+                        'div'
+                    );
+
+                card.className =
+                    'relative overflow-hidden rounded-2xl border border-violet-400/25 bg-gradient-to-br from-violet-500/10 via-slate-900 to-slate-950 p-5 shadow-[0_8px_28px_rgba(0,0,0,0.20)]';
+
+                const top =
+                    document.createElement(
+                        'div'
+                    );
+
+                top.className =
+                    'flex items-start justify-between gap-4 mb-5';
+
+                const icon =
+                    document.createElement(
+                        'div'
+                    );
+
+                icon.className =
+                    'w-12 h-12 rounded-2xl flex items-center justify-center bg-violet-400/10 border border-violet-400/25 text-2xl shrink-0';
+
+                icon.textContent =
+                    badgeIcon(
+                        badge.badgeCode
+                    );
+
+                const status =
+                    document.createElement(
+                        'span'
+                    );
+
+                status.className =
+                    'inline-flex items-center rounded-full border border-emerald-400/25 bg-emerald-400/10 text-emerald-300 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider';
+
+                status.textContent =
+                    'Awarded';
+
+                top.append(
+                    icon,
+                    status
+                );
+
+                const code =
+                    document.createElement(
+                        'div'
+                    );
+
+                code.className =
+                    'text-[10px] uppercase tracking-[0.18em] text-violet-400 font-black mb-1';
+
+                code.textContent =
+                    String(
+                        badge.badgeCode
+                    );
+
+                const title =
+                    document.createElement(
+                        'h4'
+                    );
+
+                title.className =
+                    'text-xl font-black text-white mb-2';
+
+                title.textContent =
+                    badgeDisplayName(
+                        badge.badgeCode
+                    );
+
+                const note =
+                    document.createElement(
+                        'p'
+                    );
+
+                note.className =
+                    'text-sm text-gray-400 leading-relaxed min-h-[2.5rem]';
+
+                note.textContent =
+                    badge.note ||
+                    'Official APXN account recognition.';
+
+                const date =
+                    document.createElement(
+                        'div'
+                    );
+
+                date.className =
+                    'mt-5 pt-4 border-t border-slate-800 text-xs text-gray-500';
+
+                date.textContent =
+                    badge.awardedAt
+                        ? `Awarded: ${formatDate(
+                            badge.awardedAt
+                        )}`
+                        : 'Awarded';
+
+                card.append(
+                    top,
+                    code,
+                    title,
+                    note,
+                    date
+                );
+
+                list.appendChild(
+                    card
+                );
+            }
+
+            section.style.display =
+                'block';
+        }
+
         function populateWallet(wallet) {
             const section =
                 document.getElementById(
@@ -1249,6 +1503,11 @@
                 wallet
             );
 
+            populateBadges(
+                data?.badges ||
+                []
+            );
+
             populateWallet(
                 wallet
             );
@@ -1355,5 +1614,6 @@
     </script>
 </body>
 </html>
+
 
 
