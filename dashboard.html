@@ -2,32 +2,13 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My APXN Dashboard | Apex Network</title>
-
-    <meta
-        name="description"
-        content="Secure APXN account dashboard for Apex Network community members."
-    >
-
-    <meta
-        name="robots"
-        content="noindex, nofollow"
-    >
-
-    <link
-        rel="icon"
-        href="logo2%20(1).png"
-        type="image/png"
-    >
+    <meta name="description" content="Secure APXN account dashboard for Apex Network community members.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="logo2%20(1).png" type="image/png">
 
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -54,8 +35,7 @@
             width: 500px;
             height: 500px;
             border-radius: 9999px;
-            background:
-                rgba(234, 179, 8, 0.10);
+            background: rgba(234, 179, 8, 0.10);
             filter: blur(120px);
             top: -120px;
             left: 50%;
@@ -65,10 +45,8 @@
         }
 
         .glass {
-            background:
-                rgba(15, 23, 42, 0.82);
-            backdrop-filter:
-                blur(14px);
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(14px);
         }
 
         .hidden-section {
@@ -77,511 +55,466 @@
     </style>
 </head>
 
-<body
-    class="
-        bg-slate-950
-        text-white
-        font-sans
-        overflow-x-hidden
-        selection:bg-yellow-500
-        selection:text-slate-950
-    "
->
-
+<body class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950">
     <div class="dashboard-glow"></div>
 
-    <!-- =========================
-         NAVBAR
-    ========================== -->
-
-    <nav
-        class="
-            relative
-            z-20
-            border-b
-            border-slate-800
-            bg-slate-950/90
-            backdrop-blur-md
-        "
-    >
-        <div
-            class="
-                max-w-6xl
-                mx-auto
-                px-5
-                py-4
-                flex
-                items-center
-                justify-between
-                gap-4
-            "
-        >
-
-            <a
-                href="/"
-                class="
-                    flex
-                    items-center
-                    gap-3
-                "
-            >
-                <div
-                    class="
-                        w-11
-                        h-11
-                        rounded-full
-                        overflow-hidden
-                        border
-                        border-yellow-500/50
-                        shadow-[0_0_15px_rgba(234,179,8,0.35)]
-                    "
-                >
-                    <img
-                        src="logo2%20(1).png"
-                        alt="Apex Network"
-                        class="
-                            w-full
-                            h-full
-                            object-cover
-                        "
-                    >
+    <nav class="relative z-20 border-b border-slate-800 bg-slate-950/90 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full overflow-hidden border border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.35)]">
+                    <img src="logo2%20(1).png" alt="Apex Network" class="w-full h-full object-cover">
                 </div>
 
                 <div>
-                    <div
-                        class="
-                            text-yellow-400
-                            font-black
-                            tracking-wide
-                        "
-                    >
-                        APEX NETWORK
-                    </div>
-
-                    <div
-                        class="
-                            text-[11px]
-                            text-gray-500
-                        "
-                    >
-                        My APXN Dashboard
-                    </div>
+                    <div class="text-yellow-400 font-black tracking-wide">APEX NETWORK</div>
+                    <div class="text-[11px] text-gray-500">My APXN Dashboard</div>
                 </div>
             </a>
 
-            <a
-                href="/"
-                class="
-                    text-sm
-                    font-bold
-                    text-gray-300
-                    hover:text-yellow-400
-                    transition-colors
-                "
-            >
+            <a href="/" class="text-sm font-bold text-gray-300 hover:text-yellow-400 transition-colors">
                 ← Back to Website
             </a>
-
         </div>
     </nav>
 
-
-    <!-- =========================
-         MAIN
-    ========================== -->
-
-    <main
-        class="
-            relative
-            z-10
-            max-w-6xl
-            mx-auto
-            px-5
-            py-12
-        "
-    >
-
-        <!-- PAGE HEADER -->
-
-        <div
-            class="
-                text-center
-                mb-10
-            "
-        >
-
-            <div
-                class="
-                    inline-flex
-                    items-center
-                    gap-2
-                    border
-                    border-yellow-500/30
-                    bg-yellow-500/10
-                    text-yellow-400
-                    px-4
-                    py-2
-                    rounded-full
-                    text-xs
-                    font-bold
-                    uppercase
-                    tracking-widest
-                    mb-5
-                "
-            >
+    <main class="relative z-10 max-w-6xl mx-auto px-5 py-12">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center gap-2 border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-5">
                 Secure Account Area
             </div>
 
-            <h1
-                class="
-                    text-4xl
-                    md:text-5xl
-                    font-black
-                    mb-4
-                "
-            >
+            <h1 class="text-4xl md:text-5xl font-black mb-4">
                 My
-                <span
-                    class="
-                        text-transparent
-                        bg-clip-text
-                        bg-gradient-to-r
-                        from-yellow-400
-                        to-orange-500
-                    "
-                >
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
                     APXN Dashboard
                 </span>
             </h1>
 
-            <p
-                class="
-                    text-gray-400
-                    max-w-2xl
-                    mx-auto
-                    leading-relaxed
-                "
-            >
-                Sign in securely with Telegram to view
-                your personal APXN activity and mining
-                account information.
+            <p class="text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                Sign in securely with Telegram to view your personal APXN activity and mining account information.
             </p>
-
         </div>
-
-
-        <!-- =========================
-             LOADING STATE
-        ========================== -->
 
         <section
             id="loading-section"
-            class="
-                max-w-xl
-                mx-auto
-                glass
-                border
-                border-slate-800
-                rounded-3xl
-                p-10
-                text-center
-                shadow-2xl
-            "
+            class="max-w-xl mx-auto glass border border-slate-800 rounded-3xl p-10 text-center shadow-2xl"
         >
+            <div class="w-12 h-12 border-4 border-slate-700 border-t-yellow-400 rounded-full animate-spin mx-auto mb-5"></div>
 
-            <div
-                class="
-                    w-12
-                    h-12
-                    border-4
-                    border-slate-700
-                    border-t-yellow-400
-                    rounded-full
-                    animate-spin
-                    mx-auto
-                    mb-5
-                "
-            ></div>
-
-            <h2
-                class="
-                    text-xl
-                    font-black
-                    mb-2
-                "
-            >
-                Checking your session
-            </h2>
-
-            <p
-                class="
-                    text-sm
-                    text-gray-500
-                "
-            >
-                Please wait...
-            </p>
-
+            <h2 class="text-xl font-black mb-2">Checking your session</h2>
+            <p class="text-sm text-gray-500">Please wait...</p>
         </section>
-
-
-        <!-- =========================
-             LOGIN STATE
-        ========================== -->
 
         <section
             id="login-section"
-            class="
-                hidden-section
-                max-w-xl
-                mx-auto
-                glass
-                border
-                border-slate-800
-                rounded-3xl
-                p-7
-                md:p-10
-                shadow-2xl
-                text-center
-            "
+            class="hidden-section max-w-xl mx-auto glass border border-slate-800 rounded-3xl p-7 md:p-10 shadow-2xl text-center"
         >
-
-            <div
-                class="
-                    w-24
-                    h-24
-                    rounded-full
-                    mx-auto
-                    mb-6
-                    bg-slate-900
-                    border
-                    border-yellow-500/40
-                    p-2
-                    shadow-[0_0_35px_rgba(234,179,8,0.20)]
-                "
-            >
-                <img
-                    src="logo2%20(1).png"
-                    alt="APXN"
-                    class="
-                        w-full
-                        h-full
-                        object-cover
-                        rounded-full
-                    "
-                >
+            <div class="w-24 h-24 rounded-full mx-auto mb-6 bg-slate-900 border border-yellow-500/40 p-2 shadow-[0_0_35px_rgba(234,179,8,0.20)]">
+                <img src="logo2%20(1).png" alt="APXN" class="w-full h-full object-cover rounded-full">
             </div>
 
-            <h2
-                class="
-                    text-2xl
-                    md:text-3xl
-                    font-black
-                    mb-3
-                "
-            >
-                Access Your Dashboard
-            </h2>
+            <h2 class="text-2xl md:text-3xl font-black mb-3">Access Your Dashboard</h2>
 
-            <p
-                class="
-                    text-gray-400
-                    text-sm
-                    leading-relaxed
-                    mb-8
-                "
-            >
-                Telegram is used only to verify your
-                identity and locate your existing
-                APXN mining account.
+            <p class="text-gray-400 text-sm leading-relaxed mb-8">
+                Telegram is used only to verify your identity and locate your existing APXN mining account.
             </p>
 
             <a
                 href="/api/dashboard-login"
-                class="
-                    w-full
-                    flex
-                    items-center
-                    justify-center
-                    gap-3
-                    bg-[#229ED9]
-                    hover:bg-[#1b8cc4]
-                    text-white
-                    font-black
-                    py-4
-                    px-6
-                    rounded-2xl
-                    transition-all
-                    hover:scale-[1.02]
-                    shadow-lg
-                "
+                class="w-full flex items-center justify-center gap-3 bg-[#229ED9] hover:bg-[#1b8cc4] text-white font-black py-4 px-6 rounded-2xl transition-all hover:scale-[1.02] shadow-lg"
             >
-
-                <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    width="23"
-                    height="23"
-                    fill="currentColor"
-                >
-                    <path
-                        d="M21.944 2.506a1.5 1.5 0 0 0-1.56-.227L2.631 9.22c-1.15.45-1.13 2.087.03 2.508l4.495 1.635 1.72 5.568c.349 1.13 1.78 1.48 2.606.636l2.523-2.58 4.88 3.59c.965.71 2.34.183 2.59-1.003L23.47 4.08a1.5 1.5 0 0 0-1.526-1.574ZM8.318 12.25l9.832-6.177-7.965 7.357-.31 3.318-1.557-4.498Z"
-                    />
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="23" height="23" fill="currentColor">
+                    <path d="M21.944 2.506a1.5 1.5 0 0 0-1.56-.227L2.631 9.22c-1.15.45-1.13 2.087.03 2.508l4.495 1.635 1.72 5.568c.349 1.13 1.78 1.48 2.606.636l2.523-2.58 4.88 3.59c.965.71 2.34.183 2.59-1.003L23.47 4.08a1.5 1.5 0 0 0-1.526-1.574ZM8.318 12.25l9.832-6.177-7.965 7.357-.31 3.318-1.557-4.498Z"/>
                 </svg>
 
                 Continue with Telegram
-
             </a>
 
-            <div
-                class="
-                    mt-6
-                    text-xs
-                    text-gray-600
-                    leading-relaxed
-                "
-            >
-                Signing in does not create a mining
-                account and does not change your APXN
-                Points balance.
+            <div class="mt-6 text-xs text-gray-600 leading-relaxed">
+                Signing in does not create a mining account and does not change your APXN Points balance.
             </div>
-
         </section>
-
-
-        <!-- =========================
-             NO MINING ACCOUNT
-        ========================== -->
 
         <section
             id="no-account-section"
-            class="
-                hidden-section
-                max-w-xl
-                mx-auto
-                glass
-                border
-                border-slate-800
-                rounded-3xl
-                p-8
-                md:p-10
-                shadow-2xl
-                text-center
-            "
+            class="hidden-section max-w-xl mx-auto glass border border-slate-800 rounded-3xl p-8 md:p-10 shadow-2xl text-center"
         >
-
-            <div
-                class="
-                    w-16
-                    h-16
-                    mx-auto
-                    rounded-full
-                    flex
-                    items-center
-                    justify-center
-                    bg-slate-900
-                    border
-                    border-slate-700
-                    text-3xl
-                    mb-5
-                "
-            >
+            <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center bg-slate-900 border border-slate-700 text-3xl mb-5">
                 👤
             </div>
 
-            <h2
-                class="
-                    text-2xl
-                    font-black
-                    mb-3
-                "
-            >
-                No APXN Mining Account Found
-            </h2>
+            <h2 class="text-2xl font-black mb-3">No APXN Mining Account Found</h2>
 
-            <p
-                class="
-                    text-gray-400
-                    leading-relaxed
-                    mb-7
-                "
-            >
-                Your Telegram account was verified
-                successfully, but no existing APXN
-                mining account is associated with
-                this Telegram ID.
+            <p class="text-gray-400 leading-relaxed mb-7">
+                Your Telegram account was verified successfully, but no existing APXN mining account is associated with this Telegram ID.
             </p>
 
-            <p
-                class="
-                    text-sm
-                    text-gray-500
-                    mb-7
-                "
-            >
-                No mining data or APXN Points will be
-                displayed for this account.
+            <p class="text-sm text-gray-500 mb-7">
+                No mining data or APXN Points will be displayed for this account.
             </p>
 
             <button
                 type="button"
                 onclick="logout()"
-                class="
-                    border
-                    border-slate-700
-                    bg-slate-900
-                    hover:bg-slate-800
-                    text-gray-300
-                    font-bold
-                    px-7
-                    py-3
-                    rounded-xl
-                    transition-colors
-                "
+                class="border border-slate-700 bg-slate-900 hover:bg-slate-800 text-gray-300 font-bold px-7 py-3 rounded-xl transition-colors"
             >
                 Sign Out
             </button>
-
         </section>
 
+        <section id="dashboard-section" class="hidden-section">
+            <div class="glass border border-slate-800 rounded-3xl p-6 md:p-8 mb-6 shadow-xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full overflow-hidden border border-yellow-500/40 bg-slate-900">
+                            <img src="logo2%20(1).png" alt="APXN Account" class="w-full h-full object-cover">
+                        </div>
 
-        <!-- =========================
-             MINER DASHBOARD
-        ========================== -->
+                        <div>
+                            <p class="text-xs uppercase tracking-widest text-gray-500 mb-1">Telegram Account</p>
+                            <h2 id="display-name" class="text-2xl font-black">APXN Miner</h2>
+                            <p id="display-username" class="text-sm text-yellow-400 mt-1">—</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-2 rounded-full text-xs font-black">
+                            ● Mining Account Found
+                        </span>
+
+                        <button
+                            type="button"
+                            onclick="logout()"
+                            class="text-sm font-bold text-gray-400 hover:text-white transition-colors"
+                        >
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="glass border border-yellow-500/30 rounded-2xl p-6">
+                    <div class="text-xs text-yellow-500 uppercase tracking-widest font-black mb-3">APXN Points</div>
+                    <div id="points-value" class="text-3xl font-black text-white">0</div>
+                    <div class="text-xs text-gray-500 mt-2">Community activity balance</div>
+                </div>
+
+                <div class="glass border border-slate-800 rounded-2xl p-6">
+                    <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Mining Rate</div>
+                    <div id="mining-rate-value" class="text-2xl font-black">—</div>
+                    <div class="text-xs text-gray-500 mt-2">Current account rate</div>
+                </div>
+
+                <div class="glass border border-slate-800 rounded-2xl p-6">
+                    <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Check-In Streak</div>
+                    <div id="streak-value" class="text-2xl font-black">0</div>
+                    <div class="text-xs text-gray-500 mt-2">Consecutive activity</div>
+                </div>
+
+                <div class="glass border border-slate-800 rounded-2xl p-6">
+                    <div class="text-xs text-gray-500 uppercase tracking-widest font-black mb-3">Country</div>
+                    <div id="country-value" class="text-2xl font-black">—</div>
+                    <div class="text-xs text-gray-500 mt-2">Account region</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass border border-slate-800 rounded-2xl p-6">
+                    <h3 class="text-lg font-black mb-5">Account Information</h3>
+
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
+                            <span class="text-gray-500">Telegram ID</span>
+                            <span id="telegram-id-value" class="font-mono text-gray-300">—</span>
+                        </div>
+
+                        <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
+                            <span class="text-gray-500">Mining Since</span>
+                            <span id="created-at-value" class="text-gray-300 text-right">—</span>
+                        </div>
+
+                        <div class="flex justify-between gap-5 border-b border-slate-800 pb-3">
+                            <span class="text-gray-500">Last Claim</span>
+                            <span id="last-claim-value" class="text-gray-300 text-right">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass border border-slate-800 rounded-2xl p-6">
+                    <h3 class="text-lg font-black mb-5">Account Security</h3>
+
+                    <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-4">
+                        <div class="text-emerald-400 font-black mb-1">✓ Telegram Verified</div>
+                        <div class="text-xs text-gray-400 leading-relaxed">
+                            Your dashboard session is linked to your verified Telegram identity.
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        APXN mining information shown here is read from your existing mining account.
+                        The dashboard cannot create points or modify your mining balance.
+                    </p>
+                </div>
+            </div>
+        </section>
 
         <section
-            id="dashboard-section"
-            class="hidden-section"
+            id="error-section"
+            class="hidden-section max-w-xl mx-auto glass border border-red-500/30 rounded-3xl p-8 text-center"
         >
+            <div class="text-4xl mb-4">⚠️</div>
+            <h2 class="text-xl font-black mb-3">Unable to Load Dashboard</h2>
 
-            <!-- ACCOUNT HEADER -->
+            <p id="error-message" class="text-gray-400 text-sm mb-6">
+                Please try again.
+            </p>
 
-            <div
-                class="
-                    glass
-                    border
-                    border-slate-800
-                    rounded-3xl
-                    p-6
-                    md:p-8
-                    mb-6
-                    shadow-xl
-                "
+            <button
+                type="button"
+                onclick="loadDashboard()"
+                class="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black px-7 py-3 rounded-xl transition-colors"
             >
+                Try Again
+            </button>
+        </section>
+    </main>
 
-                <div
-                    class="
-                        flex
-                        flex-col
-                        md:flex-row
-                        md:items-center
-                        justify-between
-                        gap-6
-                    "
-                >
+    <footer class="relative z-10 border-t border-slate-900 mt-12 py-8 px-5 text-center text-xs text-gray-600">
+        Apex Network — APXN
+        <br>
+        Secure community account dashboard
+    </footer>
 
-                    <div
-                        class="
-                            flex
-                            items-center
-                            gap-4
+    <script>
+        const sections = {
+            loading: document.getElementById('loading-section'),
+            login: document.getElementById('login-section'),
+            noAccount: document.getElementById('no-account-section'),
+            dashboard: document.getElementById('dashboard-section'),
+            error: document.getElementById('error-section')
+        };
+
+        function showSection(name) {
+            Object.values(sections).forEach((section) => {
+                if (section) {
+                    section.style.display = 'none';
+                }
+            });
+
+            if (sections[name]) {
+                sections[name].style.display = 'block';
+            }
+        }
+
+        function formatNumber(value) {
+            const number = Number(value);
+
+            if (!Number.isFinite(number)) {
+                return '0';
+            }
+
+            return number.toLocaleString(
+                'en-US',
+                {
+                    maximumFractionDigits: 8
+                }
+            );
+        }
+
+        function formatDate(value) {
+            if (!value) {
+                return '—';
+            }
+
+            const date = new Date(value);
+
+            if (Number.isNaN(date.getTime())) {
+                return '—';
+            }
+
+            return date.toLocaleString(
+                undefined,
+                {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }
+            );
+        }
+
+        function setText(id, value) {
+            const element = document.getElementById(id);
+
+            if (!element) {
+                return;
+            }
+
+            element.textContent = value ?? '—';
+        }
+
+        function populateDashboard(data) {
+            const user = data?.user || {};
+
+            const username = user.username
+                ? `@${String(user.username).replace(/^@/, '')}`
+                : 'No username';
+
+            const name =
+                user.firstName ||
+                user.first_name ||
+                'APXN Miner';
+
+            setText('display-name', name);
+            setText('display-username', username);
+            setText('points-value', formatNumber(user.balance));
+
+            const miningRate =
+                user.miningRate ??
+                user.mining_rate;
+
+            setText(
+                'mining-rate-value',
+                miningRate === null || miningRate === undefined
+                    ? '—'
+                    : `${formatNumber(miningRate)} / h`
+            );
+
+            setText(
+                'streak-value',
+                formatNumber(
+                    user.checkinStreak ??
+                    user.checkin_streak ??
+                    0
+                )
+            );
+
+            setText(
+                'country-value',
+                user.country || '—'
+            );
+
+            setText(
+                'telegram-id-value',
+                user.telegramId ??
+                user.telegram_id ??
+                '—'
+            );
+
+            setText(
+                'created-at-value',
+                formatDate(
+                    user.createdAt ??
+                    user.created_at
+                )
+            );
+
+            setText(
+                'last-claim-value',
+                formatDate(
+                    user.lastClaim ??
+                    user.last_claim
+                )
+            );
+        }
+
+        async function loadDashboard() {
+            showSection('loading');
+
+            try {
+                const response = await fetch(
+                    '/api/dashboard-data',
+                    {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        headers: {
+                            Accept: 'application/json'
+                        },
+                        cache: 'no-store'
+                    }
+                );
+
+                let data = null;
+
+                try {
+                    data = await response.json();
+                } catch {
+                    data = null;
+                }
+
+                if (response.status === 401) {
+                    showSection('login');
+                    return;
+                }
+
+                if (response.status === 404) {
+                    showSection('noAccount');
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.error ||
+                        'Dashboard request failed'
+                    );
+                }
+
+                if (data?.miningAccount === false) {
+                    showSection('noAccount');
+                    return;
+                }
+
+                if (!data?.user) {
+                    throw new Error(
+                        'Invalid dashboard response'
+                    );
+                }
+
+                populateDashboard(data);
+                showSection('dashboard');
+
+            } catch (error) {
+                console.error(
+                    'Dashboard:',
+                    error
+                );
+
+                setText(
+                    'error-message',
+                    'We could not load your dashboard. Please try again.'
+                );
+
+                showSection('error');
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch(
+                    '/api/dashboard-session?logout=1',
+                    {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            Accept: 'application/json'
+                        },
+                        cache: 'no-store'
+                    }
+                );
+            } catch {
+                // Continue to reload even if the request fails.
+            }
+
+            window.location.replace('/dashboard.html');
+        }
+
+        window.addEventListener(
+            'DOMContentLoaded',
+            loadDashboard
+        );
+    </script>
+</body>
+</html>
+
