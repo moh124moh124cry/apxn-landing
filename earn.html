@@ -871,13 +871,6 @@
                         >
                             APXN Member
                         </h2>
-
-                        <p
-                            id="account-username"
-                            class="text-yellow-400 text-sm mt-1"
-                        >
-                            —
-                        </p>
                     </div>
 
                     <div
@@ -1956,23 +1949,6 @@
 
                 document
                     .getElementById(
-                        'account-username'
-                    )
-                    .textContent =
-                        user.username
-                            ? (
-                                '@' +
-                                String(
-                                    user.username
-                                ).replace(
-                                    /^@/,
-                                    ''
-                                )
-                            )
-                            : 'Verified Telegram account';
-
-                document
-                    .getElementById(
                         'points-value'
                     )
                     .textContent =
@@ -2224,5 +2200,3 @@
     </script>
 </body>
 </html>
-
-
