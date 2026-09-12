@@ -171,6 +171,26 @@ function imageFilename(
 
 
 /* =====================================================
+   ARTICLE CONTENT
+===================================================== */
+
+function articleContent(
+    article
+) {
+
+    if (
+        !article?.content ||
+        typeof article.content !== 'object' ||
+        Array.isArray(article.content)
+    ) {
+        return null;
+    }
+
+    return article.content;
+}
+
+
+/* =====================================================
    NORMALIZE ARTICLE
 ===================================================== */
 
@@ -382,6 +402,10 @@ function normalizeArticle(
             article.duplicate_check !==
                 false,
 
+        quality_check:
+            article.quality_check !==
+                false,
+
         featured:
             article.featured ===
                 true,
@@ -402,6 +426,16 @@ function normalizeArticle(
             text(
                 article.source,
                 'blog-writer'
+            ),
+
+        /*
+         * Full article body is returned only through this
+         * authenticated admin API. It is required for the
+         * private pre-publication preview in /blog-admin/.
+         */
+        content:
+            articleContent(
+                article
             )
     };
 }
@@ -717,3 +751,4 @@ export default async function handler(
             });
     }
 }
+
