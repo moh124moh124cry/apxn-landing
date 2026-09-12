@@ -43,6 +43,12 @@
         <priority>0.4</priority>
     </url>
     <url>
+        <loc>https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html</loc>
+        <lastmod>2026-09-12</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
         <loc>https://apxn.network/blog/articles/what-are-apxn-points.html</loc>
         <lastmod>2026-09-08</lastmod>
         <changefreq>monthly</changefreq>
@@ -61,4 +67,3 @@
         <priority>0.3</priority>
     </url>
 </urlset>
-
