@@ -68,7 +68,7 @@
   },
 
   "automation": {
-    "auto_generate_enabled": false,
+    "auto_generate_enabled": true,
     "auto_publish_enabled": false,
     "articles_per_week": 3,
     "preferred_days": [
