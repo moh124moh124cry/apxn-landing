@@ -40,8 +40,8 @@
   "writer": {
     "enabled": true,
     "default_mode": "draft",
-    "minimum_words": 1200,
-    "target_words": 1650,
+    "minimum_words": 900,
+    "target_words": 1200,
     "maximum_words": 1900,
     "include_apxn_context": true,
     "include_faq": true,
