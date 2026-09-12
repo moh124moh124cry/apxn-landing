@@ -67,7 +67,6 @@ function sameOriginRequest(req) {
         return true;
     }
 
-
     try {
 
         const url =
@@ -79,7 +78,6 @@ function sameOriginRequest(req) {
                 ''
             )
                 .toLowerCase();
-
 
         return (
             url.host.toLowerCase() ===
@@ -108,10 +106,8 @@ function cleanText(
         return fallback;
     }
 
-
     const cleaned =
         value.trim();
-
 
     return (
         cleaned ||
@@ -242,14 +238,12 @@ function getGithubToken() {
     const token =
         process.env.BLOG_GITHUB_TOKEN;
 
-
     if (
         typeof token !== 'string' ||
         token.trim().length < 20
     ) {
         return null;
     }
-
 
     return token.trim();
 }
@@ -266,14 +260,12 @@ async function githubRequest(
     const token =
         getGithubToken();
 
-
     if (!token) {
 
         throw new Error(
             'BLOG_GITHUB_TOKEN_NOT_CONFIGURED'
         );
     }
-
 
     const response =
         await fetch(
@@ -307,13 +299,10 @@ async function githubRequest(
             }
         );
 
-
     const raw =
         await response.text();
 
-
     let data = null;
-
 
     try {
 
@@ -329,7 +318,6 @@ async function githubRequest(
         data = null;
     }
 
-
     if (
         !response.ok
     ) {
@@ -339,20 +327,16 @@ async function githubRequest(
             raw ||
             `GitHub HTTP ${response.status}`;
 
-
         const error =
             new Error(
                 message
             );
 
-
         error.status =
             response.status;
 
-
         throw error;
     }
-
 
     return data;
 }
@@ -374,14 +358,12 @@ async function readGithubJson(
             )
             .join('/');
 
-
     const result =
         await githubRequest(
             `/repos/${REPOSITORY}/contents/${encodedPath}?ref=${encodeURIComponent(
                 BRANCH
             )}`
         );
-
 
     if (
         typeof result?.content !==
@@ -392,7 +374,6 @@ async function readGithubJson(
             `INVALID_GITHUB_FILE:${filePath}`
         );
     }
-
 
     const raw =
         Buffer
@@ -407,7 +388,6 @@ async function readGithubJson(
             .toString(
                 'utf8'
             );
-
 
     return JSON.parse(
         raw
@@ -460,7 +440,6 @@ function validateImageSignature(
         );
     }
 
-
     if (
         mime === 'image/png'
     ) {
@@ -473,7 +452,6 @@ function validateImageSignature(
             buffer[3] === 0x47
         );
     }
-
 
     if (
         mime === 'image/webp'
@@ -500,7 +478,6 @@ function validateImageSignature(
         );
     }
 
-
     if (
         mime === 'image/gif'
     ) {
@@ -515,7 +492,6 @@ function validateImageSignature(
                     'ascii'
                 );
 
-
         return (
             signature ===
                 'GIF87a' ||
@@ -523,7 +499,6 @@ function validateImageSignature(
                 'GIF89a'
         );
     }
-
 
     return false;
 }
@@ -542,7 +517,6 @@ function safeImageBaseName(
                 /\.[^.]+$/,
                 ''
             );
-
 
     const safe =
         withoutExtension
@@ -571,7 +545,6 @@ function safeImageBaseName(
                 60
             );
 
-
     return (
         safe ||
         'image'
@@ -589,7 +562,6 @@ function buildImageFilename(
     const imageType =
         IMAGE_TYPES[mime];
 
-
     if (!imageType) {
 
         throw new Error(
@@ -597,12 +569,10 @@ function buildImageFilename(
         );
     }
 
-
     const baseName =
         safeImageBaseName(
             originalName
         );
-
 
     const slug =
         cleanText(
@@ -610,14 +580,11 @@ function buildImageFilename(
             'article'
         );
 
-
     let filename =
         `${slug}-${baseName}.${imageType.extension}`;
 
-
     let target =
         `blog/images/${filename}`;
-
 
     if (
         existingPaths.has(
@@ -631,15 +598,12 @@ function buildImageFilename(
                     'hex'
                 );
 
-
         filename =
             `${slug}-${baseName}-${suffix}.${imageType.extension}`;
-
 
         target =
             `blog/images/${filename}`;
     }
-
 
     return {
         filename,
@@ -667,7 +631,6 @@ function validateArticle(
         );
     }
 
-
     if (
         article.status !==
         'ready'
@@ -677,7 +640,6 @@ function validateArticle(
             'ARTICLE_NOT_READY'
         );
     }
-
 
     if (
         !article.content ||
@@ -689,7 +651,6 @@ function validateArticle(
             'ARTICLE_CONTENT_MISSING'
         );
     }
-
 
     if (
         !cleanText(
@@ -705,7 +666,6 @@ function validateArticle(
         );
     }
 
-
     if (
         !cleanText(
             article.content?.intro?.text
@@ -716,7 +676,6 @@ function validateArticle(
             'ARTICLE_INTRO_MISSING'
         );
     }
-
 
     if (
         !Array.isArray(
@@ -730,7 +689,6 @@ function validateArticle(
             'ARTICLE_SECTIONS_MISSING'
         );
     }
-
 
     if (
         !cleanText(
@@ -771,7 +729,6 @@ function renderParagraphs(
                         ? paragraph
                         : paragraph?.text;
 
-
                 if (
                     !cleanText(
                         value
@@ -779,7 +736,6 @@ function renderParagraphs(
                 ) {
                     return '';
                 }
-
 
                 return (
                     `<p>${escapeHtml(
@@ -793,6 +749,36 @@ function renderParagraphs(
 }
 
 
+function renderAdvertisement() {
+
+    return `
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+    `;
+}
+
+
 function renderArticleHtml({
     article,
     manifest,
@@ -803,12 +789,10 @@ function renderArticleHtml({
     const content =
         article.content;
 
-
     const title =
         cleanText(
             article.title
         );
-
 
     const description =
         cleanText(
@@ -817,13 +801,11 @@ function renderArticleHtml({
             content.description
         );
 
-
     const category =
         cleanText(
             article.category,
             'APXN'
         );
-
 
     const author =
         cleanText(
@@ -831,10 +813,8 @@ function renderArticleHtml({
             'Apex Network Editorial'
         );
 
-
     const canonical =
         `${BASE_URL}/blog/articles/${article.slug}.html`;
-
 
     const keywords =
         Array.isArray(
@@ -853,7 +833,6 @@ function renderArticleHtml({
                 .filter(Boolean)
             : [];
 
-
     const sectionsHtml =
         (
             Array.isArray(
@@ -870,12 +849,10 @@ function renderArticleHtml({
                             section?.heading
                         );
 
-
                     const paragraphs =
                         renderParagraphs(
                             section?.paragraphs
                         );
-
 
                     if (
                         !heading ||
@@ -883,7 +860,6 @@ function renderArticleHtml({
                     ) {
                         return '';
                     }
-
 
                     return `
                         <section>
@@ -899,14 +875,12 @@ function renderArticleHtml({
             .filter(Boolean)
             .join('\n');
 
-
     const faqItems =
         Array.isArray(
             content.faq
         )
             ? content.faq
             : [];
-
 
     const faqHtml =
         faqItems
@@ -918,12 +892,10 @@ function renderArticleHtml({
                             item?.question
                         );
 
-
                     const answer =
                         cleanText(
                             item?.answer
                         );
-
 
                     if (
                         !question ||
@@ -931,7 +903,6 @@ function renderArticleHtml({
                     ) {
                         return '';
                     }
-
 
                     return `
                         <div class="info-box">
@@ -948,7 +919,6 @@ function renderArticleHtml({
             )
             .filter(Boolean)
             .join('\n');
-
 
     const publishedArticles =
         (
@@ -969,7 +939,6 @@ function renderArticleHtml({
                 -3
             )
             .reverse();
-
 
     const relatedHtml =
         publishedArticles.length
@@ -1004,7 +973,6 @@ function renderArticleHtml({
             `
             : '';
 
-
     const disclaimer =
         [
             'apxn',
@@ -1014,7 +982,6 @@ function renderArticleHtml({
         )
             ? 'APXN Points are participation points used inside the current Apex Network ecosystem. Future token distribution, conversion, listing, withdrawal and blockchain milestones remain subject to official project updates.'
             : 'This article is educational project content and should not be treated as financial, investment, legal or tax advice.';
-
 
     const articleSchema = {
 
@@ -1072,7 +1039,6 @@ function renderArticleHtml({
         }
     };
 
-
     const faqSchema =
         faqItems.length
             ? {
@@ -1116,6 +1082,8 @@ function renderArticleHtml({
             }
             : null;
 
+    const advertisement =
+        renderAdvertisement();
 
     return `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -1596,6 +1564,9 @@ ${safeJson(faqSchema)}
             </figure>
 
 
+            ${advertisement}
+
+
             <div
                 class="article-body"
             >
@@ -1717,7 +1688,6 @@ function refreshStats(
             ? manifest.articles
             : [];
 
-
     manifest.stats = {
 
         total_articles:
@@ -1794,10 +1764,8 @@ async function publishCommit({
             )}`
         );
 
-
     const currentCommitSha =
         ref?.object?.sha;
-
 
     if (!currentCommitSha) {
 
@@ -1806,16 +1774,13 @@ async function publishCommit({
         );
     }
 
-
     const currentCommit =
         await githubRequest(
             `/repos/${REPOSITORY}/git/commits/${currentCommitSha}`
         );
 
-
     const baseTreeSha =
         currentCommit?.tree?.sha;
-
 
     if (!baseTreeSha) {
 
@@ -1824,12 +1789,10 @@ async function publishCommit({
         );
     }
 
-
     const tree =
         await githubRequest(
             `/repos/${REPOSITORY}/git/trees/${baseTreeSha}?recursive=1`
         );
-
 
     const existingPaths =
         new Set(
@@ -1847,7 +1810,6 @@ async function publishCommit({
                 .filter(Boolean)
         );
 
-
     if (
         existingPaths.has(
             `blog/articles/${article.slug}.html`
@@ -1859,7 +1821,6 @@ async function publishCommit({
         );
     }
 
-
     if (
         existingPaths.has(
             imagePath
@@ -1870,7 +1831,6 @@ async function publishCommit({
             'IMAGE_FILE_ALREADY_EXISTS'
         );
     }
-
 
     const [
         imageBlob,
@@ -1911,7 +1871,6 @@ async function publishCommit({
             )
 
         ]);
-
 
     const newTree =
         await githubRequest(
@@ -1988,7 +1947,6 @@ async function publishCommit({
             }
         );
 
-
     const commit =
         await githubRequest(
             `/repos/${REPOSITORY}/git/commits`,
@@ -2011,7 +1969,6 @@ async function publishCommit({
             }
         );
 
-
     await githubRequest(
         `/repos/${REPOSITORY}/git/refs/heads/${encodeURIComponent(
             BRANCH
@@ -2031,7 +1988,6 @@ async function publishCommit({
         }
     );
 
-
     return commit.sha;
 }
 
@@ -2049,7 +2005,6 @@ export default async function handler(
         res
     );
 
-
     if (
         req.method !== 'POST'
     ) {
@@ -2058,7 +2013,6 @@ export default async function handler(
             'Allow',
             'POST'
         );
-
 
         return res
             .status(405)
@@ -2070,7 +2024,6 @@ export default async function handler(
                     'METHOD_NOT_ALLOWED'
             });
     }
-
 
     if (
         !sameOriginRequest(
@@ -2088,7 +2041,6 @@ export default async function handler(
                     'INVALID_ORIGIN'
             });
     }
-
 
     if (
         !isBlogAdminAuthenticated(
@@ -2109,7 +2061,6 @@ export default async function handler(
             });
     }
 
-
     if (
         !getGithubToken()
     ) {
@@ -2125,7 +2076,6 @@ export default async function handler(
             });
     }
 
-
     try {
 
         const articleId =
@@ -2133,12 +2083,10 @@ export default async function handler(
                 req.body?.article_id
             );
 
-
         const imageName =
             cleanText(
                 req.body?.image_name
             );
-
 
         const imageType =
             cleanText(
@@ -2146,12 +2094,10 @@ export default async function handler(
             )
                 .toLowerCase();
 
-
         const imageBase64 =
             cleanText(
                 req.body?.image_base64
             );
-
 
         if (
             !articleId ||
@@ -2171,7 +2117,6 @@ export default async function handler(
                 });
         }
 
-
         if (
             !IMAGE_TYPES[
                 imageType
@@ -2189,13 +2134,11 @@ export default async function handler(
                 });
         }
 
-
         const imageBuffer =
             Buffer.from(
                 imageBase64,
                 'base64'
             );
-
 
         if (
             imageBuffer.length ===
@@ -2213,7 +2156,6 @@ export default async function handler(
                 });
         }
 
-
         if (
             imageBuffer.length >
             MAX_IMAGE_BYTES
@@ -2229,7 +2171,6 @@ export default async function handler(
                         'IMAGE_TOO_LARGE'
                 });
         }
-
 
         if (
             !validateImageSignature(
@@ -2249,7 +2190,6 @@ export default async function handler(
                 });
         }
 
-
         const [
             manifest,
             topicBank
@@ -2266,7 +2206,6 @@ export default async function handler(
 
             ]);
 
-
         if (
             !Array.isArray(
                 manifest?.articles
@@ -2277,7 +2216,6 @@ export default async function handler(
                 'INVALID_ARTICLE_MANIFEST'
             );
         }
-
 
         const article =
             manifest.articles
@@ -2290,11 +2228,9 @@ export default async function handler(
                         articleId
                 );
 
-
         validateArticle(
             article
         );
-
 
         const ref =
             await githubRequest(
@@ -2303,18 +2239,15 @@ export default async function handler(
                 )}`
             );
 
-
         const currentCommit =
             await githubRequest(
                 `/repos/${REPOSITORY}/git/commits/${ref.object.sha}`
             );
 
-
         const currentTree =
             await githubRequest(
                 `/repos/${REPOSITORY}/git/trees/${currentCommit.tree.sha}?recursive=1`
             );
-
 
         const existingPaths =
             new Set(
@@ -2329,7 +2262,6 @@ export default async function handler(
                     .filter(Boolean)
             );
 
-
         const image =
             buildImageFilename(
                 article,
@@ -2338,14 +2270,11 @@ export default async function handler(
                 existingPaths
             );
 
-
         const publishedDate =
             today();
 
-
         const imageUrl =
             `${BASE_URL}/${image.target}`;
-
 
         article.status =
             'published';
@@ -2384,7 +2313,6 @@ export default async function handler(
         article.duplicate_check =
             true;
 
-
         article.seo = {
 
             ...(
@@ -2420,7 +2348,6 @@ export default async function handler(
                     0
         };
 
-
         for (
             const queueItem of
             Array.isArray(
@@ -2442,7 +2369,6 @@ export default async function handler(
                     publishedDate;
             }
         }
-
 
         if (
             Array.isArray(
@@ -2476,37 +2402,30 @@ export default async function handler(
                 }
             }
 
-
             topicBank.last_updated =
                 publishedDate;
         }
 
-
         manifest.last_updated =
             publishedDate;
-
 
         manifest.automation_state =
             manifest.automation_state ||
             {};
-
 
         manifest
             .automation_state
             .last_published_article =
                 article.id;
 
-
         manifest
             .automation_state
             .automatic_publishing =
                 false;
 
-
         refreshStats(
             manifest
         );
-
 
         const html =
             renderArticleHtml({
@@ -2519,7 +2438,6 @@ export default async function handler(
 
                 publishedDate
             });
-
 
         const commitSha =
             await publishCommit({
@@ -2537,7 +2455,6 @@ export default async function handler(
 
                 html
             });
-
 
         return res
             .status(200)
@@ -2575,7 +2492,6 @@ export default async function handler(
                 : error
         );
 
-
         const knownErrors =
             new Set([
 
@@ -2600,12 +2516,10 @@ export default async function handler(
                 'IMAGE_FILE_ALREADY_EXISTS'
             ]);
 
-
         const message =
             error instanceof Error
                 ? error.message
                 : 'UNKNOWN_ERROR';
-
 
         return res
             .status(
@@ -2624,3 +2538,4 @@ export default async function handler(
             });
     }
 }
+
