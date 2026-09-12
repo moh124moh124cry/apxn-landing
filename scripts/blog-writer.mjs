@@ -153,7 +153,7 @@ const ARTICLE_SCHEMA = {
       additionalProperties: false,
       required: ["text", "evidence_ids"],
       properties: {
-        text: { type: "string", minLength: 950, maxLength: 1400 },
+        text: { type: "string", minLength: 720, maxLength: 980 },
         evidence_ids: {
           type: "array",
           minItems: 1,
@@ -181,7 +181,7 @@ const ARTICLE_SCHEMA = {
               additionalProperties: false,
               required: ["text", "evidence_ids"],
               properties: {
-                text: { type: "string", minLength: 700, maxLength: 900 },
+                text: { type: "string", minLength: 480, maxLength: 650 },
                 evidence_ids: {
                   type: "array",
                   minItems: 1,
@@ -204,7 +204,7 @@ const ARTICLE_SCHEMA = {
         required: ["question", "answer", "evidence_ids"],
         properties: {
           question: { type: "string", minLength: 10, maxLength: 140 },
-          answer: { type: "string", minLength: 650, maxLength: 900 },
+          answer: { type: "string", minLength: 420, maxLength: 620 },
           evidence_ids: {
             type: "array",
             minItems: 1,
@@ -219,7 +219,7 @@ const ARTICLE_SCHEMA = {
       additionalProperties: false,
       required: ["text", "evidence_ids"],
       properties: {
-        text: { type: "string", minLength: 950, maxLength: 1150 },
+        text: { type: "string", minLength: 540, maxLength: 780 },
         evidence_ids: {
           type: "array",
           minItems: 1,
@@ -1103,11 +1103,11 @@ function paidWriterInstructions() {
     "Do not browse. Do not use model memory. Do not add facts from general knowledge.",
     "Do not invent examples, integrations, benefits, risks, causal links or future possibilities that are not explicitly supported by the assigned evidence.",
     "Treat every writing-plan word range as a HARD constraint, not a suggestion.",
-    "The body must be at least 1200 useful words. Aim safely above the minimum, normally around 1500-1800 body words, while staying within the configured maximum.",
+    "The body must be at least 1200 useful words. Aim near the writing-plan target, normally around 1500-1750 body words, while staying within the configured maximum.",
     "Before returning JSON, silently audit the approximate word count of the intro, every section, every FAQ answer, the conclusion and the complete body. Do not return a block below its minimum.",
     "The strict JSON schema uses calibrated character ranges to reduce under-length output without forcing the article above its configured maximum.",
     "Exactly 6 sections are required. Each section must contain exactly 2 substantial paragraphs, and the two paragraphs together must satisfy that section's full word range.",
-    "For every section, follow the per-paragraph target printed in the writing plan. Do not make one paragraph tiny and the other long; keep both near half of the section target.",
+    "For every section, follow the per-paragraph target printed in the writing plan. Each of the 2 paragraphs should normally be about 80-110 words so the section lands inside its required range. Do not make one paragraph tiny and the other long.",
     "Exactly 3 FAQ items are required, and each answer must independently satisfy its FAQ word range.",
     "The meta description must stay inside the schema range and should read naturally as a search snippet.",
     "Use the approved evidence to add explanation and context, but never pad the article with unsupported facts, invented examples, generic filler or repetition.",
