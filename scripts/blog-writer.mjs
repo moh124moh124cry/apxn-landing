@@ -7,6 +7,7 @@
  *      -> scripts/blog-researcher.mjs (free deterministic research)
  *      -> immutable Research Packet
  *      -> one paid Grok writing call
+ *      -> optional one paid length-only repair when the local gate finds only word-range failures
  *      -> free deterministic local quality/grounding gate
  *      -> private draft or publication
  *
@@ -14,7 +15,7 @@
  * - This file does NOT fetch official sources itself.
  * - Grok receives facts only from the Research Packet.
  * - No open-web/model-memory research is allowed.
- * - No paid verifier/repair loop is used.
+ * - No open-ended paid verifier/repair loop is used. At most one length-only repair is allowed.
  * - A failed local gate is preserved as an artifact for inspection.
  * - Source-test mode uses the same free researcher and makes zero xAI calls.
  */
@@ -45,6 +46,8 @@ const COST_TICKS_PER_USD = 10_000_000_000;
 const API_TIMEOUT_MS = 180_000;
 const GENERATION_OUTPUT_TOKENS = 6_500;
 const DEFAULT_GENERATION_COST_RESERVE_USD = 0.05;
+const DEFAULT_LENGTH_REPAIR_COST_RESERVE_USD = 0.03;
+const MAX_LENGTH_REPAIR_CALLS = 1;
 const COST_PREFLIGHT_EPSILON_USD = 0.000000001;
 const MAX_PRE_AI_TOPIC_ATTEMPTS = 6;
 
@@ -835,11 +838,66 @@ function assertRunCost(config, runCostUsd) {
 
   if (max > 0 && runCostUsd > max) {
     fail(
-      `Paid writing call cost $${runCostUsd.toFixed(
+      `Paid writing calls cost $${runCostUsd.toFixed(
         6
       )} exceeds the per-article limit $${max.toFixed(2)}.`
     );
   }
+}
+
+function assertLengthRepairCostPreflight(config, costs, currentRunCostUsd) {
+  if (config?.cost_control?.enabled !== true) return;
+
+  const reserve = DEFAULT_LENGTH_REPAIR_COST_RESERVE_USD;
+  const monthlyBudget = Number(config?.cost_control?.monthly_budget_usd || 0);
+  const monthlySpent = monthSpendUsd(costs, monthKey());
+  const monthlyRemaining =
+    monthlyBudget > 0 ? Math.max(0, monthlyBudget - monthlySpent) : Infinity;
+
+  if (
+    config?.cost_control?.stop_when_monthly_budget_reached === true &&
+    monthlyBudget > 0 &&
+    monthlyRemaining + COST_PREFLIGHT_EPSILON_USD < reserve
+  ) {
+    fail(
+      `Length-repair preflight blocked: monthly budget has $${monthlyRemaining.toFixed(
+        6
+      )} remaining, below the $${reserve.toFixed(3)} repair reserve.`
+    );
+  }
+
+  const articleLimit = Number(
+    config?.cost_control?.maximum_cost_per_article_usd || 0
+  );
+  const articleRemaining =
+    articleLimit > 0
+      ? Math.max(0, articleLimit - Number(currentRunCostUsd || 0))
+      : Infinity;
+
+  if (
+    articleLimit > 0 &&
+    articleRemaining + COST_PREFLIGHT_EPSILON_USD < reserve
+  ) {
+    fail(
+      `Length-repair preflight blocked: article budget has $${articleRemaining.toFixed(
+        6
+      )} remaining, below the $${reserve.toFixed(3)} repair reserve.`
+    );
+  }
+
+  console.log(
+    `LENGTH REPAIR COST PREFLIGHT PASS: reserve $${reserve.toFixed(
+      3
+    )}; monthly remaining $${
+      Number.isFinite(monthlyRemaining)
+        ? monthlyRemaining.toFixed(6)
+        : "unlimited"
+    }; article remaining $${
+      Number.isFinite(articleRemaining)
+        ? articleRemaining.toFixed(6)
+        : "unlimited"
+    }.`
+  );
 }
 
 function extractResponseText(responseJson) {
@@ -868,7 +926,10 @@ function extractResponseText(responseJson) {
 async function callPaidWriter({
   config,
   apiKey,
-  input
+  input,
+  instructions = paidWriterInstructions(),
+  schemaName = "apxn_research_packet_article",
+  promptCacheSuffix = "research-packet-v5-length-repair"
 }) {
   if (!apiKey) {
     fail("XAI_API_KEY is missing.");
@@ -890,7 +951,7 @@ async function callPaidWriter({
 
   const body = {
     model,
-    instructions: paidWriterInstructions(),
+    instructions,
     input,
     max_output_tokens: GENERATION_OUTPUT_TOKENS,
     store: false,
@@ -898,7 +959,7 @@ async function callPaidWriter({
     text: {
       format: {
         type: "json_schema",
-        name: "apxn_research_packet_article",
+        name: schemaName,
         schema: ARTICLE_SCHEMA,
         strict: true
       }
@@ -914,7 +975,7 @@ async function callPaidWriter({
   ) {
     body.prompt_cache_key = `${String(
       config.ai.prompt_cache_key
-    )}-research-packet-v4-length-safe`;
+    )}-${promptCacheSuffix}`;
   }
 
   const controller = new AbortController();
@@ -1152,6 +1213,73 @@ function paidWriterInput(packet, config) {
     "Length safety rule: aim above the configured minimum, not exactly at it. A short article will be rejected locally and will not be published.",
     "Do not count the title, meta description, keywords, headings or questions toward the body minimum."
   ].join("\n");
+}
+
+
+function lengthRepairInstructions() {
+  return [
+    "You are the Apex Network Editorial length-repair writer.",
+    "You receive an article that already has the required JSON structure and a frozen Research Packet.",
+    "Repair ONLY word-count/range failures. Do not perform open-web research and do not use model memory.",
+    "The Research Packet remains the ONLY factual authority.",
+    "Return the COMPLETE article JSON, not a patch and not commentary.",
+    "Preserve exactly 6 sections, exactly 2 paragraphs per section and exactly 3 FAQ items.",
+    "Preserve the topic, factual meaning, evidence boundaries and neutral educational tone.",
+    "Expand short blocks with clearer explanation, definitions, transitions and context that are directly supported by that block's assigned evidence.",
+    "Do not invent examples, facts, benefits, risks, causal links, future possibilities or product behavior.",
+    "Do not add evidence IDs outside the writing-plan allowance for that block.",
+    "Do not write a digit, decimal, year or version number unless the exact token is allowed for that block by the writing plan.",
+    "Aim near the CENTER of every writing-plan word range, not the minimum edge.",
+    "The complete body should normally land near 1450-1700 words while staying inside the configured minimum and maximum.",
+    "Before returning JSON, silently audit the approximate word count of every block and the full body.",
+    "Do not return any intro, section, FAQ answer or conclusion below its required minimum.",
+    "Avoid repetition and filler. Every added sentence must remain grounded in the assigned evidence.",
+    "Return only the requested JSON schema."
+  ].join("\n");
+}
+
+function lengthRepairInput({ packet, config, article, errors }) {
+  return [
+    "TASK: LENGTH-ONLY REPAIR",
+    "The local deterministic quality gate rejected the article only because one or more body blocks are outside their required word ranges.",
+    "Fix those length failures while preserving factual grounding and evidence-ID restrictions.",
+    "",
+    "LOCAL QUALITY ERRORS:",
+    ...(Array.isArray(errors) ? errors : []).map((item) => `- ${item}`),
+    "",
+    "WRITING PLAN AND BLOCK-SPECIFIC NUMERIC RULES:",
+    writingPlanForPrompt(packet),
+    "",
+    "FORBIDDEN CLAIMS:",
+    ...(packet.forbidden_claims || []).map((item) => `- ${item}`),
+    "",
+    "APPROVED EVIDENCE:",
+    packetEvidenceForPrompt(packet),
+    "",
+    "CURRENT ARTICLE JSON TO REPAIR:",
+    JSON.stringify(article, null, 2),
+    "",
+    `FINAL BODY REQUIREMENT: minimum ${config.writer.minimum_words}; target ${config.writer.target_words}; maximum ${config.writer.maximum_words} words.`,
+    "Do not count title, meta description, keywords, headings or FAQ questions toward body words.",
+    "Return the full repaired JSON article only."
+  ].join("\n");
+}
+
+function isLengthOnlyQualityFailure(local) {
+  const errors = Array.isArray(local?.errors) ? local.errors : [];
+  if (errors.length === 0) return false;
+
+  const allowed = [
+    /^Article body has \d+ words; (?:minimum|maximum) is \d+\.$/,
+    /^intro has \d+ words; packet range is \d+-\d+\.$/,
+    /^section \d+ has \d+ paragraph words; packet range is \d+-\d+\.$/,
+    /^FAQ \d+ answer has \d+ words; packet range is \d+-\d+\.$/,
+    /^conclusion has \d+ words; packet range is \d+-\d+\.$/
+  ];
+
+  return errors.every((error) =>
+    allowed.some((pattern) => pattern.test(String(error || "")))
+  );
 }
 
 /* -------------------------------------------------------------------------- */
@@ -2520,7 +2648,7 @@ async function main() {
 
   assertCostKnown(config, generationCost);
 
-  const runCostUsd = Number(generationCost.cost_usd || 0);
+  let runCostUsd = Number(generationCost.cost_usd || 0);
   assertRunCost(config, runCostUsd);
 
   fs.mkdirSync(PATHS.privateDrafts, { recursive: true });
@@ -2530,10 +2658,23 @@ async function main() {
     `${provisionalSlug}.raw-generation.json`
   );
 
+  let paidAiCalls = 1;
+  let article = generation.parsed;
+  let finalGeneration = generation;
+  let repairCostUsd = 0;
+
+  let local = validateArticleAgainstPacket({
+    article,
+    packet,
+    config
+  });
+
+  const initialLocal = { ...local, errors: [...local.errors] };
+
   writeJson(rawGenerationPath, {
     generated_at: date,
-    architecture: "free_research_packet_then_one_paid_writer_call",
-    paid_ai_calls: 1,
+    architecture: "free_research_packet_then_paid_writer_with_optional_single_length_repair",
+    paid_ai_calls: paidAiCalls,
     topic: metadata.topic,
     category: metadata.category,
     content_mode: metadata.content_mode,
@@ -2541,9 +2682,11 @@ async function main() {
     model: generation.model,
     response_id: generation.responseJson?.id || null,
     generation_cost_usd: runCostUsd,
+    repair_cost_usd: 0,
     research_packet_summary: packetSummary(packet),
+    initial_validation: initialLocal,
     raw_text: generation.rawText,
-    parsed: generation.parsed
+    parsed: article
   });
 
   console.log(
@@ -2552,14 +2695,82 @@ async function main() {
       rawGenerationPath
     )}`
   );
+  console.log(`Initial article body words: ${local.body_word_count}`);
 
-  const article = generation.parsed;
+  if (
+    !local.ok &&
+    MAX_LENGTH_REPAIR_CALLS > 0 &&
+    isLengthOnlyQualityFailure(local)
+  ) {
+    console.log(
+      "LENGTH-ONLY QUALITY FAILURE: running one grounded length repair call."
+    );
 
-  const local = validateArticleAgainstPacket({
-    article,
-    packet,
-    config
-  });
+    assertLengthRepairCostPreflight(config, costs, runCostUsd);
+
+    const repair = await callPaidWriter({
+      config,
+      apiKey,
+      instructions: lengthRepairInstructions(),
+      input: lengthRepairInput({
+        packet,
+        config,
+        article,
+        errors: local.errors
+      }),
+      schemaName: "apxn_research_packet_article_length_repair",
+      promptCacheSuffix: "research-packet-v5-length-repair-pass"
+    });
+
+    const repairCost = appendCostRecord({
+      costs,
+      responseJson: repair.responseJson,
+      stage: "length_repair_1",
+      topic: metadata.topic,
+      slug: provisionalSlug,
+      model: repair.model
+    });
+
+    assertCostKnown(config, repairCost);
+
+    repairCostUsd = Number(repairCost.cost_usd || 0);
+    runCostUsd += repairCostUsd;
+    assertRunCost(config, runCostUsd);
+
+    paidAiCalls += 1;
+    finalGeneration = repair;
+    article = repair.parsed;
+
+    local = validateArticleAgainstPacket({
+      article,
+      packet,
+      config
+    });
+
+    console.log(`Repaired article body words: ${local.body_word_count}`);
+
+    writeJson(rawGenerationPath, {
+      generated_at: date,
+      architecture: "free_research_packet_then_paid_writer_with_optional_single_length_repair",
+      paid_ai_calls: paidAiCalls,
+      topic: metadata.topic,
+      category: metadata.category,
+      content_mode: metadata.content_mode,
+      source_profile: metadata.source_profile,
+      model: repair.model,
+      response_id: repair.responseJson?.id || null,
+      initial_response_id: generation.responseJson?.id || null,
+      repair_response_id: repair.responseJson?.id || null,
+      generation_cost_usd: Number(generationCost.cost_usd || 0),
+      repair_cost_usd: repairCostUsd,
+      total_run_cost_usd: runCostUsd,
+      research_packet_summary: packetSummary(packet),
+      initial_validation: initialLocal,
+      final_validation: local,
+      raw_text: finalGeneration.rawText,
+      parsed: article
+    });
+  }
 
   const validationPath = path.join(
     PATHS.privateDrafts,
@@ -2568,13 +2779,15 @@ async function main() {
 
   writeJson(validationPath, {
     generated_at: date,
+    paid_ai_calls: paidAiCalls,
+    initial_validation: initialLocal,
     ...local
   });
 
   console.log(
     `Local validation saved: ${path.relative(ROOT, validationPath)}`
   );
-  console.log(`Article body words: ${local.body_word_count}`);
+  console.log(`Final article body words: ${local.body_word_count}`);
 
   if (!local.ok) {
     const reason = `FREE local quality gate failed: ${local.errors.join(
@@ -2646,7 +2859,7 @@ async function main() {
     console.log(
       `Research evidence items: ${packet.evidence.length}; research words: ${packet.sufficiency.metrics.total_words}`
     );
-    console.log("Paid AI calls: 1");
+    console.log(`Paid AI calls: ${paidAiCalls}`);
     console.log(`Exact tracked run cost: $${runCostUsd.toFixed(6)}`);
     return;
   }
@@ -2710,7 +2923,7 @@ async function main() {
   console.log(`Article ID: ${articleId}`);
   console.log(`Words: ${local.body_word_count}`);
   console.log(`Research evidence items: ${packet.evidence.length}`);
-  console.log("Paid AI calls: 1");
+  console.log(`Paid AI calls: ${paidAiCalls}`);
   console.log(`Exact tracked run cost: $${runCostUsd.toFixed(6)}`);
 }
 
