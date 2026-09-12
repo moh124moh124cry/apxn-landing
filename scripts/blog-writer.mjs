@@ -45,8 +45,8 @@ const DEFAULT_MODEL = "grok-4.3";
 const COST_TICKS_PER_USD = 10_000_000_000;
 const API_TIMEOUT_MS = 180_000;
 const GENERATION_OUTPUT_TOKENS = 6_500;
-const DEFAULT_GENERATION_COST_RESERVE_USD = 0.05;
-const DEFAULT_LENGTH_REPAIR_COST_RESERVE_USD = 0.03;
+const DEFAULT_GENERATION_COST_RESERVE_USD = 0.03;
+const DEFAULT_LENGTH_REPAIR_COST_RESERVE_USD = 0.02;
 const MAX_LENGTH_REPAIR_CALLS = 1;
 const COST_PREFLIGHT_EPSILON_USD = 0.000000001;
 const MAX_PRE_AI_TOPIC_ATTEMPTS = 6;
@@ -1494,13 +1494,43 @@ function planWordRangeErrors(article, packet) {
 
   if (!plan) return ["Research Packet writing_plan is missing."];
 
+  /*
+   * The Research Packet ranges are editorial targets, while the configured
+   * article minimum/maximum remain the hard whole-article limits.
+   *
+   * The old packet minima added up to 1,410 words even though the configured
+   * article minimum is 1,200. That made valid 1,200-1,409 word articles
+   * impossible to pass. These hard block floors keep every block substantial
+   * without contradicting the global article requirement.
+   */
+  const HARD_FLOORS = {
+    intro: 100,
+    section: 125,
+    faq: 55,
+    conclusion: 70
+  };
+
+  const effectiveMinimum = (planned, hardFloor) => {
+    const value = Number(planned);
+    return Number.isFinite(value) && value > 0
+      ? Math.min(value, hardFloor)
+      : hardFloor;
+  };
+
+  const effectiveMaximum = (planned, tolerance) => {
+    const value = Number(planned);
+    return Number.isFinite(value) && value > 0
+      ? value + tolerance
+      : Infinity;
+  };
+
   const introWords = wordCount(article?.intro?.text);
-  if (
-    introWords < Number(plan.intro.min_words) ||
-    introWords > Number(plan.intro.max_words) + 20
-  ) {
+  const introMin = effectiveMinimum(plan?.intro?.min_words, HARD_FLOORS.intro);
+  const introMax = effectiveMaximum(plan?.intro?.max_words, 20);
+
+  if (introWords < introMin || introWords > introMax) {
     errors.push(
-      `intro has ${introWords} words; packet range is ${plan.intro.min_words}-${plan.intro.max_words}.`
+      `intro has ${introWords} words; packet range is ${introMin}-${introMax}.`
     );
   }
 
@@ -1518,12 +1548,15 @@ function planWordRangeErrors(article, packet) {
       continue;
     }
 
-    if (
-      total < Number(sectionPlan.min_words) ||
-      total > Number(sectionPlan.max_words) + 30
-    ) {
+    const sectionMin = effectiveMinimum(
+      sectionPlan.min_words,
+      HARD_FLOORS.section
+    );
+    const sectionMax = effectiveMaximum(sectionPlan.max_words, 30);
+
+    if (total < sectionMin || total > sectionMax) {
       errors.push(
-        `section ${index + 1} has ${total} paragraph words; packet range is ${sectionPlan.min_words}-${sectionPlan.max_words}.`
+        `section ${index + 1} has ${total} paragraph words; packet range is ${sectionMin}-${sectionMax}.`
       );
     }
   }
@@ -1538,23 +1571,26 @@ function planWordRangeErrors(article, packet) {
       continue;
     }
 
-    if (
-      total < Number(faqPlan.min_words) ||
-      total > Number(faqPlan.max_words) + 20
-    ) {
+    const faqMin = effectiveMinimum(faqPlan.min_words, HARD_FLOORS.faq);
+    const faqMax = effectiveMaximum(faqPlan.max_words, 20);
+
+    if (total < faqMin || total > faqMax) {
       errors.push(
-        `FAQ ${index + 1} answer has ${total} words; packet range is ${faqPlan.min_words}-${faqPlan.max_words}.`
+        `FAQ ${index + 1} answer has ${total} words; packet range is ${faqMin}-${faqMax}.`
       );
     }
   }
 
   const conclusionWords = wordCount(article?.conclusion?.text);
-  if (
-    conclusionWords < Number(plan.conclusion.min_words) ||
-    conclusionWords > Number(plan.conclusion.max_words) + 20
-  ) {
+  const conclusionMin = effectiveMinimum(
+    plan?.conclusion?.min_words,
+    HARD_FLOORS.conclusion
+  );
+  const conclusionMax = effectiveMaximum(plan?.conclusion?.max_words, 20);
+
+  if (conclusionWords < conclusionMin || conclusionWords > conclusionMax) {
     errors.push(
-      `conclusion has ${conclusionWords} words; packet range is ${plan.conclusion.min_words}-${plan.conclusion.max_words}.`
+      `conclusion has ${conclusionWords} words; packet range is ${conclusionMin}-${conclusionMax}.`
     );
   }
 
