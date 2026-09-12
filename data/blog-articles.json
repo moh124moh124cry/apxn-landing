@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 2,
-    "published": 1,
-    "ready": 1,
+    "published": 2,
+    "ready": 0,
     "drafts": 0,
     "featured": 1
   },
@@ -57,19 +57,19 @@
       "category": "Web3",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-09-12",
       "generated_at": "2026-09-12",
       "updated_at": "2026-09-12",
-      "published_at": null,
+      "published_at": "2026-09-12",
       "reading_minutes": 6,
       "word_count": 1149,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
+      "url": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
+      "image": "https://apxn.network/blog/images/telegram-mini-apps-features-and-web3-concepts-from-official-documentation-1000133363.png",
+      "image_filename": "telegram-mini-apps-features-and-web3-concepts-from-official-documentation-1000133363.png",
       "keywords": [
         "Telegram Mini Apps",
         "Web3",
@@ -93,7 +93,7 @@
         "title": "Telegram Mini Apps Features and Web3 Concepts from Official Documentation",
         "description": "An overview of Telegram Mini Apps technical capabilities alongside Web3 fundamentals drawn directly from approved sources on core.telegram.org and ethereum.org.",
         "canonical": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -259,7 +259,8 @@
             "EXT-04"
           ]
         }
-      }
+      },
+      "published_url": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html"
     }
   ],
   "generation_queue": [
@@ -273,11 +274,12 @@
       "priority": 2,
       "topic": "How Telegram Mini Apps Are Bringing Web3 to Everyday Users",
       "category": "Web3",
-      "status": "ready",
+      "status": "published",
       "article_id": "apxn-002",
       "generated_at": "2026-09-12",
       "content_mode": "external",
-      "source_profile": "telegram_web3"
+      "source_profile": "telegram_web3",
+      "published_at": "2026-09-12"
     },
     {
       "priority": 3,
@@ -318,7 +320,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-002",
-    "last_published_article": "apxn-001",
+    "last_published_article": "apxn-002",
     "next_queue_priority": 1,
     "automatic_generation": true,
     "automatic_publishing": false,
