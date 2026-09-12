@@ -369,6 +369,54 @@ jobs:
 
 
       # ============================================
+      # SAVE COST AFTER FAILURE
+      # ============================================
+
+      - name: Save xAI cost after failed run
+        if: ${{ failure() }}
+        run: |
+          set -euo pipefail
+
+          if [ ! -f data/blog-costs.json ]; then
+
+            echo "No blog cost ledger exists."
+
+            exit 0
+          fi
+
+
+          if git diff --quiet -- data/blog-costs.json; then
+
+            echo "No new xAI cost to record."
+
+            exit 0
+          fi
+
+
+          echo "A failed run used xAI. Saving its cost before exiting."
+
+
+          git config \
+            user.name \
+            "APXN Blog Bot"
+
+          git config \
+            user.email \
+            "actions@users.noreply.github.com"
+
+
+          git add \
+            data/blog-costs.json
+
+
+          git commit \
+            -m "chore(blog): record failed generation cost"
+
+
+          git push origin main
+
+
+      # ============================================
       # SUMMARY
       # ============================================
 
