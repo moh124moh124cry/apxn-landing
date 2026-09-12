@@ -1169,6 +1169,7 @@ function paidWriterInstructions() {
     "The strict JSON schema uses calibrated character ranges to reduce under-length output without forcing the article above its configured maximum.",
     "Exactly 6 sections are required. Each section must contain exactly 2 substantial paragraphs, and the two paragraphs together must satisfy that section's full word range.",
     "For every section, follow the per-paragraph target printed in the writing plan. Each of the 2 paragraphs should normally be about 80-110 words so the section lands inside its required range. Do not make one paragraph tiny and the other long.",
+    "Avoid unsupported shortcut claims such as 'without installing', 'without using', 'removes the need', future bridges, wallet custody/signing behavior or on-chain behavior unless the assigned evidence explicitly states that claim.",
     "Exactly 3 FAQ items are required, and each answer must independently satisfy its FAQ word range.",
     "The meta description must stay inside the schema range and should read naturally as a search snippet.",
     "Use the approved evidence to add explanation and context, but never pad the article with unsupported facts, invented examples, generic filler or repetition.",
@@ -1218,14 +1219,16 @@ function paidWriterInput(packet, config) {
 
 function lengthRepairInstructions() {
   return [
-    "You are the Apex Network Editorial length-repair writer.",
+    "You are the Apex Network Editorial safe-repair writer.",
     "You receive an article that already has the required JSON structure and a frozen Research Packet.",
-    "Repair ONLY word-count/range failures. Do not perform open-web research and do not use model memory.",
+    "Repair ONLY the local errors listed in the prompt: word-count/range failures and unsupported high-risk inference patterns. Do not perform open-web research and do not use model memory.",
     "The Research Packet remains the ONLY factual authority.",
     "Return the COMPLETE article JSON, not a patch and not commentary.",
     "Preserve exactly 6 sections, exactly 2 paragraphs per section and exactly 3 FAQ items.",
-    "Preserve the topic, factual meaning, evidence boundaries and neutral educational tone.",
-    "Expand short blocks with clearer explanation, definitions, transitions and context that are directly supported by that block's assigned evidence.",
+    "Preserve the topic, evidence boundaries and neutral educational tone.",
+    "For short blocks, expand only with clearer explanation, definitions, transitions and context directly supported by that block's assigned evidence.",
+    "For any unsupported high-risk inference error, REMOVE or rewrite the offending claim so it says only what the assigned evidence explicitly supports.",
+    "Do not preserve wording such as 'without installing', 'without using', 'removes the need', future bridges, custody/signing claims or similar inferences unless the assigned evidence explicitly supports that same claim.",
     "Do not invent examples, facts, benefits, risks, causal links, future possibilities or product behavior.",
     "Do not add evidence IDs outside the writing-plan allowance for that block.",
     "Do not write a digit, decimal, year or version number unless the exact token is allowed for that block by the writing plan.",
@@ -1240,11 +1243,12 @@ function lengthRepairInstructions() {
 
 function lengthRepairInput({ packet, config, article, errors }) {
   return [
-    "TASK: LENGTH-ONLY REPAIR",
-    "The local deterministic quality gate rejected the article only because one or more body blocks are outside their required word ranges.",
-    "Fix those length failures while preserving factual grounding and evidence-ID restrictions.",
+    "TASK: SAFE LOCAL QUALITY REPAIR",
+    "The deterministic local quality gate rejected the article for repairable issues only: body word ranges and/or unsupported high-risk inference wording.",
+    "Fix every listed error while preserving factual grounding and evidence-ID restrictions.",
+    "If an error names an unsupported high-risk inference pattern, remove or rewrite that exact unsupported inference using only the assigned evidence. Do not replace it with a new inference.",
     "",
-    "LOCAL QUALITY ERRORS:",
+    "LOCAL QUALITY ERRORS TO FIX:",
     ...(Array.isArray(errors) ? errors : []).map((item) => `- ${item}`),
     "",
     "WRITING PLAN AND BLOCK-SPECIFIC NUMERIC RULES:",
@@ -1265,7 +1269,7 @@ function lengthRepairInput({ packet, config, article, errors }) {
   ].join("\n");
 }
 
-function isLengthOnlyQualityFailure(local) {
+function isSafeRepairableQualityFailure(local) {
   const errors = Array.isArray(local?.errors) ? local.errors : [];
   if (errors.length === 0) return false;
 
@@ -1274,11 +1278,19 @@ function isLengthOnlyQualityFailure(local) {
     /^intro has \d+ words; packet range is \d+-\d+\.$/,
     /^section \d+ has \d+ paragraph words; packet range is \d+-\d+\.$/,
     /^FAQ \d+ answer has \d+ words; packet range is \d+-\d+\.$/,
-    /^conclusion has \d+ words; packet range is \d+-\d+\.$/
+    /^conclusion has \d+ words; packet range is \d+-\d+\.$/,
+    /^(?:intro|conclusion|section_\d+_paragraph_\d+|faq_\d+) contains unsupported high-risk inference pattern: [^.]+\.$/
   ];
 
-  return errors.every((error) =>
-    allowed.some((pattern) => pattern.test(String(error || "")))
+  const hasLengthError = errors.some((error) =>
+    allowed.slice(0, 5).some((pattern) => pattern.test(String(error || "")))
+  );
+
+  return (
+    hasLengthError &&
+    errors.every((error) =>
+      allowed.some((pattern) => pattern.test(String(error || "")))
+    )
   );
 }
 
@@ -2422,6 +2434,29 @@ function runSelfTest() {
     fail("SELF TEST: repetition similarity check failed.");
   }
 
+  if (
+    !isSafeRepairableQualityFailure({
+      errors: [
+        "Article body has 1198 words; minimum is 1200.",
+        "section 3 has 142 paragraph words; packet range is 165-220.",
+        "section_1_paragraph_1 contains unsupported high-risk inference pattern: without-installing/using claim."
+      ]
+    })
+  ) {
+    fail("SELF TEST: safe repair gate did not accept length plus removable inference errors.");
+  }
+
+  if (
+    isSafeRepairableQualityFailure({
+      errors: [
+        "Article body has 1198 words; minimum is 1200.",
+        "section_1_paragraph_1 contains numeric token \"2000\" that is not present in its assigned evidence."
+      ]
+    })
+  ) {
+    fail("SELF TEST: safe repair gate accepted an unsupported numeric-evidence error.");
+  }
+
   console.log("APXN BLOG WRITER SELF TEST PASS");
   console.log("Paid AI calls: 0");
 }
@@ -2700,10 +2735,10 @@ async function main() {
   if (
     !local.ok &&
     MAX_LENGTH_REPAIR_CALLS > 0 &&
-    isLengthOnlyQualityFailure(local)
+    isSafeRepairableQualityFailure(local)
   ) {
     console.log(
-      "LENGTH-ONLY QUALITY FAILURE: running one grounded length repair call."
+      "SAFE REPAIRABLE QUALITY FAILURE: running one grounded repair call."
     );
 
     assertLengthRepairCostPreflight(config, costs, runCostUsd);
