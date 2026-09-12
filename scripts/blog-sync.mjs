@@ -736,6 +736,36 @@ function buildSitemap(config, publishedArticles) {
       changefreq: "daily",
       priority: "0.9"
     },
+    {
+      loc: `${baseUrl}/about.html`,
+      lastmod: today,
+      changefreq: "monthly",
+      priority: "0.7"
+    },
+    {
+      loc: `${baseUrl}/earn.html`,
+      lastmod: today,
+      changefreq: "weekly",
+      priority: "0.8"
+    },
+    {
+      loc: `${baseUrl}/contact.html`,
+      lastmod: today,
+      changefreq: "monthly",
+      priority: "0.5"
+    },
+    {
+      loc: `${baseUrl}/editorial-policy.html`,
+      lastmod: today,
+      changefreq: "monthly",
+      priority: "0.5"
+    },
+    {
+      loc: `${baseUrl}/disclaimer.html`,
+      lastmod: today,
+      changefreq: "monthly",
+      priority: "0.4"
+    },
     ...publishedArticles.map((article) => ({
       loc:
         article.url ||
@@ -799,4 +829,5 @@ try {
   console.error(`ERROR: ${error.message}`);
   process.exitCode = 1;
 }
+
 
