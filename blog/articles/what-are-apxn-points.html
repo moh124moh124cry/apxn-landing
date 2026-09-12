@@ -217,6 +217,44 @@
                         <span>•</span>
                         <span>8 min read</span>
                     </div>
+
+                    <div class="mt-8 flex flex-wrap items-center gap-3">
+                        <button
+                            type="button"
+                            onclick="shareArticle()"
+                            class="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm font-black text-yellow-400 hover:bg-yellow-500/15 transition-colors"
+                            aria-label="Share this article"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="w-5 h-5"
+                                aria-hidden="true"
+                            >
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+                                <line x1="8.59" y1="13.49" x2="15.42" y2="17.51"></line>
+                            </svg>
+
+                            <span>Share article</span>
+                        </button>
+
+                        <span
+                            id="share-status"
+                            class="hidden text-sm font-bold text-emerald-400"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            Original APXN link copied
+                        </span>
+                    </div>
                 </div>
             </section>
 
@@ -566,7 +604,72 @@
         </div>
     </footer>
 
+    <script>
+        const APXN_ARTICLE_SHARE = {
+            title: 'What Are APXN Points? How the Apex Network Telegram Mini App Works',
+            url: 'https://apxn.network/blog/articles/what-are-apxn-points.html'
+        };
+
+        function showShareStatus(message) {
+            const status = document.getElementById('share-status');
+            if (!status) return;
+
+            status.textContent = message;
+            status.classList.remove('hidden');
+
+            window.clearTimeout(window.__apxnShareStatusTimer);
+            window.__apxnShareStatusTimer = window.setTimeout(() => {
+                status.classList.add('hidden');
+            }, 3000);
+        }
+
+        async function copyOriginalArticleLink() {
+            const link = APXN_ARTICLE_SHARE.url;
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(link);
+                } else {
+                    const input = document.createElement('textarea');
+                    input.value = link;
+                    input.setAttribute('readonly', '');
+                    input.style.position = 'fixed';
+                    input.style.opacity = '0';
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    input.remove();
+                }
+
+                showShareStatus('Original APXN link copied');
+                return true;
+            } catch {
+                showShareStatus('Copy the APXN link from the address bar');
+                return false;
+            }
+        }
+
+        async function shareArticle() {
+            const shareData = {
+                title: APXN_ARTICLE_SHARE.title,
+                url: APXN_ARTICLE_SHARE.url
+            };
+
+            if (typeof navigator.share === 'function') {
+                try {
+                    await navigator.share(shareData);
+                    return;
+                } catch (error) {
+                    if (error && error.name === 'AbortError') {
+                        return;
+                    }
+                }
+            }
+
+            await copyOriginalArticleLink();
+        }
+    </script>
+
 </body>
 </html>
-
 
