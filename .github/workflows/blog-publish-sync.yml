@@ -1,0 +1,86 @@
+name: APXN Blog Publish Sync
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    paths:
+      - "blog/articles/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-blog-publish-sync
+  cancel-in-progress: false
+
+jobs:
+  sync-blog:
+    name: Sync Blog Index and Sitemap
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Update local main
+        run: |
+          git pull --rebase origin main
+
+      - name: Validate required files
+        run: |
+          test -f scripts/blog-sync.mjs
+          test -f data/blog-config.json
+          test -f data/blog-articles.json
+
+      - name: Validate JSON files
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('data/blog-config.json','utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('data/blog-articles.json','utf8'))"
+
+      - name: Rebuild blog index and sitemap
+        run: |
+          node scripts/blog-sync.mjs
+
+      - name: Check generated files
+        run: |
+          test -f blog/index.html
+          test -f sitemap.xml
+
+      - name: Commit synchronized blog files
+        run: |
+          git config user.name "APXN Blog Bot"
+          git config user.email "actions@github.com"
+
+          git add blog/index.html sitemap.xml
+
+          if git diff --cached --quiet; then
+            echo "Blog index and sitemap are already synchronized."
+            exit 0
+          fi
+
+          git commit -m "Sync blog index and sitemap after publication"
+
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## APXN Blog Publish Sync"
+            echo ""
+            echo "The blog index and sitemap sync runs only after a manual article publication creates or updates a file inside blog/articles/."
+            echo ""
+            echo "This workflow does not generate or publish articles automatically."
+          } >> "$GITHUB_STEP_SUMMARY"
