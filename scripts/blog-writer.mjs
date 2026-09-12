@@ -122,11 +122,10 @@ const LEGACY_TOPIC_OVERRIDES = {
 };
 
 /*
- * The character floors below intentionally sit above the old values.
- * Grok was satisfying the previous JSON schema while still producing blocks
- * below the deterministic word-count gate. These stronger structural limits
- * provide enough room for the required 1200+ word body without weakening any
- * factual, evidence, duplicate, SEO or safety checks.
+ * Character limits below are calibrated to support the Research Packet word
+ * ranges without forcing the article above the configured maximum. The local
+ * deterministic word-count gate remains the final authority for every block
+ * and for the complete 1200+ word article.
  */
 const ARTICLE_SCHEMA = {
   type: "object",
@@ -154,7 +153,7 @@ const ARTICLE_SCHEMA = {
       additionalProperties: false,
       required: ["text", "evidence_ids"],
       properties: {
-        text: { type: "string", minLength: 1000, maxLength: 1200 },
+        text: { type: "string", minLength: 950, maxLength: 1400 },
         evidence_ids: {
           type: "array",
           minItems: 1,
@@ -182,7 +181,7 @@ const ARTICLE_SCHEMA = {
               additionalProperties: false,
               required: ["text", "evidence_ids"],
               properties: {
-                text: { type: "string", minLength: 1250, maxLength: 1350 },
+                text: { type: "string", minLength: 700, maxLength: 900 },
                 evidence_ids: {
                   type: "array",
                   minItems: 1,
@@ -205,7 +204,7 @@ const ARTICLE_SCHEMA = {
         required: ["question", "answer", "evidence_ids"],
         properties: {
           question: { type: "string", minLength: 10, maxLength: 140 },
-          answer: { type: "string", minLength: 750, maxLength: 900 },
+          answer: { type: "string", minLength: 650, maxLength: 900 },
           evidence_ids: {
             type: "array",
             minItems: 1,
@@ -220,7 +219,7 @@ const ARTICLE_SCHEMA = {
       additionalProperties: false,
       required: ["text", "evidence_ids"],
       properties: {
-        text: { type: "string", minLength: 1050, maxLength: 1200 },
+        text: { type: "string", minLength: 950, maxLength: 1150 },
         evidence_ids: {
           type: "array",
           minItems: 1,
@@ -1043,6 +1042,11 @@ function writingPlanForPrompt(packet) {
     lines.push(
       `SECTION ${section.section_index}: ${section.min_words}-${section.max_words} words TOTAL across exactly 2 paragraphs; target ${section.target_words}.`
     );
+    lines.push(
+      `SECTION ${section.section_index} PARAGRAPH TARGET: each of the 2 paragraphs should be about ${Math.ceil(
+        Number(section.min_words) / 2
+      )}-${Math.floor(Number(section.max_words) / 2)} words so the combined section stays inside its required range.`
+    );
     lines.push(`SECTION ${section.section_index} EVIDENCE: ${section.evidence_ids.join(",")}`);
     lines.push(
       numericRuleForBlock(
@@ -1101,8 +1105,9 @@ function paidWriterInstructions() {
     "Treat every writing-plan word range as a HARD constraint, not a suggestion.",
     "The body must be at least 1200 useful words. Aim safely above the minimum, normally around 1500-1800 body words, while staying within the configured maximum.",
     "Before returning JSON, silently audit the approximate word count of the intro, every section, every FAQ answer, the conclusion and the complete body. Do not return a block below its minimum.",
-    "The strict JSON schema enforces stronger minimum character lengths to prevent under-length output. Never compress a field just to be concise.",
+    "The strict JSON schema uses calibrated character ranges to reduce under-length output without forcing the article above its configured maximum.",
     "Exactly 6 sections are required. Each section must contain exactly 2 substantial paragraphs, and the two paragraphs together must satisfy that section's full word range.",
+    "For every section, follow the per-paragraph target printed in the writing plan. Do not make one paragraph tiny and the other long; keep both near half of the section target.",
     "Exactly 3 FAQ items are required, and each answer must independently satisfy its FAQ word range.",
     "The meta description must stay inside the schema range and should read naturally as a search snippet.",
     "Use the approved evidence to add explanation and context, but never pad the article with unsupported facts, invented examples, generic filler or repetition.",
