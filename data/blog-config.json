@@ -33,7 +33,7 @@
     "api_base_url": "https://api.x.ai/v1",
     "responses_endpoint": "/responses",
     "default_model": "grok-4.3",
-    "reasoning_effort": "none",
+    "reasoning_effort": "low",
     "prompt_cache_key": "apxn-blog-writer-v1"
   },
 
@@ -41,7 +41,7 @@
     "enabled": true,
     "default_mode": "draft",
     "minimum_words": 1200,
-    "target_words": 1500,
+    "target_words": 1650,
     "maximum_words": 1900,
     "include_apxn_context": true,
     "include_faq": true,
