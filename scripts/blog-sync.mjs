@@ -8,6 +8,7 @@
  * - Uses ONLY articles with status === "published"
  * - Verifies every published article file exists before indexing it
  * - Rebuilds blog/index.html from the manifest (English-only)
+ * - Shows each published article's own image and title in the blog design
  * - Rebuilds sitemap.xml with static pages + blog + published articles
  * - Never exposes drafts in the blog index or sitemap
  *
@@ -100,6 +101,11 @@ function relativeArticleHref(article) {
   return `articles/${String(article?.slug || "").trim()}.html`;
 }
 
+function articleImageUrl(article) {
+  const image = String(article?.image || "").trim();
+  return image || "../logo2%20(1).png";
+}
+
 function verifyPublishedArticles(manifest) {
   if (!Array.isArray(manifest?.articles)) {
     fail("data/blog-articles.json must contain an articles array.");
@@ -171,21 +177,32 @@ function renderFeaturedArticle(article) {
   }
 
   const href = relativeArticleHref(article);
+  const image = articleImageUrl(article);
+  const title = escapeHtml(article.title);
 
   return `
             <article class="article-card overflow-hidden bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl">
                 <div class="grid lg:grid-cols-2">
-                    <div class="relative min-h-[300px] lg:min-h-[430px] flex items-center justify-center overflow-hidden border-b lg:border-b-0 lg:border-r border-slate-800">
-                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.18),transparent_60%)]"></div>
-                        <div class="relative text-center p-10">
-                            <div class="w-36 h-36 sm:w-44 sm:h-44 mx-auto rounded-full p-1 bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-800 shadow-[0_0_55px_rgba(234,179,8,0.25)]">
-                                <div class="w-full h-full rounded-full overflow-hidden border-[5px] border-slate-950 bg-slate-900">
-                                    <img src="../logo2%20(1).png" alt="APXN Logo" class="w-full h-full object-cover" width="176" height="176">
-                                </div>
-                            </div>
-                            <p class="mt-6 text-yellow-400 font-black text-sm uppercase tracking-widest">${escapeHtml(article.category || "APXN")}</p>
+                    <a href="${escapeHtml(href)}"
+                       class="group relative min-h-[280px] sm:min-h-[340px] lg:min-h-[430px] overflow-hidden border-b lg:border-b-0 lg:border-r border-slate-800 bg-slate-900"
+                       aria-label="Read ${title}">
+                        <img
+                            src="${escapeHtml(image)}"
+                            alt="${title}"
+                            class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                            loading="eager"
+                            onerror="this.onerror=null;this.src='../logo2%20(1).png';"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/15 to-transparent"></div>
+                        <div class="absolute left-5 right-5 bottom-5 sm:left-7 sm:right-7 sm:bottom-7">
+                            <span class="inline-flex text-[10px] font-black uppercase tracking-wider text-yellow-300 bg-slate-950/75 border border-yellow-500/30 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                                ${escapeHtml(article.category || "APXN")}
+                            </span>
+                            <p class="mt-3 text-white text-lg sm:text-xl font-black leading-snug line-clamp-2 drop-shadow-lg">
+                                ${title}
+                            </p>
                         </div>
-                    </div>
+                    </a>
 
                     <div class="p-7 sm:p-10 lg:p-12 flex flex-col justify-center">
                         <div class="flex flex-wrap gap-2 mb-5">
@@ -194,7 +211,7 @@ function renderFeaturedArticle(article) {
                         </div>
 
                         <h3 class="text-2xl sm:text-4xl font-black leading-tight mb-4">
-                            ${escapeHtml(article.title)}
+                            ${title}
                         </h3>
 
                         <p class="text-gray-400 leading-relaxed mb-7">
@@ -220,6 +237,8 @@ function renderFeaturedArticle(article) {
 function renderArticleCard(article) {
   const href = relativeArticleHref(article);
   const search = articleSearchText(article);
+  const image = articleImageUrl(article);
+  const title = escapeHtml(article.title);
 
   return `
                 <article class="article-card article-item bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden flex flex-col"
@@ -227,16 +246,35 @@ function renderArticleCard(article) {
                          data-search="${escapeHtml(search)}">
                     <div class="h-2 bg-gradient-to-r from-yellow-500 to-orange-500"></div>
 
+                    <a href="${escapeHtml(href)}"
+                       class="group relative block aspect-[16/9] overflow-hidden bg-slate-950 border-b border-slate-800"
+                       aria-label="Read ${title}">
+                        <img
+                            src="${escapeHtml(image)}"
+                            alt="${title}"
+                            class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                            loading="lazy"
+                            onerror="this.onerror=null;this.src='../logo2%20(1).png';"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent"></div>
+                        <div class="absolute left-4 right-4 bottom-4">
+                            <span class="inline-flex text-[9px] font-black uppercase tracking-wider text-yellow-300 bg-slate-950/75 border border-yellow-500/30 px-2.5 py-1 rounded-full backdrop-blur-sm">
+                                ${escapeHtml(article.category || "APXN")}
+                            </span>
+                        </div>
+                    </a>
+
                     <div class="p-6 flex flex-col flex-1">
                         <div class="flex items-center justify-between gap-3 mb-5">
                             <span class="text-[10px] font-black uppercase tracking-wider text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 px-3 py-1.5 rounded-full">
                                 ${escapeHtml(article.category || "APXN")}
                             </span>
-
                         </div>
 
                         <h3 class="font-black text-xl leading-snug mb-3 line-clamp-2">
-                            ${escapeHtml(article.title)}
+                            <a href="${escapeHtml(href)}" class="hover:text-yellow-300 transition-colors">
+                                ${title}
+                            </a>
                         </h3>
 
                         <p class="text-sm text-gray-400 leading-relaxed line-clamp-3 mb-6">
@@ -829,5 +867,4 @@ try {
   console.error(`ERROR: ${error.message}`);
   process.exitCode = 1;
 }
-
 
