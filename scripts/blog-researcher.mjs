@@ -3,11 +3,11 @@
  * Path: scripts/blog-researcher.mjs
  *
  * Purpose:
- * - Perform the research stage without any paid AI/API model.
+ * - Perform research without any paid AI/API model.
  * - Read only allowlisted official sources from data/blog-source-profiles.json.
  * - Read APXN project facts only from explicitly selected knowledge_sections.
  * - Build a deterministic Research Packet for the paid writer.
- * - Refuse topics whose evidence cannot support a substantial 1200+ word article.
+ * - Support substantial articles starting from 900 words.
  *
  * This module has no external npm dependencies and uses Node.js built-ins only.
  */
@@ -32,8 +32,8 @@ const PATHS = {
 const SOURCE_FETCH_TIMEOUT_MS = 22_000;
 const MAX_SOURCE_BYTES = 900_000;
 const MAX_SOURCE_TEXT_CHARS = 140_000;
-const MIN_PASSAGE_WORDS = 55;
-const TARGET_PASSAGE_WORDS = 130;
+const MIN_PASSAGE_WORDS = 50;
+const TARGET_PASSAGE_WORDS = 125;
 const MAX_PASSAGE_WORDS = 210;
 const MAX_PASSAGES_PER_SOURCE = 6;
 const MAX_EXTERNAL_EVIDENCE_ITEMS = 18;
@@ -41,6 +41,10 @@ const MAX_APXN_EVIDENCE_ITEMS = 24;
 
 const CONTENT_MODES = new Set(["apxn", "external", "hybrid", "manual"]);
 
+/*
+ * Research thresholds remain deliberately conservative. Lowering the article
+ * minimum to 900 words does not mean lowering source quality.
+ */
 const MIN_RESEARCH = {
   external: {
     total_words: 900,
@@ -62,14 +66,20 @@ const MIN_RESEARCH = {
   }
 };
 
+/*
+ * 900+ article plan.
+ * The per-block minima deliberately add up to less than 900 so the whole-body
+ * limit remains the real hard minimum. The writer may naturally produce 900,
+ * 1000, 1200 or more useful words as long as it stays below the configured max.
+ */
 const ARTICLE_WORD_PLAN = {
-  minimum: 1200,
-  target: 1500,
+  minimum: 900,
+  target: 1200,
   maximum: 1900,
-  intro: { min: 120, target: 145, max: 170 },
-  section: { min: 165, target: 190, max: 220 },
-  faq_each: { min: 70, target: 90, max: 110 },
-  conclusion: { min: 90, target: 110, max: 135 }
+  intro: { min: 70, target: 120, max: 170 },
+  section: { min: 80, target: 150, max: 220 },
+  faq_each: { min: 40, target: 70, max: 110 },
+  conclusion: { min: 50, target: 90, max: 135 }
 };
 
 const STOP_WORDS = new Set([
@@ -184,6 +194,7 @@ function hostnameOf(value) {
 
 function isAllowedHostname(hostname, allowedDomains) {
   const clean = String(hostname || "").toLowerCase().replace(/^www\./, "");
+
   return (allowedDomains || []).some((domain) => {
     const allowed = String(domain || "").toLowerCase().replace(/^www\./, "");
     return clean === allowed || clean.endsWith(`.${allowed}`);
@@ -201,12 +212,12 @@ function decodeHtmlEntities(value) {
     .replace(/&#x27;/gi, "'")
     .replace(/&#x2F;/gi, "/")
     .replace(/&#(\d+);/g, (_, code) => {
-      const valueNumber = Number(code);
-      return Number.isFinite(valueNumber) ? String.fromCodePoint(valueNumber) : " ";
+      const n = Number(code);
+      return Number.isFinite(n) ? String.fromCodePoint(n) : " ";
     })
     .replace(/&#x([0-9a-f]+);/gi, (_, code) => {
-      const valueNumber = Number.parseInt(code, 16);
-      return Number.isFinite(valueNumber) ? String.fromCodePoint(valueNumber) : " ";
+      const n = Number.parseInt(code, 16);
+      return Number.isFinite(n) ? String.fromCodePoint(n) : " ";
     });
 }
 
@@ -224,14 +235,13 @@ function htmlToTextWithBlocks(html) {
     .replace(/<li\b[^>]*>/gi, "\n")
     .replace(/<[^>]+>/g, " ");
 
-  text = decodeHtmlEntities(text)
+  return decodeHtmlEntities(text)
     .replace(/\r/g, "")
     .replace(/[ \t]+/g, " ")
     .replace(/ *\n */g, "\n")
     .replace(/\n{3,}/g, "\n\n")
-    .trim();
-
-  return text.slice(0, MAX_SOURCE_TEXT_CHARS);
+    .trim()
+    .slice(0, MAX_SOURCE_TEXT_CHARS);
 }
 
 function plainTextSourceToBlocks(text) {
@@ -245,13 +255,13 @@ function plainTextSourceToBlocks(text) {
 
 function sourceBodyToText(body, contentType, url) {
   const type = String(contentType || "").toLowerCase();
-  const pathname = (() => {
-    try {
-      return new URL(url).pathname.toLowerCase();
-    } catch {
-      return "";
-    }
-  })();
+  let pathname = "";
+
+  try {
+    pathname = new URL(url).pathname.toLowerCase();
+  } catch {
+    pathname = "";
+  }
 
   if (
     type.includes("text/html") ||
@@ -274,6 +284,27 @@ function topicTerms(topic, category = "") {
   return uniqueStrings([...tokenize(topic), ...tokenize(category)], 30);
 }
 
+function tokenJaccard(a, b) {
+  const left = new Set(tokenize(a));
+  const right = new Set(tokenize(b));
+  if (left.size === 0 || right.size === 0) return 0;
+
+  let intersection = 0;
+  for (const token of left) {
+    if (right.has(token)) intersection += 1;
+  }
+
+  const union = left.size + right.size - intersection;
+  return union > 0 ? intersection / union : 0;
+}
+
+function isNearDuplicate(candidate, selected) {
+  return selected.some((existing) => {
+    if (candidate.toLowerCase() === existing.toLowerCase()) return true;
+    return tokenJaccard(candidate, existing) >= 0.82;
+  });
+}
+
 function passageScore(passage, terms, sourceTitle = "") {
   const lower = String(passage || "").toLowerCase();
   const passageTokens = new Set(tokenize(passage));
@@ -287,14 +318,14 @@ function passageScore(passage, terms, sourceTitle = "") {
   }
 
   const words = wordCount(passage);
-  if (words >= 85 && words <= 175) score += 4;
+  if (words >= 80 && words <= 175) score += 4;
   else if (words >= MIN_PASSAGE_WORDS && words <= MAX_PASSAGE_WORDS) score += 2;
 
   if (/\b(?:privacy policy|terms of service|cookie|copyright|all rights reserved|subscribe|newsletter|sign in|log in)\b/i.test(passage)) {
     score -= 20;
   }
 
-  if (/\b(?:example|for example|means|defined|works|security|verify|validation|transaction|wallet|network|token|authentication|account|contract|gas|block)\b/i.test(passage)) {
+  if (/\b(?:example|means|defined|works|security|verify|validation|transaction|wallet|network|token|authentication|account|contract|gas|block|mini app|telegram)\b/i.test(passage)) {
     score += 2;
   }
 
@@ -313,16 +344,16 @@ function splitLongBlockIntoPassages(block) {
     let slice = words.slice(start, end).join(" ");
 
     if (end < words.length) {
-      const nextExtra = words.slice(end, Math.min(words.length, end + 35)).join(" ");
-      const combined = `${slice} ${nextExtra}`;
-      const sentenceBoundary = Math.max(
+      const extra = words.slice(end, Math.min(words.length, end + 35)).join(" ");
+      const combined = `${slice} ${extra}`;
+      const boundary = Math.max(
         combined.lastIndexOf(". "),
         combined.lastIndexOf("? "),
         combined.lastIndexOf("! ")
       );
 
-      if (sentenceBoundary > slice.length * 0.7) {
-        slice = combined.slice(0, sentenceBoundary + 1);
+      if (boundary > slice.length * 0.7) {
+        slice = combined.slice(0, boundary + 1);
       }
     }
 
@@ -365,27 +396,6 @@ function extractCandidatePassages(text) {
   }
 
   return candidates;
-}
-
-function tokenJaccard(a, b) {
-  const left = new Set(tokenize(a));
-  const right = new Set(tokenize(b));
-  if (left.size === 0 || right.size === 0) return 0;
-
-  let intersection = 0;
-  for (const token of left) {
-    if (right.has(token)) intersection += 1;
-  }
-
-  const union = left.size + right.size - intersection;
-  return union > 0 ? intersection / union : 0;
-}
-
-function isNearDuplicate(candidate, selected) {
-  return selected.some((existing) => {
-    if (candidate.toLowerCase() === existing.toLowerCase()) return true;
-    return tokenJaccard(candidate, existing) >= 0.82;
-  });
 }
 
 function selectPassages(text, { topic, category, sourceTitle }) {
@@ -460,7 +470,7 @@ async function fetchOfficialSource(source, profile) {
 
   const response = await fetchWithTimeout(originalUrl, {
     headers: {
-      "user-agent": "APXNBlogResearcher/1.0 (+https://apxn.network)",
+      "user-agent": "APXNBlogResearcher/1.1 (+https://apxn.network)",
       accept: "text/html,text/plain,text/markdown,application/xhtml+xml;q=0.9,*/*;q=0.2"
     }
   });
@@ -510,6 +520,7 @@ function makeExternalEvidenceItem({ id, passage, page, score = null }) {
     source_url: page.final_url,
     source_hostname: page.hostname,
     source_path: null,
+    project_source_paths: [],
     text: normalizeSpace(passage),
     word_count: wordCount(passage),
     numeric_tokens: extractNumericTokens(passage),
@@ -625,16 +636,12 @@ function scalarToText(pathParts, value) {
 
 function flattenKnowledgeValue(value, pathParts = [], result = []) {
   if (result.length >= MAX_APXN_EVIDENCE_ITEMS * 2) return result;
-
   if (value === null || value === undefined) return result;
 
   if (["string", "number", "boolean"].includes(typeof value)) {
     const text = scalarToText(pathParts, value);
     if (text) {
-      result.push({
-        source_path: pathParts.join("."),
-        text
-      });
+      result.push({ source_path: pathParts.join("."), text });
     }
     return result;
   }
@@ -646,10 +653,7 @@ function flattenKnowledgeValue(value, pathParts = [], result = []) {
       if (["string", "number", "boolean"].includes(typeof item)) {
         const text = scalarToText([...pathParts, String(index + 1)], item);
         if (text) {
-          result.push({
-            source_path: pathParts.join("."),
-            text
-          });
+          result.push({ source_path: pathParts.join("."), text });
         }
       } else {
         flattenKnowledgeValue(item, [...pathParts, String(index + 1)], result);
@@ -705,7 +709,11 @@ function collectApxnEvidence(metadata, knowledge) {
         text: clean,
         word_count: wordCount(clean),
         numeric_tokens: extractNumericTokens(clean),
-        relevance_score: passageScore(clean, topicTerms(metadata.topic, metadata.category), knowledgePath)
+        relevance_score: passageScore(
+          clean,
+          topicTerms(metadata.topic, metadata.category),
+          knowledgePath
+        )
       });
     }
   }
@@ -761,21 +769,16 @@ function theoreticalEvidenceItemCapacity(mode, profile = null) {
       MAX_EXTERNAL_EVIDENCE_ITEMS,
       configuredPages * MAX_PASSAGES_PER_SOURCE
     );
-
     return externalCapacity + MAX_APXN_EVIDENCE_ITEMS;
   }
 
-  if (mode === "apxn") {
-    return MAX_APXN_EVIDENCE_ITEMS;
-  }
-
+  if (mode === "apxn") return MAX_APXN_EVIDENCE_ITEMS;
   return 0;
 }
 
 function effectiveEvidenceItemRequirement(mode, threshold, profile = null) {
   const requested = Math.max(1, Number(threshold?.evidence_items || 1));
   const capacity = theoreticalEvidenceItemCapacity(mode, profile);
-
   if (capacity <= 0) return requested;
   return Math.min(requested, capacity);
 }
@@ -797,11 +800,7 @@ function evaluateResearchSufficiency(metadata, evidence, profile = null) {
   const externalPages = distinctExternalPageCount(evidence);
   const configuredExternalPages = configuredExternalPageCount(profile);
   const theoreticalEvidenceCapacity = theoreticalEvidenceItemCapacity(mode, profile);
-  const requiredEvidenceItems = effectiveEvidenceItemRequirement(
-    mode,
-    threshold,
-    profile
-  );
+  const requiredEvidenceItems = effectiveEvidenceItemRequirement(mode, threshold, profile);
   const reasons = [];
 
   if (evidence.length < requiredEvidenceItems) {
@@ -860,54 +859,23 @@ function evidenceSourceKey(item) {
 }
 
 function distributeEvidenceAcrossSections(evidence) {
-  const groups = new Map();
-
-  for (const item of evidence) {
-    const key = evidenceSourceKey(item);
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(item);
-  }
-
-  const groupList = [...groups.values()].sort((a, b) => {
-    const left = a.reduce((sum, item) => sum + item.word_count, 0);
-    const right = b.reduce((sum, item) => sum + item.word_count, 0);
-    return right - left;
-  });
-
   const sections = Array.from({ length: 6 }, () => []);
-  const sourceIndex = Array.from({ length: 6 }, () => new Set());
-
   const sortedEvidence = [...evidence].sort((a, b) => {
     return (b.relevance_score || 0) - (a.relevance_score || 0) || b.word_count - a.word_count;
   });
 
+  if (sortedEvidence.length === 0) return sections;
+
   for (let index = 0; index < sortedEvidence.length; index++) {
-    const item = sortedEvidence[index];
-    const key = evidenceSourceKey(item);
-
-    const candidates = sections
-      .map((items, sectionIndex) => ({
-        sectionIndex,
-        words: items.reduce((sum, current) => sum + current.word_count, 0),
-        sameSource: sourceIndex[sectionIndex].has(key)
-      }))
-      .sort((a, b) => {
-        if (a.sameSource !== b.sameSource) return a.sameSource ? -1 : 1;
-        return a.words - b.words || a.sectionIndex - b.sectionIndex;
-      });
-
-    const destination = candidates[0].sectionIndex;
+    const destination = index % 6;
     if (sections[destination].length < 4) {
-      sections[destination].push(item);
-      sourceIndex[destination].add(key);
+      sections[destination].push(sortedEvidence[index]);
     }
   }
 
-  // Guarantee every section has at least one evidence item by borrowing the
-  // highest-ranked evidence. Reuse is permitted in the plan; invention is not.
-  for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
-    if (sections[sectionIndex].length === 0 && sortedEvidence.length > 0) {
-      sections[sectionIndex].push(sortedEvidence[sectionIndex % sortedEvidence.length]);
+  for (let index = 0; index < sections.length; index++) {
+    if (sections[index].length === 0) {
+      sections[index].push(sortedEvidence[index % sortedEvidence.length]);
     }
   }
 
@@ -931,9 +899,31 @@ function focusTermsForEvidence(items, topic) {
     .map(([token]) => token);
 }
 
-function buildWritingPlan(metadata, evidence) {
+function buildWritingPlan(metadata, evidence, config) {
   const sectionEvidence = distributeEvidenceAcrossSections(evidence);
-  const topEvidence = [...evidence].sort((a, b) => (b.relevance_score || 0) - (a.relevance_score || 0));
+  const topEvidence = [...evidence].sort(
+    (a, b) => (b.relevance_score || 0) - (a.relevance_score || 0)
+  );
+
+  const configuredMinimum = Math.max(
+    900,
+    Number(config?.writer?.minimum_words || ARTICLE_WORD_PLAN.minimum)
+  );
+  const configuredTarget = Math.max(
+    configuredMinimum,
+    Number(config?.writer?.target_words || ARTICLE_WORD_PLAN.target)
+  );
+  const configuredMaximum = Math.max(
+    configuredTarget,
+    Number(config?.writer?.maximum_words || ARTICLE_WORD_PLAN.maximum)
+  );
+
+  const articleRequirement = {
+    ...ARTICLE_WORD_PLAN,
+    minimum: configuredMinimum,
+    target: configuredTarget,
+    maximum: configuredMaximum
+  };
 
   const sections = sectionEvidence.map((items, index) => ({
     section_index: index + 1,
@@ -943,11 +933,17 @@ function buildWritingPlan(metadata, evidence) {
     evidence_ids: uniqueStrings(items.map((item) => item.id), 4),
     focus_terms: focusTermsForEvidence(items, metadata.topic),
     instruction:
-      "Explain only the facts supported by these evidence IDs. You may clarify terminology and relationships already stated inside the assigned evidence, but you may not add a new product behavior, implementation detail, benefit, risk, example or future use from outside the packet."
+      "Explain only facts supported by these evidence IDs. Clarify what the evidence says, but do not add a new behavior, implementation detail, benefit, risk, example or future use from outside the packet."
   }));
 
-  const introEvidence = uniqueStrings(topEvidence.slice(0, 3).map((item) => item.id), 3);
-  const conclusionEvidence = uniqueStrings(topEvidence.slice(0, 4).map((item) => item.id), 4);
+  const introEvidence = uniqueStrings(
+    topEvidence.slice(0, 3).map((item) => item.id),
+    3
+  );
+  const conclusionEvidence = uniqueStrings(
+    topEvidence.slice(0, 4).map((item) => item.id),
+    4
+  );
 
   const faq = Array.from({ length: 3 }, (_, index) => ({
     faq_index: index + 1,
@@ -955,7 +951,10 @@ function buildWritingPlan(metadata, evidence) {
     min_words: ARTICLE_WORD_PLAN.faq_each.min,
     max_words: ARTICLE_WORD_PLAN.faq_each.max,
     evidence_ids: uniqueStrings(
-      [topEvidence[(index * 2) % topEvidence.length], topEvidence[(index * 2 + 1) % topEvidence.length]]
+      [
+        topEvidence[(index * 2) % topEvidence.length],
+        topEvidence[(index * 2 + 1) % topEvidence.length]
+      ]
         .filter(Boolean)
         .map((item) => item.id),
       2
@@ -964,7 +963,7 @@ function buildWritingPlan(metadata, evidence) {
   }));
 
   return {
-    article_word_requirement: ARTICLE_WORD_PLAN,
+    article_word_requirement: articleRequirement,
     intro: {
       target_words: ARTICLE_WORD_PLAN.intro.target,
       min_words: ARTICLE_WORD_PLAN.intro.min,
@@ -981,7 +980,7 @@ function buildWritingPlan(metadata, evidence) {
       max_words: ARTICLE_WORD_PLAN.conclusion.max,
       evidence_ids: conclusionEvidence,
       instruction:
-        "Summarize only the evidence-backed takeaways. Do not add a prediction, recommendation, price claim or future integration."
+        "Summarize only evidence-backed takeaways. Do not add a prediction, recommendation, price claim or future integration."
     }
   };
 }
@@ -1014,7 +1013,9 @@ function buildForbiddenClaims(metadata, profile) {
   if (profile?.editorial_guard) guards.push(profile.editorial_guard);
 
   if (metadata.content_mode === "apxn") {
-    guards.push("Do not introduce general blockchain facts unless they are present in the selected APXN knowledge evidence.");
+    guards.push(
+      "Do not introduce general blockchain facts unless they are present in the selected APXN knowledge evidence."
+    );
   }
 
   if (metadata.content_mode === "hybrid") {
@@ -1091,7 +1092,9 @@ export function loadTopicByIdOrTitle(selector, topicBank = readJson(PATHS.topicB
     (topic) =>
       topic.status === "available" &&
       topic.auto_publish_allowed === true &&
-      ["apxn", "external", "hybrid"].includes(String(topic.content_mode || "").toLowerCase())
+      ["apxn", "external", "hybrid"].includes(
+        String(topic.content_mode || "").toLowerCase()
+      )
   );
 
   if (!automatic) fail("No eligible automatic topic is available in the topic bank.");
@@ -1134,8 +1137,14 @@ export async function buildResearchPacketForTopic(metadata, options = {}) {
     : [];
 
   const evidence = [...apxnEvidence, ...externalResult.evidence];
-  const sufficiency = evaluateResearchSufficiency(metadata, evidence, profile);
-  const writingPlan = sufficiency.ready ? buildWritingPlan(metadata, evidence) : null;
+  const normalizedMetadata = {
+    ...metadata,
+    content_mode: mode
+  };
+  const sufficiency = evaluateResearchSufficiency(normalizedMetadata, evidence, profile);
+  const writingPlan = sufficiency.ready
+    ? buildWritingPlan(normalizedMetadata, evidence, config)
+    : null;
 
   const packet = {
     schema_version: 1,
@@ -1180,7 +1189,7 @@ export async function buildResearchPacketForTopic(metadata, options = {}) {
     },
     sources: packetSources(evidence),
     allowed_numeric_tokens: collectAllowedNumericTokens(evidence),
-    forbidden_claims: buildForbiddenClaims(metadata, profile),
+    forbidden_claims: buildForbiddenClaims(normalizedMetadata, profile),
     evidence,
     writing_plan: writingPlan
   };
@@ -1190,7 +1199,8 @@ export async function buildResearchPacketForTopic(metadata, options = {}) {
 
 function parseCliArguments(argv) {
   const result = {
-    topicSelector: process.env.BLOG_RESEARCH_TOPIC_ID || process.env.BLOG_RESEARCH_TOPIC || "",
+    topicSelector:
+      process.env.BLOG_RESEARCH_TOPIC_ID || process.env.BLOG_RESEARCH_TOPIC || "",
     output: process.env.BLOG_RESEARCH_OUTPUT || ""
   };
 
