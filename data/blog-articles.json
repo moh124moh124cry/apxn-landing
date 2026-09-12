@@ -1,10 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-08",
+  "last_updated": "2026-09-12",
   "default_language": "en",
   "stats": {
-    "total_articles": 1,
+    "total_articles": 2,
     "published": 1,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -46,6 +47,219 @@
         "article_schema": true,
         "faq_schema": true
       }
+    },
+    {
+      "id": "apxn-002",
+      "slug": "telegram-mini-apps-features-and-web3-concepts-from-official-documentation",
+      "title": "Telegram Mini Apps Features and Web3 Concepts from Official Documentation",
+      "description": "An overview of Telegram Mini Apps technical capabilities alongside Web3 fundamentals drawn directly from approved sources on core.telegram.org and ethereum.org.",
+      "excerpt": "An overview of Telegram Mini Apps technical capabilities alongside Web3 fundamentals drawn directly from approved sources on core.telegram.org and ethereum.org.",
+      "category": "Web3",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-12",
+      "generated_at": "2026-09-12",
+      "updated_at": "2026-09-12",
+      "published_at": null,
+      "reading_minutes": 6,
+      "word_count": 1149,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "Telegram Mini Apps",
+        "Web3",
+        "Ethereum",
+        "debug mode",
+        "events",
+        "Web3 ownership",
+        "Mini App launch",
+        "educational resources",
+        "storage fields",
+        "Bot API updates"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "external",
+      "source_profile": "telegram_web3",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "Telegram Mini Apps Features and Web3 Concepts from Official Documentation",
+        "description": "An overview of Telegram Mini Apps technical capabilities alongside Web3 fundamentals drawn directly from approved sources on core.telegram.org and ethereum.org.",
+        "canonical": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "Telegram Mini Apps Features and Web3 Concepts from Official Documentation",
+        "description": "An overview of Telegram Mini Apps technical capabilities alongside Web3 fundamentals drawn directly from approved sources on core.telegram.org and ethereum.org.",
+        "keywords": [
+          "Telegram Mini Apps",
+          "Web3",
+          "Ethereum",
+          "debug mode",
+          "events",
+          "Web3 ownership",
+          "Mini App launch",
+          "educational resources",
+          "storage fields",
+          "Bot API updates"
+        ],
+        "intro": {
+          "text": "Telegram Mini Apps offer specific tools for developers and users as described in official documentation. One process involves tapping ten times on the Settings icon to enable inspection features on iOS devices. Mini Apps also support sending gifts using Telegram Stars balances and allow customization of loading screens with icons and theme colors. Documentation outlines seven distinct launch methods including profile buttons, keyboard buttons, inline buttons, bot menu buttons, inline mode, direct links, and the attachment menu. These elements provide structured ways to interact with Mini Apps. Separate resources on ethereum.org introduce Web3 as a concept built on decentralized principles with sections covering topics such as staking and builder resources. The sources focus on practical implementation details and foundational concepts without combining them into new claims.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Debug Processes and Web3 Overview",
+            "paragraphs": [
+              {
+                "text": "Official Telegram documentation details a debug mode for Mini Apps on iOS. Users tap ten times on the Settings icon and toggle on Allow Web View Inspection. A USB connection to a computer then allows Safari on macOS to access the Develop menu and inspect the running Mini App under the connected device name. This setup helps locate app-specific issues during development on physical devices. The process requires following each step in sequence to connect the device properly and access the inspection tools through the browser menu.",
+                "evidence_ids": [
+                  "EXT-01"
+                ]
+              },
+              {
+                "text": "Resources on ethereum.org present Web3 through sections that include staking options and builder tools. The material covers Ethereum network fundamentals alongside development paths for those exploring decentralized applications. Staking appears as one entry point while builder sections list tools and resources for creating on the network. Ethereum is referenced as the base layer with related topics such as wallets and smart contracts appearing in the same overview structure.",
+                "evidence_ids": [
+                  "EXT-07"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Events and Data Handling in Context",
+            "paragraphs": [
+              {
+                "text": "Mini Apps can receive events from the Telegram app after validation of data. Complex data types arrive as JSON-serialized objects. Developers attach handlers through the Telegram.WebApp.onEvent method where the this object points to Telegram.WebApp and parameters vary by event type. A list of possible events is provided in the documentation. The eventHandler receives context that always refers back to the main WebApp object for consistent access during handling.",
+                "evidence_ids": [
+                  "EXT-04"
+                ]
+              },
+              {
+                "text": "Web3 documentation addresses how centralization supported broad adoption of the web while creating stable infrastructure. It notes that data and analytics tools exist alongside community events and online groups. The material separates these infrastructure points from other sections on fundamentals. Readers can find references to events in the context of broader community resources listed on the page.",
+                "evidence_ids": [
+                  "EXT-08"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Launch Options and Web Evolution Stages",
+            "paragraphs": [
+              {
+                "text": "Telegram supports seven different launch methods for Mini Apps. These include the main Mini App from a profile button, from a keyboard button, from an inline button, from the bot menu button, via inline mode, from a direct link, and from the attachment menu. Each method provides a distinct entry point into the Mini App experience. The documentation presents these options as the complete set currently available for launching applications in different contexts.",
+                "evidence_ids": [
+                  "EXT-03"
+                ]
+              },
+              {
+                "text": "Web documentation describes early stages as read-only from nineteen ninety to two thousand four. It then covers read-write phases starting in two thousand four and introduces read-write-own as a later stage. The material uses these periods to frame shifts in how users interact with web content. The read-only period ends at two thousand four while the next phase begins immediately afterward according to the outlined timeline.",
+                "evidence_ids": [
+                  "EXT-12"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Customization and Learning Approaches",
+            "paragraphs": [
+              {
+                "text": "Mini Apps can customize their loading screen by adding an icon and specific colors for light and dark themes. They can also use balances of Telegram Stars to send gifts to users. Documentation points to separate resources for implementing paid subscriptions and gifts through the Bot API. These customization options are listed as available features that Mini Apps may apply when presenting their interface to users.",
+                "evidence_ids": [
+                  "EXT-02"
+                ]
+              },
+              {
+                "text": "Web3 material notes that education requires learning different mental models compared with prior web eras. It references an earlier education drive during the late nineteen nineties that used metaphors and broadcasts. The section emphasizes that educational initiatives help inform users about new paradigms. The text highlights that Web3 is described as different rather than difficult and points to the need for targeted educational efforts.",
+                "evidence_ids": [
+                  "EXT-11"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Settings for Inspection and Cost Considerations",
+            "paragraphs": [
+              {
+                "text": "On Android devices the process requires going to Settings then Advanced then Experimental settings to enable webview inspection. Right clicking inside the WebView then opens an inspect option. On macOS the beta version requires clicking five times on the Settings icon to reach the debug menu for Mini Apps. These steps are presented separately for each platform in the official guidance.",
+                "evidence_ids": [
+                  "EXT-05"
+                ]
+              },
+              {
+                "text": "Web3 resources mention that important features such as Sign-in with Ethereum are available at zero cost. They also note that relative transaction costs can remain high in certain regions. The material states that layer two solutions are part of ongoing work to address accessibility. The text separates the zero cost availability of some features from the discussion of transaction fees in different locations.",
+                "evidence_ids": [
+                  "EXT-10"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Recent Additions and Ownership Concepts",
+            "paragraphs": [
+              {
+                "text": "Sample bots such as DurgerKingBot demonstrate Mini Apps in action. Updates through two thousand twenty six added fields including chat join request query id to WebAppInitData and methods such as requestChat to WebApp. Earlier updates added fields for icon custom emoji id and methods to hide the keyboard. The changes are listed by date with specific class and field names attached to each Bot API version.",
+                "evidence_ids": [
+                  "EXT-06"
+                ]
+              },
+              {
+                "text": "Ownership in Web3 is described as giving users control over digital assets in a new manner. The material contrasts this with web two games where purchased items tie to accounts that can be deleted. It notes that stopping play in such games can result in loss of invested value. The example illustrates the difference in how assets are handled between the two approaches without extending beyond the stated comparison.",
+                "evidence_ids": [
+                  "EXT-09"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What steps enable debug mode on iOS for Mini Apps?",
+            "answer": "Documentation specifies tapping ten times on the Settings icon inside Telegram and enabling Allow Web View Inspection. After connecting the device via USB cable users open Safari on a Mac and select the device name from the Develop menu to inspect the Mini App once launched. The sequence must be followed exactly to reach the inspection interface through the browser.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "How are events managed within Mini Apps?",
+            "answer": "Mini Apps receive events from the Telegram app after data validation occurs. Handlers attach using the onEvent method and the this reference points to Telegram.WebApp. Parameters passed to the handler depend on the specific event type listed in the documentation. The handler context remains tied to the WebApp object throughout the process.",
+            "evidence_ids": [
+              "EXT-03",
+              "EXT-04"
+            ]
+          },
+          {
+            "question": "Which storage fields were added in recent Bot API versions?",
+            "answer": "Updates in two thousand twenty five introduced DeviceStorage and SecureStorage fields allowing persistent local storage and secure storage for sensitive data on the user device. Later updates through two thousand twenty six added further fields and methods to WebApp classes. The additions are recorded by version number and class name in the change log.",
+            "evidence_ids": [
+              "EXT-05",
+              "EXT-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "Official sources describe specific Mini App launch methods, debug procedures, event handling, and loading customizations. Separate documentation outlines Web3 topics including ownership models, education needs, and accessibility points. These elements remain grounded in the provided passages without additional linkages. The passages keep their respective topics distinct throughout the material.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04"
+          ]
+        }
+      }
     }
   ],
   "generation_queue": [
@@ -59,7 +273,11 @@
       "priority": 2,
       "topic": "How Telegram Mini Apps Are Bringing Web3 to Everyday Users",
       "category": "Web3",
-      "status": "waiting"
+      "status": "ready",
+      "article_id": "apxn-002",
+      "generated_at": "2026-09-12",
+      "content_mode": "external",
+      "source_profile": "telegram_web3"
     },
     {
       "priority": 3,
@@ -99,17 +317,28 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": null,
+    "last_generated_article": "apxn-002",
     "last_published_article": "apxn-001",
     "next_queue_priority": 1,
-    "automatic_generation": false,
+    "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-09-08",
+      "last_run": "2026-09-12",
       "added_topics": 0,
+      "added_topic_ids": [],
+      "added_categories": [],
       "waiting_topics_after_run": 8,
       "minimum_waiting_topics": 6,
-      "target_waiting_topics": 12
+      "target_waiting_topics": 12,
+      "category_load_after_run": {
+        "APXN Guides": 3,
+        "Blockchain": 1,
+        "Web3": 1,
+        "BSC": 1,
+        "Security": 2,
+        "Education": 0,
+        "Development": 1
+      }
     }
   }
 }

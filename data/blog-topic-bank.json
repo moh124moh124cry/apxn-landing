@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-09",
+  "last_updated": "2026-09-12",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -501,9 +501,20 @@
     }
   ],
   "planner_state": {
-    "last_run": "2026-09-08",
+    "last_run": "2026-09-12",
     "available_topics": 36,
+    "automation_eligible_available_topics": 34,
+    "manual_or_review_topics": 2,
     "queued_topics": 0,
-    "used_topics": 0
+    "used_topics": 0,
+    "category_load_after_run": {
+      "APXN Guides": 3,
+      "Blockchain": 1,
+      "Web3": 1,
+      "BSC": 1,
+      "Security": 2,
+      "Education": 0,
+      "Development": 1
+    }
   }
 }
