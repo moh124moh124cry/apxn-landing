@@ -24,7 +24,6 @@
             --bg: #020617;
             --bg-soft: #0f172a;
             --card: rgba(15, 23, 42, 0.88);
-            --card-2: rgba(30, 41, 59, 0.75);
             --border: rgba(148, 163, 184, 0.15);
             --border-strong: rgba(148, 163, 184, 0.25);
             --text: #f8fafc;
@@ -69,6 +68,10 @@
 
         button {
             cursor: pointer;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
         }
 
         .hidden {
@@ -196,10 +199,6 @@
             font-size: 13px;
         }
 
-        .password-wrap {
-            position: relative;
-        }
-
         .input {
             width: 100%;
             border: 1px solid var(--border-strong);
@@ -240,7 +239,6 @@
 
         .login-button:disabled {
             opacity: 0.55;
-            cursor: not-allowed;
             transform: none;
         }
 
@@ -264,8 +262,14 @@
             border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
+        .message.success {
+            background: var(--green-soft);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
         /* =====================================
-           ADMIN LAYOUT
+           ADMIN
         ====================================== */
 
         .admin {
@@ -404,7 +408,7 @@
         }
 
         /* =====================================
-           TABS
+           TOOLBAR
         ====================================== */
 
         .toolbar {
@@ -526,6 +530,10 @@
             background: rgba(148, 163, 184, 0.09);
         }
 
+        /* =====================================
+           IMAGE
+        ====================================== */
+
         .image-section {
             border-top: 1px solid var(--border);
             padding: 17px 21px;
@@ -566,6 +574,11 @@
             cursor: pointer;
         }
 
+        .image-label.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
         .file-name {
             color: var(--muted);
             font-size: 12px;
@@ -573,6 +586,10 @@
             text-align: left;
             overflow-wrap: anywhere;
         }
+
+        /* =====================================
+           ACTIONS
+        ====================================== */
 
         .article-actions {
             display: flex;
@@ -603,15 +620,41 @@
                     #047857
                 );
             color: white;
+            min-width: 110px;
         }
 
         .publish-button:disabled {
             opacity: 0.4;
-            cursor: not-allowed;
+        }
+
+        .card-message {
+            margin-top: 13px;
+            padding: 11px 13px;
+            border-radius: 10px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .card-message.error {
+            color: #fca5a5;
+            background: var(--red-soft);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .card-message.success {
+            color: #6ee7b7;
+            background: var(--green-soft);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .card-message.warning {
+            color: #fcd34d;
+            background: var(--yellow-soft);
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
         /* =====================================
-           EMPTY / API STATE
+           EMPTY
         ====================================== */
 
         .empty-state {
@@ -661,9 +704,7 @@
            RESPONSIVE
         ====================================== */
 
-        @media (
-            max-width: 760px
-        ) {
+        @media (max-width: 760px) {
             .stats {
                 grid-template-columns: 1fr;
             }
@@ -685,6 +726,11 @@
             .category {
                 align-self: flex-start;
             }
+
+            .publish-button,
+            .secondary-button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -694,7 +740,7 @@
 <div class="app">
 
     <!-- =========================================
-         INITIAL LOADING
+         LOADING
     ========================================== -->
 
     <section
@@ -764,19 +810,15 @@
                     كلمة مرور الإدارة
                 </label>
 
-                <div class="password-wrap">
-
-                    <input
-                        id="admin-secret"
-                        class="input"
-                        type="password"
-                        autocomplete="current-password"
-                        maxlength="512"
-                        placeholder="BLOG_ADMIN_SECRET"
-                        required
-                    >
-
-                </div>
+                <input
+                    id="admin-secret"
+                    class="input"
+                    type="password"
+                    autocomplete="current-password"
+                    maxlength="512"
+                    placeholder="BLOG_ADMIN_SECRET"
+                    required
+                >
 
                 <button
                     id="login-button"
@@ -800,7 +842,7 @@
 
 
     <!-- =========================================
-         ADMIN DASHBOARD
+         ADMIN
     ========================================== -->
 
     <section
@@ -857,7 +899,7 @@
                     </h1>
 
                     <p>
-                        راجع المقال، أضف الصورة، ثم انشره عندما يكون جاهزًا.
+                        راجع المقال، اختر الصورة، ثم اضغط نشر المقال.
                     </p>
 
                 </div>
@@ -919,7 +961,7 @@
             </section>
 
 
-            <!-- TABS -->
+            <!-- TOOLBAR -->
 
             <section class="toolbar">
 
@@ -963,8 +1005,6 @@
             </section>
 
 
-            <!-- ARTICLES -->
-
             <section
                 id="articles"
                 class="articles"
@@ -973,8 +1013,8 @@
 
             <div class="system-note">
                 لا يتم نشر أي مقال تلقائيًا.
-                المقالات ستبقى مسودات حتى تقوم أنت باختيار الصورة
-                والضغط على زر النشر.
+                المقالات الجديدة تبقى في حالة جاهزة للنشر
+                حتى تختار الصورة وتضغط على زر نشر المقال.
             </div>
 
         </main>
@@ -985,1291 +1025,2067 @@
 
 
 <script>
-    (() => {
+(() => {
 
-        'use strict';
-
-
-        /* =========================================
-           APPLICATION STATE
-        ========================================== */
-
-        const state = {
-            authenticated: false,
-
-            articles: [],
-
-            filter: 'ready',
-
-            selectedFiles:
-                new Map()
-        };
+    'use strict';
 
 
-        /* =========================================
-           ELEMENTS
-        ========================================== */
+    /* =========================================
+       SETTINGS
+    ========================================== */
 
-        const elements = {
-            loadingScreen:
-                document.getElementById(
-                    'loading-screen'
-                ),
-
-            loginScreen:
-                document.getElementById(
-                    'login-screen'
-                ),
-
-            adminScreen:
-                document.getElementById(
-                    'admin-screen'
-                ),
-
-            loginForm:
-                document.getElementById(
-                    'login-form'
-                ),
-
-            adminSecret:
-                document.getElementById(
-                    'admin-secret'
-                ),
-
-            loginButton:
-                document.getElementById(
-                    'login-button'
-                ),
-
-            loginMessage:
-                document.getElementById(
-                    'login-message'
-                ),
-
-            logoutButton:
-                document.getElementById(
-                    'logout-button'
-                ),
-
-            refreshButton:
-                document.getElementById(
-                    'refresh-button'
-                ),
-
-            articles:
-                document.getElementById(
-                    'articles'
-                ),
-
-            readyCount:
-                document.getElementById(
-                    'ready-count'
-                ),
-
-            draftCount:
-                document.getElementById(
-                    'draft-count'
-                ),
-
-            publishedCount:
-                document.getElementById(
-                    'published-count'
-                )
-        };
+    const MAX_IMAGE_BYTES =
+        3 * 1024 * 1024;
 
 
-        /* =========================================
-           HTML ESCAPING
-        ========================================== */
+    const ALLOWED_IMAGE_TYPES =
+        new Set([
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/gif'
+        ]);
 
-        function escapeHtml(value) {
 
-            return String(
-                value ?? ''
+    /* =========================================
+       STATE
+    ========================================== */
+
+    const state = {
+
+        authenticated:
+            false,
+
+        articles:
+            [],
+
+        filter:
+            'ready',
+
+        selectedFiles:
+            new Map(),
+
+        publishing:
+            new Set()
+    };
+
+
+    /* =========================================
+       ELEMENTS
+    ========================================== */
+
+    const elements = {
+
+        loadingScreen:
+            document.getElementById(
+                'loading-screen'
+            ),
+
+        loginScreen:
+            document.getElementById(
+                'login-screen'
+            ),
+
+        adminScreen:
+            document.getElementById(
+                'admin-screen'
+            ),
+
+        loginForm:
+            document.getElementById(
+                'login-form'
+            ),
+
+        adminSecret:
+            document.getElementById(
+                'admin-secret'
+            ),
+
+        loginButton:
+            document.getElementById(
+                'login-button'
+            ),
+
+        loginMessage:
+            document.getElementById(
+                'login-message'
+            ),
+
+        logoutButton:
+            document.getElementById(
+                'logout-button'
+            ),
+
+        refreshButton:
+            document.getElementById(
+                'refresh-button'
+            ),
+
+        articles:
+            document.getElementById(
+                'articles'
+            ),
+
+        readyCount:
+            document.getElementById(
+                'ready-count'
+            ),
+
+        draftCount:
+            document.getElementById(
+                'draft-count'
+            ),
+
+        publishedCount:
+            document.getElementById(
+                'published-count'
             )
-                .replaceAll(
-                    '&',
-                    '&amp;'
-                )
-                .replaceAll(
-                    '<',
-                    '&lt;'
-                )
-                .replaceAll(
-                    '>',
-                    '&gt;'
-                )
-                .replaceAll(
-                    '"',
-                    '&quot;'
-                )
-                .replaceAll(
-                    "'",
-                    '&#039;'
-                );
-        }
+    };
 
 
-        /* =========================================
-           SCREEN HELPERS
-        ========================================== */
+    /* =========================================
+       ESCAPE HTML
+    ========================================== */
 
-        function hideAllScreens() {
+    function escapeHtml(
+        value
+    ) {
 
-            elements.loadingScreen
-                .classList
-                .add('hidden');
-
-            elements.loginScreen
-                .classList
-                .add('hidden');
-
-            elements.adminScreen
-                .classList
-                .add('hidden');
-        }
-
-
-        function showLogin() {
-
-            hideAllScreens();
-
-            elements.loginScreen
-                .classList
-                .remove('hidden');
-
-            setTimeout(
-                () => {
-                    elements.adminSecret
-                        .focus();
-                },
-                50
+        return String(
+            value ?? ''
+        )
+            .replaceAll(
+                '&',
+                '&amp;'
+            )
+            .replaceAll(
+                '<',
+                '&lt;'
+            )
+            .replaceAll(
+                '>',
+                '&gt;'
+            )
+            .replaceAll(
+                '"',
+                '&quot;'
+            )
+            .replaceAll(
+                "'",
+                '&#039;'
             );
-        }
+    }
 
 
-        function showAdmin() {
+    /* =========================================
+       DOM ID
+    ========================================== */
 
-            hideAllScreens();
+    function safeDomId(
+        value
+    ) {
 
-            elements.adminScreen
+        return String(
+            value || 'article'
+        )
+            .replace(
+                /[^a-zA-Z0-9_-]/g,
+                '_'
+            );
+    }
+
+
+    /* =========================================
+       SCREENS
+    ========================================== */
+
+    function hideAllScreens() {
+
+        elements.loadingScreen
+            .classList
+            .add(
+                'hidden'
+            );
+
+        elements.loginScreen
+            .classList
+            .add(
+                'hidden'
+            );
+
+        elements.adminScreen
+            .classList
+            .add(
+                'hidden'
+            );
+    }
+
+
+    function showLogin() {
+
+        hideAllScreens();
+
+        elements.loginScreen
+            .classList
+            .remove(
+                'hidden'
+            );
+
+        setTimeout(
+            () => {
+                elements.adminSecret
+                    .focus();
+            },
+            50
+        );
+    }
+
+
+    function showAdmin() {
+
+        hideAllScreens();
+
+        elements.adminScreen
+            .classList
+            .remove(
+                'hidden'
+            );
+    }
+
+
+    /* =========================================
+       LOGIN MESSAGE
+    ========================================== */
+
+    function setLoginMessage(
+        message = '',
+        type = 'error'
+    ) {
+
+        if (!message) {
+
+            elements.loginMessage
                 .classList
-                .remove('hidden');
-        }
-
-
-        /* =========================================
-           LOGIN MESSAGE
-        ========================================== */
-
-        function setLoginMessage(
-            message = '',
-            type = 'error'
-        ) {
-
-            if (!message) {
-
-                elements.loginMessage
-                    .classList
-                    .add('hidden');
-
-                elements.loginMessage
-                    .textContent = '';
-
-                return;
-            }
-
-            elements.loginMessage
-                .className =
-                `message ${type}`;
-
-            elements.loginMessage
-                .textContent =
-                message;
-        }
-
-
-        /* =========================================
-           REQUEST HELPER
-        ========================================== */
-
-        async function apiRequest(
-            url,
-            options = {}
-        ) {
-
-            const response =
-                await fetch(
-                    url,
-                    {
-                        credentials:
-                            'same-origin',
-
-                        cache:
-                            'no-store',
-
-                        ...options
-                    }
+                .add(
+                    'hidden'
                 );
 
-            let data = null;
+            elements.loginMessage
+                .textContent = '';
 
-            try {
+            return;
+        }
 
-                data =
-                    await response.json();
 
-            } catch {
+        elements.loginMessage
+            .className =
+            `message ${type}`;
 
-                data = null;
-            }
 
-            return {
+        elements.loginMessage
+            .textContent =
+            message;
+    }
+
+
+    /* =========================================
+       API REQUEST
+    ========================================== */
+
+    async function apiRequest(
+        url,
+        options = {}
+    ) {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    credentials:
+                        'same-origin',
+
+                    cache:
+                        'no-store',
+
+                    ...options
+                }
+            );
+
+
+        let data = null;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch {
+
+            data = null;
+        }
+
+
+        return {
+            response,
+            data
+        };
+    }
+
+
+    /* =========================================
+       AUTH CHECK
+    ========================================== */
+
+    async function checkAuthentication() {
+
+        try {
+
+            const {
                 response,
                 data
-            };
-        }
+            } =
+                await apiRequest(
+                    '/api/blog-admin-auth'
+                );
 
 
-        /* =========================================
-           AUTH CHECK
-        ========================================== */
-
-        async function checkAuthentication() {
-
-            try {
-
-                const {
-                    response,
-                    data
-                } =
-                    await apiRequest(
-                        '/api/blog-admin-auth'
-                    );
-
-
-                if (
-                    response.status === 503
-                ) {
-
-                    showLogin();
-
-                    setLoginMessage(
-                        'BLOG_ADMIN_SECRET غير مضاف في إعدادات Vercel أو أنه أقصر من 16 حرفًا.',
-                        'warning'
-                    );
-
-                    return;
-                }
-
-
-                if (
-                    response.ok &&
-                    data?.authenticated === true
-                ) {
-
-                    state.authenticated =
-                        true;
-
-                    showAdmin();
-
-                    await loadArticles();
-
-                    return;
-                }
-
-
-                state.authenticated =
-                    false;
-
-                showLogin();
-
-            } catch {
+            if (
+                response.status ===
+                503
+            ) {
 
                 showLogin();
 
                 setLoginMessage(
-                    'تعذر الاتصال بخادم تسجيل الدخول. تأكد من نشر ملف API على Vercel.'
+                    'BLOG_ADMIN_SECRET غير مضبوط في Vercel.',
+                    'warning'
                 );
+
+                return;
             }
-        }
 
 
-        /* =========================================
-           LOGIN
-        ========================================== */
-
-        async function login(
-            secret
-        ) {
-
-            elements.loginButton
-                .disabled = true;
-
-            elements.loginButton
-                .textContent =
-                'جاري تسجيل الدخول...';
-
-            setLoginMessage();
-
-
-            try {
-
-                const {
-                    response,
-                    data
-                } =
-                    await apiRequest(
-                        '/api/blog-admin-auth',
-                        {
-                            method:
-                                'POST',
-
-                            headers: {
-                                'Content-Type':
-                                    'application/json'
-                            },
-
-                            body:
-                                JSON.stringify({
-                                    secret
-                                })
-                        }
-                    );
-
-
-                if (
-                    response.status === 503
-                ) {
-
-                    setLoginMessage(
-                        'BLOG_ADMIN_SECRET غير مضبوط في Vercel.',
-                        'warning'
-                    );
-
-                    return;
-                }
-
-
-                if (
-                    response.status === 401
-                ) {
-
-                    setLoginMessage(
-                        'كلمة مرور الإدارة غير صحيحة.'
-                    );
-
-                    return;
-                }
-
-
-                if (
-                    !response.ok ||
-                    data?.authenticated !== true
-                ) {
-
-                    setLoginMessage(
-                        'فشل تسجيل الدخول. حاول مرة أخرى.'
-                    );
-
-                    return;
-                }
-
+            if (
+                response.ok &&
+                data?.authenticated ===
+                    true
+            ) {
 
                 state.authenticated =
                     true;
-
-                elements.adminSecret
-                    .value = '';
 
                 showAdmin();
 
                 await loadArticles();
 
-            } catch {
-
-                setLoginMessage(
-                    'حدث خطأ أثناء الاتصال بالخادم.'
-                );
-
-            } finally {
-
-                elements.loginButton
-                    .disabled = false;
-
-                elements.loginButton
-                    .textContent =
-                    'تسجيل الدخول';
-            }
-        }
-
-
-        /* =========================================
-           LOGOUT
-        ========================================== */
-
-        async function logout() {
-
-            elements.logoutButton
-                .disabled = true;
-
-            try {
-
-                await apiRequest(
-                    '/api/blog-admin-auth',
-                    {
-                        method:
-                            'DELETE'
-                    }
-                );
-
-            } catch {
-                // Even if the request fails,
-                // return to the login screen.
+                return;
             }
 
 
             state.authenticated =
                 false;
 
-            state.articles = [];
+            showLogin();
 
-            state.selectedFiles
-                .clear();
+        } catch {
 
             showLogin();
 
-            elements.logoutButton
-                .disabled = false;
+            setLoginMessage(
+                'تعذر الاتصال بخادم الإدارة.'
+            );
+        }
+    }
+
+
+    /* =========================================
+       LOGIN
+    ========================================== */
+
+    async function login(
+        secret
+    ) {
+
+        elements.loginButton
+            .disabled =
+            true;
+
+
+        elements.loginButton
+            .textContent =
+            'جاري تسجيل الدخول...';
+
+
+        setLoginMessage();
+
+
+        try {
+
+            const {
+                response,
+                data
+            } =
+                await apiRequest(
+                    '/api/blog-admin-auth',
+                    {
+                        method:
+                            'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body:
+                            JSON.stringify({
+                                secret
+                            })
+                    }
+                );
+
+
+            if (
+                response.status ===
+                503
+            ) {
+
+                setLoginMessage(
+                    'BLOG_ADMIN_SECRET غير مضبوط في Vercel.',
+                    'warning'
+                );
+
+                return;
+            }
+
+
+            if (
+                response.status ===
+                401
+            ) {
+
+                setLoginMessage(
+                    'كلمة مرور الإدارة غير صحيحة.'
+                );
+
+                return;
+            }
+
+
+            if (
+                !response.ok ||
+                data?.authenticated !==
+                    true
+            ) {
+
+                setLoginMessage(
+                    'فشل تسجيل الدخول.'
+                );
+
+                return;
+            }
+
+
+            state.authenticated =
+                true;
+
+
+            elements.adminSecret
+                .value =
+                '';
+
+
+            showAdmin();
+
+            await loadArticles();
+
+        } catch {
+
+            setLoginMessage(
+                'حدث خطأ أثناء الاتصال بالخادم.'
+            );
+
+        } finally {
+
+            elements.loginButton
+                .disabled =
+                false;
+
+
+            elements.loginButton
+                .textContent =
+                'تسجيل الدخول';
+        }
+    }
+
+
+    /* =========================================
+       LOGOUT
+    ========================================== */
+
+    async function logout() {
+
+        elements.logoutButton
+            .disabled =
+            true;
+
+
+        try {
+
+            await apiRequest(
+                '/api/blog-admin-auth',
+                {
+                    method:
+                        'DELETE'
+                }
+            );
+
+        } catch {
+            // Continue logout locally.
         }
 
 
-        /* =========================================
-           LOAD ARTICLES
-        ========================================== */
+        state.authenticated =
+            false;
 
-        async function loadArticles() {
+
+        state.articles =
+            [];
+
+
+        state.selectedFiles
+            .clear();
+
+
+        state.publishing
+            .clear();
+
+
+        showLogin();
+
+
+        elements.logoutButton
+            .disabled =
+            false;
+    }
+
+
+    /* =========================================
+       LOAD ARTICLES
+    ========================================== */
+
+    async function loadArticles() {
+
+        elements.refreshButton
+            .disabled =
+            true;
+
+
+        elements.articles
+            .innerHTML = `
+                <div class="empty-state">
+
+                    <div class="spinner"></div>
+
+                    <p>
+                        جاري تحميل المقالات...
+                    </p>
+
+                </div>
+            `;
+
+
+        try {
+
+            const {
+                response,
+                data
+            } =
+                await apiRequest(
+                    '/api/blog-admin-articles'
+                );
+
+
+            if (
+                response.status ===
+                401
+            ) {
+
+                state.authenticated =
+                    false;
+
+                showLogin();
+
+                return;
+            }
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    data?.error ||
+                    'ARTICLES_LOAD_FAILED'
+                );
+            }
+
+
+            state.articles =
+                Array.isArray(
+                    data?.articles
+                )
+                    ? data.articles
+                    : [];
+
+
+            updateStats();
+
+            renderArticles();
+
+        } catch {
+
+            state.articles =
+                [];
+
+            updateStats();
+
 
             elements.articles
                 .innerHTML = `
                     <div class="empty-state">
-                        <div class="spinner"></div>
+
+                        <div class="empty-icon">
+                            !
+                        </div>
+
+                        <h3>
+                            تعذر تحميل المقالات
+                        </h3>
+
                         <p>
-                            جاري تحميل المقالات...
+                            تأكد من نشر ملفات API
+                            ثم اضغط تحديث.
                         </p>
+
                     </div>
                 `;
 
+        } finally {
 
-            try {
-
-                const {
-                    response,
-                    data
-                } =
-                    await apiRequest(
-                        '/api/blog-admin-articles'
-                    );
+            elements.refreshButton
+                .disabled =
+                false;
+        }
+    }
 
 
-                /*
-                 * This API will be created
-                 * in the next implementation step.
-                 */
-                if (
-                    response.status === 404
-                ) {
+    /* =========================================
+       STATUS
+    ========================================== */
 
-                    state.articles = [];
+    function normalizeStatus(
+        article
+    ) {
 
-                    updateStats();
-
-                    renderArticles(
-                        true
-                    );
-
-                    return;
-                }
+        const status =
+            String(
+                article?.status ||
+                ''
+            )
+                .trim()
+                .toLowerCase();
 
 
-                if (
-                    response.status === 401
-                ) {
-
-                    state.authenticated =
-                        false;
-
-                    showLogin();
-
-                    return;
-                }
-
-
-                if (
-                    !response.ok
-                ) {
-
-                    throw new Error(
-                        'ARTICLES_API_ERROR'
-                    );
-                }
-
-
-                state.articles =
-                    Array.isArray(
-                        data?.articles
-                    )
-                        ? data.articles
-                        : [];
-
-
-                updateStats();
-
-                renderArticles();
-
-            } catch {
-
-                state.articles = [];
-
-                updateStats();
-
-                elements.articles
-                    .innerHTML = `
-                        <div class="empty-state">
-
-                            <div class="empty-icon">
-                                !
-                            </div>
-
-                            <h3>
-                                تعذر تحميل المقالات
-                            </h3>
-
-                            <p>
-                                تسجيل الدخول يعمل،
-                                لكن API الخاص بمقالات المدونة
-                                غير متصل بعد.
-                            </p>
-
-                        </div>
-                    `;
-            }
+        if (
+            status ===
+            'published'
+        ) {
+            return 'published';
         }
 
 
-        /* =========================================
-           STATUS HELPERS
-        ========================================== */
+        if (
+            status ===
+                'ready' ||
+            status ===
+                'ready_to_publish' ||
+            status ===
+                'ready-to-publish'
+        ) {
+            return 'ready';
+        }
 
-        function normalizeStatus(
-            article
+
+        return 'draft';
+    }
+
+
+    /* =========================================
+       STATS
+    ========================================== */
+
+    function updateStats() {
+
+        let ready = 0;
+        let draft = 0;
+        let published = 0;
+
+
+        for (
+            const article of
+            state.articles
         ) {
 
             const status =
-                String(
-                    article?.status ||
-                    ''
-                )
-                    .trim()
-                    .toLowerCase();
+                normalizeStatus(
+                    article
+                );
 
 
             if (
-                status === 'published'
-            ) {
-                return 'published';
-            }
-
-
-            if (
-                status === 'ready' ||
                 status ===
-                    'ready_to_publish'
+                'ready'
             ) {
-                return 'ready';
+                ready++;
             }
 
 
-            return 'draft';
+            if (
+                status ===
+                'draft'
+            ) {
+                draft++;
+            }
+
+
+            if (
+                status ===
+                'published'
+            ) {
+                published++;
+            }
         }
 
 
-        /* =========================================
-           COUNTERS
-        ========================================== */
-
-        function updateStats() {
-
-            let ready = 0;
-            let draft = 0;
-            let published = 0;
+        elements.readyCount
+            .textContent =
+            ready;
 
 
-            for (
-                const article of
-                state.articles
-            ) {
+        elements.draftCount
+            .textContent =
+            draft;
 
-                const status =
+
+        elements.publishedCount
+            .textContent =
+            published;
+    }
+
+
+    /* =========================================
+       FILTER
+    ========================================== */
+
+    function filteredArticles() {
+
+        return state.articles
+            .filter(
+                article =>
                     normalizeStatus(
                         article
-                    );
+                    ) ===
+                    state.filter
+            );
+    }
 
 
-                if (
-                    status === 'ready'
-                ) {
-                    ready++;
-                }
+    /* =========================================
+       BADGE
+    ========================================== */
 
-                if (
-                    status === 'draft'
-                ) {
-                    draft++;
-                }
+    function checkBadge(
+        ok,
+        yesText,
+        noText
+    ) {
 
-                if (
-                    status === 'published'
-                ) {
-                    published++;
-                }
-            }
-
-
-            elements.readyCount
-                .textContent =
-                ready;
-
-            elements.draftCount
-                .textContent =
-                draft;
-
-            elements.publishedCount
-                .textContent =
-                published;
-        }
-
-
-        /* =========================================
-           ARTICLE FILTER
-        ========================================== */
-
-        function filteredArticles() {
-
-            return state.articles
-                .filter(
-                    article =>
-                        normalizeStatus(
-                            article
-                        ) ===
-                        state.filter
-                );
-        }
-
-
-        /* =========================================
-           ARTICLE CHECK BADGE
-        ========================================== */
-
-        function checkBadge(
-            ok,
-            yesText,
-            noText
+        if (
+            ok === true
         ) {
 
-            if (
-                ok === true
-            ) {
-
-                return `
-                    <span class="check ok">
-                        ✓ ${escapeHtml(
-                            yesText
-                        )}
-                    </span>
-                `;
-            }
-
-
             return `
-                <span class="check pending">
-                    ⚠ ${escapeHtml(
-                        noText
+                <span class="check ok">
+                    ✓ ${escapeHtml(
+                        yesText
                     )}
                 </span>
             `;
         }
 
 
-        /* =========================================
-           ARTICLE CARD
-        ========================================== */
+        return `
+            <span class="check pending">
+                ⚠ ${escapeHtml(
+                    noText
+                )}
+            </span>
+        `;
+    }
 
-        function articleCard(
-            article
-        ) {
 
-            const id =
-                String(
-                    article.id ||
-                    article.slug ||
-                    article.title ||
-                    crypto.randomUUID()
+    /* =========================================
+       ARTICLE ID
+    ========================================== */
+
+    function getArticleId(
+        article
+    ) {
+
+        return String(
+            article?.id ||
+            article?.slug ||
+            ''
+        );
+    }
+
+
+    function findArticle(
+        id
+    ) {
+
+        return state.articles
+            .find(
+                article =>
+                    getArticleId(
+                        article
+                    ) ===
+                    id
+            );
+    }
+
+
+    /* =========================================
+       CARD
+    ========================================== */
+
+    function articleCard(
+        article
+    ) {
+
+        const id =
+            getArticleId(
+                article
+            );
+
+
+        const domId =
+            safeDomId(
+                id
+            );
+
+
+        const status =
+            normalizeStatus(
+                article
+            );
+
+
+        const isReady =
+            status ===
+            'ready';
+
+
+        const isPublished =
+            status ===
+            'published';
+
+
+        const selected =
+            state.selectedFiles
+                .get(
+                    id
                 );
 
 
-            const selected =
-                state.selectedFiles
-                    .get(id);
-
-
-            const fileName =
-                selected?.name ||
-                article.image_filename ||
-                'لم يتم اختيار صورة بعد';
-
-
-            const wordCount =
-                Number(
-                    article.word_count ||
-                    article.wordCount ||
-                    0
+        const publishing =
+            state.publishing
+                .has(
+                    id
                 );
 
 
-            const isPublished =
-                normalizeStatus(
-                    article
-                ) ===
-                'published';
+        const fileName =
+            selected?.name ||
+            (
+                isPublished
+                    ? article.image_filename
+                    : ''
+            ) ||
+            'لم يتم اختيار صورة بعد';
 
 
-            return `
-                <article
-                    class="article-card"
-                    data-article-id="${escapeHtml(id)}"
-                >
-
-                    <div class="article-content">
-
-                        <div class="article-top">
-
-                            <div>
-
-                                <h2 class="article-title">
-                                    ${escapeHtml(
-                                        article.title ||
-                                        'Untitled Article'
-                                    )}
-                                </h2>
-
-                            </div>
+        const wordCount =
+            Number(
+                article.word_count ||
+                article.wordCount ||
+                0
+            );
 
 
-                            <span class="category">
+        return `
+            <article
+                class="article-card"
+                data-article-id="${escapeHtml(
+                    id
+                )}"
+            >
+
+                <div class="article-content">
+
+                    <div class="article-top">
+
+                        <div>
+
+                            <h2 class="article-title">
                                 ${escapeHtml(
-                                    article.category ||
-                                    'APXN'
+                                    article.title ||
+                                    'Untitled Article'
                                 )}
-                            </span>
+                            </h2>
 
                         </div>
 
 
-                        <p class="article-excerpt">
+                        <span class="category">
                             ${escapeHtml(
-                                article.excerpt ||
-                                article.meta_description ||
-                                'المقال جاهز للمراجعة.'
+                                article.category ||
+                                'APXN'
                             )}
-                        </p>
-
-
-                        <div class="checks">
-
-                            ${
-                                checkBadge(
-                                    article.seo_ready !== false,
-                                    'SEO Ready',
-                                    'SEO Review'
-                                )
-                            }
-
-                            ${
-                                checkBadge(
-                                    article.facts_verified !== false,
-                                    'APXN Facts Verified',
-                                    'Facts Review'
-                                )
-                            }
-
-                            ${
-                                checkBadge(
-                                    article.duplicate_check !== false,
-                                    'Duplicate Check',
-                                    'Duplicate Review'
-                                )
-                            }
-
-                            <span class="check neutral">
-                                ${escapeHtml(
-                                    wordCount
-                                )} words
-                            </span>
-
-                        </div>
-
-
-                        <div class="article-actions">
-
-                            <button
-                                class="action-button secondary-button"
-                                type="button"
-                                data-action="preview"
-                                data-id="${escapeHtml(id)}"
-                            >
-                                معاينة
-                            </button>
-
-                        </div>
+                        </span>
 
                     </div>
 
 
-                    ${
-                        isPublished
-                            ? ''
-                            : `
-                                <div class="image-section">
-
-                                    <div class="image-row">
-
-                                        <div class="image-picker">
-
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                id="image-${escapeHtml(id)}"
-                                                data-image-input="${escapeHtml(id)}"
-                                            >
-
-                                            <label
-                                                class="image-label"
-                                                for="image-${escapeHtml(id)}"
-                                            >
-                                                اختيار صورة
-                                            </label>
-
-                                        </div>
+                    <p class="article-excerpt">
+                        ${escapeHtml(
+                            article.excerpt ||
+                            article.meta_description ||
+                            article.description ||
+                            'المقال جاهز للمراجعة.'
+                        )}
+                    </p>
 
 
-                                        <span
-                                            class="file-name"
-                                            id="filename-${escapeHtml(id)}"
-                                        >
-                                            ${escapeHtml(
-                                                fileName
-                                            )}
-                                        </span>
+                    <div class="checks">
 
-                                    </div>
+                        ${
+                            checkBadge(
+                                article.seo_ready !==
+                                    false,
+                                'SEO Ready',
+                                'SEO Review'
+                            )
+                        }
+
+                        ${
+                            checkBadge(
+                                article.facts_verified !==
+                                    false,
+                                'APXN Facts Verified',
+                                'Facts Review'
+                            )
+                        }
+
+                        ${
+                            checkBadge(
+                                article.duplicate_check !==
+                                    false,
+                                'Duplicate Check',
+                                'Duplicate Review'
+                            )
+                        }
+
+                        <span class="check neutral">
+                            ${escapeHtml(
+                                wordCount
+                            )} words
+                        </span>
+
+                        ${
+                            isReady
+                                ? `
+                                    <span class="check pending">
+                                        ⚠ Image Required
+                                    </span>
+                                `
+                                : ''
+                        }
+
+                        ${
+                            isPublished
+                                ? `
+                                    <span class="check ok">
+                                        ✓ Published
+                                    </span>
+                                `
+                                : ''
+                        }
+
+                    </div>
 
 
-                                    <div class="article-actions">
+                    <div class="article-actions">
 
-                                        <button
-                                            class="action-button publish-button"
-                                            type="button"
-                                            data-action="publish"
-                                            data-id="${escapeHtml(id)}"
+                        <button
+                            class="action-button secondary-button"
+                            type="button"
+                            data-action="preview"
+                            data-id="${escapeHtml(
+                                id
+                            )}"
+                        >
+                            ${
+                                isPublished
+                                    ? 'فتح المقال'
+                                    : 'معاينة'
+                            }
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                ${
+                    isReady
+                        ? `
+                            <div class="image-section">
+
+                                <div class="image-row">
+
+                                    <div class="image-picker">
+
+                                        <input
+                                            type="file"
+                                            accept="image/jpeg,image/png,image/webp,image/gif"
+                                            id="image-${escapeHtml(
+                                                domId
+                                            )}"
+                                            data-image-input="${escapeHtml(
+                                                id
+                                            )}"
                                             ${
-                                                selected ||
-                                                article.image_filename
-                                                    ? ''
-                                                    : 'disabled'
+                                                publishing
+                                                    ? 'disabled'
+                                                    : ''
                                             }
                                         >
-                                            نشر المقال
-                                        </button>
+
+                                        <label
+                                            class="image-label ${
+                                                publishing
+                                                    ? 'disabled'
+                                                    : ''
+                                            }"
+                                            for="image-${escapeHtml(
+                                                domId
+                                            )}"
+                                        >
+                                            اختيار صورة
+                                        </label>
 
                                     </div>
 
+
+                                    <span
+                                        class="file-name"
+                                        id="filename-${escapeHtml(
+                                            domId
+                                        )}"
+                                    >
+                                        ${escapeHtml(
+                                            fileName
+                                        )}
+                                    </span>
+
                                 </div>
-                            `
-                    }
-
-                </article>
-            `;
-        }
 
 
-        /* =========================================
-           RENDER ARTICLES
-        ========================================== */
+                                <div class="article-actions">
 
-        function renderArticles(
-            apiNotBuilt = false
+                                    <button
+                                        class="action-button publish-button"
+                                        type="button"
+                                        data-action="publish"
+                                        data-id="${escapeHtml(
+                                            id
+                                        )}"
+                                        ${
+                                            !selected ||
+                                            publishing
+                                                ? 'disabled'
+                                                : ''
+                                        }
+                                    >
+                                        ${
+                                            publishing
+                                                ? 'جاري النشر...'
+                                                : 'نشر المقال'
+                                        }
+                                    </button>
+
+                                </div>
+
+
+                                <div
+                                    id="message-${escapeHtml(
+                                        domId
+                                    )}"
+                                    class="card-message hidden"
+                                ></div>
+
+                            </div>
+                        `
+                        : ''
+                }
+
+            </article>
+        `;
+    }
+
+
+    /* =========================================
+       RENDER
+    ========================================== */
+
+    function renderArticles() {
+
+        const articles =
+            filteredArticles();
+
+
+        if (
+            articles.length ===
+            0
         ) {
 
-            if (
-                apiNotBuilt
-            ) {
-
-                elements.articles
-                    .innerHTML = `
-                        <div class="empty-state">
-
-                            <div class="empty-icon">
-                                ✍
-                            </div>
-
-                            <h3>
-                                لوحة الإدارة جاهزة
-                            </h3>
-
-                            <p>
-                                تسجيل الدخول ولوحة التحكم يعملان.
-                                في الخطوة التالية سنربط هذه الصفحة
-                                بمسودات المقالات الجاهزة للنشر.
-                            </p>
-
-                        </div>
-                    `;
-
-                return;
-            }
-
-
-            const articles =
-                filteredArticles();
-
-
-            if (
-                articles.length === 0
-            ) {
-
-                elements.articles
-                    .innerHTML = `
-                        <div class="empty-state">
-
-                            <div class="empty-icon">
-                                📝
-                            </div>
-
-                            <h3>
-                                لا توجد مقالات هنا حاليًا
-                            </h3>
-
-                            <p>
-                                عندما يقوم نظام الكتابة
-                                بتجهيز المقالات ستظهر هنا تلقائيًا.
-                            </p>
-
-                        </div>
-                    `;
-
-                return;
-            }
-
-
             elements.articles
-                .innerHTML =
-                articles
-                    .map(
-                        article =>
-                            articleCard(
-                                article
-                            )
-                    )
-                    .join('');
+                .innerHTML = `
+                    <div class="empty-state">
 
+                        <div class="empty-icon">
+                            📝
+                        </div>
 
-            bindImageInputs();
+                        <h3>
+                            لا توجد مقالات هنا حاليًا
+                        </h3>
+
+                        <p>
+                            عندما يقوم نظام الكتابة
+                            بتجهيز مقال جديد سيظهر
+                            هنا تلقائيًا.
+                        </p>
+
+                    </div>
+                `;
+
+            return;
         }
 
 
-        /* =========================================
-           IMAGE INPUTS
-        ========================================== */
-
-        function bindImageInputs() {
-
-            const inputs =
-                document.querySelectorAll(
-                    '[data-image-input]'
+        elements.articles
+            .innerHTML =
+            articles
+                .map(
+                    article =>
+                        articleCard(
+                            article
+                        )
+                )
+                .join(
+                    ''
                 );
 
 
-            for (
-                const input of inputs
-            ) {
-
-                input.addEventListener(
-                    'change',
-                    () => {
-
-                        const id =
-                            input.dataset
-                                .imageInput;
+        bindImageInputs();
+    }
 
 
-                        const file =
-                            input.files?.[0];
+    /* =========================================
+       CARD MESSAGE
+    ========================================== */
+
+    function setCardMessage(
+        id,
+        message = '',
+        type = 'error'
+    ) {
+
+        const element =
+            document.getElementById(
+                `message-${safeDomId(
+                    id
+                )}`
+            );
 
 
-                        if (!file) {
-                            return;
-                        }
+        if (!element) {
+            return;
+        }
 
 
-                        /*
-                         * No filename restriction.
-                         *
-                         * The original selected filename
-                         * is detected automatically.
-                         */
-                        state.selectedFiles
-                            .set(
-                                id,
-                                file
-                            );
+        if (!message) {
+
+            element
+                .classList
+                .add(
+                    'hidden'
+                );
+
+            element.textContent =
+                '';
+
+            return;
+        }
 
 
-                        const filename =
-                            document.getElementById(
-                                `filename-${id}`
-                            );
+        element.className =
+            `card-message ${type}`;
 
 
-                        if (
-                            filename
-                        ) {
-
-                            filename.textContent =
-                                file.name;
-                        }
+        element.textContent =
+            message;
+    }
 
 
-                        const publishButton =
-                            document.querySelector(
-                                `[data-action="publish"][data-id="${CSS.escape(id)}"]`
-                            );
+    /* =========================================
+       IMAGE VALIDATION
+    ========================================== */
+
+    function validateSelectedImage(
+        file
+    ) {
+
+        if (!file) {
+
+            return {
+                ok: false,
+                message:
+                    'اختر صورة المقال أولًا.'
+            };
+        }
 
 
-                        if (
-                            publishButton
-                        ) {
+        if (
+            !ALLOWED_IMAGE_TYPES
+                .has(
+                    file.type
+                )
+        ) {
 
-                            publishButton.disabled =
-                                false;
-                        }
+            return {
+                ok: false,
+                message:
+                    'استخدم صورة JPG أو PNG أو WEBP أو GIF.'
+            };
+        }
+
+
+        if (
+            file.size <=
+            0
+        ) {
+
+            return {
+                ok: false,
+                message:
+                    'ملف الصورة غير صالح.'
+            };
+        }
+
+
+        if (
+            file.size >
+            MAX_IMAGE_BYTES
+        ) {
+
+            return {
+                ok: false,
+                message:
+                    'حجم الصورة يجب ألا يتجاوز 3MB.'
+            };
+        }
+
+
+        return {
+            ok: true,
+            message: ''
+        };
+    }
+
+
+    /* =========================================
+       IMAGE INPUT
+    ========================================== */
+
+    function bindImageInputs() {
+
+        const inputs =
+            document.querySelectorAll(
+                '[data-image-input]'
+            );
+
+
+        for (
+            const input of
+            inputs
+        ) {
+
+            input.addEventListener(
+                'change',
+                () => {
+
+                    const id =
+                        input.dataset
+                            .imageInput;
+
+
+                    const file =
+                        input.files?.[0];
+
+
+                    if (!file) {
+                        return;
                     }
-                );
-            }
-        }
 
 
-        /* =========================================
-           TABS
-        ========================================== */
-
-        function bindTabs() {
-
-            const tabs =
-                document.querySelectorAll(
-                    '.tab[data-filter]'
-                );
+                    const validation =
+                        validateSelectedImage(
+                            file
+                        );
 
 
-            for (
-                const tab of tabs
-            ) {
+                    if (
+                        !validation.ok
+                    ) {
 
-                tab.addEventListener(
-                    'click',
-                    () => {
-
-                        state.filter =
-                            tab.dataset.filter;
+                        state.selectedFiles
+                            .delete(
+                                id
+                            );
 
 
-                        for (
-                            const item of tabs
-                        ) {
+                        input.value =
+                            '';
 
-                            item.classList
-                                .toggle(
-                                    'active',
-                                    item === tab
-                                );
-                        }
+
+                        setCardMessage(
+                            id,
+                            validation.message,
+                            'error'
+                        );
 
 
                         renderArticles();
+
+                        return;
                     }
+
+
+                    state.selectedFiles
+                        .set(
+                            id,
+                            file
+                        );
+
+
+                    setCardMessage(
+                        id
+                    );
+
+
+                    renderArticles();
+                }
+            );
+        }
+    }
+
+
+    /* =========================================
+       FILE -> BASE64
+    ========================================== */
+
+    function fileToBase64(
+        file
+    ) {
+
+        return new Promise(
+            (
+                resolve,
+                reject
+            ) => {
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload =
+                    () => {
+
+                        const result =
+                            String(
+                                reader.result ||
+                                ''
+                            );
+
+
+                        const comma =
+                            result.indexOf(
+                                ','
+                            );
+
+
+                        if (
+                            comma ===
+                            -1
+                        ) {
+
+                            reject(
+                                new Error(
+                                    'INVALID_IMAGE_DATA'
+                                )
+                            );
+
+                            return;
+                        }
+
+
+                        resolve(
+                            result.slice(
+                                comma + 1
+                            )
+                        );
+                    };
+
+
+                reader.onerror =
+                    () => {
+
+                        reject(
+                            new Error(
+                                'IMAGE_READ_FAILED'
+                            )
+                        );
+                    };
+
+
+                reader.readAsDataURL(
+                    file
                 );
             }
+        );
+    }
+
+
+    /* =========================================
+       PUBLISH ERROR
+    ========================================== */
+
+    function publishErrorMessage(
+        code
+    ) {
+
+        const messages = {
+
+            BLOG_GITHUB_TOKEN_NOT_CONFIGURED:
+                'BLOG_GITHUB_TOKEN غير مضبوط في Vercel أو يحتاج إلى إعادة نشر المشروع.',
+
+            MISSING_PUBLISH_DATA:
+                'بيانات النشر غير مكتملة.',
+
+            UNSUPPORTED_IMAGE_TYPE:
+                'نوع الصورة غير مدعوم.',
+
+            INVALID_IMAGE:
+                'ملف الصورة غير صالح.',
+
+            IMAGE_TOO_LARGE:
+                'حجم الصورة أكبر من 3MB.',
+
+            ARTICLE_NOT_FOUND:
+                'لم يتم العثور على المقال.',
+
+            ARTICLE_NOT_READY:
+                'هذا المقال لم يعد في حالة جاهزة للنشر.',
+
+            ARTICLE_CONTENT_MISSING:
+                'محتوى المقال غير موجود.',
+
+            ARTICLE_METADATA_INVALID:
+                'بيانات المقال غير مكتملة.',
+
+            ARTICLE_INTRO_MISSING:
+                'مقدمة المقال غير موجودة.',
+
+            ARTICLE_SECTIONS_MISSING:
+                'أقسام المقال غير مكتملة.',
+
+            ARTICLE_CONCLUSION_MISSING:
+                'خاتمة المقال غير موجودة.',
+
+            ARTICLE_FILE_ALREADY_EXISTS:
+                'صفحة المقال موجودة بالفعل في GitHub.',
+
+            IMAGE_FILE_ALREADY_EXISTS:
+                'ملف الصورة موجود بالفعل.',
+
+            UNAUTHORIZED:
+                'انتهت جلسة الإدارة. سجل الدخول مرة أخرى.',
+
+            INVALID_ORIGIN:
+                'تم رفض طلب النشر لأسباب أمنية.'
+        };
+
+
+        return (
+            messages[
+                code
+            ] ||
+            'تعذر نشر المقال. تحقق من إعدادات GitHub وVercel ثم حاول مرة أخرى.'
+        );
+    }
+
+
+    /* =========================================
+       PUBLISH ARTICLE
+    ========================================== */
+
+    async function publishArticle(
+        id
+    ) {
+
+        const article =
+            findArticle(
+                id
+            );
+
+
+        if (!article) {
+
+            setCardMessage(
+                id,
+                'لم يتم العثور على المقال.',
+                'error'
+            );
+
+            return;
         }
 
 
-        /* =========================================
-           ARTICLE ACTIONS
-        ========================================== */
+        if (
+            normalizeStatus(
+                article
+            ) !==
+            'ready'
+        ) {
 
-        elements.articles
-            .addEventListener(
-                'click',
-                event => {
+            setCardMessage(
+                id,
+                'هذا المقال غير جاهز للنشر.',
+                'error'
+            );
 
-                    const button =
-                        event.target.closest(
-                            '[data-action]'
-                        );
-
-
-                    if (!button) {
-                        return;
-                    }
+            return;
+        }
 
 
-                    const action =
-                        button.dataset.action;
+        const file =
+            state.selectedFiles
+                .get(
+                    id
+                );
 
 
-                    const id =
-                        button.dataset.id;
-
-
-                    if (
-                        action === 'preview'
-                    ) {
-
-                        const article =
-                            state.articles
-                                .find(
-                                    item => {
-
-                                        const articleId =
-                                            String(
-                                                item.id ||
-                                                item.slug ||
-                                                item.title ||
-                                                ''
-                                            );
-
-                                        return (
-                                            articleId ===
-                                            id
-                                        );
-                                    }
-                                );
-
-
-                        if (
-                            article?.published_url
-                        ) {
-
-                            window.open(
-                                article.published_url,
-                                '_blank',
-                                'noopener,noreferrer'
-                            );
-
-                            return;
-                        }
-
-
-                        if (
-                            article?.preview_url
-                        ) {
-
-                            window.open(
-                                article.preview_url,
-                                '_blank',
-                                'noopener,noreferrer'
-                            );
-
-                            return;
-                        }
-
-
-                        alert(
-                            'سيتم ربط المعاينة الكاملة مع API المقالات في الخطوات التالية.'
-                        );
-
-                        return;
-                    }
-
-
-                    if (
-                        action === 'publish'
-                    ) {
-
-                        /*
-                         * Upload + Publish API
-                         * will be connected later.
-                         */
-                        alert(
-                            'زر النشر جاهز في الواجهة. سنربطه برفع الصورة وإنشاء المقال في GitHub في الخطوة القادمة الخاصة بالنشر.'
-                        );
-                    }
-                }
+        const validation =
+            validateSelectedImage(
+                file
             );
 
 
-        /* =========================================
-           EVENT LISTENERS
-        ========================================== */
+        if (
+            !validation.ok
+        ) {
 
-        elements.loginForm
-            .addEventListener(
-                'submit',
-                async event => {
+            setCardMessage(
+                id,
+                validation.message,
+                'error'
+            );
 
-                    event.preventDefault();
-
-
-                    const secret =
-                        elements.adminSecret
-                            .value;
+            return;
+        }
 
 
-                    if (!secret) {
+        const confirmed =
+            window.confirm(
+                `هل تريد نشر هذا المقال الآن؟\n\n${article.title}`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        state.publishing
+            .add(
+                id
+            );
+
+
+        renderArticles();
+
+
+        setCardMessage(
+            id,
+            'جاري رفع الصورة ونشر المقال على GitHub...',
+            'warning'
+        );
+
+
+        try {
+
+            const imageBase64 =
+                await fileToBase64(
+                    file
+                );
+
+
+            const {
+                response,
+                data
+            } =
+                await apiRequest(
+                    '/api/blog-admin-publish',
+                    {
+                        method:
+                            'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                article_id:
+                                    id,
+
+                                image_name:
+                                    file.name,
+
+                                image_type:
+                                    file.type,
+
+                                image_base64:
+                                    imageBase64
+                            })
+                    }
+                );
+
+
+            if (
+                response.status ===
+                401
+            ) {
+
+                state.authenticated =
+                    false;
+
+                state.publishing
+                    .delete(
+                        id
+                    );
+
+                showLogin();
+
+                setLoginMessage(
+                    'انتهت جلسة الإدارة. سجل الدخول من جديد.',
+                    'warning'
+                );
+
+                return;
+            }
+
+
+            if (
+                !response.ok ||
+                data?.success !==
+                    true
+            ) {
+
+                throw new Error(
+                    data?.error ||
+                    'PUBLISH_FAILED'
+                );
+            }
+
+
+            state.selectedFiles
+                .delete(
+                    id
+                );
+
+
+            state.publishing
+                .delete(
+                    id
+                );
+
+
+            /*
+             * Update the local record immediately.
+             */
+            article.status =
+                'published';
+
+
+            article.published_url =
+                data.url ||
+                article.url ||
+                '';
+
+
+            article.url =
+                data.url ||
+                article.url ||
+                '';
+
+
+            article.image =
+                data.image ||
+                article.image ||
+                '';
+
+
+            article.image_filename =
+                data.image_filename ||
+                file.name;
+
+
+            updateStats();
+
+
+            state.filter =
+                'published';
+
+
+            activateTab(
+                'published'
+            );
+
+
+            renderArticles();
+
+
+            alert(
+                'تم نشر المقال بنجاح.\n\nسيقوم Vercel بنشر التحديث الجديد تلقائيًا خلال وقت قصير.'
+            );
+
+
+            /*
+             * Reload from server/GitHub-backed manifest.
+             */
+            setTimeout(
+                () => {
+                    loadArticles();
+                },
+                1500
+            );
+
+        } catch (
+            error
+        ) {
+
+            state.publishing
+                .delete(
+                    id
+                );
+
+
+            renderArticles();
+
+
+            setCardMessage(
+                id,
+                publishErrorMessage(
+                    error instanceof Error
+                        ? error.message
+                        : 'PUBLISH_FAILED'
+                ),
+                'error'
+            );
+        }
+    }
+
+
+    /* =========================================
+       PREVIEW
+    ========================================== */
+
+    function previewArticle(
+        id
+    ) {
+
+        const article =
+            findArticle(
+                id
+            );
+
+
+        if (!article) {
+            return;
+        }
+
+
+        const publishedUrl =
+            article.published_url ||
+            (
+                normalizeStatus(
+                    article
+                ) ===
+                    'published'
+                    ? article.url
+                    : ''
+            );
+
+
+        if (
+            publishedUrl
+        ) {
+
+            window.open(
+                publishedUrl,
+                '_blank',
+                'noopener,noreferrer'
+            );
+
+            return;
+        }
+
+
+        if (
+            article.preview_url
+        ) {
+
+            window.open(
+                article.preview_url,
+                '_blank',
+                'noopener,noreferrer'
+            );
+
+            return;
+        }
+
+
+        alert(
+            'المقال جاهز للنشر. اختر الصورة ثم اضغط نشر المقال.'
+        );
+    }
+
+
+    /* =========================================
+       TABS
+    ========================================== */
+
+    function activateTab(
+        filter
+    ) {
+
+        const tabs =
+            document.querySelectorAll(
+                '.tab[data-filter]'
+            );
+
+
+        for (
+            const tab of
+            tabs
+        ) {
+
+            tab.classList
+                .toggle(
+                    'active',
+                    tab.dataset.filter ===
+                        filter
+                );
+        }
+    }
+
+
+    function bindTabs() {
+
+        const tabs =
+            document.querySelectorAll(
+                '.tab[data-filter]'
+            );
+
+
+        for (
+            const tab of
+            tabs
+        ) {
+
+            tab.addEventListener(
+                'click',
+                () => {
+
+                    state.filter =
+                        tab.dataset.filter;
+
+
+                    activateTab(
+                        state.filter
+                    );
+
+
+                    renderArticles();
+                }
+            );
+        }
+    }
+
+
+    /* =========================================
+       ARTICLE ACTIONS
+    ========================================== */
+
+    elements.articles
+        .addEventListener(
+            'click',
+            async event => {
+
+                const button =
+                    event.target.closest(
+                        '[data-action]'
+                    );
+
+
+                if (!button) {
+                    return;
+                }
+
+
+                const action =
+                    button.dataset
+                        .action;
+
+
+                const id =
+                    button.dataset
+                        .id;
+
+
+                if (
+                    !id
+                ) {
+                    return;
+                }
+
+
+                if (
+                    action ===
+                    'preview'
+                ) {
+
+                    previewArticle(
+                        id
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    action ===
+                    'publish'
+                ) {
+
+                    if (
+                        state.publishing
+                            .has(
+                                id
+                            )
+                    ) {
                         return;
                     }
 
 
-                    await login(
-                        secret
+                    await publishArticle(
+                        id
                     );
                 }
-            );
+            }
+        );
 
 
-        elements.logoutButton
-            .addEventListener(
-                'click',
-                logout
-            );
+    /* =========================================
+       EVENTS
+    ========================================== */
+
+    elements.loginForm
+        .addEventListener(
+            'submit',
+            async event => {
+
+                event.preventDefault();
 
 
-        elements.refreshButton
-            .addEventListener(
-                'click',
-                loadArticles
-            );
+                const secret =
+                    elements.adminSecret
+                        .value;
 
 
-        bindTabs();
+                if (!secret) {
+                    return;
+                }
 
 
-        /* =========================================
-           START
-        ========================================== */
+                await login(
+                    secret
+                );
+            }
+        );
 
-        checkAuthentication();
 
-    })();
+    elements.logoutButton
+        .addEventListener(
+            'click',
+            logout
+        );
+
+
+    elements.refreshButton
+        .addEventListener(
+            'click',
+            loadArticles
+        );
+
+
+    bindTabs();
+
+
+    /* =========================================
+       START
+    ========================================== */
+
+    checkAuthentication();
+
+})();
 </script>
 
 </body>
