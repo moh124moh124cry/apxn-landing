@@ -13,16 +13,9 @@ const ARTICLES_FILE =
         'blog-articles.json'
     );
 
-const DRAFTS_FILE =
-    path.join(
-        process.cwd(),
-        'data',
-        'blog-drafts.json'
-    );
-
 
 /* =====================================================
-   RESPONSE SECURITY
+   SECURITY HEADERS
 ===================================================== */
 
 function noStore(res) {
@@ -51,19 +44,14 @@ function noStore(res) {
         'Referrer-Policy',
         'no-referrer'
     );
-
-    res.setHeader(
-        'X-Frame-Options',
-        'DENY'
-    );
 }
 
 
 /* =====================================================
-   HELPERS
+   BASIC HELPERS
 ===================================================== */
 
-function cleanString(
+function text(
     value,
     fallback = ''
 ) {
@@ -74,34 +62,42 @@ function cleanString(
         return fallback;
     }
 
-    return value.trim();
+    const cleaned =
+        value.trim();
+
+    return (
+        cleaned ||
+        fallback
+    );
 }
 
 
-function safeNumber(
+function number(
     value,
     fallback = 0
 ) {
 
-    const number =
+    const result =
         Number(value);
 
-    if (
-        !Number.isFinite(number)
-    ) {
-        return fallback;
-    }
-
-    return number;
+    return Number.isFinite(
+        result
+    )
+        ? result
+        : fallback;
 }
 
+
+/* =====================================================
+   ARTICLE STATUS
+===================================================== */
 
 function normalizeStatus(
     value
 ) {
 
     const status =
-        cleanString(value)
+        text(value)
             .toLowerCase();
 
 
@@ -126,184 +122,28 @@ function normalizeStatus(
 
 
 /* =====================================================
-   JSON READER
+   IMAGE FILENAME
 ===================================================== */
 
-async function readJsonFile(
-    filePath,
-    {
-        optional = false
-    } = {}
-) {
-
-    try {
-
-        const raw =
-            await fs.readFile(
-                filePath,
-                'utf8'
-            );
-
-
-        return JSON.parse(
-            raw
-        );
-
-    } catch (error) {
-
-        if (
-            optional &&
-            error?.code === 'ENOENT'
-        ) {
-            return null;
-        }
-
-
-        if (
-            error instanceof SyntaxError
-        ) {
-
-            throw new Error(
-                `INVALID_JSON:${path.basename(
-                    filePath
-                )}`
-            );
-        }
-
-
-        throw error;
-    }
-}
-
-
-/* =====================================================
-   SEO NORMALIZATION
-===================================================== */
-
-function normalizeSeo(
+function imageFilename(
     article
 ) {
 
-    const seo =
-        article?.seo &&
-        typeof article.seo === 'object'
-            ? article.seo
-            : {};
+    if (
+        article.image_filename
+    ) {
 
-
-    return {
-
-        title:
-            cleanString(
-                seo.title ||
-                article.meta_title ||
-                article.seo_title ||
-                article.title
-            ),
-
-        description:
-            cleanString(
-                seo.description ||
-                article.meta_description ||
-                article.description
-            ),
-
-        canonical:
-            cleanString(
-                seo.canonical ||
-                article.canonical ||
-                article.url
-            ),
-
-        robots:
-            cleanString(
-                seo.robots,
-                'index, follow'
-            ),
-
-        keywords:
-            Array.isArray(
-                article.keywords
-            )
-                ? article.keywords
-                    .filter(
-                        item =>
-                            typeof item ===
-                            'string'
-                    )
-                    .map(
-                        item =>
-                            item.trim()
-                    )
-                    .filter(Boolean)
-                : [],
-
-        article_schema:
-            seo.article_schema ===
-                true,
-
-        faq_schema:
-            seo.faq_schema ===
-                true
-    };
-}
-
-
-/* =====================================================
-   QUALITY NORMALIZATION
-===================================================== */
-
-function normalizeQuality(
-    article
-) {
-
-    const quality =
-        article?.quality &&
-        typeof article.quality === 'object'
-            ? article.quality
-            : {};
-
-
-    return {
-
-        seo_ready:
-            article.seo_ready !== false &&
-            quality.seo_ready !== false,
-
-        facts_verified:
-            article.facts_verified !== false &&
-            article.verified_against_knowledge !== false &&
-            quality.facts_verified !== false,
-
-        duplicate_check:
-            article.duplicate_check !== false &&
-            quality.duplicate_check !== false
-    };
-}
-
-
-/* =====================================================
-   IMAGE NORMALIZATION
-===================================================== */
-
-function getImageFilename(
-    article
-) {
-
-    const explicit =
-        cleanString(
+        return text(
             article.image_filename
         );
-
-    if (explicit) {
-        return explicit;
     }
 
 
     const image =
-        cleanString(
+        text(
             article.image
         );
+
 
     if (!image) {
         return '';
@@ -331,12 +171,11 @@ function getImageFilename(
 
 
 /* =====================================================
-   ARTICLE NORMALIZATION
+   NORMALIZE ARTICLE
 ===================================================== */
 
 function normalizeArticle(
-    article,
-    source
+    article
 ) {
 
     if (
@@ -348,13 +187,13 @@ function normalizeArticle(
 
 
     const title =
-        cleanString(
+        text(
             article.title
         );
 
 
     const slug =
-        cleanString(
+        text(
             article.slug
         );
 
@@ -374,32 +213,15 @@ function normalizeArticle(
 
 
     const seo =
-        normalizeSeo(
-            article
-        );
-
-
-    const quality =
-        normalizeQuality(
-            article
-        );
-
-
-    const url =
-        cleanString(
-            article.url ||
-            article.published_url
-        );
-
-
-    const previewUrl =
-        cleanString(
-            article.preview_url
-        );
+        article.seo &&
+        typeof article.seo ===
+            'object'
+            ? article.seo
+            : {};
 
 
     const description =
-        cleanString(
+        text(
             article.excerpt ||
             article.description ||
             article.meta_description ||
@@ -407,10 +229,17 @@ function normalizeArticle(
         );
 
 
+    const url =
+        text(
+            article.url ||
+            article.published_url
+        );
+
+
     return {
 
         id:
-            cleanString(
+            text(
                 article.id,
                 slug
             ),
@@ -420,19 +249,19 @@ function normalizeArticle(
         title,
 
         category:
-            cleanString(
+            text(
                 article.category,
                 'APXN Guides'
             ),
 
         language:
-            cleanString(
+            text(
                 article.language,
                 'en'
             ),
 
         author:
-            cleanString(
+            text(
                 article.author,
                 'Apex Network Editorial'
             ),
@@ -445,50 +274,77 @@ function normalizeArticle(
         description,
 
         meta_title:
-            seo.title,
+            text(
+                article.meta_title ||
+                article.seo_title ||
+                seo.title ||
+                title
+            ),
 
         meta_description:
-            seo.description,
-
-        canonical:
-            seo.canonical,
+            text(
+                article.meta_description ||
+                seo.description ||
+                description
+            ),
 
         keywords:
-            seo.keywords,
+            Array.isArray(
+                article.keywords
+            )
+                ? article.keywords
+                    .filter(
+                        item =>
+                            typeof item ===
+                            'string'
+                    )
+                    .map(
+                        item =>
+                            item.trim()
+                    )
+                    .filter(Boolean)
+                : [],
+
+        canonical:
+            text(
+                article.canonical ||
+                seo.canonical ||
+                url
+            ),
 
         word_count:
-            safeNumber(
+            number(
                 article.word_count ||
                 article.wordCount
             ),
 
         reading_minutes:
-            safeNumber(
+            number(
                 article.reading_minutes
             ),
 
         created_at:
-            cleanString(
+            text(
                 article.created_at
             ),
 
         generated_at:
-            cleanString(
+            text(
                 article.generated_at
             ),
 
-        published_at:
-            cleanString(
-                article.published_at
-            ),
-
         updated_at:
-            cleanString(
+            text(
                 article.updated_at
             ),
 
+        published_at:
+            text(
+                article.published_at
+            ),
+
         path:
-            cleanString(
+            text(
                 article.path
             ),
 
@@ -498,38 +354,33 @@ function normalizeArticle(
                 : '',
 
         preview_url:
-            previewUrl,
+            text(
+                article.preview_url
+            ),
 
         image:
-            cleanString(
+            text(
                 article.image
             ),
 
         image_filename:
-            getImageFilename(
+            imageFilename(
                 article
             ),
 
         seo_ready:
-            quality.seo_ready,
+            article.seo_ready !==
+                false,
 
         facts_verified:
-            quality.facts_verified,
+            article.facts_verified !==
+                false &&
+            article.verified_against_knowledge !==
+                false,
 
         duplicate_check:
-            quality.duplicate_check,
-
-        article_schema:
-            seo.article_schema,
-
-        faq_schema:
-            seo.faq_schema,
-
-        source:
-            cleanString(
-                article.source,
-                source
-            ),
+            article.duplicate_check !==
+                false,
 
         featured:
             article.featured ===
@@ -537,153 +388,22 @@ function normalizeArticle(
 
         indexable:
             article.indexable !==
-                false
-    };
-}
+                false,
 
+        article_schema:
+            seo.article_schema ===
+                true,
 
-/* =====================================================
-   LOAD PUBLISHED ARTICLES
-===================================================== */
+        faq_schema:
+            seo.faq_schema ===
+                true,
 
-async function loadPublishedArticles() {
-
-    const manifest =
-        await readJsonFile(
-            ARTICLES_FILE
-        );
-
-
-    const articles =
-        Array.isArray(
-            manifest?.articles
-        )
-            ? manifest.articles
-            : [];
-
-
-    return articles
-        .map(
-            article =>
-                normalizeArticle(
-                    article,
-                    'blog-articles'
-                )
-        )
-        .filter(Boolean);
-}
-
-
-/* =====================================================
-   LOAD DRAFT ARTICLES
-===================================================== */
-
-async function loadDraftArticles() {
-
-    /*
-     * blog-drafts.json does not need to exist yet.
-     *
-     * The future AI writer will save generated
-     * articles here.
-     */
-
-    const manifest =
-        await readJsonFile(
-            DRAFTS_FILE,
-            {
-                optional: true
-            }
-        );
-
-
-    if (!manifest) {
-        return [];
-    }
-
-
-    const drafts =
-        Array.isArray(
-            manifest.articles
-        )
-            ? manifest.articles
-
-            : Array.isArray(
-                manifest.drafts
+        source:
+            text(
+                article.source,
+                'blog-writer'
             )
-                ? manifest.drafts
-
-                : [];
-
-
-    return drafts
-        .map(
-            article =>
-                normalizeArticle(
-                    article,
-                    'blog-drafts'
-                )
-        )
-        .filter(Boolean);
-}
-
-
-/* =====================================================
-   REMOVE DUPLICATES
-===================================================== */
-
-function mergeArticles(
-    published,
-    drafts
-) {
-
-    const map =
-        new Map();
-
-
-    /*
-     * Drafts first.
-     */
-    for (
-        const article of
-        drafts
-    ) {
-
-        const key =
-            article.slug
-                .toLowerCase();
-
-
-        map.set(
-            key,
-            article
-        );
-    }
-
-
-    /*
-     * Published article always wins
-     * if the same slug exists in both files.
-     */
-    for (
-        const article of
-        published
-    ) {
-
-        const key =
-            article.slug
-                .toLowerCase();
-
-
-        map.set(
-            key,
-            article
-        );
-    }
-
-
-    return Array.from(
-        map.values()
-    );
+    };
 }
 
 
@@ -691,11 +411,11 @@ function mergeArticles(
    SORTING
 ===================================================== */
 
-function articleTimestamp(
+function timestamp(
     article
 ) {
 
-    const candidates = [
+    const values = [
 
         article.published_at,
 
@@ -709,8 +429,7 @@ function articleTimestamp(
 
 
     for (
-        const value of
-        candidates
+        const value of values
     ) {
 
         if (!value) {
@@ -718,7 +437,7 @@ function articleTimestamp(
         }
 
 
-        const timestamp =
+        const time =
             Date.parse(
                 value
             );
@@ -726,10 +445,10 @@ function articleTimestamp(
 
         if (
             Number.isFinite(
-                timestamp
+                time
             )
         ) {
-            return timestamp;
+            return time;
         }
     }
 
@@ -742,44 +461,43 @@ function sortArticles(
     articles
 ) {
 
+    const priority = {
+
+        ready: 3,
+
+        draft: 2,
+
+        published: 1
+    };
+
+
     return [...articles]
         .sort(
             (a, b) => {
 
-                const statusPriority = {
-                    ready: 3,
-                    draft: 2,
-                    published: 1
-                };
-
-
-                const firstPriority =
-                    statusPriority[
-                        a.status
-                    ] || 0;
-
-
-                const secondPriority =
-                    statusPriority[
-                        b.status
-                    ] || 0;
+                const difference =
+                    (
+                        priority[
+                            b.status
+                        ] || 0
+                    ) -
+                    (
+                        priority[
+                            a.status
+                        ] || 0
+                    );
 
 
                 if (
-                    firstPriority !==
-                    secondPriority
+                    difference !== 0
                 ) {
-
-                    return (
-                        secondPriority -
-                        firstPriority
-                    );
+                    return difference;
                 }
 
 
                 return (
-                    articleTimestamp(b) -
-                    articleTimestamp(a)
+                    timestamp(b) -
+                    timestamp(a)
                 );
             }
         );
@@ -787,24 +505,27 @@ function sortArticles(
 
 
 /* =====================================================
-   COUNTERS
+   STATISTICS
 ===================================================== */
 
-function buildStats(
+function createStats(
     articles
 ) {
 
     const stats = {
+
         total: 0,
+
         ready: 0,
+
         drafts: 0,
+
         published: 0
     };
 
 
     for (
-        const article of
-        articles
+        const article of articles
     ) {
 
         stats.total++;
@@ -843,7 +564,48 @@ function buildStats(
 
 
 /* =====================================================
-   API HANDLER
+   READ MANIFEST
+===================================================== */
+
+async function loadArticles() {
+
+    const raw =
+        await fs.readFile(
+            ARTICLES_FILE,
+            'utf8'
+        );
+
+
+    const manifest =
+        JSON.parse(
+            raw
+        );
+
+
+    const source =
+        Array.isArray(
+            manifest?.articles
+        )
+            ? manifest.articles
+            : [];
+
+
+    const articles =
+        source
+            .map(
+                normalizeArticle
+            )
+            .filter(Boolean);
+
+
+    return sortArticles(
+        articles
+    );
+}
+
+
+/* =====================================================
+   API
 ===================================================== */
 
 export default async function handler(
@@ -883,7 +645,7 @@ export default async function handler(
 
 
     /* ---------------------------------------------
-       ADMIN AUTHENTICATION
+       ADMIN LOGIN REQUIRED
     ---------------------------------------------- */
 
     if (
@@ -907,37 +669,13 @@ export default async function handler(
 
 
     /* ---------------------------------------------
-       LOAD ARTICLES
+       ARTICLES
     ---------------------------------------------- */
 
     try {
 
-        const [
-            published,
-            drafts
-        ] =
-            await Promise.all([
-
-                loadPublishedArticles(),
-
-                loadDraftArticles()
-
-            ]);
-
-
         const articles =
-            sortArticles(
-                mergeArticles(
-                    published,
-                    drafts
-                )
-            );
-
-
-        const stats =
-            buildStats(
-                articles
-            );
+            await loadArticles();
 
 
         return res
@@ -948,7 +686,10 @@ export default async function handler(
 
                 authenticated: true,
 
-                stats,
+                stats:
+                    createStats(
+                        articles
+                    ),
 
                 articles
             });
@@ -956,10 +697,10 @@ export default async function handler(
     } catch (error) {
 
         console.error(
-            'Blog admin articles error:',
+            'Blog admin articles:',
             error instanceof Error
                 ? error.message
-                : 'UNKNOWN_ERROR'
+                : error
         );
 
 
