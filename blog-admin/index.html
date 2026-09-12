@@ -61,6 +61,10 @@
             min-height: 100vh;
         }
 
+        body.modal-open {
+            overflow: hidden;
+        }
+
         button,
         input {
             font: inherit;
@@ -701,6 +705,243 @@
         }
 
         /* =====================================
+           PRIVATE PREVIEW MODAL
+        ====================================== */
+
+        .preview-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 18px;
+            overflow-y: auto;
+            background: rgba(2, 6, 23, 0.88);
+            backdrop-filter: blur(12px);
+        }
+
+        .preview-shell {
+            width: min(900px, 100%);
+            margin: 20px auto;
+            border: 1px solid var(--border-strong);
+            border-radius: 24px;
+            background: #07101f;
+            overflow: hidden;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.58);
+        }
+
+        .preview-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(7, 16, 31, 0.96);
+            backdrop-filter: blur(14px);
+        }
+
+        .preview-toolbar-title {
+            min-width: 0;
+        }
+
+        .preview-toolbar-title strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .preview-toolbar-title span {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .preview-close {
+            flex: 0 0 auto;
+            min-width: 72px;
+            padding: 10px 13px;
+            border-radius: 11px;
+            border: 1px solid var(--border-strong);
+            background: rgba(15, 23, 42, 0.85);
+            color: #e2e8f0;
+            font-weight: 800;
+        }
+
+        .preview-article {
+            direction: ltr;
+            text-align: left;
+            color: #dbe5f3;
+        }
+
+        .preview-hero {
+            padding: 42px 32px 30px;
+            border-bottom: 1px solid var(--border);
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(37, 99, 235, 0.17),
+                    transparent 38%
+                );
+        }
+
+        .preview-category {
+            display: inline-flex;
+            margin-bottom: 14px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(37, 99, 235, 0.14);
+            color: #93c5fd;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .preview-hero h1 {
+            margin: 0 0 14px;
+            color: #f8fafc;
+            font-size: clamp(28px, 5vw, 44px);
+            line-height: 1.15;
+        }
+
+        .preview-description {
+            margin: 0;
+            max-width: 760px;
+            color: #9eacc0;
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .preview-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            margin-top: 20px;
+            color: #8190a5;
+            font-size: 12px;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 460px;
+            display: block;
+            object-fit: cover;
+            background: #020617;
+        }
+
+        .preview-image-placeholder {
+            display: flex;
+            min-height: 120px;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            color: #718096;
+            background: rgba(2, 6, 23, 0.48);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .preview-body {
+            padding: 32px;
+        }
+
+        .preview-body p {
+            margin: 0 0 18px;
+            color: #c4cfde;
+            font-size: 16px;
+            line-height: 1.92;
+        }
+
+        .preview-body h2 {
+            margin: 38px 0 16px;
+            color: #f8fafc;
+            font-size: 25px;
+            line-height: 1.35;
+        }
+
+        .preview-section:first-child h2 {
+            margin-top: 18px;
+        }
+
+        .preview-faq {
+            margin-top: 42px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+        }
+
+        .preview-faq > h2 {
+            margin-top: 0;
+        }
+
+        .preview-faq-item {
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .preview-faq-item:last-child {
+            border-bottom: 0;
+        }
+
+        .preview-faq-item h3 {
+            margin: 0 0 10px;
+            color: #eef4fb;
+            font-size: 18px;
+            line-height: 1.45;
+        }
+
+        .preview-faq-item p {
+            margin-bottom: 0;
+        }
+
+        .preview-conclusion {
+            margin-top: 36px;
+            padding: 24px;
+            border: 1px solid rgba(96, 165, 250, 0.18);
+            border-radius: 18px;
+            background: rgba(37, 99, 235, 0.07);
+        }
+
+        .preview-conclusion h2 {
+            margin: 0 0 14px;
+        }
+
+        .preview-conclusion p {
+            margin: 0;
+        }
+
+        .preview-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 34px;
+            padding-top: 26px;
+            border-top: 1px solid var(--border);
+        }
+
+        .preview-keyword {
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.09);
+            color: #aab7c8;
+            font-size: 11px;
+        }
+
+        .preview-missing {
+            margin: 28px 0;
+            padding: 18px;
+            border-radius: 14px;
+            color: #fcd34d;
+            background: var(--yellow-soft);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            text-align: center;
+            direction: rtl;
+        }
+
+        /* =====================================
            RESPONSIVE
         ====================================== */
 
@@ -730,6 +971,29 @@
             .publish-button,
             .secondary-button {
                 width: 100%;
+            }
+
+            .preview-overlay {
+                padding: 0;
+            }
+
+            .preview-shell {
+                min-height: 100vh;
+                margin: 0;
+                border: 0;
+                border-radius: 0;
+            }
+
+            .preview-hero {
+                padding: 30px 20px 24px;
+            }
+
+            .preview-body {
+                padding: 24px 20px 40px;
+            }
+
+            .preview-body p {
+                font-size: 15px;
             }
         }
     </style>
@@ -907,8 +1171,6 @@
             </div>
 
 
-            <!-- STATS -->
-
             <section class="stats">
 
                 <div class="stat ready">
@@ -960,8 +1222,6 @@
 
             </section>
 
-
-            <!-- TOOLBAR -->
 
             <section class="toolbar">
 
@@ -1024,6 +1284,46 @@
 </div>
 
 
+<!-- =============================================
+     PRIVATE ARTICLE PREVIEW
+============================================== -->
+
+<div
+    id="preview-overlay"
+    class="preview-overlay hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="preview-dialog-title"
+>
+    <div class="preview-shell">
+
+        <div class="preview-toolbar">
+
+            <div class="preview-toolbar-title">
+                <strong id="preview-dialog-title">
+                    معاينة المقال
+                </strong>
+                <span>
+                    معاينة خاصة قبل النشر
+                </span>
+            </div>
+
+            <button
+                id="preview-close"
+                class="preview-close"
+                type="button"
+            >
+                إغلاق
+            </button>
+
+        </div>
+
+        <div id="preview-content"></div>
+
+    </div>
+</div>
+
+
 <script>
 (() => {
 
@@ -1066,7 +1366,10 @@
             new Map(),
 
         publishing:
-            new Set()
+            new Set(),
+
+        previewObjectUrl:
+            null
     };
 
 
@@ -1139,6 +1442,21 @@
         publishedCount:
             document.getElementById(
                 'published-count'
+            ),
+
+        previewOverlay:
+            document.getElementById(
+                'preview-overlay'
+            ),
+
+        previewContent:
+            document.getElementById(
+                'preview-content'
+            ),
+
+        previewClose:
+            document.getElementById(
+                'preview-close'
             )
     };
 
@@ -1222,6 +1540,8 @@
 
 
     function showLogin() {
+
+        closePreview();
 
         hideAllScreens();
 
@@ -1528,6 +1848,9 @@
         elements.logoutButton
             .disabled =
             true;
+
+
+        closePreview();
 
 
         try {
@@ -2631,7 +2954,7 @@
 
         const confirmed =
             window.confirm(
-                `هل تريد نشر هذا المقال الآن؟\n\n${article.title}`
+                `هل تريد نشر هذا المقال الآن?\n\n${article.title}`
             );
 
 
@@ -2747,9 +3070,6 @@
                 );
 
 
-            /*
-             * Update the local record immediately.
-             */
             article.status =
                 'published';
 
@@ -2797,9 +3117,6 @@
             );
 
 
-            /*
-             * Reload from server/GitHub-backed manifest.
-             */
             setTimeout(
                 () => {
                     loadArticles();
@@ -2834,8 +3151,493 @@
 
 
     /* =========================================
-       PREVIEW
+       PRIVATE PREVIEW
     ========================================== */
+
+    function getPreviewImage(
+        article
+    ) {
+
+        const id =
+            getArticleId(
+                article
+            );
+
+
+        const selectedFile =
+            state.selectedFiles
+                .get(
+                    id
+                );
+
+
+        if (
+            selectedFile
+        ) {
+
+            if (
+                state.previewObjectUrl
+            ) {
+
+                URL.revokeObjectURL(
+                    state.previewObjectUrl
+                );
+
+                state.previewObjectUrl =
+                    null;
+            }
+
+
+            state.previewObjectUrl =
+                URL.createObjectURL(
+                    selectedFile
+                );
+
+
+            return state.previewObjectUrl;
+        }
+
+
+        return (
+            article.image ||
+            ''
+        );
+    }
+
+
+    function previewSectionsHtml(
+        content
+    ) {
+
+        const sections =
+            Array.isArray(
+                content?.sections
+            )
+                ? content.sections
+                : [];
+
+
+        return sections
+            .map(
+                section => {
+
+                    const paragraphs =
+                        Array.isArray(
+                            section?.paragraphs
+                        )
+                            ? section.paragraphs
+                            : [];
+
+
+                    return `
+                        <section class="preview-section">
+
+                            <h2>
+                                ${escapeHtml(
+                                    section?.heading ||
+                                    'Section'
+                                )}
+                            </h2>
+
+                            ${
+                                paragraphs
+                                    .map(
+                                        paragraph => `
+                                            <p>
+                                                ${escapeHtml(
+                                                    paragraph?.text ||
+                                                    ''
+                                                )}
+                                            </p>
+                                        `
+                                    )
+                                    .join('')
+                            }
+
+                        </section>
+                    `;
+                }
+            )
+            .join('');
+    }
+
+
+    function previewFaqHtml(
+        content
+    ) {
+
+        const faq =
+            Array.isArray(
+                content?.faq
+            )
+                ? content.faq
+                : [];
+
+
+        if (
+            faq.length ===
+            0
+        ) {
+            return '';
+        }
+
+
+        return `
+            <section class="preview-faq">
+
+                <h2>
+                    Frequently Asked Questions
+                </h2>
+
+                ${
+                    faq
+                        .map(
+                            item => `
+                                <div class="preview-faq-item">
+
+                                    <h3>
+                                        ${escapeHtml(
+                                            item?.question ||
+                                            ''
+                                        )}
+                                    </h3>
+
+                                    <p>
+                                        ${escapeHtml(
+                                            item?.answer ||
+                                            ''
+                                        )}
+                                    </p>
+
+                                </div>
+                            `
+                        )
+                        .join('')
+                }
+
+            </section>
+        `;
+    }
+
+
+    function previewKeywordsHtml(
+        article,
+        content
+    ) {
+
+        const keywords =
+            Array.isArray(
+                content?.keywords
+            )
+                ? content.keywords
+                : (
+                    Array.isArray(
+                        article?.keywords
+                    )
+                        ? article.keywords
+                        : []
+                );
+
+
+        if (
+            keywords.length ===
+            0
+        ) {
+            return '';
+        }
+
+
+        return `
+            <div class="preview-keywords">
+                ${
+                    keywords
+                        .map(
+                            keyword => `
+                                <span class="preview-keyword">
+                                    ${escapeHtml(
+                                        keyword
+                                    )}
+                                </span>
+                            `
+                        )
+                        .join('')
+                }
+            </div>
+        `;
+    }
+
+
+    function openPrivatePreview(
+        article
+    ) {
+
+        const content =
+            article?.content &&
+            typeof article.content ===
+                'object'
+                ? article.content
+                : null;
+
+
+        const title =
+            content?.title ||
+            article.title ||
+            'Untitled Article';
+
+
+        const description =
+            content?.description ||
+            article.meta_description ||
+            article.description ||
+            article.excerpt ||
+            '';
+
+
+        const image =
+            getPreviewImage(
+                article
+            );
+
+
+        const wordCount =
+            Number(
+                article.word_count ||
+                article.wordCount ||
+                0
+            );
+
+
+        const readingMinutes =
+            Number(
+                article.reading_minutes ||
+                0
+            );
+
+
+        const intro =
+            content?.intro?.text ||
+            '';
+
+
+        const conclusion =
+            content?.conclusion?.text ||
+            '';
+
+
+        elements.previewContent
+            .innerHTML = `
+                <article class="preview-article">
+
+                    <header class="preview-hero">
+
+                        <span class="preview-category">
+                            ${escapeHtml(
+                                article.category ||
+                                'APXN'
+                            )}
+                        </span>
+
+                        <h1>
+                            ${escapeHtml(
+                                title
+                            )}
+                        </h1>
+
+                        <p class="preview-description">
+                            ${escapeHtml(
+                                description
+                            )}
+                        </p>
+
+                        <div class="preview-meta">
+
+                            <span>
+                                ${escapeHtml(
+                                    article.author ||
+                                    'Apex Network Editorial'
+                                )}
+                            </span>
+
+                            ${
+                                wordCount > 0
+                                    ? `
+                                        <span>
+                                            ${escapeHtml(
+                                                wordCount
+                                            )} words
+                                        </span>
+                                    `
+                                    : ''
+                            }
+
+                            ${
+                                readingMinutes > 0
+                                    ? `
+                                        <span>
+                                            ${escapeHtml(
+                                                readingMinutes
+                                            )} min read
+                                        </span>
+                                    `
+                                    : ''
+                            }
+
+                            <span>
+                                Private preview
+                            </span>
+
+                        </div>
+
+                    </header>
+
+                    ${
+                        image
+                            ? `
+                                <img
+                                    class="preview-image"
+                                    src="${escapeHtml(
+                                        image
+                                    )}"
+                                    alt="${escapeHtml(
+                                        title
+                                    )}"
+                                >
+                            `
+                            : `
+                                <div class="preview-image-placeholder">
+                                    لا توجد صورة مختارة بعد — يمكنك معاينة النص كاملًا قبل اختيار الصورة.
+                                </div>
+                            `
+                    }
+
+                    <div class="preview-body">
+
+                        ${
+                            !content
+                                ? `
+                                    <div class="preview-missing">
+                                        محتوى المقال الكامل غير متاح في هذه النسخة.
+                                        اضغط تحديث بعد اكتمال نشر Vercel.
+                                    </div>
+                                `
+                                : ''
+                        }
+
+                        ${
+                            intro
+                                ? `
+                                    <p>
+                                        ${escapeHtml(
+                                            intro
+                                        )}
+                                    </p>
+                                `
+                                : ''
+                        }
+
+                        ${
+                            previewSectionsHtml(
+                                content
+                            )
+                        }
+
+                        ${
+                            previewFaqHtml(
+                                content
+                            )
+                        }
+
+                        ${
+                            conclusion
+                                ? `
+                                    <section class="preview-conclusion">
+
+                                        <h2>
+                                            Conclusion
+                                        </h2>
+
+                                        <p>
+                                            ${escapeHtml(
+                                                conclusion
+                                            )}
+                                        </p>
+
+                                    </section>
+                                `
+                                : ''
+                        }
+
+                        ${
+                            previewKeywordsHtml(
+                                article,
+                                content
+                            )
+                        }
+
+                    </div>
+
+                </article>
+            `;
+
+
+        elements.previewOverlay
+            .classList
+            .remove(
+                'hidden'
+            );
+
+
+        document.body
+            .classList
+            .add(
+                'modal-open'
+            );
+
+
+        elements.previewClose
+            .focus();
+    }
+
+
+    function closePreview() {
+
+        if (
+            state.previewObjectUrl
+        ) {
+
+            URL.revokeObjectURL(
+                state.previewObjectUrl
+            );
+
+            state.previewObjectUrl =
+                null;
+        }
+
+
+        elements.previewOverlay
+            ?.classList
+            .add(
+                'hidden'
+            );
+
+
+        if (
+            elements.previewContent
+        ) {
+
+            elements.previewContent
+                .innerHTML =
+                '';
+        }
+
+
+        document.body
+            .classList
+            .remove(
+                'modal-open'
+            );
+    }
+
 
     function previewArticle(
         id
@@ -2878,22 +3680,8 @@
         }
 
 
-        if (
-            article.preview_url
-        ) {
-
-            window.open(
-                article.preview_url,
-                '_blank',
-                'noopener,noreferrer'
-            );
-
-            return;
-        }
-
-
-        alert(
-            'المقال جاهز للنشر. اختر الصورة ثم اضغط نشر المقال.'
+        openPrivatePreview(
+            article
         );
     }
 
@@ -3034,6 +3822,53 @@
 
 
     /* =========================================
+       PREVIEW EVENTS
+    ========================================== */
+
+    elements.previewClose
+        .addEventListener(
+            'click',
+            closePreview
+        );
+
+
+    elements.previewOverlay
+        .addEventListener(
+            'click',
+            event => {
+
+                if (
+                    event.target ===
+                    elements.previewOverlay
+                ) {
+
+                    closePreview();
+                }
+            }
+        );
+
+
+    document.addEventListener(
+        'keydown',
+        event => {
+
+            if (
+                event.key ===
+                'Escape' &&
+                !elements.previewOverlay
+                    .classList
+                    .contains(
+                        'hidden'
+                    )
+            ) {
+
+                closePreview();
+            }
+        }
+    );
+
+
+    /* =========================================
        EVENTS
     ========================================== */
 
@@ -3090,3 +3925,4 @@
 
 </body>
 </html>
+
