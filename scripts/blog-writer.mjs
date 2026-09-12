@@ -121,6 +121,13 @@ const LEGACY_TOPIC_OVERRIDES = {
   }
 };
 
+/*
+ * The character floors below intentionally sit above the old values.
+ * Grok was satisfying the previous JSON schema while still producing blocks
+ * below the deterministic word-count gate. These stronger structural limits
+ * provide enough room for the required 1200+ word body without weakening any
+ * factual, evidence, duplicate, SEO or safety checks.
+ */
 const ARTICLE_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -134,20 +141,20 @@ const ARTICLE_SCHEMA = {
     "conclusion"
   ],
   properties: {
-    title: { type: "string" },
-    description: { type: "string" },
+    title: { type: "string", minLength: 30, maxLength: 110 },
+    description: { type: "string", minLength: 100, maxLength: 175 },
     keywords: {
       type: "array",
       minItems: 5,
       maxItems: 10,
-      items: { type: "string" }
+      items: { type: "string", minLength: 2, maxLength: 70 }
     },
     intro: {
       type: "object",
       additionalProperties: false,
       required: ["text", "evidence_ids"],
       properties: {
-        text: { type: "string", minLength: 760, maxLength: 980 },
+        text: { type: "string", minLength: 1000, maxLength: 1200 },
         evidence_ids: {
           type: "array",
           minItems: 1,
@@ -165,7 +172,7 @@ const ARTICLE_SCHEMA = {
         additionalProperties: false,
         required: ["heading", "paragraphs"],
         properties: {
-          heading: { type: "string" },
+          heading: { type: "string", minLength: 8, maxLength: 100 },
           paragraphs: {
             type: "array",
             minItems: 2,
@@ -175,7 +182,7 @@ const ARTICLE_SCHEMA = {
               additionalProperties: false,
               required: ["text", "evidence_ids"],
               properties: {
-                text: { type: "string", minLength: 560, maxLength: 700 },
+                text: { type: "string", minLength: 1250, maxLength: 1350 },
                 evidence_ids: {
                   type: "array",
                   minItems: 1,
@@ -197,8 +204,8 @@ const ARTICLE_SCHEMA = {
         additionalProperties: false,
         required: ["question", "answer", "evidence_ids"],
         properties: {
-          question: { type: "string" },
-          answer: { type: "string", minLength: 440, maxLength: 620 },
+          question: { type: "string", minLength: 10, maxLength: 140 },
+          answer: { type: "string", minLength: 750, maxLength: 900 },
           evidence_ids: {
             type: "array",
             minItems: 1,
@@ -213,7 +220,7 @@ const ARTICLE_SCHEMA = {
       additionalProperties: false,
       required: ["text", "evidence_ids"],
       properties: {
-        text: { type: "string", minLength: 580, maxLength: 800 },
+        text: { type: "string", minLength: 1050, maxLength: 1200 },
         evidence_ids: {
           type: "array",
           minItems: 1,
@@ -908,7 +915,7 @@ async function callPaidWriter({
   ) {
     body.prompt_cache_key = `${String(
       config.ai.prompt_cache_key
-    )}-research-packet-v3`;
+    )}-research-packet-v4-length-safe`;
   }
 
   const controller = new AbortController();
@@ -1091,10 +1098,14 @@ function paidWriterInstructions() {
     "The Research Packet is your ONLY factual authority.",
     "Do not browse. Do not use model memory. Do not add facts from general knowledge.",
     "Do not invent examples, integrations, benefits, risks, causal links or future possibilities that are not explicitly supported by the assigned evidence.",
-    "Follow every writing-plan word range. The body must be at least 1200 useful words, preferably near the packet target, without repetition or filler.",
-    "The strict JSON schema also enforces minimum and maximum character lengths for article body fields. Do not compress the prose below those structural limits.",
-    "Exactly 6 sections are required. Each section must contain exactly 2 substantial paragraphs; each paragraph should carry roughly half of that section's target words.",
-    "Exactly 3 FAQ items are required.",
+    "Treat every writing-plan word range as a HARD constraint, not a suggestion.",
+    "The body must be at least 1200 useful words. Aim safely above the minimum, normally around 1500-1800 body words, while staying within the configured maximum.",
+    "Before returning JSON, silently audit the approximate word count of the intro, every section, every FAQ answer, the conclusion and the complete body. Do not return a block below its minimum.",
+    "The strict JSON schema enforces stronger minimum character lengths to prevent under-length output. Never compress a field just to be concise.",
+    "Exactly 6 sections are required. Each section must contain exactly 2 substantial paragraphs, and the two paragraphs together must satisfy that section's full word range.",
+    "Exactly 3 FAQ items are required, and each answer must independently satisfy its FAQ word range.",
+    "The meta description must stay inside the schema range and should read naturally as a search snippet.",
+    "Use the approved evidence to add explanation and context, but never pad the article with unsupported facts, invented examples, generic filler or repetition.",
     "Each intro, paragraph, FAQ answer and conclusion must cite only evidence IDs allowed for that block by the writing plan.",
     "Numeric rules are block-specific: never write a digit, decimal, year or version number unless that exact token appears in that block's ALLOWED NUMERIC TOKENS.",
     "If a paragraph uses an allowed numeric token, its evidence_ids must include an assigned evidence ID whose passage contains that token.",
@@ -1133,6 +1144,7 @@ function paidWriterInput(packet, config) {
     packetEvidenceForPrompt(packet),
     "",
     `FINAL BODY WORD REQUIREMENT FROM CONFIG: minimum ${config.writer.minimum_words}; target ${config.writer.target_words}; maximum ${config.writer.maximum_words}.`,
+    "Length safety rule: aim above the configured minimum, not exactly at it. A short article will be rejected locally and will not be published.",
     "Do not count the title, meta description, keywords, headings or questions toward the body minimum."
   ].join("\n");
 }
@@ -1997,7 +2009,6 @@ ${safeJsonForScript(faqSchema)}
               ${sourcesHtml}
             </ol>
           </section>
-
           <div class="info-box">
             <strong>Editorial note:</strong>
             <p>${escapeHtml(disclaimer)}</p>
@@ -2702,6 +2713,4 @@ main().catch((error) => {
   console.error(`\nERROR: ${error.message}`);
   process.exitCode = 1;
 });
-
-
 
