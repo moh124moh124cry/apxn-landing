@@ -128,7 +128,7 @@ const LEGACY_TOPIC_OVERRIDES = {
  * Character limits below are calibrated to support the Research Packet word
  * ranges without forcing the article above the configured maximum. The local
  * deterministic word-count gate remains the final authority for every block
- * and for the complete 1200+ word article.
+ * and for the complete 900+ word article.
  */
 const ARTICLE_SCHEMA = {
   type: "object",
@@ -275,6 +275,31 @@ function writeText(filePath, value) {
 
 function normalizeSpace(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim();
+}
+
+function normalizeMetaDescription(value, maxLength = 175) {
+  const text = normalizeSpace(value);
+  if (!text || text.length <= maxLength) return text;
+
+  const clipped = text.slice(0, maxLength + 1);
+  const lastSpace = clipped.lastIndexOf(" ");
+  const cutAt = lastSpace >= 120 ? lastSpace : maxLength;
+
+  return clipped
+    .slice(0, cutAt)
+    .replace(/[,:;\-–—]+$/u, "")
+    .trim();
+}
+
+function normalizeGeneratedArticle(article) {
+  if (!article || typeof article !== "object" || Array.isArray(article)) {
+    return article;
+  }
+
+  return {
+    ...article,
+    description: normalizeMetaDescription(article.description, 175)
+  };
 }
 
 function normalizeTopic(value) {
@@ -439,7 +464,7 @@ function validateConfig(config) {
   const targetWords = Number(config?.writer?.target_words || 0);
   const maxWords = Number(config?.writer?.maximum_words || 0);
 
-  if (!(minWords >= 1200 && targetWords >= minWords && maxWords >= targetWords)) {
+  if (!(minWords >= 900 && targetWords >= minWords && maxWords >= targetWords)) {
     fail("Writer word-count settings are invalid.");
   }
 
@@ -1163,14 +1188,14 @@ function paidWriterInstructions() {
     "The Research Packet is your ONLY factual authority.",
     "Do not browse. Do not use model memory. Do not add facts from general knowledge.",
     "Do not invent examples, integrations, benefits, risks, causal links or future possibilities that are not explicitly supported by the assigned evidence.",
-    "Treat every writing-plan word range as a HARD constraint, not a suggestion.",
-    "The body must be at least 1200 useful words. Aim near the writing-plan target, normally around 1500-1750 body words, while staying within the configured maximum.",
-    "Before returning JSON, silently audit the approximate word count of the intro, every section, every FAQ answer, the conclusion and the complete body. Do not return a block below its minimum.",
+    "Treat the writing-plan word ranges as editorial targets. The configured whole-article minimum and the local safety floors are the hard limits.",
+    "The body must be at least 900 useful words. Aim for roughly 1000-1300 body words unless the configured target asks for more, while staying within the configured maximum.",
+    "Before returning JSON, silently audit the approximate word count of the complete body and keep every block substantial and useful.",
     "The strict JSON schema uses calibrated character ranges to reduce under-length output without forcing the article above its configured maximum.",
     "Exactly 6 sections are required. Each section must contain exactly 2 substantial paragraphs, and the two paragraphs together must satisfy that section's full word range.",
-    "For every section, follow the per-paragraph target printed in the writing plan. Each of the 2 paragraphs should normally be about 80-110 words so the section lands inside its required range. Do not make one paragraph tiny and the other long.",
+    "For every section, keep both paragraphs substantive. Around 40-75 words per paragraph is acceptable when the complete article remains at least 900 useful words.",
     "Avoid unsupported shortcut claims such as 'without installing', 'without using', 'removes the need', future bridges, wallet custody/signing behavior or on-chain behavior unless the assigned evidence explicitly states that claim.",
-    "Exactly 3 FAQ items are required, and each answer must independently satisfy its FAQ word range.",
+    "Exactly 3 FAQ items are required. Each answer should be concise but useful and grounded in its assigned evidence.",
     "The meta description must stay inside the schema range and should read naturally as a search snippet.",
     "Use the approved evidence to add explanation and context, but never pad the article with unsupported facts, invented examples, generic filler or repetition.",
     "Each intro, paragraph, FAQ answer and conclusion must cite only evidence IDs allowed for that block by the writing plan.",
@@ -1232,10 +1257,10 @@ function lengthRepairInstructions() {
     "Do not invent examples, facts, benefits, risks, causal links, future possibilities or product behavior.",
     "Do not add evidence IDs outside the writing-plan allowance for that block.",
     "Do not write a digit, decimal, year or version number unless the exact token is allowed for that block by the writing plan.",
-    "Aim near the CENTER of every writing-plan word range, not the minimum edge.",
-    "The complete body should normally land near 1450-1700 words while staying inside the configured minimum and maximum.",
+    "Aim for a balanced article that clears the configured whole-article minimum without padding.",
+    "The complete body should normally land near 1000-1300 words while staying inside the configured minimum and maximum.",
     "Before returning JSON, silently audit the approximate word count of every block and the full body.",
-    "Do not return any intro, section, FAQ answer or conclusion below its required minimum.",
+    "Keep every intro, section, FAQ answer and conclusion substantial enough to remain useful; the local validator will enforce safety floors.",
     "Avoid repetition and filler. Every added sentence must remain grounded in the assigned evidence.",
     "Return only the requested JSON schema."
   ].join("\n");
@@ -1498,16 +1523,15 @@ function planWordRangeErrors(article, packet) {
    * The Research Packet ranges are editorial targets, while the configured
    * article minimum/maximum remain the hard whole-article limits.
    *
-   * The old packet minima added up to 1,410 words even though the configured
-   * article minimum is 1,200. That made valid 1,200-1,409 word articles
-   * impossible to pass. These hard block floors keep every block substantial
-   * without contradicting the global article requirement.
+   * Packet ranges are editorial targets. The configured whole-article minimum
+   * is the hard length requirement. These block floors prevent empty or trivial
+   * sections without making a valid 900+ word article impossible to pass.
    */
   const HARD_FLOORS = {
-    intro: 100,
-    section: 125,
-    faq: 55,
-    conclusion: 70
+    intro: 70,
+    section: 80,
+    faq: 40,
+    conclusion: 50
   };
 
   const effectiveMinimum = (planned, hardFloor) => {
@@ -2397,7 +2421,7 @@ async function runSourceTest() {
 
     console.log(`SOURCE TEST SAFE SKIP: ${profileId}`);
     console.log(
-      `Reason: ${reasons.join(" | ") || "Research evidence is insufficient for a substantial 1200+ word article."}`
+      `Reason: ${reasons.join(" | ") || "Research evidence is insufficient for a substantial 900+ word article."}`
     );
     console.log(
       `Distinct official pages: ${Number(metrics.distinct_external_pages || 0)}`
@@ -2473,7 +2497,7 @@ function runSelfTest() {
   if (
     !isSafeRepairableQualityFailure({
       errors: [
-        "Article body has 1198 words; minimum is 1200.",
+        "Article body has 898 words; minimum is 900.",
         "section 3 has 142 paragraph words; packet range is 165-220.",
         "section_1_paragraph_1 contains unsupported high-risk inference pattern: without-installing/using claim."
       ]
@@ -2485,7 +2509,7 @@ function runSelfTest() {
   if (
     isSafeRepairableQualityFailure({
       errors: [
-        "Article body has 1198 words; minimum is 1200.",
+        "Article body has 898 words; minimum is 900.",
         "section_1_paragraph_1 contains numeric token \"2000\" that is not present in its assigned evidence."
       ]
     })
@@ -2730,7 +2754,7 @@ async function main() {
   );
 
   let paidAiCalls = 1;
-  let article = generation.parsed;
+  let article = normalizeGeneratedArticle(generation.parsed);
   let finalGeneration = generation;
   let repairCostUsd = 0;
 
@@ -2810,7 +2834,7 @@ async function main() {
 
     paidAiCalls += 1;
     finalGeneration = repair;
-    article = repair.parsed;
+    article = normalizeGeneratedArticle(repair.parsed);
 
     local = validateArticleAgainstPacket({
       article,
