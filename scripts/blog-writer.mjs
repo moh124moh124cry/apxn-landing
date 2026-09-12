@@ -7,7 +7,7 @@
  *      -> scripts/blog-researcher.mjs (free deterministic research)
  *      -> immutable Research Packet
  *      -> one paid Grok writing call
- *      -> optional one paid length-only repair when the local gate finds only word-range failures
+ *      -> optional one paid safe repair only for whole-article length or unsupported high-risk wording
  *      -> free deterministic local quality/grounding gate
  *      -> private draft or publication
  *
@@ -15,7 +15,7 @@
  * - This file does NOT fetch official sources itself.
  * - Grok receives facts only from the Research Packet.
  * - No open-web/model-memory research is allowed.
- * - No open-ended paid verifier/repair loop is used. At most one length-only repair is allowed.
+ * - No open-ended paid verifier/repair loop is used. At most one safe repair is allowed.
  * - A failed local gate is preserved as an artifact for inspection.
  * - Source-test mode uses the same free researcher and makes zero xAI calls.
  */
@@ -125,10 +125,9 @@ const LEGACY_TOPIC_OVERRIDES = {
 };
 
 /*
- * Character limits below are calibrated to support the Research Packet word
- * ranges without forcing the article above the configured maximum. The local
- * deterministic word-count gate remains the final authority for every block
- * and for the complete 900+ word article.
+ * Character limits below keep each structured field substantial while the
+ * configured whole-article minimum/maximum remain the only hard word-count
+ * limits. Per-block word ranges are editorial guidance, not rejection gates.
  */
 const ARTICLE_SCHEMA = {
   type: "object",
@@ -1246,7 +1245,7 @@ function lengthRepairInstructions() {
   return [
     "You are the Apex Network Editorial safe-repair writer.",
     "You receive an article that already has the required JSON structure and a frozen Research Packet.",
-    "Repair ONLY the local errors listed in the prompt: word-count/range failures and unsupported high-risk inference patterns. Do not perform open-web research and do not use model memory.",
+    "Repair ONLY the local errors listed in the prompt: whole-article word-count failures and/or unsupported high-risk inference patterns. Do not perform open-web research and do not use model memory.",
     "The Research Packet remains the ONLY factual authority.",
     "Return the COMPLETE article JSON, not a patch and not commentary.",
     "Preserve exactly 6 sections, exactly 2 paragraphs per section and exactly 3 FAQ items.",
@@ -1269,7 +1268,7 @@ function lengthRepairInstructions() {
 function lengthRepairInput({ packet, config, article, errors }) {
   return [
     "TASK: SAFE LOCAL QUALITY REPAIR",
-    "The deterministic local quality gate rejected the article for repairable issues only: body word ranges and/or unsupported high-risk inference wording.",
+    "The deterministic local quality gate rejected the article for repairable issues only: whole-article word count and/or unsupported high-risk inference wording.",
     "Fix every listed error while preserving factual grounding and evidence-ID restrictions.",
     "If an error names an unsupported high-risk inference pattern, remove or rewrite that exact unsupported inference using only the assigned evidence. Do not replace it with a new inference.",
     "",
@@ -1298,21 +1297,23 @@ function isSafeRepairableQualityFailure(local) {
   const errors = Array.isArray(local?.errors) ? local.errors : [];
   if (errors.length === 0) return false;
 
+  /*
+   * A second paid call is allowed only when the article itself is outside the
+   * configured 900+ whole-body limit, or when the local safety scan finds a
+   * removable high-risk inference. Short/long individual sections, FAQ answers
+   * or the conclusion are NOT repair triggers.
+   */
   const allowed = [
     /^Article body has \d+ words; (?:minimum|maximum) is \d+\.$/,
-    /^intro has \d+ words; packet range is \d+-\d+\.$/,
-    /^section \d+ has \d+ paragraph words; packet range is \d+-\d+\.$/,
-    /^FAQ \d+ answer has \d+ words; packet range is \d+-\d+\.$/,
-    /^conclusion has \d+ words; packet range is \d+-\d+\.$/,
     /^(?:intro|conclusion|section_\d+_paragraph_\d+|faq_\d+) contains unsupported high-risk inference pattern: [^.]+\.$/
   ];
 
-  const hasLengthError = errors.some((error) =>
-    allowed.slice(0, 5).some((pattern) => pattern.test(String(error || "")))
+  const hasRepairableError = errors.some((error) =>
+    allowed.some((pattern) => pattern.test(String(error || "")))
   );
 
   return (
-    hasLengthError &&
+    hasRepairableError &&
     errors.every((error) =>
       allowed.some((pattern) => pattern.test(String(error || "")))
     )
@@ -1514,108 +1515,31 @@ function hasVolatileMetricClaims(text) {
 }
 
 function planWordRangeErrors(article, packet) {
-  const errors = [];
   const plan = packet.writing_plan;
 
   if (!plan) return ["Research Packet writing_plan is missing."];
 
   /*
-   * The Research Packet ranges are editorial targets, while the configured
-   * article minimum/maximum remain the hard whole-article limits.
+   * IMPORTANT: per-block word ranges are editorial targets only.
    *
-   * Packet ranges are editorial targets. The configured whole-article minimum
-   * is the hard length requirement. These block floors prevent empty or trivial
-   * sections without making a valid 900+ word article impossible to pass.
+   * The hard length rule is the configured whole article range (900-1900 in
+   * the current config). A valid 900+ article must not be rejected or sent to
+   * a paid repair call just because one section, FAQ answer, intro or conclusion
+   * falls outside a planning target. Structure and evidence integrity are still
+   * enforced elsewhere in validateArticleAgainstPacket().
    */
-  const HARD_FLOORS = {
-    intro: 70,
-    section: 80,
-    faq: 40,
-    conclusion: 50
-  };
+  const errors = [];
 
-  const effectiveMinimum = (planned, hardFloor) => {
-    const value = Number(planned);
-    return Number.isFinite(value) && value > 0
-      ? Math.min(value, hardFloor)
-      : hardFloor;
-  };
-
-  const effectiveMaximum = (planned, tolerance) => {
-    const value = Number(planned);
-    return Number.isFinite(value) && value > 0
-      ? value + tolerance
-      : Infinity;
-  };
-
-  const introWords = wordCount(article?.intro?.text);
-  const introMin = effectiveMinimum(plan?.intro?.min_words, HARD_FLOORS.intro);
-  const introMax = effectiveMaximum(plan?.intro?.max_words, 20);
-
-  if (introWords < introMin || introWords > introMax) {
-    errors.push(
-      `intro has ${introWords} words; packet range is ${introMin}-${introMax}.`
-    );
+  if (!plan.intro || !plan.conclusion) {
+    errors.push("Research Packet writing_plan is missing intro or conclusion guidance.");
   }
 
-  for (let index = 0; index < 6; index++) {
-    const section = article?.sections?.[index];
-    const sectionPlan = plan?.sections?.[index];
-
-    const total = (section?.paragraphs || []).reduce(
-      (sum, paragraph) => sum + wordCount(paragraph?.text),
-      0
-    );
-
-    if (!sectionPlan) {
-      errors.push(`writing plan is missing section ${index + 1}.`);
-      continue;
-    }
-
-    const sectionMin = effectiveMinimum(
-      sectionPlan.min_words,
-      HARD_FLOORS.section
-    );
-    const sectionMax = effectiveMaximum(sectionPlan.max_words, 30);
-
-    if (total < sectionMin || total > sectionMax) {
-      errors.push(
-        `section ${index + 1} has ${total} paragraph words; packet range is ${sectionMin}-${sectionMax}.`
-      );
-    }
+  if (!Array.isArray(plan.sections) || plan.sections.length !== 6) {
+    errors.push("Research Packet writing_plan must contain exactly 6 section plans.");
   }
 
-  for (let index = 0; index < 3; index++) {
-    const faq = article?.faq?.[index];
-    const faqPlan = plan?.faq?.[index];
-    const total = wordCount(faq?.answer);
-
-    if (!faqPlan) {
-      errors.push(`writing plan is missing FAQ ${index + 1}.`);
-      continue;
-    }
-
-    const faqMin = effectiveMinimum(faqPlan.min_words, HARD_FLOORS.faq);
-    const faqMax = effectiveMaximum(faqPlan.max_words, 20);
-
-    if (total < faqMin || total > faqMax) {
-      errors.push(
-        `FAQ ${index + 1} answer has ${total} words; packet range is ${faqMin}-${faqMax}.`
-      );
-    }
-  }
-
-  const conclusionWords = wordCount(article?.conclusion?.text);
-  const conclusionMin = effectiveMinimum(
-    plan?.conclusion?.min_words,
-    HARD_FLOORS.conclusion
-  );
-  const conclusionMax = effectiveMaximum(plan?.conclusion?.max_words, 20);
-
-  if (conclusionWords < conclusionMin || conclusionWords > conclusionMax) {
-    errors.push(
-      `conclusion has ${conclusionWords} words; packet range is ${conclusionMin}-${conclusionMax}.`
-    );
+  if (!Array.isArray(plan.faq) || plan.faq.length !== 3) {
+    errors.push("Research Packet writing_plan must contain exactly 3 FAQ plans.");
   }
 
   return errors;
@@ -2498,12 +2422,31 @@ function runSelfTest() {
     !isSafeRepairableQualityFailure({
       errors: [
         "Article body has 898 words; minimum is 900.",
-        "section 3 has 142 paragraph words; packet range is 165-220.",
         "section_1_paragraph_1 contains unsupported high-risk inference pattern: without-installing/using claim."
       ]
     })
   ) {
-    fail("SELF TEST: safe repair gate did not accept length plus removable inference errors.");
+    fail("SELF TEST: safe repair gate did not accept whole-body length plus removable inference errors.");
+  }
+
+  if (
+    !isSafeRepairableQualityFailure({
+      errors: [
+        "faq_2 contains unsupported high-risk inference pattern: removes-the-need claim."
+      ]
+    })
+  ) {
+    fail("SELF TEST: safe repair gate did not accept a removable high-risk inference by itself.");
+  }
+
+  if (
+    isSafeRepairableQualityFailure({
+      errors: [
+        "section 3 has 62 paragraph words; packet range is 80-250."
+      ]
+    })
+  ) {
+    fail("SELF TEST: per-section word targets incorrectly triggered a paid repair.");
   }
 
   if (
@@ -2768,7 +2711,7 @@ async function main() {
 
   writeJson(rawGenerationPath, {
     generated_at: date,
-    architecture: "free_research_packet_then_paid_writer_with_optional_single_length_repair",
+    architecture: "free_research_packet_then_paid_writer_with_optional_single_safe_repair",
     paid_ai_calls: paidAiCalls,
     topic: metadata.topic,
     category: metadata.category,
@@ -2846,7 +2789,7 @@ async function main() {
 
     writeJson(rawGenerationPath, {
       generated_at: date,
-      architecture: "free_research_packet_then_paid_writer_with_optional_single_length_repair",
+      architecture: "free_research_packet_then_paid_writer_with_optional_single_safe_repair",
       paid_ai_calls: paidAiCalls,
       topic: metadata.topic,
       category: metadata.category,
