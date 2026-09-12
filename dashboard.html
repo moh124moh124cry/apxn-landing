@@ -286,7 +286,6 @@
                             <div class="min-w-0">
                                 <p class="text-xs uppercase tracking-widest text-gray-500 mb-1">Telegram Account</p>
                                 <h2 id="display-name" class="text-2xl sm:text-3xl font-black truncate">APXN Miner</h2>
-                                <p id="display-username" class="text-sm sm:text-base text-yellow-400 mt-1 truncate">—</p>
                             </div>
                         </div>
 
@@ -1262,17 +1261,12 @@
         function populateDashboard(data) {
             const user = data?.user || {};
 
-            const username = user.username
-                ? `@${String(user.username).replace(/^@/, '')}`
-                : 'No username';
-
             const name =
                 user.firstName ||
                 user.first_name ||
                 'APXN Miner';
 
             setText('display-name', name);
-            setText('display-username', username);
             setText('points-value', formatNumber(user.balance));
 
             const miningRate =
@@ -1447,9 +1441,4 @@
     </script>
 </body>
 </html>
-
-
-
-
-
 
