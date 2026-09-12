@@ -273,7 +273,7 @@
 }
     </script>
 
-    
+
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -306,7 +306,7 @@
   ]
 }
     </script>
-            
+
 
 </head>
 
@@ -513,6 +513,31 @@
             </figure>
 
 
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+
+
             <div
                 class="article-body"
             >
@@ -524,14 +549,14 @@
                 </p>
 
 
-                
+
                         <section>
                             <h2>Debug Processes and Web3 Overview</h2>
 
                             <p>Official Telegram documentation details a debug mode for Mini Apps on iOS. Users tap ten times on the Settings icon and toggle on Allow Web View Inspection. A USB connection to a computer then allows Safari on macOS to access the Develop menu and inspect the running Mini App under the connected device name. This setup helps locate app-specific issues during development on physical devices. The process requires following each step in sequence to connect the device properly and access the inspection tools through the browser menu.</p>
 <p>Resources on ethereum.org present Web3 through sections that include staking options and builder tools. The material covers Ethereum network fundamentals alongside development paths for those exploring decentralized applications. Staking appears as one entry point while builder sections list tools and resources for creating on the network. Ethereum is referenced as the base layer with related topics such as wallets and smart contracts appearing in the same overview structure.</p>
                         </section>
-                    
+
 
                         <section>
                             <h2>Events and Data Handling in Context</h2>
@@ -539,7 +564,7 @@
                             <p>Mini Apps can receive events from the Telegram app after validation of data. Complex data types arrive as JSON-serialized objects. Developers attach handlers through the Telegram.WebApp.onEvent method where the this object points to Telegram.WebApp and parameters vary by event type. A list of possible events is provided in the documentation. The eventHandler receives context that always refers back to the main WebApp object for consistent access during handling.</p>
 <p>Web3 documentation addresses how centralization supported broad adoption of the web while creating stable infrastructure. It notes that data and analytics tools exist alongside community events and online groups. The material separates these infrastructure points from other sections on fundamentals. Readers can find references to events in the context of broader community resources listed on the page.</p>
                         </section>
-                    
+
 
                         <section>
                             <h2>Launch Options and Web Evolution Stages</h2>
@@ -547,7 +572,7 @@
                             <p>Telegram supports seven different launch methods for Mini Apps. These include the main Mini App from a profile button, from a keyboard button, from an inline button, from the bot menu button, via inline mode, from a direct link, and from the attachment menu. Each method provides a distinct entry point into the Mini App experience. The documentation presents these options as the complete set currently available for launching applications in different contexts.</p>
 <p>Web documentation describes early stages as read-only from nineteen ninety to two thousand four. It then covers read-write phases starting in two thousand four and introduces read-write-own as a later stage. The material uses these periods to frame shifts in how users interact with web content. The read-only period ends at two thousand four while the next phase begins immediately afterward according to the outlined timeline.</p>
                         </section>
-                    
+
 
                         <section>
                             <h2>Customization and Learning Approaches</h2>
@@ -555,7 +580,7 @@
                             <p>Mini Apps can customize their loading screen by adding an icon and specific colors for light and dark themes. They can also use balances of Telegram Stars to send gifts to users. Documentation points to separate resources for implementing paid subscriptions and gifts through the Bot API. These customization options are listed as available features that Mini Apps may apply when presenting their interface to users.</p>
 <p>Web3 material notes that education requires learning different mental models compared with prior web eras. It references an earlier education drive during the late nineteen nineties that used metaphors and broadcasts. The section emphasizes that educational initiatives help inform users about new paradigms. The text highlights that Web3 is described as different rather than difficult and points to the need for targeted educational efforts.</p>
                         </section>
-                    
+
 
                         <section>
                             <h2>Settings for Inspection and Cost Considerations</h2>
@@ -563,7 +588,7 @@
                             <p>On Android devices the process requires going to Settings then Advanced then Experimental settings to enable webview inspection. Right clicking inside the WebView then opens an inspect option. On macOS the beta version requires clicking five times on the Settings icon to reach the debug menu for Mini Apps. These steps are presented separately for each platform in the official guidance.</p>
 <p>Web3 resources mention that important features such as Sign-in with Ethereum are available at zero cost. They also note that relative transaction costs can remain high in certain regions. The material states that layer two solutions are part of ongoing work to address accessibility. The text separates the zero cost availability of some features from the discussion of transaction fees in different locations.</p>
                         </section>
-                    
+
 
                         <section>
                             <h2>Recent Additions and Ownership Concepts</h2>
@@ -571,40 +596,40 @@
                             <p>Sample bots such as DurgerKingBot demonstrate Mini Apps in action. Updates through two thousand twenty six added fields including chat join request query id to WebAppInitData and methods such as requestChat to WebApp. Earlier updates added fields for icon custom emoji id and methods to hide the keyboard. The changes are listed by date with specific class and field names attached to each Bot API version.</p>
 <p>Ownership in Web3 is described as giving users control over digital assets in a new manner. The material contrasts this with web two games where purchased items tie to accounts that can be deleted. It notes that stopping play in such games can result in loss of invested value. The example illustrates the difference in how assets are handled between the two approaches without extending beyond the stated comparison.</p>
                         </section>
-                    
 
 
-                
+
+
                 <section>
 
                     <h2>
                         Frequently asked questions
                     </h2>
 
-                    
+
                         <div class="info-box">
                             <h3>What steps enable debug mode on iOS for Mini Apps?</h3>
 
                             <p>Documentation specifies tapping ten times on the Settings icon inside Telegram and enabling Allow Web View Inspection. After connecting the device via USB cable users open Safari on a Mac and select the device name from the Develop menu to inspect the Mini App once launched. The sequence must be followed exactly to reach the inspection interface through the browser.</p>
                         </div>
-                    
+
 
                         <div class="info-box">
                             <h3>How are events managed within Mini Apps?</h3>
 
                             <p>Mini Apps receive events from the Telegram app after data validation occurs. Handlers attach using the onEvent method and the this reference points to Telegram.WebApp. Parameters passed to the handler depend on the specific event type listed in the documentation. The handler context remains tied to the WebApp object throughout the process.</p>
                         </div>
-                    
+
 
                         <div class="info-box">
                             <h3>Which storage fields were added in recent Bot API versions?</h3>
 
                             <p>Updates in two thousand twenty five introduced DeviceStorage and SecureStorage fields allowing persistent local storage and secure storage for sensitive data on the user device. Later updates through two thousand twenty six added further fields and methods to WebApp classes. The additions are recorded by version number and class name in the change log.</p>
                         </div>
-                    
+
 
                 </section>
-                        
+
 
 
                 <section>
@@ -620,7 +645,7 @@
                 </section>
 
 
-                
+
                 <section>
 
                     <h2>
@@ -628,17 +653,17 @@
                     </h2>
 
                     <ul>
-                        
+
                                         <li>
                                             <a href="./what-are-apxn-points.html">
                                                 What Are APXN Points? How the Apex Network Telegram Mini App Works
                                             </a>
                                         </li>
-                                    
+
                     </ul>
 
                 </section>
-            
+
 
 
                 <div
@@ -690,3 +715,4 @@
 
 </body>
 </html>
+
