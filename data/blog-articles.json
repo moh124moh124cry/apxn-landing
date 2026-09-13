@@ -268,7 +268,7 @@
       "priority": 1,
       "topic": "What Is BSC? Understanding BEP-20 Tokens and Gas Fees",
       "category": "BSC",
-      "status": "waiting"
+      "status": "retired_legacy"
     },
     {
       "priority": 2,
@@ -321,7 +321,7 @@
   "automation_state": {
     "last_generated_article": "apxn-002",
     "last_published_article": "apxn-002",
-    "next_queue_priority": 1,
+    "next_queue_priority": 3,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
@@ -344,3 +344,4 @@
     }
   }
 }
+
