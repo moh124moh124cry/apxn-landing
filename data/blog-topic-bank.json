@@ -229,14 +229,16 @@
       "topic": "How Database Row Locking Helps Protect Point Claim Systems",
       "category": "Development",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "hybrid",
       "source_profile": "postgres_concurrency",
       "knowledge_sections": [
         "implemented_product_facts.points_mining",
         "implemented_product_facts.daily_checkin"
       ],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-14",
+      "queue_priority": 15
     },
     {
       "id": "bank-015",
@@ -258,36 +260,42 @@
       "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
       "category": "Web3",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "hybrid",
       "source_profile": "wallet_connection",
       "knowledge_sections": [
         "features_not_to_describe_as_live.wallet_linking"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "APXN wallet linking is UI-only in the reviewed implementation. Do not say that a wallet is persistently bound to a Telegram account."
+      "editorial_guard": "APXN wallet linking is UI-only in the reviewed implementation. Do not say that a wallet is persistently bound to a Telegram account.",
+      "queued_at": "2026-09-14",
+      "queue_priority": 12
     },
     {
       "id": "bank-017",
       "topic": "How to Read and Verify a Crypto Wallet Address",
       "category": "Education",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "wallet_basics",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-14",
+      "queue_priority": 10
     },
     {
       "id": "bank-018",
       "topic": "Self-Custody Wallet Basics for Web3 Beginners",
       "category": "Education",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "wallet_basics",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-14",
+      "queue_priority": 14
     },
     {
       "id": "bank-019",
@@ -338,22 +346,26 @@
       "topic": "What Is BNB Smart Chain and How Does It Work?",
       "category": "BSC",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "bsc",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-14",
+      "queue_priority": 9
     },
     {
       "id": "bank-024",
       "topic": "What Is a BEP-20 Token? A Beginner-Friendly Guide",
       "category": "BSC",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "bep20",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-14",
+      "queue_priority": 13
     },
     {
       "id": "bank-025",
@@ -371,11 +383,13 @@
       "topic": "How Blockchain Explorers Help Users Verify Transactions",
       "category": "Blockchain",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "block_explorers",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-14",
+      "queue_priority": 11
     },
     {
       "id": "bank-027",
@@ -502,19 +516,19 @@
   ],
   "planner_state": {
     "last_run": "2026-09-14",
-    "available_topics": 36,
-    "automation_eligible_available_topics": 34,
+    "available_topics": 29,
+    "automation_eligible_available_topics": 27,
     "manual_or_review_topics": 2,
-    "queued_topics": 0,
+    "queued_topics": 7,
     "used_topics": 0,
     "category_load_after_run": {
       "APXN Guides": 3,
-      "Blockchain": 1,
-      "Web3": 1,
-      "BSC": 0,
+      "Blockchain": 2,
+      "Web3": 2,
+      "BSC": 2,
       "Security": 2,
-      "Education": 0,
-      "Development": 1
+      "Education": 2,
+      "Development": 2
     }
   }
 }

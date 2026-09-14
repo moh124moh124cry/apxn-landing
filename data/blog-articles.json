@@ -3,9 +3,9 @@
   "last_updated": "2026-09-14",
   "default_language": "en",
   "stats": {
-    "total_articles": 3,
+    "total_articles": 4,
     "published": 3,
-    "ready": 0,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -485,6 +485,227 @@
         }
       },
       "published_url": "https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html"
+    },
+    {
+      "id": "apxn-004",
+      "slug": "blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3",
+      "title": "Blockchain Basics for Beginners: Understanding Blocks Ethereum and Web3",
+      "description": "Learn the core ideas behind blockchain technology including blocks data structures Ethereum transactions and the transition toward Web3 using verified technical sources.",
+      "excerpt": "Learn the core ideas behind blockchain technology including blocks data structures Ethereum transactions and the transition toward Web3 using verified technical sources.",
+      "category": "Blockchain",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-14",
+      "generated_at": "2026-09-14",
+      "updated_at": "2026-09-14",
+      "published_at": null,
+      "reading_minutes": 7,
+      "word_count": 1346,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "blockchain",
+        "ethereum",
+        "blocks",
+        "transactions",
+        "smart contracts",
+        "web3",
+        "ether",
+        "nodes",
+        "staking",
+        "data"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "external",
+      "source_profile": "blockchain_transactions",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "Blockchain Basics for Beginners: Understanding Blocks Ethereum and Web3",
+        "description": "Learn the core ideas behind blockchain technology including blocks data structures Ethereum transactions and the transition toward Web3 using verified technical sources.",
+        "canonical": "https://apxn.network/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "Blockchain Basics for Beginners: Understanding Blocks Ethereum and Web3",
+        "description": "Learn the core ideas behind blockchain technology including blocks data structures Ethereum transactions and the transition toward Web3 using verified technical sources.",
+        "keywords": [
+          "blockchain",
+          "ethereum",
+          "blocks",
+          "transactions",
+          "smart contracts",
+          "web3",
+          "ether",
+          "nodes",
+          "staking",
+          "data"
+        ],
+        "intro": {
+          "text": "A blockchain functions as a public database that updates and shares across many computers in a network. Block refers to data and state stored in consecutive groups. When sending ETH the transaction data must enter a block to succeed. Ethereum represents a programmable blockchain that extends these ideas through ether as its native currency and smart contracts that execute automatically. Terminology covers accounts transactions blocks and nodes. The Ethereum network supports various uses from simple transfers to more complex interactions while maintaining cryptographic verification of all changes. A blockchain serves as the foundational structure where updates occur through verified additions to the shared record. Each addition builds on prior entries to create a continuous sequence that participants can reference. Ethereum incorporates these structures with additional layers for currency handling and automated agreements. The core elements remain consistent across descriptions that outline how data moves and persists within the system.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Blockchain Data and Network Design",
+            "paragraphs": [
+              {
+                "text": "Ethereum relies on a proof of stake consensus mechanism where participants stake ETH to add new blocks. Validators run software and receive random selection to propose blocks that others verify before addition to the chain. Rewards and penalties encourage honest behavior and consistent availability. The overall design keeps the network secure through these economic incentives tied directly to the native currency. The mechanism selects participants based on the amount of collateral committed. This selection process distributes responsibility for maintaining the record across the active set.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              },
+              {
+                "text": "Data structures organize information so that blocks contain consecutive groups of transactions and state changes. The network distributes updates across many computers ensuring every participant sees the same record. This approach maintains consistency without central control while allowing new blocks to form only after validation steps complete. Blocks serve as containers that group related updates into ordered segments. The shared record grows through successive additions that follow the established validation sequence.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Ethereum Ether and Transaction Flow",
+            "paragraphs": [
+              {
+                "text": "Ether serves as the native currency within Ethereum and supports all network activity including transaction fees and staking. Transactions represent signed instructions that update network state when included in blocks. Cryptographic methods verify each transaction and prevent later tampering once added to the chain. Updates listed in documentation reflect ongoing refinements noted around two thousand twenty six. The currency unit enables the economic coordination required for network operations.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              },
+              {
+                "text": "The same cryptographic protections ensure that only the account owner can authorize transfers of assets. Every transaction carries appropriate permissions that the network enforces automatically. Updates to the page listing these details occurred in two thousand twenty six reflecting ongoing refinements to the documentation. Permissions are checked at the point of verification to maintain the integrity of asset movements. The process relies on established cryptographic checks that apply uniformly to all submitted instructions.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Smart Contracts and Proof Mechanisms",
+            "paragraphs": [
+              {
+                "text": "Smart contracts operate as self executing programs stored on the blockchain. They run when triggered by transactions and follow predefined rules written in code. Interaction with these contracts requires specific transaction data fields that describe the intended action and any associated parameters. Standards such as those numbered ten nineteen twenty five and two thousand seven hundred eighteen provide consistent formats for these interactions. The contracts execute according to the rules encoded at the time they were placed on the chain.",
+                "evidence_ids": [
+                  "EXT-06",
+                  "EXT-09"
+                ]
+              },
+              {
+                "text": "Proof of stake replaces earlier methods and relies on staked collateral rather than computational puzzles. Transaction descriptors outline the type of action such as simple transfers or contract calls. Standards like typed transaction envelopes organize these interactions for consistent processing across the network. The shift to this approach changes how selection for block proposal occurs. Descriptors help categorize the purpose of each submitted instruction for proper handling.",
+                "evidence_ids": [
+                  "EXT-06",
+                  "EXT-09"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Staking and Application Development",
+            "paragraphs": [
+              {
+                "text": "Staking allows users to lock ETH as collateral to participate in block validation. The process ties directly to the proof of stake design where selected validators propose and attest to new blocks. An Ethereum client manages the signing of related transactions using structured calls that specify parameters such as gas limits. The example format includes fields identified by the number two and version two point zero for compatibility. Clients process these structured requests to complete the required authorization steps.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-10"
+                ]
+              },
+              {
+                "text": "Applications built on the network use accounts and transactions to interact with contracts and other users. The builder tools and documentation outline how developers connect to the network and submit properly formatted requests. Example calls demonstrate the format required for signing operations within a client. Accounts serve as the starting point for initiating these interactions. Requests follow defined structures to ensure they are interpreted correctly by the receiving software.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-10"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Nodes Clients and Network History",
+            "paragraphs": [
+              {
+                "text": "Nodes represent the computers that store and relay blockchain data while executing transactions. Different client software implements the protocol allowing participants to choose implementations that suit their needs. Running a node provides direct access to the current state and historical records without relying on third party services. The variety of available clients supports continued operation even if one implementation encounters issues. History covers the evolution of how these components have been organized and maintained.",
+                "evidence_ids": [
+                  "EXT-04"
+                ]
+              },
+              {
+                "text": "Client diversity improves overall network resilience by reducing dependence on any single software version. Historical development of the network includes transitions in consensus methods and improvements to how nodes communicate. These elements together form the operational foundation that keeps the system functioning consistently. Diversity in client choices helps distribute the load of maintaining the shared record. Communication improvements have refined the way updates propagate through the participant set.",
+                "evidence_ids": [
+                  "EXT-04"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Data Structures and Account Management",
+            "paragraphs": [
+              {
+                "text": "Data availability strategies determine how participants access the information needed to verify blocks. Design fundamentals guide how interfaces present network activity to users while maintaining security principles. The network uses established data encoding methods to represent transactions and state in a compact verifiable format. These strategies ensure that verification remains possible across the distributed set of participants. Encoding methods reduce the size of transmitted information while preserving the ability to check correctness.",
+                "evidence_ids": [
+                  "EXT-05"
+                ]
+              },
+              {
+                "text": "Accounts initiate transactions that update the shared state across all nodes. Each account maintains its own balance and nonce values that prevent replay of earlier instructions. Copying the full chain history allows new nodes to reach the current state through standard synchronization procedures. The nonce serves as a sequential marker that distinguishes each new instruction from previous ones. Synchronization brings newly joined participants to the same view of the record held by others.",
+                "evidence_ids": [
+                  "EXT-05"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What defines a blockchain and how does Ethereum extend it?",
+            "answer": "A blockchain serves as a public database updated across many computers where blocks store consecutive groups of data and state. Sending ETH requires the transaction data to enter a block. Ethereum builds on this foundation by adding ether as currency and smart contracts that execute automatically according to code. Terminology includes accounts transactions blocks and nodes. Page updates in two thousand twenty six reflect continued documentation of these core elements. The structure supports verified additions that maintain a consistent shared view among participants.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "How do transactions and nodes relate in the Ethereum network?",
+            "answer": "Transactions are cryptographically signed instructions from accounts that update network state. The simplest case transfers ETH between accounts. Nodes store the chain data execute these instructions and relay updates to other participants. Client software handles the signing process using structured calls that include required parameters such as gas values. The number two appears in example request formats that illustrate how clients receive and process these instructions.",
+            "evidence_ids": [
+              "EXT-03",
+              "EXT-04"
+            ]
+          },
+          {
+            "question": "What role do smart contracts and proof mechanisms play?",
+            "answer": "Smart contracts are programs stored on the blockchain that run automatically when triggered by transactions. They require specific data fields to define the intended action. Proof of stake selects validators based on staked ETH to propose and verify blocks. Standards such as typed transaction envelopes and token formats like those numbered ten nineteen twenty five and two thousand seven hundred eighteen organize interactions consistently. The mechanisms ensure that contract execution follows the encoded rules without deviation.",
+            "evidence_ids": [
+              "EXT-05",
+              "EXT-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "Blockchain technology centers on public databases organized into blocks that record transactions and state changes across a distributed network. Ethereum incorporates ether and smart contracts while using proof of stake for consensus. Nodes and clients maintain the system history and execute updates. These elements together provide the technical foundation described in the source materials without additional assumptions about future developments. Documentation updates noted in two thousand twenty six and related references support the descriptions of accounts and transaction handling. The combination of these components forms the operational base outlined across the referenced sources.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04"
+          ]
+        }
+      }
     }
   ],
   "generation_queue": [
@@ -520,7 +741,11 @@
       "priority": 4,
       "topic": "Blockchain Explained for Beginners: From Blocks to Web3",
       "category": "Blockchain",
-      "status": "waiting"
+      "status": "ready",
+      "article_id": "apxn-004",
+      "generated_at": "2026-09-14",
+      "content_mode": "external",
+      "source_profile": "blockchain_transactions"
     },
     {
       "priority": 5,
@@ -545,30 +770,150 @@
       "topic": "How Telegram Mini App Authentication Works and Why initData Verification Matters",
       "category": "Security",
       "status": "waiting"
+    },
+    {
+      "priority": 9,
+      "topic": "What Is BNB Smart Chain and How Does It Work?",
+      "category": "BSC",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-023",
+      "language": "en",
+      "queued_at": "2026-09-14",
+      "content_mode": "external",
+      "source_profile": "bsc",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 10,
+      "topic": "How to Read and Verify a Crypto Wallet Address",
+      "category": "Education",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-017",
+      "language": "en",
+      "queued_at": "2026-09-14",
+      "content_mode": "external",
+      "source_profile": "wallet_basics",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 11,
+      "topic": "How Blockchain Explorers Help Users Verify Transactions",
+      "category": "Blockchain",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-026",
+      "language": "en",
+      "queued_at": "2026-09-14",
+      "content_mode": "external",
+      "source_profile": "block_explorers",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 12,
+      "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+      "category": "Web3",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-016",
+      "language": "en",
+      "queued_at": "2026-09-14",
+      "content_mode": "hybrid",
+      "source_profile": "wallet_connection",
+      "knowledge_sections": [
+        "features_not_to_describe_as_live.wallet_linking"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "APXN wallet linking is UI-only in the reviewed implementation. Do not say that a wallet is persistently bound to a Telegram account."
+    },
+    {
+      "priority": 13,
+      "topic": "What Is a BEP-20 Token? A Beginner-Friendly Guide",
+      "category": "BSC",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-024",
+      "language": "en",
+      "queued_at": "2026-09-14",
+      "content_mode": "external",
+      "source_profile": "bep20",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 14,
+      "topic": "Self-Custody Wallet Basics for Web3 Beginners",
+      "category": "Education",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-018",
+      "language": "en",
+      "queued_at": "2026-09-14",
+      "content_mode": "external",
+      "source_profile": "wallet_basics",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 15,
+      "topic": "How Database Row Locking Helps Protect Point Claim Systems",
+      "category": "Development",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-014",
+      "language": "en",
+      "queued_at": "2026-09-14",
+      "content_mode": "hybrid",
+      "source_profile": "postgres_concurrency",
+      "knowledge_sections": [
+        "implemented_product_facts.points_mining",
+        "implemented_product_facts.daily_checkin"
+      ],
+      "auto_publish_allowed": true
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-003",
+    "last_generated_article": "apxn-004",
     "last_published_article": "apxn-003",
-    "next_queue_priority": 4,
+    "next_queue_priority": 5,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
       "last_run": "2026-09-14",
-      "added_topics": 0,
-      "added_topic_ids": [],
-      "added_categories": [],
-      "waiting_topics_after_run": 6,
+      "added_topics": 7,
+      "added_topic_ids": [
+        "bank-023",
+        "bank-017",
+        "bank-026",
+        "bank-016",
+        "bank-024",
+        "bank-018",
+        "bank-014"
+      ],
+      "added_categories": [
+        "BSC",
+        "Education",
+        "Blockchain",
+        "Web3",
+        "BSC",
+        "Education",
+        "Development"
+      ],
+      "waiting_topics_after_run": 12,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
         "APXN Guides": 3,
-        "Blockchain": 1,
-        "Web3": 1,
-        "BSC": 0,
+        "Blockchain": 2,
+        "Web3": 2,
+        "BSC": 2,
         "Security": 2,
-        "Education": 0,
-        "Development": 1
+        "Education": 2,
+        "Development": 2
       }
     }
   }
