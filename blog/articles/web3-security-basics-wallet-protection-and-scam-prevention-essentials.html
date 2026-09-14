@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Web3 Security Basics: Wallet Protection and Scam Prevention Essentials</title>
+
+    <meta
+        name="description"
+        content="Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and"
+    >
+
+    <meta
+        name="keywords"
+        content="ethereum security, wallet recovery phrase, two-factor authentication, scam prevention, password practices, multifactor authentication, phishing awareness, cybersecurity topics, official websites, hardware wallet"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <meta
+        name="author"
+        content="Apex Network Editorial"
+    >
+
+
+    <link
+        rel="canonical"
+        href="https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html"
+    >
+
+    <link
+        rel="icon"
+        href="../../logo2%20(1).png"
+        type="image/png"
+    >
+
+
+    <meta
+        property="og:type"
+        content="article"
+    >
+
+    <meta
+        property="og:title"
+        content="Web3 Security Basics: Wallet Protection and Scam Prevention Essentials"
+    >
+
+    <meta
+        property="og:description"
+        content="Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and"
+    >
+
+    <meta
+        property="og:url"
+        content="https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html"
+    >
+
+    <meta
+        property="og:image"
+        content="https://apxn.network/blog/images/web3-security-basics-wallet-protection-and-scam-prevention-essentials-1000133466.png"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Apex Network"
+    >
+
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="Web3 Security Basics: Wallet Protection and Scam Prevention Essentials"
+    >
+
+    <meta
+        name="twitter:description"
+        content="Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and"
+    >
+
+    <meta
+        name="twitter:image"
+        content="https://apxn.network/blog/images/web3-security-basics-wallet-protection-and-scam-prevention-essentials-1000133466.png"
+    >
+
+
+    <script>
+        window.va =
+            window.va ||
+            function () {
+                (
+                    window.vaq =
+                    window.vaq ||
+                    []
+                ).push(
+                    arguments
+                );
+            };
+    </script>
+
+    <script
+        defer
+        src="/_vercel/insights/script.js"
+    ></script>
+
+
+    <script
+        src="https://cdn.tailwindcss.com"
+    ></script>
+
+
+    <style>
+
+        html {
+            background: #020617;
+        }
+
+        .gold-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #fde047,
+                    #f59e0b,
+                    #fb923c
+                );
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+        }
+
+        .article-body p {
+            color:
+                #cbd5e1;
+
+            line-height:
+                1.9;
+
+            margin:
+                1rem 0 1.5rem;
+        }
+
+        .article-body h2 {
+            color:
+                #fff;
+
+            font-size:
+                1.75rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                2.7rem;
+
+            margin-bottom:
+                1rem;
+
+            line-height:
+                1.25;
+        }
+
+        .article-body h3 {
+            color:
+                #facc15;
+
+            font-size:
+                1.2rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                1rem;
+
+            margin-bottom:
+                .75rem;
+        }
+
+        .article-body ul {
+            color:
+                #cbd5e1;
+
+            margin:
+                1rem 0 1.5rem 1.5rem;
+
+            line-height:
+                1.9;
+
+            list-style:
+                disc;
+        }
+
+        .article-body a {
+            color:
+                #facc15;
+
+            font-weight:
+                800;
+        }
+
+        .info-box {
+            background:
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .8
+                );
+
+            border:
+                1px solid
+                rgba(
+                    234,
+                    179,
+                    8,
+                    .25
+                );
+
+            border-radius:
+                1rem;
+
+            padding:
+                1.25rem;
+
+            margin:
+                1.5rem 0;
+        }
+
+    </style>
+
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Web3 Security Basics: Wallet Protection and Scam Prevention Essentials",
+  "description": "Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and",
+  "image": "https://apxn.network/blog/images/web3-security-basics-wallet-protection-and-scam-prevention-essentials-1000133466.png",
+  "mainEntityOfPage": "https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html",
+  "datePublished": "2026-09-14",
+  "dateModified": "2026-09-14",
+  "author": {
+    "@type": "Organization",
+    "name": "Apex Network Editorial"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Apex Network",
+    "url": "https://apxn.network",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apxn.network/logo2%20(1).png"
+    }
+  }
+}
+    </script>
+
+    
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What foundational topics appear in Ethereum security resources?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ethereum security materials list topics such as wallets, smart contracts, gas fees, staking methods, layer two networks, and Web3 concepts. They also reference guides for choosing a wallet, exploring applications, and understanding privacy on Ethereum alongside scam prevention sections."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does two-factor authentication add protection?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Documentation explains that two-factor authentication requires an additional factor beyond a password. The common implementation uses a randomized six-digit time-based one-time password generated by an authenticator app whose seed is stored on the device, serving as a something-you-own factor."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What scam types and verification steps are highlighted?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Listed scam types include phishing, giveaway scams, support scams, and token-related schemes. Verification guidance notes that official sites use .gov domains with HTTPS and a lock icon. Ethereum pages reference update dates including September 10, 2026 and June 6, 2026 while directing readers to further reading on common scams."
+      }
+    }
+  ]
+}
+    </script>
+            
+
+</head>
+
+
+<body
+    class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950"
+>
+
+
+<header
+    class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5"
+    >
+
+        <a
+            href="../index.html"
+            class="flex items-center gap-3 min-w-0"
+        >
+
+            <div
+                class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50"
+            >
+
+                <img
+                    src="../../logo2%20(1).png"
+                    alt="Apex Network Logo"
+                    class="w-full h-full object-cover"
+                    width="44"
+                    height="44"
+                >
+
+            </div>
+
+
+            <div>
+
+                <div
+                    class="font-black tracking-wider gold-text text-base sm:text-lg"
+                >
+                    APEX NETWORK
+                </div>
+
+                <div
+                    class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]"
+                >
+                    APXN Blog
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <div
+            class="flex items-center gap-3"
+        >
+
+            <a
+                href="../index.html"
+                class="hidden sm:inline-flex text-sm font-bold text-gray-400 hover:text-yellow-400"
+            >
+                Blog Home
+            </a>
+
+            <a
+                href="https://t.me/ApxMinerBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl"
+            >
+                Open APXN App
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <article>
+
+
+        <section
+            class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent"
+        >
+
+            <div
+                class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20"
+            >
+
+                <nav
+                    aria-label="Breadcrumb"
+                    class="text-xs text-gray-500 font-bold mb-7"
+                >
+
+                    <a
+                        href="../../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Home
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <a
+                        href="../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Blog
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <span
+                        class="text-yellow-400"
+                    >
+                        Security
+                    </span>
+
+                </nav>
+
+
+                <span
+                    class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5"
+                >
+                    Security
+                </span>
+
+
+                <h1
+                    class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6"
+                >
+                    Web3 Security Basics: Wallet Protection and Scam Prevention Essentials
+                </h1>
+
+
+                <p
+                    class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7"
+                >
+                    Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and
+                </p>
+
+
+                <div
+                    class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500"
+                >
+
+                    <span
+                        class="font-bold text-gray-300"
+                    >
+                        Apex Network Editorial
+                    </span>
+
+                    <span>
+                        •
+                    </span>
+
+                    <time
+                        datetime="2026-09-14"
+                    >
+                        September 14, 2026
+                    </time>
+
+                    <span>
+                        •
+                    </span>
+
+                    <span>
+                        5 min read
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="mt-8 flex flex-wrap items-center gap-3"
+                >
+
+                    <button
+                        type="button"
+                        onclick="shareArticle()"
+                        class="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm font-black text-yellow-400 hover:bg-yellow-500/15 transition-colors"
+                        aria-label="Share this article"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                        >
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+                            <line x1="8.59" y1="13.49" x2="15.42" y2="17.51"></line>
+                        </svg>
+
+                        <span>
+                            Share article
+                        </span>
+                    </button>
+
+
+                    <span
+                        id="share-status"
+                        class="hidden text-sm font-bold text-emerald-400"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Original APXN link copied
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div
+            class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14"
+        >
+
+            <figure
+                class="mb-12"
+            >
+
+                <img
+                    src="https://apxn.network/blog/images/web3-security-basics-wallet-protection-and-scam-prevention-essentials-1000133466.png"
+                    alt="Web3 Security Basics: Wallet Protection and Scam Prevention Essentials"
+                    class="w-full rounded-2xl border border-slate-800 object-cover max-h-[620px]"
+                    loading="eager"
+                >
+
+            </figure>
+
+
+            
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+    
+
+
+            <div
+                class="article-body"
+            >
+
+                <p
+                    class="text-lg"
+                >
+                    Ethereum security and scam prevention resources outline foundational topics that include Ethereum wallets, smart contracts, gas fees, staking, and Web3 concepts alongside guidance on protecting accounts from threats. These materials emphasize choosing a wallet, exploring apps, and understanding core principles such as privacy on Ethereum. CISA Secure Our World materials address cybersecurity awareness and provide resources for individuals and families on recognizing threats. Ethereum documentation stresses that the recovery phrase serves as the master key to a wallet and that no legitimate service will request it. Together these sources establish baseline practices for maintaining security when engaging with decentralized networks and online accounts.
+                </p>
+
+
+                
+                        <section>
+                            <h2>Foundational Ethereum and Cyber Topics</h2>
+
+                            <p>Ethereum resources cover foundational topics that include Ethereum stack details, user experience design fundamentals, and enterprise applications on the mainnet. These materials also reference staking options such as solo staking, pooled staking, and staking as a service while listing related guides for running a node. CISA materials organize content around cybersecurity best practices, cyber threats and response, and critical infrastructure security. The sources list topics suitable for government, educational institutions, industry, and individuals seeking practical information on protecting systems and accounts.</p>
+<p>Additional Ethereum sections address layer two networks, blockchain bridges, and builder tools for development. The content includes tutorials for learning Ethereum development and community resources such as events and translation programs. CISA content similarly directs users to resources for state, local, tribal, and territorial partners as well as high-risk communities. Both sets of materials focus on providing structured overviews rather than implementation specifics, helping readers identify relevant areas for further study in security and decentralized applications.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Online Safety and Decentralized Access</h2>
+
+                            <p>CISA guidance presents four easy ways to stay safe online that include recognizing phishing, using strong passwords, enabling multifactor authentication, and updating software. The materials note that online criminals target individuals who skip basic precautions and that following the steps reduces vulnerability to deceptive tactics. Ethereum resources list application explorer entries for stablecoins, non-fungible tokens, decentralized finance, and decentralized autonomous organizations as areas where users interact with decentralized systems.</p>
+<p>Ethereum materials reference Ethereum events, the Ethereum Foundation blog, and the ecosystem support program as community touchpoints. CISA content explains that every day users connect through messaging, shopping, and business activities, making consistent security steps important across phones, laptops, and smart devices. The sources describe these actions as straightforward measures that help individuals and businesses maintain safer connections without introducing new technical requirements.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Recognizing Scams and Verifying Official Sources</h2>
+
+                            <p>Ethereum scam education sections list common issues such as Twitter ad phishing, giveaway scams, social media hacks, celebrity giveaways, support scams, and phishing attempts. The materials also reference an Eth2 token scam along with crypto trading broker scams, mining pool scams, and airdrop scams. CISA content stresses that official websites use .gov domains and that secure .gov sites employ HTTPS indicated by a lock icon, advising users to share sensitive information only on verified official secure websites.</p>
+<p>The Ethereum page notes contributors and displays update information referencing September 10, 2026 while listing further reading on crypto security and scam education. CISA pages similarly confirm official status through visible government indicators. These details help readers distinguish legitimate resources from fraudulent sites that may mimic official branding or promise token giveaways.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Common Crypto Security References</h2>
+
+                            <p>Ethereum resources point to external materials including Coinbase crypto security guidance, MyCrypto protecting yourself resources, Salus security issues in communication software, and Andreas M. Antonopoulos materials on passwords and authentication. Additional links cover identifying scam tokens, common scams from MyCrypto, and Bitcoin.org avoiding scams content. The page records a last update date of June 6, 2026.</p>
+<p>CISA materials describe staying safe online as easier than many expect and encourage simple daily actions when using connected devices. Ethereum listings include Twitter threads on common crypto phishing emails and messages. These references collectively illustrate categories of publicly discussed security topics without providing operational instructions for any specific tool or service.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Authentication Factors and Password Practices</h2>
+
+                            <p>Ethereum documentation explains three authentication categories: something you know such as a password, something you are such as a fingerprint, and something you own such as a security key or authenticator app. Two-factor authentication supplies an extra factor so that a password alone does not grant access. The most common second factor is a randomized six-digit code generated as a time-based one-time password through apps like Google Authenticator.</p>
+<p>The same materials note that the seed generating the timed code resides on the user device, functioning as an ownership factor. CISA resources provide tip sheets and additional materials in multiple languages that expand on secure online practices. Both sources present these elements as standard components of account protection strategies discussed across cybersecurity guidance.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Recovery Phrase and Key Handling</h2>
+
+                            <p>Ethereum security guidance states that users should never share the recovery phrase or private keys for any reason. The recovery phrase functions as the master key to the wallet, allowing anyone who obtains it to access all accounts and assets. Private keys operate similarly for individual accounts. The source explicitly notes that no legitimate service, support agent, or website will request these items.</p>
+<p>The same passage advises against taking screenshots of seed phrases or private keys and recommends considering a hardware wallet while double-checking transactions before sending. It also suggests setting smart contract spend limits. These points appear under the wallet security heading alongside common scam descriptions and web security practices such as using strong passwords and a password manager.</p>
+                        </section>
+                    
+
+
+                
+                <section>
+
+                    <h2>
+                        Frequently asked questions
+                    </h2>
+
+                    
+                        <div class="info-box">
+                            <h3>What foundational topics appear in Ethereum security resources?</h3>
+
+                            <p>Ethereum security materials list topics such as wallets, smart contracts, gas fees, staking methods, layer two networks, and Web3 concepts. They also reference guides for choosing a wallet, exploring applications, and understanding privacy on Ethereum alongside scam prevention sections.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>How does two-factor authentication add protection?</h3>
+
+                            <p>Documentation explains that two-factor authentication requires an additional factor beyond a password. The common implementation uses a randomized six-digit time-based one-time password generated by an authenticator app whose seed is stored on the device, serving as a something-you-own factor.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>What scam types and verification steps are highlighted?</h3>
+
+                            <p>Listed scam types include phishing, giveaway scams, support scams, and token-related schemes. Verification guidance notes that official sites use .gov domains with HTTPS and a lock icon. Ethereum pages reference update dates including September 10, 2026 and June 6, 2026 while directing readers to further reading on common scams.</p>
+                        </div>
+                    
+
+                </section>
+                        
+
+
+                <section>
+
+                    <h2>
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        Ethereum and CISA sources together outline core practices including never sharing recovery phrases, employing authentication factors such as six-digit codes, using strong unique passwords, and verifying official websites. Foundational topics cover wallets, staking, and scam categories while stressing that legitimate services do not request sensitive keys. These points provide readers with documented reference areas for continued attention to account security.
+                    </p>
+
+                </section>
+
+
+                
+                <section>
+
+                    <h2>
+                        Related reading
+                    </h2>
+
+                    <ul>
+                        
+                                        <li>
+                                            <a href="./telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html">
+                                                Telegram Mini Apps Features and Web3 Concepts from Official Documentation
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./what-are-apxn-points.html">
+                                                What Are APXN Points? How the Apex Network Telegram Mini App Works
+                                            </a>
+                                        </li>
+                                    
+                    </ul>
+
+                </section>
+            
+
+
+                <div
+                    class="info-box"
+                >
+
+                    <strong>
+                        Editorial note:
+                    </strong>
+
+                    <p>
+                        This article is educational project content and should not be treated as financial, investment, legal or tax advice.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</main>
+
+
+<footer
+    class="border-t border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 flex flex-wrap gap-4 justify-between"
+    >
+
+        <span>
+            © 2026 Apex Network
+        </span>
+
+        <a
+            href="../index.html"
+            class="hover:text-yellow-400"
+        >
+            APXN Blog
+        </a>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    const APXN_ARTICLE_SHARE = {
+        title:
+            "Web3 Security Basics: Wallet Protection and Scam Prevention Essentials",
+
+        url:
+            "https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html"
+    };
+
+
+    function showShareStatus(
+        message
+    ) {
+
+        const status =
+            document.getElementById(
+                'share-status'
+            );
+
+        if (!status) {
+            return;
+        }
+
+        status.textContent =
+            message;
+
+        status.classList.remove(
+            'hidden'
+        );
+
+        window.clearTimeout(
+            window.__apxnShareStatusTimer
+        );
+
+        window.__apxnShareStatusTimer =
+            window.setTimeout(
+                () => {
+                    status.classList.add(
+                        'hidden'
+                    );
+                },
+                3000
+            );
+    }
+
+
+    async function copyOriginalArticleLink() {
+
+        const link =
+            APXN_ARTICLE_SHARE.url;
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(
+                    link
+                );
+
+            } else {
+
+                const input =
+                    document.createElement(
+                        'textarea'
+                    );
+
+                input.value =
+                    link;
+
+                input.setAttribute(
+                    'readonly',
+                    ''
+                );
+
+                input.style.position =
+                    'fixed';
+
+                input.style.opacity =
+                    '0';
+
+                document.body.appendChild(
+                    input
+                );
+
+                input.select();
+
+                document.execCommand(
+                    'copy'
+                );
+
+                input.remove();
+            }
+
+            showShareStatus(
+                'Original APXN link copied'
+            );
+
+            return true;
+
+        } catch {
+
+            showShareStatus(
+                'Copy the APXN link from the address bar'
+            );
+
+            return false;
+        }
+    }
+
+
+    async function shareArticle() {
+
+        const shareData = {
+            title:
+                APXN_ARTICLE_SHARE.title,
+
+            url:
+                APXN_ARTICLE_SHARE.url
+        };
+
+        if (
+            typeof navigator.share ===
+            'function'
+        ) {
+
+            try {
+
+                await navigator.share(
+                    shareData
+                );
+
+                return;
+
+            } catch (error) {
+
+                if (
+                    error &&
+                    error.name ===
+                        'AbortError'
+                ) {
+                    return;
+                }
+            }
+        }
+
+        await copyOriginalArticleLink();
+    }
+
+</script>
+
+
+</body>
+</html>
