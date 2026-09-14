@@ -1385,9 +1385,27 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 126321500,
           "cost_usd": 0.01263215
+        },
+        {
+          "date": "2026-09-14",
+          "response_id": "b643edd6-5b81-950b-bae3-0acbe36077ef",
+          "model": "grok-4.3",
+          "topic": "Blockchain Explained for Beginners: From Blocks to Web3",
+          "article_slug": "blockchain-explained-for-beginners-from-blocks-to-web3",
+          "stage": "research_packet_writing",
+          "input_tokens": 4790,
+          "cached_input_tokens": 192,
+          "output_tokens": 2510,
+          "reasoning_tokens": 761,
+          "total_tokens": 7300,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 120609000,
+          "cost_usd": 0.0120609
         }
       ],
-      "total_cost_usd": 1.21522195
+      "total_cost_usd": 1.22728285
     }
   },
   "last_updated": "2026-09-14"
