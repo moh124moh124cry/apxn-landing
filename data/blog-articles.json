@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 4,
-    "published": 3,
-    "ready": 1,
+    "published": 4,
+    "ready": 0,
     "drafts": 0,
     "featured": 1
   },
@@ -495,19 +495,19 @@
       "category": "Blockchain",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-09-14",
       "generated_at": "2026-09-14",
       "updated_at": "2026-09-14",
-      "published_at": null,
+      "published_at": "2026-09-14",
       "reading_minutes": 7,
       "word_count": 1346,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
+      "url": "https://apxn.network/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
+      "image": "https://apxn.network/blog/images/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3-1000133494.png",
+      "image_filename": "blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3-1000133494.png",
       "keywords": [
         "blockchain",
         "ethereum",
@@ -531,7 +531,7 @@
         "title": "Blockchain Basics for Beginners: Understanding Blocks Ethereum and Web3",
         "description": "Learn the core ideas behind blockchain technology including blocks data structures Ethereum transactions and the transition toward Web3 using verified technical sources.",
         "canonical": "https://apxn.network/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -705,7 +705,8 @@
             "EXT-04"
           ]
         }
-      }
+      },
+      "published_url": "https://apxn.network/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html"
     }
   ],
   "generation_queue": [
@@ -741,11 +742,12 @@
       "priority": 4,
       "topic": "Blockchain Explained for Beginners: From Blocks to Web3",
       "category": "Blockchain",
-      "status": "ready",
+      "status": "published",
       "article_id": "apxn-004",
       "generated_at": "2026-09-14",
       "content_mode": "external",
-      "source_profile": "blockchain_transactions"
+      "source_profile": "blockchain_transactions",
+      "published_at": "2026-09-14"
     },
     {
       "priority": 5,
@@ -878,7 +880,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-004",
-    "last_published_article": "apxn-003",
+    "last_published_article": "apxn-004",
     "next_queue_priority": 5,
     "automatic_generation": true,
     "automatic_publishing": false,
