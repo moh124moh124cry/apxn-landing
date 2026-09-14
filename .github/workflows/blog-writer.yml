@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "0 8 * * 1"
-    - cron: "0 8 * * 3"
-    - cron: "0 8 * * 6"
+    - cron: "17 8 * * 1"
+    - cron: "17 8 * * 3"
+    - cron: "17 8 * * 6"
 
 
 permissions:
@@ -430,3 +430,4 @@ jobs:
           echo "❌ Automatic publishing disabled" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Open /blog-admin/ to review the article, add an image and publish it." >> "$GITHUB_STEP_SUMMARY"
+
