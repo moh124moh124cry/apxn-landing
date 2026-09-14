@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-12",
+  "last_updated": "2026-09-14",
   "default_language": "en",
   "stats": {
-    "total_articles": 2,
+    "total_articles": 3,
     "published": 2,
-    "ready": 0,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -261,6 +261,229 @@
         }
       },
       "published_url": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html"
+    },
+    {
+      "id": "apxn-003",
+      "slug": "web3-security-basics-wallet-protection-and-scam-prevention-essentials",
+      "title": "Web3 Security Basics: Wallet Protection and Scam Prevention Essentials",
+      "description": "Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and",
+      "excerpt": "Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and",
+      "category": "Security",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-14",
+      "generated_at": "2026-09-14",
+      "updated_at": "2026-09-14",
+      "published_at": null,
+      "reading_minutes": 5,
+      "word_count": 1058,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "ethereum security",
+        "wallet recovery phrase",
+        "two-factor authentication",
+        "scam prevention",
+        "password practices",
+        "multifactor authentication",
+        "phishing awareness",
+        "cybersecurity topics",
+        "official websites",
+        "hardware wallet"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "external",
+      "source_profile": "web3_security",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "Web3 Security Basics: Wallet Protection and Scam Prevention Essentials",
+        "description": "Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and",
+        "canonical": "https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "Web3 Security Basics: Wallet Protection and Scam Prevention Essentials",
+        "description": "Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and",
+        "keywords": [
+          "ethereum security",
+          "wallet recovery phrase",
+          "two-factor authentication",
+          "scam prevention",
+          "password practices",
+          "multifactor authentication",
+          "phishing awareness",
+          "cybersecurity topics",
+          "official websites",
+          "hardware wallet"
+        ],
+        "intro": {
+          "text": "Ethereum security and scam prevention resources outline foundational topics that include Ethereum wallets, smart contracts, gas fees, staking, and Web3 concepts alongside guidance on protecting accounts from threats. These materials emphasize choosing a wallet, exploring apps, and understanding core principles such as privacy on Ethereum. CISA Secure Our World materials address cybersecurity awareness and provide resources for individuals and families on recognizing threats. Ethereum documentation stresses that the recovery phrase serves as the master key to a wallet and that no legitimate service will request it. Together these sources establish baseline practices for maintaining security when engaging with decentralized networks and online accounts.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Foundational Ethereum and Cyber Topics",
+            "paragraphs": [
+              {
+                "text": "Ethereum resources cover foundational topics that include Ethereum stack details, user experience design fundamentals, and enterprise applications on the mainnet. These materials also reference staking options such as solo staking, pooled staking, and staking as a service while listing related guides for running a node. CISA materials organize content around cybersecurity best practices, cyber threats and response, and critical infrastructure security. The sources list topics suitable for government, educational institutions, industry, and individuals seeking practical information on protecting systems and accounts.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              },
+              {
+                "text": "Additional Ethereum sections address layer two networks, blockchain bridges, and builder tools for development. The content includes tutorials for learning Ethereum development and community resources such as events and translation programs. CISA content similarly directs users to resources for state, local, tribal, and territorial partners as well as high-risk communities. Both sets of materials focus on providing structured overviews rather than implementation specifics, helping readers identify relevant areas for further study in security and decentralized applications.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Online Safety and Decentralized Access",
+            "paragraphs": [
+              {
+                "text": "CISA guidance presents four easy ways to stay safe online that include recognizing phishing, using strong passwords, enabling multifactor authentication, and updating software. The materials note that online criminals target individuals who skip basic precautions and that following the steps reduces vulnerability to deceptive tactics. Ethereum resources list application explorer entries for stablecoins, non-fungible tokens, decentralized finance, and decentralized autonomous organizations as areas where users interact with decentralized systems.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              },
+              {
+                "text": "Ethereum materials reference Ethereum events, the Ethereum Foundation blog, and the ecosystem support program as community touchpoints. CISA content explains that every day users connect through messaging, shopping, and business activities, making consistent security steps important across phones, laptops, and smart devices. The sources describe these actions as straightforward measures that help individuals and businesses maintain safer connections without introducing new technical requirements.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Recognizing Scams and Verifying Official Sources",
+            "paragraphs": [
+              {
+                "text": "Ethereum scam education sections list common issues such as Twitter ad phishing, giveaway scams, social media hacks, celebrity giveaways, support scams, and phishing attempts. The materials also reference an Eth2 token scam along with crypto trading broker scams, mining pool scams, and airdrop scams. CISA content stresses that official websites use .gov domains and that secure .gov sites employ HTTPS indicated by a lock icon, advising users to share sensitive information only on verified official secure websites.",
+                "evidence_ids": [
+                  "EXT-06",
+                  "EXT-09"
+                ]
+              },
+              {
+                "text": "The Ethereum page notes contributors and displays update information referencing September 10, 2026 while listing further reading on crypto security and scam education. CISA pages similarly confirm official status through visible government indicators. These details help readers distinguish legitimate resources from fraudulent sites that may mimic official branding or promise token giveaways.",
+                "evidence_ids": [
+                  "EXT-06",
+                  "EXT-09"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Common Crypto Security References",
+            "paragraphs": [
+              {
+                "text": "Ethereum resources point to external materials including Coinbase crypto security guidance, MyCrypto protecting yourself resources, Salus security issues in communication software, and Andreas M. Antonopoulos materials on passwords and authentication. Additional links cover identifying scam tokens, common scams from MyCrypto, and Bitcoin.org avoiding scams content. The page records a last update date of June 6, 2026.",
+                "evidence_ids": [
+                  "EXT-05",
+                  "EXT-10"
+                ]
+              },
+              {
+                "text": "CISA materials describe staying safe online as easier than many expect and encourage simple daily actions when using connected devices. Ethereum listings include Twitter threads on common crypto phishing emails and messages. These references collectively illustrate categories of publicly discussed security topics without providing operational instructions for any specific tool or service.",
+                "evidence_ids": [
+                  "EXT-05",
+                  "EXT-10"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Authentication Factors and Password Practices",
+            "paragraphs": [
+              {
+                "text": "Ethereum documentation explains three authentication categories: something you know such as a password, something you are such as a fingerprint, and something you own such as a security key or authenticator app. Two-factor authentication supplies an extra factor so that a password alone does not grant access. The most common second factor is a randomized six-digit code generated as a time-based one-time password through apps like Google Authenticator.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "EXT-11"
+                ]
+              },
+              {
+                "text": "The same materials note that the seed generating the timed code resides on the user device, functioning as an ownership factor. CISA resources provide tip sheets and additional materials in multiple languages that expand on secure online practices. Both sources present these elements as standard components of account protection strategies discussed across cybersecurity guidance.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "EXT-11"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Recovery Phrase and Key Handling",
+            "paragraphs": [
+              {
+                "text": "Ethereum security guidance states that users should never share the recovery phrase or private keys for any reason. The recovery phrase functions as the master key to the wallet, allowing anyone who obtains it to access all accounts and assets. Private keys operate similarly for individual accounts. The source explicitly notes that no legitimate service, support agent, or website will request these items.",
+                "evidence_ids": [
+                  "EXT-03"
+                ]
+              },
+              {
+                "text": "The same passage advises against taking screenshots of seed phrases or private keys and recommends considering a hardware wallet while double-checking transactions before sending. It also suggests setting smart contract spend limits. These points appear under the wallet security heading alongside common scam descriptions and web security practices such as using strong passwords and a password manager.",
+                "evidence_ids": [
+                  "EXT-03"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What foundational topics appear in Ethereum security resources?",
+            "answer": "Ethereum security materials list topics such as wallets, smart contracts, gas fees, staking methods, layer two networks, and Web3 concepts. They also reference guides for choosing a wallet, exploring applications, and understanding privacy on Ethereum alongside scam prevention sections.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "How does two-factor authentication add protection?",
+            "answer": "Documentation explains that two-factor authentication requires an additional factor beyond a password. The common implementation uses a randomized six-digit time-based one-time password generated by an authenticator app whose seed is stored on the device, serving as a something-you-own factor.",
+            "evidence_ids": [
+              "EXT-03",
+              "EXT-04"
+            ]
+          },
+          {
+            "question": "What scam types and verification steps are highlighted?",
+            "answer": "Listed scam types include phishing, giveaway scams, support scams, and token-related schemes. Verification guidance notes that official sites use .gov domains with HTTPS and a lock icon. Ethereum pages reference update dates including September 10, 2026 and June 6, 2026 while directing readers to further reading on common scams.",
+            "evidence_ids": [
+              "EXT-05",
+              "EXT-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "Ethereum and CISA sources together outline core practices including never sharing recovery phrases, employing authentication factors such as six-digit codes, using strong unique passwords, and verifying official websites. Foundational topics cover wallets, staking, and scam categories while stressing that legitimate services do not request sensitive keys. These points provide readers with documented reference areas for continued attention to account security.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04"
+          ]
+        }
+      }
     }
   ],
   "generation_queue": [
@@ -285,7 +508,11 @@
       "priority": 3,
       "topic": "Web3 Security Basics: Protecting Your Wallet and Telegram Account",
       "category": "Security",
-      "status": "waiting"
+      "status": "ready",
+      "article_id": "apxn-003",
+      "generated_at": "2026-09-14",
+      "content_mode": "external",
+      "source_profile": "web3_security"
     },
     {
       "priority": 4,
@@ -319,24 +546,24 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-002",
+    "last_generated_article": "apxn-003",
     "last_published_article": "apxn-002",
-    "next_queue_priority": 3,
+    "next_queue_priority": 4,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-09-12",
+      "last_run": "2026-09-14",
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 8,
+      "waiting_topics_after_run": 6,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
         "APXN Guides": 3,
         "Blockchain": 1,
         "Web3": 1,
-        "BSC": 1,
+        "BSC": 0,
         "Security": 2,
         "Education": 0,
         "Development": 1
@@ -344,4 +571,3 @@
     }
   }
 }
-

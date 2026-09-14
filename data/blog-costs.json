@@ -1367,10 +1367,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 137734000,
           "cost_usd": 0.0137734
+        },
+        {
+          "date": "2026-09-14",
+          "response_id": "85cf4520-9bcf-9f2c-a659-a06c1939d898",
+          "model": "grok-4.3",
+          "topic": "Web3 Security Basics: Protecting Your Wallet and Telegram Account",
+          "article_slug": "web3-security-basics-protecting-your-wallet-and-telegram-account",
+          "stage": "research_packet_writing",
+          "input_tokens": 4633,
+          "cached_input_tokens": 192,
+          "output_tokens": 2817,
+          "reasoning_tokens": 843,
+          "total_tokens": 7450,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 126321500,
+          "cost_usd": 0.01263215
         }
       ],
-      "total_cost_usd": 1.2025898
+      "total_cost_usd": 1.21522195
     }
   },
-  "last_updated": "2026-09-12"
+  "last_updated": "2026-09-14"
 }
