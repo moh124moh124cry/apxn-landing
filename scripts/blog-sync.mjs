@@ -375,7 +375,7 @@ function buildBlogIndex(config, publishedArticles) {
                     }
                 }
             }
-        }
+        };
     </script>
 
     <style>
@@ -490,6 +490,21 @@ ${JSON.stringify(
     </header>
 
     <main>
+
+        <!-- ISOLATED 320x50 ADVERTISEMENT -->
+        <section class="border-b border-slate-800 bg-slate-950">
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-5 flex justify-center" aria-label="Advertisement">
+                <iframe
+                    src="/ad-320x50.html"
+                    title="Advertisement"
+                    width="320"
+                    height="50"
+                    loading="eager"
+                    scrolling="no"
+                    class="block w-[320px] max-w-full border-0"
+                ></iframe>
+            </div>
+        </section>
 
         <section class="relative overflow-hidden border-b border-slate-800">
             <div class="hero-glow"></div>
