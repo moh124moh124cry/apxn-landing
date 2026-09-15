@@ -1439,10 +1439,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 148196500,
           "cost_usd": 0.01481965
+        },
+        {
+          "date": "2026-09-15",
+          "response_id": "10a065f2-26f8-9759-8d5a-43f0cba9f9a4",
+          "model": "grok-4.3",
+          "topic": "How APXN Referrals and Active Friend Mining Boosts Work",
+          "article_slug": "how-apxn-referrals-and-active-friend-mining-boosts-work",
+          "stage": "research_packet_writing",
+          "input_tokens": 4609,
+          "cached_input_tokens": 192,
+          "output_tokens": 3150,
+          "reasoning_tokens": 901,
+          "total_tokens": 7759,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 134346500,
+          "cost_usd": 0.01343465
         }
       ],
-      "total_cost_usd": 1.2535734
+      "total_cost_usd": 1.26700805
     }
   },
-  "last_updated": "2026-09-14"
+  "last_updated": "2026-09-15"
 }
