@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-14",
+  "last_updated": "2026-09-15",
   "default_language": "en",
   "stats": {
-    "total_articles": 4,
+    "total_articles": 5,
     "published": 4,
-    "ready": 0,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -707,6 +707,241 @@
         }
       },
       "published_url": "https://apxn.network/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html"
+    },
+    {
+      "id": "apxn-005",
+      "slug": "how-apxn-referrals-and-active-friend-mining-boosts-work",
+      "title": "How APXN Referrals and Active Friend Mining Boosts Work",
+      "description": "Learn how the APXN referral system defines active friends through recent claim activity and applies speed boosts to the inviter's points accumulation rate under current",
+      "excerpt": "Learn how the APXN referral system defines active friends through recent claim activity and applies speed boosts to the inviter's points accumulation rate under current",
+      "category": "APXN Guides",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-15",
+      "generated_at": "2026-09-15",
+      "updated_at": "2026-09-15",
+      "published_at": null,
+      "reading_minutes": 6,
+      "word_count": 1249,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "APXN referrals",
+        "active friend mining",
+        "APXN points rate",
+        "referral speed bonus",
+        "mining claim activity",
+        "APXN base rate",
+        "referred account status",
+        "inviter mining boost"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "How APXN Referrals and Active Friend Mining Boosts Work",
+        "description": "Learn how the APXN referral system defines active friends through recent claim activity and applies speed boosts to the inviter's points accumulation rate under current",
+        "canonical": "https://apxn.network/blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "How APXN Referrals and Active Friend Mining Boosts Work",
+        "description": "Learn how the APXN referral system defines active friends through recent claim activity and applies speed boosts to the inviter's points accumulation rate under current",
+        "keywords": [
+          "APXN referrals",
+          "active friend mining",
+          "APXN points rate",
+          "referral speed bonus",
+          "mining claim activity",
+          "APXN base rate",
+          "referred account status",
+          "inviter mining boost"
+        ],
+        "intro": {
+          "text": "The APXN referral system includes two separate ideas that articles must not combine. A valid referral can give a new user a registration referral bonus while the inviter benefits over time through active-friend mining-speed boosts. These mechanisms have different recipients and different conditions. An APXN referred friend becomes active for mining-speed purposes when that referred account has a successful mining claim within the previous 24 hours. The active-friend definition is based on recent claim activity not merely on whether the friend once registered or opened Telegram. A referred account that has not claimed within the most recent 24-hour window no longer counts as active for the current speed calculation.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Referral Relationship and Speed Calculation Basics",
+            "paragraphs": [
+              {
+                "text": "The referral relationship and active status are application mechanics for APXN Points. They must not be described as guaranteed token yield staking APY passive investment return or proof of future token allocation. The benefit is an in-app points accumulation-rate increase under the current rules. The total rate formula is expressed as base rate plus active friends multiplied by base rate times 0.05. The friend list can include the referred user's first name stored country code and last-claim information.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "APXN-12",
+                  "APXN-18"
+                ]
+              },
+              {
+                "text": "Referral articles must explain the current rules using the base rate as the reference for every friend. The referral relationship and active status remain separate from any token mechanics. The formula uses the base rate as the reference so the total rate equals base rate plus active-friend count multiplied by 0.05 of the base rate. The country field is informational only and does not change the referral reward formula.",
+                "evidence_ids": [
+                  "APXN-07",
+                  "APXN-12",
+                  "APXN-18"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Defining Active Friends Through Claim Activity",
+            "paragraphs": [
+              {
+                "text": "An APXN referred friend becomes active for mining-speed purposes when that referred account has a successful mining claim within the previous 24 hours. The active-friend definition is based on recent claim activity not merely on whether the friend once registered or opened Telegram. The friend list can include the referred user's first name stored country code and last-claim information. The country field is informational only and does not change the referral reward formula authentication status mining eligibility or future token eligibility.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "APXN-19"
+                ]
+              },
+              {
+                "text": "The referral link format and activity rules are current product behavior and can change with future product updates. New articles should be generated from the latest verified code rather than copying historical referral numbers from older promotional posts. A referred account that has not claimed within the most recent 24-hour window no longer counts as active for the current speed calculation. If the friend later makes a qualifying mining claim again the active-friend count can reflect that recent activity in later calculations.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "APXN-19"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "How Recent Claims Update the Speed Bonus",
+            "paragraphs": [
+              {
+                "text": "A referred account that has not claimed within the most recent 24-hour window no longer counts as active for the current speed calculation. If the friend later makes a qualifying mining claim again the active-friend count can reflect that recent activity in later calculations. The referral-speed bonus changes the rate used when the inviter later makes an eligible APXN Points claim. It is not a direct transfer from the friend's balance and it should not be described as taking points away from the referred user.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-09",
+                  "APXN-15"
+                ]
+              },
+              {
+                "text": "The invite link pattern follows the format that includes the inviter's Telegram user identifier in the startapp parameter. When a new user opens the Mini App through that link the registration path can evaluate the start parameter and create a referral relationship if the value is valid. The referral-speed bonus changes the rate used when the inviter later makes an eligible APXN Points claim. The country field remains informational only.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-09",
+                  "APXN-15"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Applying the Five Percent Base Rate Addition",
+            "paragraphs": [
+              {
+                "text": "Each active referred friend adds five percent of the inviter's base mining rate to the inviter's effective mining rate. The formula uses the base rate as the reference for every friend so the total rate is base rate plus active-friend count multiplied by five percent of the base rate. Every APXN user can share a Telegram Mini App referral link that includes the inviter's Telegram user identifier in the startapp parameter. The status of the referral system is implemented.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-10",
+                  "APXN-14"
+                ]
+              },
+              {
+                "text": "The referral relationship and active status are application mechanics for APXN Points. They must not be described as guaranteed token yield staking APY passive investment return or proof of future token allocation. The benefit is an in-app points accumulation-rate increase under the current rules. The formula uses the base rate as the reference for every friend so the total rate is base rate plus active-friend count multiplied by five percent of the base rate.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-10",
+                  "APXN-14"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Current Calculation Rules for Articles",
+            "paragraphs": [
+              {
+                "text": "Referral articles should explain that the current five-percent rule is calculated from the inviter's base mining rate for each active friend. They should not invent tier multipliers maximum friend limits or extra cash rewards unless current executable logic or an official policy explicitly introduces them. A referred account whose last successful mining claim was within the previous 24 hours qualifies under the active friend definition. The friend list can include the referred user's first name.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-11",
+                  "APXN-16"
+                ]
+              },
+              {
+                "text": "Referral articles should explain that the current five-percent rule is calculated from the inviter's base mining rate for each active friend. They should not invent tier multipliers maximum friend limits or extra cash rewards unless current executable logic or an official policy explicitly introduces them. An APXN referred friend becomes active for mining-speed purposes when that referred account has a successful mining claim within the previous 24 hours. The active-friend definition is based on recent claim activity.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-11",
+                  "APXN-16"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Country Field and Authentication Details",
+            "paragraphs": [
+              {
+                "text": "The country field is informational only and does not affect authentication rewards mining or referral eligibility. The friend list can include the referred user's first name stored country code and last-claim information. Speed Bonus Per Active Friend equals five percent of the inviter's base mining rate. The referral relationship and active status are application mechanics for APXN Points.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-13",
+                  "APXN-17"
+                ]
+              },
+              {
+                "text": "The country field is informational only and does not affect authentication rewards mining or referral eligibility. The friend list can include the referred user's first name stored country code and last-claim information. The referral-speed bonus changes the rate used when the inviter later makes an eligible APXN Points claim. It is not a direct transfer from the friend's balance.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-13",
+                  "APXN-17"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "How does a referred friend become active for the mining speed calculation?",
+            "answer": "An APXN referred friend becomes active for mining-speed purposes when that referred account has a successful mining claim within the previous 24 hours. The active-friend definition is based on recent claim activity not merely on whether the friend once registered or opened Telegram. A referred account that has not claimed within the most recent 24-hour window no longer counts as active for the current speed calculation.",
+            "evidence_ids": [
+              "APXN-01",
+              "APXN-02"
+            ]
+          },
+          {
+            "question": "What bonus does each active friend provide to the inviter?",
+            "answer": "Speed Bonus Per Active Friend is five percent of the inviter's base mining rate. Each active referred friend adds five percent of the inviter's base mining rate to the inviter's effective mining rate. The formula uses the base rate as the reference for every friend so the total rate is base rate plus active-friend count multiplied by five percent of the base rate.",
+            "evidence_ids": [
+              "APXN-03",
+              "APXN-04"
+            ]
+          },
+          {
+            "question": "What should referral articles explain about the current calculation rule?",
+            "answer": "Referral articles should explain that the current five-percent rule is calculated from the inviter's base mining rate for each active friend. They should not invent tier multipliers maximum friend limits or extra cash rewards unless current executable logic or an official policy explicitly introduces them. The referral relationship and active status are application mechanics for APXN Points.",
+            "evidence_ids": [
+              "APXN-05",
+              "APXN-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "The APXN referral system separates the new-user registration bonus from the inviter's ongoing active-friend mining-speed boosts. Active status depends on a successful mining claim within the previous 24 hours. Each active friend adds five percent of the inviter's base mining rate to the total rate. The country field remains informational only and does not affect eligibility. These mechanics operate under current product rules for APXN Points accumulation.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03",
+            "APXN-04"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -753,7 +988,11 @@
       "priority": 5,
       "topic": "How APXN Referrals and Active Friend Mining Boosts Work",
       "category": "APXN Guides",
-      "status": "waiting"
+      "status": "ready",
+      "article_id": "apxn-005",
+      "generated_at": "2026-09-15",
+      "content_mode": "apxn",
+      "source_profile": null
     },
     {
       "priority": 6,
@@ -879,33 +1118,17 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-004",
+    "last_generated_article": "apxn-005",
     "last_published_article": "apxn-004",
-    "next_queue_priority": 5,
+    "next_queue_priority": 6,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-09-14",
-      "added_topics": 7,
-      "added_topic_ids": [
-        "bank-023",
-        "bank-017",
-        "bank-026",
-        "bank-016",
-        "bank-024",
-        "bank-018",
-        "bank-014"
-      ],
-      "added_categories": [
-        "BSC",
-        "Education",
-        "Blockchain",
-        "Web3",
-        "BSC",
-        "Education",
-        "Development"
-      ],
-      "waiting_topics_after_run": 12,
+      "last_run": "2026-09-15",
+      "added_topics": 0,
+      "added_topic_ids": [],
+      "added_categories": [],
+      "waiting_topics_after_run": 11,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
