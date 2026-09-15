@@ -3,9 +3,9 @@
   "last_updated": "2026-09-15",
   "default_language": "en",
   "stats": {
-    "total_articles": 5,
+    "total_articles": 6,
     "published": 5,
-    "ready": 0,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -943,6 +943,248 @@
       },
       "verified_against_knowledge": true,
       "published_url": "https://apxn.network/blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html"
+    },
+    {
+      "id": "apxn-006",
+      "slug": "understanding-the-apxn-daily-check-in-reward-system",
+      "title": "Understanding the APXN Daily Check-In Reward System",
+      "description": "Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and",
+      "excerpt": "Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and",
+      "category": "APXN Guides",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-15",
+      "generated_at": "2026-09-15",
+      "updated_at": "2026-09-15",
+      "published_at": null,
+      "reading_minutes": 5,
+      "word_count": 1067,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "APXN Daily Check-In",
+        "APXN Points",
+        "streak reward",
+        "UTC calendar",
+        "server-backed logic",
+        "engagement reward",
+        "seven-day cycle",
+        "database protection"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "Understanding the APXN Daily Check-In Reward System",
+        "description": "Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and",
+        "canonical": "https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "Understanding the APXN Daily Check-In Reward System",
+        "description": "Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and",
+        "keywords": [
+          "APXN Daily Check-In",
+          "APXN Points",
+          "streak reward",
+          "UTC calendar",
+          "server-backed logic",
+          "engagement reward",
+          "seven-day cycle",
+          "database protection"
+        ],
+        "intro": {
+          "text": "The Daily Check-In reward is APXN Points and should be described as an engagement reward inside the current ecosystem. It is not an on-chain staking yield, blockchain block reward, guaranteed investment return or direct proof of future token allocation. The APXN Daily Check-In is a server-backed points reward that operates on UTC calendar dates. A user can receive one successful check-in reward for a given UTC day. A second attempt on the same UTC date is rejected as already claimed instead of adding another reward. Articles should distinguish the Daily Check-In from mining-style claims and social tasks. Mining claims use an elapsed-time and mining-rate calculation, while Daily Check-In uses a calendar-day streak reward. They can both increase APXN Points but they are different product mechanics with different eligibility rules.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Backend Allocation and Action Handling",
+            "paragraphs": [
+              {
+                "text": "The check-in streak and reward are written through trusted server-side database logic rather than allowing the browser to choose its own reward amount. This distinction matters for security explanations because the interface requests the action while the backend decides whether the day is eligible, calculates the reward and updates the balance. The amount awarded follows a defined schedule that the backend enforces without client-side override.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "APXN-13",
+                  "APXN-18"
+                ]
+              },
+              {
+                "text": "Allocation of the reward amount occurs only after the backend validates the UTC date and confirms eligibility. The system uses the value four hundred for the fourth position in the schedule and ensures the action completes atomically on the server. This approach prevents any direct browser control over the final points credited to the account.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "APXN-13",
+                  "APXN-18"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Seven-Day Cycle and Points Accumulation",
+            "paragraphs": [
+              {
+                "text": "The seven-day cycle is a reward schedule, not a seven-day expiration of the entire APXN account. Missing a day affects the streak progression and next reward tier. It does not by itself imply deletion of the user's previously accumulated APXN Points. The cycle itself repeats every seven days according to the defined pattern of points distribution.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "APXN-14",
+                  "APXN-19"
+                ]
+              },
+              {
+                "text": "Points are accumulated only through successful daily check-ins that meet the UTC calendar requirement. A user receives the appropriate tier for the current position in the cycle, such as five hundred at the fifth step. The accumulated total grows solely from valid claims that the server accepts on separate UTC dates.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "APXN-14",
+                  "APXN-19"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Streak Continuation and Mining Distinction",
+            "paragraphs": [
+              {
+                "text": "A streak continues only when the previous successful check-in was on the previous UTC date. If the user skips a day or the stored previous date is otherwise not yesterday, the next successful check-in begins a new streak at day one and uses the corresponding one hundred point reward. This rule keeps the mechanic tied strictly to consecutive calendar days.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-09",
+                  "APXN-12",
+                  "APXN-20"
+                ]
+              },
+              {
+                "text": "The system distinguishes Daily Check-In from mining claims because the two features rely on separate rules. Mining uses elapsed time calculations while check-in uses the date streak. Both can raise the points total yet remain independent with their own eligibility requirements and claim timing.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-09",
+                  "APXN-12",
+                  "APXN-20"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Reward Pattern and Streak Reset Behavior",
+            "paragraphs": [
+              {
+                "text": "The check-in reward follows a repeating seven-day reward pattern. Day one awards one hundred APXN Points, day two awards two hundred, then three hundred, four hundred, five hundred, six hundred and seven hundred on day seven. If the streak continues to day eight the reward amount cycles back to one hundred while the streak counter can continue increasing.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-11",
+                  "APXN-15",
+                  "APXN-21"
+                ]
+              },
+              {
+                "text": "When the previous check-in was not yesterday the next successful check-in starts a new streak at day one. The pattern then restarts with the one hundred point award. This reset rule applies whenever the consecutive date requirement is not met and ensures the schedule remains consistent with the seven-day cycle.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-11",
+                  "APXN-15",
+                  "APXN-21"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "UTC Timing and Local Date Handling",
+            "paragraphs": [
+              {
+                "text": "Because the system uses UTC for the authoritative date, a user's local midnight does not necessarily define a new APXN check-in day. User-facing articles can explain that availability follows the system's UTC-day logic instead of promising a reset at midnight in every local timezone. This keeps expectations aligned with the actual server rule.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-10",
+                  "APXN-16"
+                ]
+              },
+              {
+                "text": "After day seven the reward cycle returns to one hundred points while the streak can continue. The timing decision remains anchored to UTC so that the next available check-in is determined by the calendar date on the server rather than any local clock. Articles therefore reference the authoritative UTC basis when describing daily availability.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-10",
+                  "APXN-16"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Database Protection and Balance Integrity",
+            "paragraphs": [
+              {
+                "text": "The check-in logic locks the user's database row while evaluating and writing a successful reward. This protects the balance and streak from concurrent requests that might otherwise attempt to claim the same daily reward at nearly the same time. The mechanism relies on atomic database operations to maintain consistency across multiple access attempts.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-22",
+                  "APXN-17"
+                ]
+              },
+              {
+                "text": "Atomic database row locking plus server-side duplicate protection ensures that only one reward is granted per UTC day. The same protection applies to the streak counter so that balance updates remain accurate even when several requests arrive close together. This server-controlled approach safeguards the integrity of the points record.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-22",
+                  "APXN-17"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "How does the APXN Daily Check-In differ from mining claims?",
+            "answer": "The Daily Check-In reward is APXN Points described as an engagement reward inside the current ecosystem. It is not an on-chain staking yield or blockchain block reward. The APXN Daily Check-In operates on UTC calendar dates with one successful reward per UTC day. Mining claims use an elapsed-time and mining-rate calculation while Daily Check-In uses a calendar-day streak reward. Both can increase APXN Points yet follow different product mechanics and eligibility rules.",
+            "evidence_ids": [
+              "APXN-01",
+              "APXN-02"
+            ]
+          },
+          {
+            "question": "What reward amounts are given across the seven-day cycle?",
+            "answer": "The check-in reward follows a repeating seven-day reward pattern. Day one awards one hundred APXN Points, day two awards two hundred, then three hundred, four hundred, five hundred, six hundred and seven hundred on day seven. If the streak continues to day eight the reward amount cycles back to one hundred while the streak counter can continue increasing. When the previous check-in was not yesterday the next successful check-in starts a new streak at day one.",
+            "evidence_ids": [
+              "APXN-03",
+              "APXN-04"
+            ]
+          },
+          {
+            "question": "How does the system prevent duplicate daily claims?",
+            "answer": "The check-in logic locks the user's database row while evaluating and writing a successful reward. This protects the balance and streak from concurrent requests that might otherwise attempt to claim the same daily reward at nearly the same time. Because the system uses UTC for the authoritative date a user's local midnight does not necessarily define a new APXN check-in day. Availability follows the system's UTC-day logic.",
+            "evidence_ids": [
+              "APXN-05",
+              "APXN-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "The Daily Check-In reward supplies APXN Points through a server-backed process tied to UTC calendar dates and a seven-day reward pattern. The pattern begins at one hundred points on day one and reaches seven hundred on day seven before cycling back. A streak resets when the previous check-in was not yesterday. The system distinguishes this mechanic from mining claims and uses database row locking to protect balances from duplicate attempts on the same UTC day.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03",
+            "APXN-04"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -1000,7 +1242,11 @@
       "priority": 6,
       "topic": "Understanding the APXN Daily Check-In Reward System",
       "category": "APXN Guides",
-      "status": "waiting"
+      "status": "ready",
+      "article_id": "apxn-006",
+      "generated_at": "2026-09-15",
+      "content_mode": "apxn",
+      "source_profile": null
     },
     {
       "priority": 7,
@@ -1120,9 +1366,9 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-005",
+    "last_generated_article": "apxn-006",
     "last_published_article": "apxn-005",
-    "next_queue_priority": 6,
+    "next_queue_priority": 7,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
@@ -1130,7 +1376,7 @@
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 11,
+      "waiting_topics_after_run": 10,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {

@@ -1475,9 +1475,27 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 86728500,
           "cost_usd": 0.00867285
+        },
+        {
+          "date": "2026-09-15",
+          "response_id": "aeda9a4c-da67-9be2-9c57-d3f04f3624b8",
+          "model": "grok-4.3",
+          "topic": "Understanding the APXN Daily Check-In Reward System",
+          "article_slug": "understanding-the-apxn-daily-check-in-reward-system",
+          "stage": "research_packet_writing",
+          "input_tokens": 4816,
+          "cached_input_tokens": 192,
+          "output_tokens": 2764,
+          "reasoning_tokens": 779,
+          "total_tokens": 7580,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 127284000,
+          "cost_usd": 0.0127284
         }
       ],
-      "total_cost_usd": 1.2756809
+      "total_cost_usd": 1.2884093
     }
   },
   "last_updated": "2026-09-15"
