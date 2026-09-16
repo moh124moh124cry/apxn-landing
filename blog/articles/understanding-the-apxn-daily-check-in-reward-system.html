@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Understanding the APXN Daily Check-In Reward System</title>
+
+    <meta
+        name="description"
+        content="Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and"
+    >
+
+    <meta
+        name="keywords"
+        content="APXN Daily Check-In, APXN Points, streak reward, UTC calendar, server-backed logic, engagement reward, seven-day cycle, database protection"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <meta
+        name="author"
+        content="Apex Network Editorial"
+    >
+
+
+    <link
+        rel="canonical"
+        href="https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html"
+    >
+
+    <link
+        rel="icon"
+        href="../../logo2%20(1).png"
+        type="image/png"
+    >
+
+
+    <meta
+        property="og:type"
+        content="article"
+    >
+
+    <meta
+        property="og:title"
+        content="Understanding the APXN Daily Check-In Reward System"
+    >
+
+    <meta
+        property="og:description"
+        content="Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and"
+    >
+
+    <meta
+        property="og:url"
+        content="https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html"
+    >
+
+    <meta
+        property="og:image"
+        content="https://apxn.network/blog/images/understanding-the-apxn-daily-check-in-reward-system-1000133639.jpg"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Apex Network"
+    >
+
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="Understanding the APXN Daily Check-In Reward System"
+    >
+
+    <meta
+        name="twitter:description"
+        content="Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and"
+    >
+
+    <meta
+        name="twitter:image"
+        content="https://apxn.network/blog/images/understanding-the-apxn-daily-check-in-reward-system-1000133639.jpg"
+    >
+
+
+    <script>
+        window.va =
+            window.va ||
+            function () {
+                (
+                    window.vaq =
+                    window.vaq ||
+                    []
+                ).push(
+                    arguments
+                );
+            };
+    </script>
+
+    <script
+        defer
+        src="/_vercel/insights/script.js"
+    ></script>
+
+
+    <script
+        src="https://cdn.tailwindcss.com"
+    ></script>
+
+
+    <style>
+
+        html {
+            background: #020617;
+        }
+
+        .gold-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #fde047,
+                    #f59e0b,
+                    #fb923c
+                );
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+        }
+
+        .article-body p {
+            color:
+                #cbd5e1;
+
+            line-height:
+                1.9;
+
+            margin:
+                1rem 0 1.5rem;
+        }
+
+        .article-body h2 {
+            color:
+                #fff;
+
+            font-size:
+                1.75rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                2.7rem;
+
+            margin-bottom:
+                1rem;
+
+            line-height:
+                1.25;
+        }
+
+        .article-body h3 {
+            color:
+                #facc15;
+
+            font-size:
+                1.2rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                1rem;
+
+            margin-bottom:
+                .75rem;
+        }
+
+        .article-body ul {
+            color:
+                #cbd5e1;
+
+            margin:
+                1rem 0 1.5rem 1.5rem;
+
+            line-height:
+                1.9;
+
+            list-style:
+                disc;
+        }
+
+        .article-body a {
+            color:
+                #facc15;
+
+            font-weight:
+                800;
+        }
+
+        .info-box {
+            background:
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .8
+                );
+
+            border:
+                1px solid
+                rgba(
+                    234,
+                    179,
+                    8,
+                    .25
+                );
+
+            border-radius:
+                1rem;
+
+            padding:
+                1.25rem;
+
+            margin:
+                1.5rem 0;
+        }
+
+    </style>
+
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Understanding the APXN Daily Check-In Reward System",
+  "description": "Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and",
+  "image": "https://apxn.network/blog/images/understanding-the-apxn-daily-check-in-reward-system-1000133639.jpg",
+  "mainEntityOfPage": "https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html",
+  "datePublished": "2026-09-16",
+  "dateModified": "2026-09-16",
+  "author": {
+    "@type": "Organization",
+    "name": "Apex Network Editorial"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Apex Network",
+    "url": "https://apxn.network",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apxn.network/logo2%20(1).png"
+    }
+  }
+}
+    </script>
+
+    
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does the APXN Daily Check-In differ from mining claims?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Daily Check-In reward is APXN Points described as an engagement reward inside the current ecosystem. It is not an on-chain staking yield or blockchain block reward. The APXN Daily Check-In operates on UTC calendar dates with one successful reward per UTC day. Mining claims use an elapsed-time and mining-rate calculation while Daily Check-In uses a calendar-day streak reward. Both can increase APXN Points yet follow different product mechanics and eligibility rules."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What reward amounts are given across the seven-day cycle?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The check-in reward follows a repeating seven-day reward pattern. Day one awards one hundred APXN Points, day two awards two hundred, then three hundred, four hundred, five hundred, six hundred and seven hundred on day seven. If the streak continues to day eight the reward amount cycles back to one hundred while the streak counter can continue increasing. When the previous check-in was not yesterday the next successful check-in starts a new streak at day one."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the system prevent duplicate daily claims?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The check-in logic locks the user's database row while evaluating and writing a successful reward. This protects the balance and streak from concurrent requests that might otherwise attempt to claim the same daily reward at nearly the same time. Because the system uses UTC for the authoritative date a user's local midnight does not necessarily define a new APXN check-in day. Availability follows the system's UTC-day logic."
+      }
+    }
+  ]
+}
+    </script>
+            
+
+</head>
+
+
+<body
+    class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950"
+>
+
+
+<header
+    class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5"
+    >
+
+        <a
+            href="../index.html"
+            class="flex items-center gap-3 min-w-0"
+        >
+
+            <div
+                class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50"
+            >
+
+                <img
+                    src="../../logo2%20(1).png"
+                    alt="Apex Network Logo"
+                    class="w-full h-full object-cover"
+                    width="44"
+                    height="44"
+                >
+
+            </div>
+
+
+            <div>
+
+                <div
+                    class="font-black tracking-wider gold-text text-base sm:text-lg"
+                >
+                    APEX NETWORK
+                </div>
+
+                <div
+                    class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]"
+                >
+                    APXN Blog
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <div
+            class="flex items-center gap-3"
+        >
+
+            <a
+                href="../index.html"
+                class="hidden sm:inline-flex text-sm font-bold text-gray-400 hover:text-yellow-400"
+            >
+                Blog Home
+            </a>
+
+            <a
+                href="https://t.me/ApxMinerBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl"
+            >
+                Open APXN App
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <article>
+
+
+        <section
+            class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent"
+        >
+
+            <div
+                class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20"
+            >
+
+                <nav
+                    aria-label="Breadcrumb"
+                    class="text-xs text-gray-500 font-bold mb-7"
+                >
+
+                    <a
+                        href="../../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Home
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <a
+                        href="../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Blog
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <span
+                        class="text-yellow-400"
+                    >
+                        APXN Guides
+                    </span>
+
+                </nav>
+
+
+                <span
+                    class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5"
+                >
+                    APXN Guides
+                </span>
+
+
+                <h1
+                    class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6"
+                >
+                    Understanding the APXN Daily Check-In Reward System
+                </h1>
+
+
+                <p
+                    class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7"
+                >
+                    Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and
+                </p>
+
+
+                <div
+                    class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500"
+                >
+
+                    <span
+                        class="font-bold text-gray-300"
+                    >
+                        Apex Network Editorial
+                    </span>
+
+                    <span>
+                        •
+                    </span>
+
+                    <time
+                        datetime="2026-09-16"
+                    >
+                        September 16, 2026
+                    </time>
+
+                    <span>
+                        •
+                    </span>
+
+                    <span>
+                        5 min read
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="mt-8 flex flex-wrap items-center gap-3"
+                >
+
+                    <button
+                        type="button"
+                        onclick="shareArticle()"
+                        class="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm font-black text-yellow-400 hover:bg-yellow-500/15 transition-colors"
+                        aria-label="Share this article"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                        >
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+                            <line x1="8.59" y1="13.49" x2="15.42" y2="17.51"></line>
+                        </svg>
+
+                        <span>
+                            Share article
+                        </span>
+                    </button>
+
+
+                    <span
+                        id="share-status"
+                        class="hidden text-sm font-bold text-emerald-400"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Original APXN link copied
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div
+            class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14"
+        >
+
+            <figure
+                class="mb-12"
+            >
+
+                <img
+                    src="https://apxn.network/blog/images/understanding-the-apxn-daily-check-in-reward-system-1000133639.jpg"
+                    alt="Understanding the APXN Daily Check-In Reward System"
+                    class="w-full rounded-2xl border border-slate-800 object-cover max-h-[620px]"
+                    loading="eager"
+                >
+
+            </figure>
+
+
+            
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+    
+
+
+            <div
+                class="article-body"
+            >
+
+                <p
+                    class="text-lg"
+                >
+                    The Daily Check-In reward is APXN Points and should be described as an engagement reward inside the current ecosystem. It is not an on-chain staking yield, blockchain block reward, guaranteed investment return or direct proof of future token allocation. The APXN Daily Check-In is a server-backed points reward that operates on UTC calendar dates. A user can receive one successful check-in reward for a given UTC day. A second attempt on the same UTC date is rejected as already claimed instead of adding another reward. Articles should distinguish the Daily Check-In from mining-style claims and social tasks. Mining claims use an elapsed-time and mining-rate calculation, while Daily Check-In uses a calendar-day streak reward. They can both increase APXN Points but they are different product mechanics with different eligibility rules.
+                </p>
+
+
+                
+                        <section>
+                            <h2>Backend Allocation and Action Handling</h2>
+
+                            <p>The check-in streak and reward are written through trusted server-side database logic rather than allowing the browser to choose its own reward amount. This distinction matters for security explanations because the interface requests the action while the backend decides whether the day is eligible, calculates the reward and updates the balance. The amount awarded follows a defined schedule that the backend enforces without client-side override.</p>
+<p>Allocation of the reward amount occurs only after the backend validates the UTC date and confirms eligibility. The system uses the value four hundred for the fourth position in the schedule and ensures the action completes atomically on the server. This approach prevents any direct browser control over the final points credited to the account.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Seven-Day Cycle and Points Accumulation</h2>
+
+                            <p>The seven-day cycle is a reward schedule, not a seven-day expiration of the entire APXN account. Missing a day affects the streak progression and next reward tier. It does not by itself imply deletion of the user&#039;s previously accumulated APXN Points. The cycle itself repeats every seven days according to the defined pattern of points distribution.</p>
+<p>Points are accumulated only through successful daily check-ins that meet the UTC calendar requirement. A user receives the appropriate tier for the current position in the cycle, such as five hundred at the fifth step. The accumulated total grows solely from valid claims that the server accepts on separate UTC dates.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Streak Continuation and Mining Distinction</h2>
+
+                            <p>A streak continues only when the previous successful check-in was on the previous UTC date. If the user skips a day or the stored previous date is otherwise not yesterday, the next successful check-in begins a new streak at day one and uses the corresponding one hundred point reward. This rule keeps the mechanic tied strictly to consecutive calendar days.</p>
+<p>The system distinguishes Daily Check-In from mining claims because the two features rely on separate rules. Mining uses elapsed time calculations while check-in uses the date streak. Both can raise the points total yet remain independent with their own eligibility requirements and claim timing.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Reward Pattern and Streak Reset Behavior</h2>
+
+                            <p>The check-in reward follows a repeating seven-day reward pattern. Day one awards one hundred APXN Points, day two awards two hundred, then three hundred, four hundred, five hundred, six hundred and seven hundred on day seven. If the streak continues to day eight the reward amount cycles back to one hundred while the streak counter can continue increasing.</p>
+<p>When the previous check-in was not yesterday the next successful check-in starts a new streak at day one. The pattern then restarts with the one hundred point award. This reset rule applies whenever the consecutive date requirement is not met and ensures the schedule remains consistent with the seven-day cycle.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>UTC Timing and Local Date Handling</h2>
+
+                            <p>Because the system uses UTC for the authoritative date, a user&#039;s local midnight does not necessarily define a new APXN check-in day. User-facing articles can explain that availability follows the system&#039;s UTC-day logic instead of promising a reset at midnight in every local timezone. This keeps expectations aligned with the actual server rule.</p>
+<p>After day seven the reward cycle returns to one hundred points while the streak can continue. The timing decision remains anchored to UTC so that the next available check-in is determined by the calendar date on the server rather than any local clock. Articles therefore reference the authoritative UTC basis when describing daily availability.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Database Protection and Balance Integrity</h2>
+
+                            <p>The check-in logic locks the user&#039;s database row while evaluating and writing a successful reward. This protects the balance and streak from concurrent requests that might otherwise attempt to claim the same daily reward at nearly the same time. The mechanism relies on atomic database operations to maintain consistency across multiple access attempts.</p>
+<p>Atomic database row locking plus server-side duplicate protection ensures that only one reward is granted per UTC day. The same protection applies to the streak counter so that balance updates remain accurate even when several requests arrive close together. This server-controlled approach safeguards the integrity of the points record.</p>
+                        </section>
+                    
+
+
+                
+                <section>
+
+                    <h2>
+                        Frequently asked questions
+                    </h2>
+
+                    
+                        <div class="info-box">
+                            <h3>How does the APXN Daily Check-In differ from mining claims?</h3>
+
+                            <p>The Daily Check-In reward is APXN Points described as an engagement reward inside the current ecosystem. It is not an on-chain staking yield or blockchain block reward. The APXN Daily Check-In operates on UTC calendar dates with one successful reward per UTC day. Mining claims use an elapsed-time and mining-rate calculation while Daily Check-In uses a calendar-day streak reward. Both can increase APXN Points yet follow different product mechanics and eligibility rules.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>What reward amounts are given across the seven-day cycle?</h3>
+
+                            <p>The check-in reward follows a repeating seven-day reward pattern. Day one awards one hundred APXN Points, day two awards two hundred, then three hundred, four hundred, five hundred, six hundred and seven hundred on day seven. If the streak continues to day eight the reward amount cycles back to one hundred while the streak counter can continue increasing. When the previous check-in was not yesterday the next successful check-in starts a new streak at day one.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>How does the system prevent duplicate daily claims?</h3>
+
+                            <p>The check-in logic locks the user&#039;s database row while evaluating and writing a successful reward. This protects the balance and streak from concurrent requests that might otherwise attempt to claim the same daily reward at nearly the same time. Because the system uses UTC for the authoritative date a user&#039;s local midnight does not necessarily define a new APXN check-in day. Availability follows the system&#039;s UTC-day logic.</p>
+                        </div>
+                    
+
+                </section>
+                        
+
+
+                <section>
+
+                    <h2>
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        The Daily Check-In reward supplies APXN Points through a server-backed process tied to UTC calendar dates and a seven-day reward pattern. The pattern begins at one hundred points on day one and reaches seven hundred on day seven before cycling back. A streak resets when the previous check-in was not yesterday. The system distinguishes this mechanic from mining claims and uses database row locking to protect balances from duplicate attempts on the same UTC day.
+                    </p>
+
+                </section>
+
+
+                
+                <section>
+
+                    <h2>
+                        Related reading
+                    </h2>
+
+                    <ul>
+                        
+                                        <li>
+                                            <a href="./how-apxn-referrals-and-active-friend-mining-boosts-work.html">
+                                                How APXN Referrals and Active Friend Mining Boosts Work
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html">
+                                                Blockchain Basics for Beginners: Understanding Blocks Ethereum and Web3
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./web3-security-basics-wallet-protection-and-scam-prevention-essentials.html">
+                                                Web3 Security Basics: Wallet Protection and Scam Prevention Essentials
+                                            </a>
+                                        </li>
+                                    
+                    </ul>
+
+                </section>
+            
+
+
+                <div
+                    class="info-box"
+                >
+
+                    <strong>
+                        Editorial note:
+                    </strong>
+
+                    <p>
+                        APXN Points are participation points used inside the current Apex Network ecosystem. Future token distribution, conversion, listing, withdrawal and blockchain milestones remain subject to official project updates.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</main>
+
+
+<footer
+    class="border-t border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 flex flex-wrap gap-4 justify-between"
+    >
+
+        <span>
+            © 2026 Apex Network
+        </span>
+
+        <a
+            href="../index.html"
+            class="hover:text-yellow-400"
+        >
+            APXN Blog
+        </a>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    const APXN_ARTICLE_SHARE = {
+        title:
+            "Understanding the APXN Daily Check-In Reward System",
+
+        url:
+            "https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html"
+    };
+
+
+    function showShareStatus(
+        message
+    ) {
+
+        const status =
+            document.getElementById(
+                'share-status'
+            );
+
+        if (!status) {
+            return;
+        }
+
+        status.textContent =
+            message;
+
+        status.classList.remove(
+            'hidden'
+        );
+
+        window.clearTimeout(
+            window.__apxnShareStatusTimer
+        );
+
+        window.__apxnShareStatusTimer =
+            window.setTimeout(
+                () => {
+                    status.classList.add(
+                        'hidden'
+                    );
+                },
+                3000
+            );
+    }
+
+
+    async function copyOriginalArticleLink() {
+
+        const link =
+            APXN_ARTICLE_SHARE.url;
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(
+                    link
+                );
+
+            } else {
+
+                const input =
+                    document.createElement(
+                        'textarea'
+                    );
+
+                input.value =
+                    link;
+
+                input.setAttribute(
+                    'readonly',
+                    ''
+                );
+
+                input.style.position =
+                    'fixed';
+
+                input.style.opacity =
+                    '0';
+
+                document.body.appendChild(
+                    input
+                );
+
+                input.select();
+
+                document.execCommand(
+                    'copy'
+                );
+
+                input.remove();
+            }
+
+            showShareStatus(
+                'Original APXN link copied'
+            );
+
+            return true;
+
+        } catch {
+
+            showShareStatus(
+                'Copy the APXN link from the address bar'
+            );
+
+            return false;
+        }
+    }
+
+
+    async function shareArticle() {
+
+        const shareData = {
+            title:
+                APXN_ARTICLE_SHARE.title,
+
+            url:
+                APXN_ARTICLE_SHARE.url
+        };
+
+        if (
+            typeof navigator.share ===
+            'function'
+        ) {
+
+            try {
+
+                await navigator.share(
+                    shareData
+                );
+
+                return;
+
+            } catch (error) {
+
+                if (
+                    error &&
+                    error.name ===
+                        'AbortError'
+                ) {
+                    return;
+                }
+            }
+        }
+
+        await copyOriginalArticleLink();
+    }
+
+</script>
+
+
+</body>
+</html>
