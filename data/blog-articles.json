@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 8,
-    "published": 7,
-    "ready": 1,
+    "published": 8,
+    "ready": 0,
     "drafts": 0,
     "featured": 1
   },
@@ -1196,19 +1196,19 @@
       "category": "Development",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-09-16",
       "generated_at": "2026-09-16",
       "updated_at": "2026-09-16",
-      "published_at": null,
+      "published_at": "2026-09-16",
       "reading_minutes": 8,
       "word_count": 1737,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
+      "url": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
+      "image": "https://apxn.network/blog/images/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones-1000133668.jpg",
+      "image_filename": "apxn-development-roadmap-distinguishing-live-features-from-planned-milestones-1000133668.jpg",
       "keywords": [
         "APXN roadmap",
         "Telegram Mini App",
@@ -1232,7 +1232,7 @@
         "title": "APXN Development Roadmap: Distinguishing Live Features from Planned Milestones",
         "description": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
         "canonical": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -1435,7 +1435,8 @@
           ]
         }
       },
-      "verified_against_knowledge": true
+      "verified_against_knowledge": true,
+      "published_url": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html"
     },
     {
       "id": "apxn-008",
@@ -1724,11 +1725,12 @@
       "priority": 7,
       "topic": "APXN Development Roadmap: Live Features vs Planned Milestones",
       "category": "Development",
-      "status": "ready",
+      "status": "published",
       "article_id": "apxn-007",
       "generated_at": "2026-09-16",
       "content_mode": "apxn",
-      "source_profile": null
+      "source_profile": null,
+      "published_at": "2026-09-16"
     },
     {
       "priority": 8,
@@ -1846,7 +1848,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-008",
-    "last_published_article": "apxn-008",
+    "last_published_article": "apxn-007",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
