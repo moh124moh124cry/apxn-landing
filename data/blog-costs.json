@@ -1493,10 +1493,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 127284000,
           "cost_usd": 0.0127284
+        },
+        {
+          "date": "2026-09-16",
+          "response_id": "bd537b7d-8b7c-97ee-866e-dc7f18ff2cd9",
+          "model": "grok-4.3",
+          "topic": "APXN Development Roadmap: Live Features vs Planned Milestones",
+          "article_slug": "apxn-development-roadmap-live-features-vs-planned-milestones",
+          "stage": "research_packet_writing",
+          "input_tokens": 5262,
+          "cached_input_tokens": 192,
+          "output_tokens": 3639,
+          "reasoning_tokens": 710,
+          "total_tokens": 8901,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 154734000,
+          "cost_usd": 0.0154734
         }
       ],
-      "total_cost_usd": 1.2884093
+      "total_cost_usd": 1.3038827
     }
   },
-  "last_updated": "2026-09-15"
+  "last_updated": "2026-09-16"
 }

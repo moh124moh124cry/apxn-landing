@@ -3,9 +3,9 @@
   "last_updated": "2026-09-16",
   "default_language": "en",
   "stats": {
-    "total_articles": 6,
+    "total_articles": 7,
     "published": 6,
-    "ready": 0,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -1186,6 +1186,256 @@
       },
       "verified_against_knowledge": true,
       "published_url": "https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html"
+    },
+    {
+      "id": "apxn-007",
+      "slug": "apxn-development-roadmap-distinguishing-live-features-from-planned-milestones",
+      "title": "APXN Development Roadmap: Distinguishing Live Features from Planned Milestones",
+      "description": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
+      "excerpt": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
+      "category": "Development",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-16",
+      "generated_at": "2026-09-16",
+      "updated_at": "2026-09-16",
+      "published_at": null,
+      "reading_minutes": 8,
+      "word_count": 1737,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "APXN roadmap",
+        "Telegram Mini App",
+        "APXN Points",
+        "planned milestones",
+        "current features",
+        "authentication",
+        "mining rate",
+        "roadmap phases",
+        "points balance",
+        "development status"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "APXN Development Roadmap: Distinguishing Live Features from Planned Milestones",
+        "description": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
+        "canonical": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "APXN Development Roadmap: Distinguishing Live Features from Planned Milestones",
+        "description": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
+        "keywords": [
+          "APXN roadmap",
+          "Telegram Mini App",
+          "APXN Points",
+          "planned milestones",
+          "current features",
+          "authentication",
+          "mining rate",
+          "roadmap phases",
+          "points balance",
+          "development status"
+        ],
+        "intro": {
+          "text": "The APXN roadmap functions as a forward-looking development plan rather than a guarantee that every milestone will occur on an exact date. Future phases should be described with terms such as planned, targeted or scheduled to avoid turning roadmap timing into a contractual promise. The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. Roadmap summaries on the website can group detailed quarterly milestones into yearly sections as long as they preserve the same chronology and status. A simplified summary must not move a planned feature earlier, imply that a planned item is already active or introduce an exchange, price or partnership not present in verified sources. Current feature status must be determined independently from roadmap dates.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Current Foundation and Safe Article Structure",
+            "paragraphs": [
+              {
+                "text": "The 2026 foundation centers on the Telegram community experience, APXN Points, check-ins, tasks, referrals and the official project website. The website should present this as the current ecosystem foundation while keeping token distribution, withdrawals, Presale or ICO, Testnet, staking and Mainnet clearly separated as later stages. The safest APXN roadmap article combines two layers: verified current product facts for what users can use today, and clearly labeled roadmap information for what the project intends to build later. This prevents readers from confusing an existing APXN Points feature with a future token, network or financial function. The welcome tiers are APXN Points rewards inside the application. The tiers describe the current registration reward logic and may change if the product rules are updated in the future.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-08",
+                  "APXN-14",
+                  "APXN-21"
+                ]
+              },
+              {
+                "text": "If development priorities change, the roadmap can change. Blog articles about roadmap history should identify the version or review date they are based on and should not reuse obsolete dates after the official project roadmap has been updated. The detailed Telegram Mini App roadmap and the simplified website roadmap describe the same project direction at different levels of detail. Use the detailed phases below for chronology and the public summary for general website wording. The 2026 foundation centers on the Telegram community experience, APXN Points, check-ins, tasks, referrals and the official project website. The website should present this as the current ecosystem foundation while keeping token distribution, withdrawals, Presale or ICO, Testnet, staking and Mainnet clearly separated as later stages.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-08",
+                  "APXN-14",
+                  "APXN-21"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "2028 Targets and Authentication Controls",
+            "paragraphs": [
+              {
+                "text": "The roadmap places the Apex Testnet launch target in Q4 2028 after earlier token-preparation and listing-announcement stages. Testnet articles can explain what the project plans to test, but they must not claim that a public testnet network, explorer or developer endpoint exists before a verified launch. The 2028 roadmap moves toward platform optimization, token preparation, later listing and points-transition announcements and the planned Apex Testnet stage. Naming DEX or CEX support in a roadmap does not itself confirm a listing relationship with any specific exchange. Roadmap summaries on the website can group detailed quarterly milestones into yearly sections as long as they preserve the same chronology and status.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-07",
+                  "APXN-15",
+                  "APXN-17"
+                ]
+              },
+              {
+                "text": "The current APXN policy accepts Telegram authentication data for up to 24 hours and rejects authentication timestamps that are too far in the future. These checks are application-security controls and should be described as current implementation details rather than universal requirements for every Telegram Mini App. The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. The word mining describes the user experience of accumulating points over time; the current claim action is not proof-of-work, does not solve cryptographic puzzles and should not be described as blockchain consensus mining.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-07",
+                  "APXN-15",
+                  "APXN-17"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "2027 Focus Areas and Account Registration",
+            "paragraphs": [
+              {
+                "text": "The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. If development priorities change, the roadmap can change. Blog articles about roadmap history should identify the version or review date they are based on and should not reuse obsolete dates after the official project roadmap has been updated. The detailed Telegram Mini App roadmap and the simplified website roadmap describe the same project direction at different levels of detail.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-09",
+                  "APXN-13",
+                  "APXN-20"
+                ]
+              },
+              {
+                "text": "A new APXN Telegram Mini App account is registered through server-side logic after Telegram initData has been validated. The server derives the Telegram user identity from the verified payload and passes the trusted identity to the registration RPC rather than accepting an arbitrary browser-supplied account identifier. The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. Current feature status must be determined independently from roadmap dates.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-09",
+                  "APXN-13",
+                  "APXN-20"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Telegram Authentication and Points Separation",
+            "paragraphs": [
+              {
+                "text": "Current feature status must be determined independently from roadmap dates. Some community features can exist before a roadmap phase that mentions their formal launch or expansion. Conversely, a future roadmap item does not become live merely because the calendar reaches the quarter printed beside it. APXN uses Telegram Mini App initData as the authentication input for protected application requests. The server does not simply trust a Telegram user ID sent by browser code. It parses the signed initData payload, verifies the Telegram HMAC signature with the bot token and then derives the trusted user identity from the verified Telegram user object.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-10",
+                  "APXN-16",
+                  "APXN-23"
+                ]
+              },
+              {
+                "text": "Four clear separation points exist between APXN Points and token or project communications. The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. Level one is named APXN Miners. The reward formula is based on elapsed seconds multiplied by the total mining rate. The total mining rate begins with the user's base mining rate and can include active-referral bonuses. The resulting APXN Points are added to the existing balance and the successful claim time becomes the new last-claim timestamp.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-10",
+                  "APXN-16",
+                  "APXN-23"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "2029 Preparation and Mining Mechanics",
+            "paragraphs": [
+              {
+                "text": "The 2029 roadmap includes Testnet expansion, staking preparation and implementation targets, Mainnet preparation and a planned Mainnet launch. Staking rewards, validators, nodes, native Mainnet APXN and a Mainnet Explorer must remain future-tense until those systems are actually deployed and verified. The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. The word mining describes the user experience of accumulating points over time; the current claim action is not proof-of-work, does not solve cryptographic puzzles and should not be described as blockchain consensus mining.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-11",
+                  "APXN-18",
+                  "APXN-22"
+                ]
+              },
+              {
+                "text": "The reward formula is based on elapsed seconds multiplied by the total mining rate. The total mining rate begins with the user's base mining rate and can include active-referral bonuses. The resulting APXN Points are added to the existing balance and the successful claim time becomes the new last-claim timestamp. The boost store status is planned. The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. The word mining describes the user experience of accumulating points over time.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-11",
+                  "APXN-18",
+                  "APXN-22"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Tokenomics Separation and Balance Description",
+            "paragraphs": [
+              {
+                "text": "The roadmap should also be separated from tokenomics. A token allocation percentage describes how the project currently plans to allocate supply, while a roadmap period describes when development or launch stages are targeted. Neither one, by itself, proves that a sale, listing, distribution, withdrawal or network launch is currently available. A wallet connection prompt in a user interface proves only that the interface can request or display an address. It does not by itself prove that the wallet address is permanently stored, uniquely bound to an APXN account or approved for a future withdrawal.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-12",
+                  "APXN-19",
+                  "APXN-24"
+                ]
+              },
+              {
+                "text": "The APXN Points balance is an application participation balance. It must not be described as a bank deposit, a guaranteed cash balance, a guaranteed investment return or a currently withdrawable cryptocurrency balance. Token distribution, conversion and withdrawal are separate future project stages that require their own official activation. The currency used for the described level is APXN. The APXN Points balance is an application participation balance. It must not be described as a bank deposit, a guaranteed cash balance, a guaranteed investment return or a currently withdrawable cryptocurrency balance.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-12",
+                  "APXN-19",
+                  "APXN-24"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "How does the roadmap distinguish current features from later phases?",
+            "answer": "The roadmap is a forward-looking development plan, not a guarantee that every milestone will happen on an exact date. The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. Current feature status must be determined independently from roadmap dates. Some community features can exist before a roadmap phase that mentions their formal launch or expansion.",
+            "evidence_ids": [
+              "APXN-01",
+              "APXN-02"
+            ]
+          },
+          {
+            "question": "What authentication method does the current application use?",
+            "answer": "APXN uses Telegram Mini App initData as the authentication input for protected application requests. The server does not simply trust a Telegram user ID sent by browser code. It parses the signed initData payload, verifies the Telegram HMAC signature with the bot token and then derives the trusted user identity from the verified Telegram user object. The current APXN policy accepts Telegram authentication data for up to twenty four hours and rejects authentication timestamps that are too far in the future. These checks are application-security controls.",
+            "evidence_ids": [
+              "APXN-03",
+              "APXN-04"
+            ]
+          },
+          {
+            "question": "How are APXN Points balances described relative to future stages?",
+            "answer": "The 2029 roadmap includes Testnet expansion, staking preparation and implementation targets, Mainnet preparation and a planned Mainnet launch. The APXN Points balance is an application participation balance. It must not be described as a bank deposit, a guaranteed cash balance, a guaranteed investment return or a currently withdrawable cryptocurrency balance. Token distribution, conversion and withdrawal are separate future project stages that require their own official activation. The reward formula is based on elapsed seconds multiplied by the total mining rate.",
+            "evidence_ids": [
+              "APXN-05",
+              "APXN-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "The APXN roadmap is a forward-looking development plan, not a guarantee that every milestone will happen on an exact date. The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. Current feature status must be determined independently from roadmap dates. APXN uses Telegram Mini App initData as the authentication input for protected application requests. The APXN Points balance is an application participation balance and must not be described as a currently withdrawable cryptocurrency balance.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03",
+            "APXN-04"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -1254,7 +1504,11 @@
       "priority": 7,
       "topic": "APXN Development Roadmap: Live Features vs Planned Milestones",
       "category": "Development",
-      "status": "waiting"
+      "status": "ready",
+      "article_id": "apxn-007",
+      "generated_at": "2026-09-16",
+      "content_mode": "apxn",
+      "source_profile": null
     },
     {
       "priority": 8,
@@ -1368,17 +1622,17 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-006",
+    "last_generated_article": "apxn-007",
     "last_published_article": "apxn-006",
-    "next_queue_priority": 7,
+    "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-09-15",
+      "last_run": "2026-09-16",
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 10,
+      "waiting_topics_after_run": 9,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
