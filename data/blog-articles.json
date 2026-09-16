@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 8,
-    "published": 6,
-    "ready": 2,
+    "published": 7,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -1446,19 +1446,19 @@
       "category": "BSC",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-09-16",
       "generated_at": "2026-09-16",
       "updated_at": "2026-09-16",
-      "published_at": null,
+      "published_at": "2026-09-16",
       "reading_minutes": 6,
       "word_count": 1212,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
+      "url": "https://apxn.network/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
+      "image": "https://apxn.network/blog/images/what-is-bnb-smart-chain-and-how-does-it-work-1000133664.jpg",
+      "image_filename": "what-is-bnb-smart-chain-and-how-does-it-work-1000133664.jpg",
       "keywords": [
         "BNB Smart Chain",
         "BSC",
@@ -1482,7 +1482,7 @@
         "title": "What Is BNB Smart Chain and How Does It Work",
         "description": "BNB Smart Chain is a high-performance EVM-compatible blockchain that uses Proof of Staked Authority consensus with a fixed validator set. Learn its core structure, staking",
         "canonical": "https://apxn.network/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -1654,7 +1654,8 @@
             "EXT-04"
           ]
         }
-      }
+      },
+      "published_url": "https://apxn.network/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html"
     }
   ],
   "generation_queue": [
@@ -1739,7 +1740,7 @@
       "priority": 9,
       "topic": "What Is BNB Smart Chain and How Does It Work?",
       "category": "BSC",
-      "status": "ready",
+      "status": "published",
       "source": "topic_bank",
       "topic_bank_id": "bank-023",
       "language": "en",
@@ -1749,7 +1750,8 @@
       "knowledge_sections": [],
       "auto_publish_allowed": true,
       "article_id": "apxn-008",
-      "generated_at": "2026-09-16"
+      "generated_at": "2026-09-16",
+      "published_at": "2026-09-16"
     },
     {
       "priority": 10,
@@ -1844,7 +1846,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-008",
-    "last_published_article": "apxn-006",
+    "last_published_article": "apxn-008",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,

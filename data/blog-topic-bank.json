@@ -346,7 +346,7 @@
       "topic": "What Is BNB Smart Chain and How Does It Work?",
       "category": "BSC",
       "risk": "safe",
-      "status": "ready",
+      "status": "published",
       "content_mode": "external",
       "source_profile": "bsc",
       "knowledge_sections": [],
@@ -355,7 +355,8 @@
       "queue_priority": 9,
       "article_id": "apxn-008",
       "article_slug": "what-is-bnb-smart-chain-and-how-does-it-work",
-      "generated_at": "2026-09-16"
+      "generated_at": "2026-09-16",
+      "published_at": "2026-09-16"
     },
     {
       "id": "bank-024",
