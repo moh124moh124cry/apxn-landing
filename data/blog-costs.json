@@ -1511,9 +1511,45 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 154734000,
           "cost_usd": 0.0154734
+        },
+        {
+          "date": "2026-09-16",
+          "response_id": "a9709f8c-ae3e-9c78-b038-3bd01b5afa76",
+          "model": "grok-4.3",
+          "topic": "What Is BNB Smart Chain and How Does It Work?",
+          "article_slug": "what-is-bnb-smart-chain-and-how-does-it-work",
+          "stage": "research_packet_writing",
+          "input_tokens": 4622,
+          "cached_input_tokens": 192,
+          "output_tokens": 2231,
+          "reasoning_tokens": 766,
+          "total_tokens": 6853,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 111534000,
+          "cost_usd": 0.0111534
+        },
+        {
+          "date": "2026-09-16",
+          "response_id": "ac630ff4-6358-900c-8540-1df01f454179",
+          "model": "grok-4.3",
+          "topic": "What Is BNB Smart Chain and How Does It Work?",
+          "article_slug": "what-is-bnb-smart-chain-and-how-does-it-work",
+          "stage": "safe_repair_1",
+          "input_tokens": 6041,
+          "cached_input_tokens": 192,
+          "output_tokens": 2739,
+          "reasoning_tokens": 557,
+          "total_tokens": 8780,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 141971500,
+          "cost_usd": 0.01419715
         }
       ],
-      "total_cost_usd": 1.3038827
+      "total_cost_usd": 1.32923325
     }
   },
   "last_updated": "2026-09-16"

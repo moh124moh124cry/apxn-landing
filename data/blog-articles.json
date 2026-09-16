@@ -3,9 +3,9 @@
   "last_updated": "2026-09-16",
   "default_language": "en",
   "stats": {
-    "total_articles": 7,
+    "total_articles": 8,
     "published": 6,
-    "ready": 1,
+    "ready": 2,
     "drafts": 0,
     "featured": 1
   },
@@ -1436,6 +1436,225 @@
         }
       },
       "verified_against_knowledge": true
+    },
+    {
+      "id": "apxn-008",
+      "slug": "what-is-bnb-smart-chain-and-how-does-it-work",
+      "title": "What Is BNB Smart Chain and How Does It Work",
+      "description": "BNB Smart Chain is a high-performance EVM-compatible blockchain that uses Proof of Staked Authority consensus with a fixed validator set. Learn its core structure, staking",
+      "excerpt": "BNB Smart Chain is a high-performance EVM-compatible blockchain that uses Proof of Staked Authority consensus with a fixed validator set. Learn its core structure, staking",
+      "category": "BSC",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-16",
+      "generated_at": "2026-09-16",
+      "updated_at": "2026-09-16",
+      "published_at": null,
+      "reading_minutes": 6,
+      "word_count": 1212,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "BNB Smart Chain",
+        "BSC",
+        "Proof of Staked Authority",
+        "validators",
+        "staking",
+        "blockchain",
+        "EVM compatible",
+        "governance",
+        "slashing",
+        "transaction fees"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "external",
+      "source_profile": "bsc",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "What Is BNB Smart Chain and How Does It Work",
+        "description": "BNB Smart Chain is a high-performance EVM-compatible blockchain that uses Proof of Staked Authority consensus with a fixed validator set. Learn its core structure, staking",
+        "canonical": "https://apxn.network/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "What Is BNB Smart Chain and How Does It Work",
+        "description": "BNB Smart Chain is a high-performance EVM-compatible blockchain that uses Proof of Staked Authority consensus with a fixed validator set. Learn its core structure, staking",
+        "keywords": [
+          "BNB Smart Chain",
+          "BSC",
+          "Proof of Staked Authority",
+          "validators",
+          "staking",
+          "blockchain",
+          "EVM compatible",
+          "governance",
+          "slashing",
+          "transaction fees"
+        ],
+        "intro": {
+          "text": "BNB Smart Chain is a high-performance blockchain network that is EVM-compatible, allowing existing Ethereum smart contract skills to transfer directly to the new environment. It was designed to bring programmability and interoperability to the BNB Beacon Chain while preserving familiar development workflows. The chain relies on a system of validators operating under Proof of Staked Authority consensus. This setup supports short block times and lower fees while maintaining security through specific detection mechanisms such as double-sign detection and malicious vote detection. The active validator set consists of 45 validators divided into 21 Cabinet and 24 Candidates. BNB serves as the native utility token used to pay transaction fees on the network. Resources for network information, RPC providers, and wallet configuration assist users in establishing connections and obtaining tokens for testing or production use.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Validator Rewards and Staking Dynamics",
+            "paragraphs": [
+              {
+                "text": "The reward for validators comes from the fees collected from transactions in each block. Validators decide how much of these fees to share with delegators who stake BNB to them. This arrangement helps attract additional staking to particular validators. Every validator will take turns to produce blocks in the same probability when they maintain full liveness. Over time stable validators tend to receive comparable rewards. Because stakes differ across validators, delegators may choose those with lower stakes provided the validator remains trustworthy. This dynamic helps reduce stake concentration across the network and avoids situations where a small number of validators accumulate disproportionate influence.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              },
+              {
+                "text": "Rational delegators evaluate validator performance and stake distribution when deciding where to allocate their holdings. The reward mechanism creates an incentive for validators to offer competitive returns to delegators while preserving their own share of collected fees. In the long run the system encourages a more even spread of stakes among trustworthy participants. This outcome arises because delegators naturally gravitate toward validators with smaller current stakes as long as security standards are met. The resulting balance contributes to overall network stability by limiting the risk associated with any single validator holding an outsized portion of total stakes.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Staking Candidates and Governance Overview",
+            "paragraphs": [
+              {
+                "text": "Unavailable candidates face slashing penalties at a reduced scale compared with official validators. Candidates will produce blocks and charge gas fees in the mainnet but at a much lower frequency than the official validator set. Governance documentation outlines user guides and APIs that support community participation in network decisions. These resources allow stakeholders to review proposals and understand the processes that guide validator selection and parameter adjustments over time.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              },
+              {
+                "text": "A motivation structure exists to keep candidate validators committed to maintaining quality and supporting network security. This structure encourages candidates to uphold operational standards even though their opportunities to produce blocks occur less frequently. Governance processes are described in dedicated sections that cover user guides, temperature checks, and governance APIs. Stakeholders can consult these materials to learn how decisions affecting the validator set and staking parameters are proposed, discussed, and implemented within the documented framework.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Validator Set Composition and Available Tools",
+            "paragraphs": [
+              {
+                "text": "The active validator set contains 45 validators split between 21 Cabinet members and 24 Candidates. Additional validators may be introduced later as backups to maintain network operations. The most bonded validator candidates become the active validators responsible for block production. This selection process relies on the amount of stake bonded to each candidate and ensures that the highest-staked participants assume primary responsibility for consensus duties.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-09"
+                ]
+              },
+              {
+                "text": "Developers and operators can access various wallets and tools that support interaction with the chain. These resources include configuration options for connecting to the network and managing validator-related activities under the established authority structure. Documentation references additional tools for indexing, storage, analytics, and account abstraction that extend the core capabilities available to participants building or operating on the network.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-09"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Developer Resources and Network Access",
+            "paragraphs": [
+              {
+                "text": "Developers building on the chain receive essential information through official quick guides that cover getting started and connecting to the network. The documentation lists resources for wallet configuration and obtaining tokens required for transaction fees. These guides explain how to configure connections using RPC providers and how to acquire BNB for use in paying fees during development and testing activities.",
+                "evidence_ids": [
+                  "EXT-04"
+                ]
+              },
+              {
+                "text": "JSON-RPC APIs and official developer kits are provided to support application development. Additional developer tools are referenced for further exploration of network capabilities and integration options. The quick guide serves as a central reference point that directs developers to the specific resources needed for tasks such as deploying contracts, querying chain data, and interacting with staking or governance functions.",
+                "evidence_ids": [
+                  "EXT-04"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Security Measures Against Network Attacks",
+            "paragraphs": [
+              {
+                "text": "When more than half plus one validators remain honest, proof-of-authority style networks operate securely. Byzantine validators can still attempt attacks such as clone attacks on the network. The presence of a sufficient honest majority provides the foundation for reliable consensus, yet the system incorporates additional safeguards to address scenarios where a smaller number of validators might attempt malicious actions.",
+                "evidence_ids": [
+                  "EXT-05"
+                ]
+              },
+              {
+                "text": "Slashing logic penalizes validators for double signing or unavailability. This mechanism exposes malicious validators quickly and reduces the benefit of executing clone attacks, thereby protecting stability and finality. The logic is designed to make such attacks both detectable within a short time frame and economically disadvantageous for the participants involved, reinforcing the overall security posture of the network.",
+                "evidence_ids": [
+                  "EXT-05"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Transaction Fee Distribution Among Validators",
+            "paragraphs": [
+              {
+                "text": "All validators in the current set receive transaction fees paid in BNB. Because BNB is not inflationary, there are no mining rewards of the type generated on other networks, making gas fees the primary form of compensation. Part of the fees collected is allocated as reward for finality voting performed by validators. This distribution ensures that validators are incentivized to participate actively in maintaining chain finality.",
+                "evidence_ids": [
+                  "EXT-06"
+                ]
+              },
+              {
+                "text": "Validators and delegators continue to receive other utility benefits associated with holding BNB alongside these fee-based rewards. The non-inflationary nature of the token means that validator compensation depends entirely on actual network usage reflected in transaction fees. This model aligns validator incentives with ongoing chain activity and distinguishes the reward structure from inflationary systems that rely on newly minted tokens.",
+                "evidence_ids": [
+                  "EXT-06"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "How does BNB Smart Chain handle validator selection and staking?",
+            "answer": "The chain selects validators through a Proof of Staked Authority process where the most bonded candidates become validators. Candidates produce blocks at lower frequency than the main set and can face reduced slashing for unavailability. Governance documentation provides user guides and APIs for participation in related decisions. Delegators allocate stakes to validators and receive a share of fees according to arrangements set by each validator.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "What tools and resources support developers working on BNB Smart Chain?",
+            "answer": "Official quick guides list JSON-RPC APIs, developer kits, and wallet configuration steps. Resources also cover obtaining test tokens and connecting to the network. Additional tools for indexing, storage, and analytics are referenced for extended development needs. These materials help developers set up environments, interact with the chain, and explore extended capabilities such as account abstraction and data indexing.",
+            "evidence_ids": [
+              "EXT-03",
+              "EXT-04"
+            ]
+          },
+          {
+            "question": "How are validators rewarded and protected against attacks?",
+            "answer": "Validators receive transaction fees in BNB as their main reward since the token is non-inflationary. Slashing logic penalizes double signing or unavailability to counter Byzantine attacks such as clone attacks. Part of the fees also supports finality voting rewards. The combination of fee distribution and slashing mechanisms maintains both compensation for honest participation and deterrence against malicious conduct.",
+            "evidence_ids": [
+              "EXT-05",
+              "EXT-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "BNB Smart Chain operates with a fixed set of validators under Proof of Staked Authority consensus. Rewards derive from transaction fees distributed among validators and shared with delegators. Security relies on slashing mechanisms that address malicious behavior. Developer resources cover connection, tools, and governance participation. These elements together define the documented structure of the network and illustrate how staking, validation, and fee distribution function within the established framework.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04"
+          ]
+        }
+      }
     }
   ],
   "generation_queue": [
@@ -1520,7 +1739,7 @@
       "priority": 9,
       "topic": "What Is BNB Smart Chain and How Does It Work?",
       "category": "BSC",
-      "status": "waiting",
+      "status": "ready",
       "source": "topic_bank",
       "topic_bank_id": "bank-023",
       "language": "en",
@@ -1528,7 +1747,9 @@
       "content_mode": "external",
       "source_profile": "bsc",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "article_id": "apxn-008",
+      "generated_at": "2026-09-16"
     },
     {
       "priority": 10,
@@ -1622,7 +1843,7 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-007",
+    "last_generated_article": "apxn-008",
     "last_published_article": "apxn-006",
     "next_queue_priority": 8,
     "automatic_generation": true,
@@ -1632,7 +1853,7 @@
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 9,
+      "waiting_topics_after_run": 8,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
@@ -1642,7 +1863,7 @@
         "BSC": 2,
         "Security": 2,
         "Education": 2,
-        "Development": 2
+        "Development": 1
       }
     }
   }
