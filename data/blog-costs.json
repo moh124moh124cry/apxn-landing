@@ -1547,10 +1547,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 141971500,
           "cost_usd": 0.01419715
+        },
+        {
+          "date": "2026-09-17",
+          "response_id": "f586d19d-f48c-9302-bd49-eb07ba36a945",
+          "model": "grok-4.3",
+          "topic": "How to Read and Verify a Crypto Wallet Address",
+          "article_slug": "how-to-read-and-verify-a-crypto-wallet-address",
+          "stage": "research_packet_writing",
+          "input_tokens": 4479,
+          "cached_input_tokens": 192,
+          "output_tokens": 2681,
+          "reasoning_tokens": 1000,
+          "total_tokens": 7160,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 120996500,
+          "cost_usd": 0.01209965
         }
       ],
-      "total_cost_usd": 1.32923325
+      "total_cost_usd": 1.3413329
     }
   },
-  "last_updated": "2026-09-16"
+  "last_updated": "2026-09-17"
 }

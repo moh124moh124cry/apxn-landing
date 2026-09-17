@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-16",
+  "last_updated": "2026-09-17",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -276,13 +276,16 @@
       "topic": "How to Read and Verify a Crypto Wallet Address",
       "category": "Education",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "content_mode": "external",
       "source_profile": "wallet_basics",
       "knowledge_sections": [],
       "auto_publish_allowed": true,
       "queued_at": "2026-09-14",
-      "queue_priority": 10
+      "queue_priority": 10,
+      "article_id": "apxn-009",
+      "article_slug": "how-ethereum-wallet-addresses-support-account-verification-and-security",
+      "generated_at": "2026-09-17"
     },
     {
       "id": "bank-018",
@@ -519,12 +522,12 @@
     }
   ],
   "planner_state": {
-    "last_run": "2026-09-16",
+    "last_run": "2026-09-17",
     "available_topics": 29,
     "automation_eligible_available_topics": 27,
     "manual_or_review_topics": 2,
-    "queued_topics": 7,
-    "used_topics": 0,
+    "queued_topics": 6,
+    "used_topics": 1,
     "category_load_after_run": {
       "APXN Guides": 3,
       "Blockchain": 2,
@@ -532,7 +535,7 @@
       "BSC": 2,
       "Security": 2,
       "Education": 2,
-      "Development": 1
+      "Development": 2
     }
   }
 }
