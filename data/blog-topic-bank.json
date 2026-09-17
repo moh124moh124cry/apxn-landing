@@ -276,7 +276,7 @@
       "topic": "How to Read and Verify a Crypto Wallet Address",
       "category": "Education",
       "risk": "safe",
-      "status": "ready",
+      "status": "published",
       "content_mode": "external",
       "source_profile": "wallet_basics",
       "knowledge_sections": [],
@@ -285,7 +285,8 @@
       "queue_priority": 10,
       "article_id": "apxn-009",
       "article_slug": "how-ethereum-wallet-addresses-support-account-verification-and-security",
-      "generated_at": "2026-09-17"
+      "generated_at": "2026-09-17",
+      "published_at": "2026-09-17"
     },
     {
       "id": "bank-018",
