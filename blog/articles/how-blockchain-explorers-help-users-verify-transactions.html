@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>How Blockchain Explorers Help Users Verify Transactions</title>
+
+    <meta
+        name="description"
+        content="Learn how block explorers provide access to Ethereum and BNB Smart Chain data including blocks, transactions, gas usage, and token details for verification purposes."
+    >
+
+    <meta
+        name="keywords"
+        content="block explorers, transaction verification, Ethereum data, BNB Smart Chain, gas usage, token contracts, block hash, network data"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <meta
+        name="author"
+        content="Apex Network Editorial"
+    >
+
+
+    <link
+        rel="canonical"
+        href="https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html"
+    >
+
+    <link
+        rel="icon"
+        href="../../logo2%20(1).png"
+        type="image/png"
+    >
+
+
+    <meta
+        property="og:type"
+        content="article"
+    >
+
+    <meta
+        property="og:title"
+        content="How Blockchain Explorers Help Users Verify Transactions"
+    >
+
+    <meta
+        property="og:description"
+        content="Learn how block explorers provide access to Ethereum and BNB Smart Chain data including blocks, transactions, gas usage, and token details for verification purposes."
+    >
+
+    <meta
+        property="og:url"
+        content="https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html"
+    >
+
+    <meta
+        property="og:image"
+        content="https://apxn.network/blog/images/how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Apex Network"
+    >
+
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="How Blockchain Explorers Help Users Verify Transactions"
+    >
+
+    <meta
+        name="twitter:description"
+        content="Learn how block explorers provide access to Ethereum and BNB Smart Chain data including blocks, transactions, gas usage, and token details for verification purposes."
+    >
+
+    <meta
+        name="twitter:image"
+        content="https://apxn.network/blog/images/how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg"
+    >
+
+
+    <script>
+        window.va =
+            window.va ||
+            function () {
+                (
+                    window.vaq =
+                    window.vaq ||
+                    []
+                ).push(
+                    arguments
+                );
+            };
+    </script>
+
+    <script
+        defer
+        src="/_vercel/insights/script.js"
+    ></script>
+
+
+    <script
+        src="https://cdn.tailwindcss.com"
+    ></script>
+
+
+    <style>
+
+        html {
+            background: #020617;
+        }
+
+        .gold-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #fde047,
+                    #f59e0b,
+                    #fb923c
+                );
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+        }
+
+        .article-body p {
+            color:
+                #cbd5e1;
+
+            line-height:
+                1.9;
+
+            margin:
+                1rem 0 1.5rem;
+        }
+
+        .article-body h2 {
+            color:
+                #fff;
+
+            font-size:
+                1.75rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                2.7rem;
+
+            margin-bottom:
+                1rem;
+
+            line-height:
+                1.25;
+        }
+
+        .article-body h3 {
+            color:
+                #facc15;
+
+            font-size:
+                1.2rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                1rem;
+
+            margin-bottom:
+                .75rem;
+        }
+
+        .article-body ul {
+            color:
+                #cbd5e1;
+
+            margin:
+                1rem 0 1.5rem 1.5rem;
+
+            line-height:
+                1.9;
+
+            list-style:
+                disc;
+        }
+
+        .article-body a {
+            color:
+                #facc15;
+
+            font-weight:
+                800;
+        }
+
+        .info-box {
+            background:
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .8
+                );
+
+            border:
+                1px solid
+                rgba(
+                    234,
+                    179,
+                    8,
+                    .25
+                );
+
+            border-radius:
+                1rem;
+
+            padding:
+                1.25rem;
+
+            margin:
+                1.5rem 0;
+        }
+
+    </style>
+
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How Blockchain Explorers Help Users Verify Transactions",
+  "description": "Learn how block explorers provide access to Ethereum and BNB Smart Chain data including blocks, transactions, gas usage, and token details for verification purposes.",
+  "image": "https://apxn.network/blog/images/how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg",
+  "mainEntityOfPage": "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
+  "datePublished": "2026-09-17",
+  "dateModified": "2026-09-17",
+  "author": {
+    "@type": "Organization",
+    "name": "Apex Network Editorial"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Apex Network",
+    "url": "https://apxn.network",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apxn.network/logo2%20(1).png"
+    }
+  }
+}
+    </script>
+
+    
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What initial checks does a block explorer support for a missing token?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Users begin by entering the wallet address or transaction hash into the explorer to verify that the transaction succeeded and that the token reached the intended address on the correct network. This step confirms basic transfer details before any further actions such as network selection or manual token import are considered."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why might a token remain invisible even after a successful explorer check?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The wallet may be set to a different network than the one used for the transfer. Switching to the matching network such as BNB Smart Chain instead of Ethereum Mainnet allows the explorer-confirmed token to become visible once the setting aligns with the source chain."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do explorers assist with tokens that follow standards such as ERC-721 or ERC-1155?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Explorers record token contract addresses and indicate the applicable standard so users can confirm whether an NFT or multi-token asset matches the wallet's supported formats. When a bridged token does not appear automatically the explorer supplies the contract address needed for manual import after both networks confirm the transfer."
+      }
+    }
+  ]
+}
+    </script>
+            
+
+</head>
+
+
+<body
+    class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950"
+>
+
+
+<header
+    class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5"
+    >
+
+        <a
+            href="../index.html"
+            class="flex items-center gap-3 min-w-0"
+        >
+
+            <div
+                class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50"
+            >
+
+                <img
+                    src="../../logo2%20(1).png"
+                    alt="Apex Network Logo"
+                    class="w-full h-full object-cover"
+                    width="44"
+                    height="44"
+                >
+
+            </div>
+
+
+            <div>
+
+                <div
+                    class="font-black tracking-wider gold-text text-base sm:text-lg"
+                >
+                    APEX NETWORK
+                </div>
+
+                <div
+                    class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]"
+                >
+                    APXN Blog
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <div
+            class="flex items-center gap-3"
+        >
+
+            <a
+                href="../index.html"
+                class="hidden sm:inline-flex text-sm font-bold text-gray-400 hover:text-yellow-400"
+            >
+                Blog Home
+            </a>
+
+            <a
+                href="https://t.me/ApxMinerBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl"
+            >
+                Open APXN App
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <article>
+
+
+        <section
+            class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent"
+        >
+
+            <div
+                class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20"
+            >
+
+                <nav
+                    aria-label="Breadcrumb"
+                    class="text-xs text-gray-500 font-bold mb-7"
+                >
+
+                    <a
+                        href="../../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Home
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <a
+                        href="../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Blog
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <span
+                        class="text-yellow-400"
+                    >
+                        Blockchain
+                    </span>
+
+                </nav>
+
+
+                <span
+                    class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5"
+                >
+                    Blockchain
+                </span>
+
+
+                <h1
+                    class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6"
+                >
+                    How Blockchain Explorers Help Users Verify Transactions
+                </h1>
+
+
+                <p
+                    class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7"
+                >
+                    Learn how block explorers provide access to Ethereum and BNB Smart Chain data including blocks, transactions, gas usage, and token details for verification purposes.
+                </p>
+
+
+                <div
+                    class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500"
+                >
+
+                    <span
+                        class="font-bold text-gray-300"
+                    >
+                        Apex Network Editorial
+                    </span>
+
+                    <span>
+                        •
+                    </span>
+
+                    <time
+                        datetime="2026-09-17"
+                    >
+                        September 17, 2026
+                    </time>
+
+                    <span>
+                        •
+                    </span>
+
+                    <span>
+                        5 min read
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="mt-8 flex flex-wrap items-center gap-3"
+                >
+
+                    <button
+                        type="button"
+                        onclick="shareArticle()"
+                        class="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm font-black text-yellow-400 hover:bg-yellow-500/15 transition-colors"
+                        aria-label="Share this article"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                        >
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+                            <line x1="8.59" y1="13.49" x2="15.42" y2="17.51"></line>
+                        </svg>
+
+                        <span>
+                            Share article
+                        </span>
+                    </button>
+
+
+                    <span
+                        id="share-status"
+                        class="hidden text-sm font-bold text-emerald-400"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Original APXN link copied
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div
+            class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14"
+        >
+
+            <div
+                class="mb-8 flex w-full justify-center"
+            >
+                <a
+                    href="https://omg10.com/4/11822007"
+                    target="_blank"
+                    rel="sponsored noopener noreferrer"
+                    aria-label="Sponsored advertisement — view offer"
+                    class="inline-flex w-full max-w-2xl items-center justify-center gap-2 rounded-2xl border border-yellow-400/50 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 px-6 py-4 text-center text-sm sm:text-base font-black text-slate-950 shadow-[0_12px_32px_rgba(245,158,11,0.22)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                >
+                    <span>
+                        Sponsored Advertisement — View Offer
+                    </span>
+
+                    <span aria-hidden="true">
+                        ↗
+                    </span>
+                </a>
+            </div>
+
+
+            <figure
+                class="mb-12"
+            >
+
+                <img
+                    src="https://apxn.network/blog/images/how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg"
+                    alt="How Blockchain Explorers Help Users Verify Transactions"
+                    class="w-full rounded-2xl border border-slate-800 object-cover max-h-[620px]"
+                    loading="eager"
+                >
+
+            </figure>
+
+
+            
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+    
+
+
+            <div
+                class="article-body"
+            >
+
+                <p
+                    class="text-lg"
+                >
+                    Block explorers serve as portals to Ethereum&#039;s data and allow users to examine real-time information on blocks, transactions, validators, accounts, and other onchain activity. They present details such as burnt fees, extra data included by builders, and advanced elements including the cryptographic hash that identifies each block, the parent hash of the preceding block, and the state root hash from the Merkle trie. Explorers also supply gas usage information for transactions and blocks along with current network gas prices. This supports understanding of network conditions and helps with transaction handling. The same resources extend to BNB Smart Chain where users follow steps to review transfers, confirm network selection, and address cases where tokens do not appear automatically after airdrops or movements.
+                </p>
+
+
+                
+                        <section>
+                            <h2>Examining Block Details and Gas Information</h2>
+
+                            <p>Block explorers display specific block attributes such as burnt fees that indicate how much ETH is removed in each block. They also show any extra data added by the builder and advanced fields including the cryptographic hash serving as the unique block identifier. The parent hash links to the previous block while the state root represents the Merkle trie root that stores the full system state. These elements allow direct inspection of block structure and continuity across the chain. Gas data forms another key area where explorers report usage within individual transactions and entire blocks.</p>
+<p>This information helps track overall usage patterns and supports decisions when preparing transactions. On BNB Smart Chain the first verification step involves entering a wallet address or transaction hash into BscScan to confirm success, correct recipient address, and matching network. These checks establish whether a transfer or airdrop has completed as expected before moving to additional review steps.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Adding Networks and Tokens Manually</h2>
+
+                            <p>When a token does not appear after transfer users may need to add the relevant network manually. For BNB Smart Chain the required details include the RPC URL and chain identifier 56. For opBNB the corresponding values are the RPC URL and chain identifier 204. Once the network setting matches the source of the token the balance or transaction record can be viewed through the explorer interface.</p>
+<p>Tokens sometimes remain hidden until their contract address is imported directly into the wallet. The address can be located on BscScan by searching the token symbol. After copying the contract address users select the add or import option in the wallet and paste the value to complete setup. This process relies on data retrieved from the explorer rather than automatic detection.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Confirming Network and Token Standards</h2>
+
+                            <p>Explorers cover both the main Ethereum network and testnets so the same verification approach applies across environments. Data is separated into execution records that cover executed transactions within blocks and consensus records that cover the blocks and their proposing validators. Selecting the matching network in a wallet prevents mismatches that would otherwise hide tokens or transactions.</p>
+<p>For NFTs the explorer may show the asset while the wallet does not. In such cases the wallet must support the correct token standard such as BEP-721 rather than a fungible standard. Users can also consult an NFT-focused platform to cross-check the item before returning to the primary explorer view.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Reviewing Execution and Consensus Data</h2>
+
+                            <p>Ethereum transparency allows every element to be checked through an explorer interface. Execution data covers the transactions processed inside a given block while consensus data covers the blocks themselves together with validator activity.</p>
+<p>When tokens arrive via bridges the final confirmation must appear on both source and destination networks. Explorers display the status of each leg of the transfer so users can verify completion on the relevant chain before expecting the asset to display in a wallet.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Smart Contract and Token Standard Records</h2>
+
+                            <p>Explorers list information related to smart contracts and the standards that define token behavior. Records include details for ERC-20 fungible tokens, ERC-721 non-fungible tokens, and ERC-1155 multi-token contracts. These entries help confirm which standard applies to a given token address retrieved from the explorer.</p>
+<p>Bridged assets may require additional patience because confirmation times vary with network load. After the bridge transaction finishes users can revisit the explorer to locate the contract address and add it manually if the wallet does not detect the token automatically.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Accounts, Transactions, and Network Updates</h2>
+
+                            <p>Explorers organize data into categories covering transactions, accounts, tokens, and network metrics. On the consensus side they present epoch and slot details along with validator and attestation records. These sections remain available for ongoing reference when checking activity across the Ethereum network.</p>
+<p>Page updates for the documentation occur on dates such as March 2, 2026 and September 15, 2026. The same explorer tools continue to surface account balances and transaction histories so users can confirm details without relying on wallet displays alone.</p>
+                        </section>
+                    
+
+
+                
+                <section>
+
+                    <h2>
+                        Frequently asked questions
+                    </h2>
+
+                    
+                        <div class="info-box">
+                            <h3>What initial checks does a block explorer support for a missing token?</h3>
+
+                            <p>Users begin by entering the wallet address or transaction hash into the explorer to verify that the transaction succeeded and that the token reached the intended address on the correct network. This step confirms basic transfer details before any further actions such as network selection or manual token import are considered.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>Why might a token remain invisible even after a successful explorer check?</h3>
+
+                            <p>The wallet may be set to a different network than the one used for the transfer. Switching to the matching network such as BNB Smart Chain instead of Ethereum Mainnet allows the explorer-confirmed token to become visible once the setting aligns with the source chain.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>How do explorers assist with tokens that follow standards such as ERC-721 or ERC-1155?</h3>
+
+                            <p>Explorers record token contract addresses and indicate the applicable standard so users can confirm whether an NFT or multi-token asset matches the wallet&#039;s supported formats. When a bridged token does not appear automatically the explorer supplies the contract address needed for manual import after both networks confirm the transfer.</p>
+                        </div>
+                    
+
+                </section>
+                        
+
+
+                <section>
+
+                    <h2>
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        Block explorers organize Ethereum and BNB Smart Chain records into accessible categories covering blocks, transactions, gas, accounts, and tokens. They separate execution data from consensus data and supply contract addresses that support manual verification steps. These resources allow direct review of network activity and token status using only the information presented in the explorer interfaces.
+                    </p>
+
+                </section>
+
+
+                
+                <section>
+
+                    <h2>
+                        Related reading
+                    </h2>
+
+                    <ul>
+                        
+                                        <li>
+                                            <a href="./how-ethereum-wallet-addresses-support-account-verification-and-security.html">
+                                                How Ethereum Wallet Addresses Support Account Verification and Security
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./what-is-bnb-smart-chain-and-how-does-it-work.html">
+                                                What Is BNB Smart Chain and How Does It Work
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html">
+                                                APXN Development Roadmap: Distinguishing Live Features from Planned Milestones
+                                            </a>
+                                        </li>
+                                    
+                    </ul>
+
+                </section>
+            
+
+
+                <div
+                    class="info-box"
+                >
+
+                    <strong>
+                        Editorial note:
+                    </strong>
+
+                    <p>
+                        This article is educational project content and should not be treated as financial, investment, legal or tax advice.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</main>
+
+
+<footer
+    class="border-t border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 flex flex-wrap gap-4 justify-between"
+    >
+
+        <span>
+            © 2026 Apex Network
+        </span>
+
+        <a
+            href="../index.html"
+            class="hover:text-yellow-400"
+        >
+            APXN Blog
+        </a>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    const APXN_ARTICLE_SHARE = {
+        title:
+            "How Blockchain Explorers Help Users Verify Transactions",
+
+        url:
+            "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html"
+    };
+
+
+    function showShareStatus(
+        message
+    ) {
+
+        const status =
+            document.getElementById(
+                'share-status'
+            );
+
+        if (!status) {
+            return;
+        }
+
+        status.textContent =
+            message;
+
+        status.classList.remove(
+            'hidden'
+        );
+
+        window.clearTimeout(
+            window.__apxnShareStatusTimer
+        );
+
+        window.__apxnShareStatusTimer =
+            window.setTimeout(
+                () => {
+                    status.classList.add(
+                        'hidden'
+                    );
+                },
+                3000
+            );
+    }
+
+
+    async function copyOriginalArticleLink() {
+
+        const link =
+            APXN_ARTICLE_SHARE.url;
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(
+                    link
+                );
+
+            } else {
+
+                const input =
+                    document.createElement(
+                        'textarea'
+                    );
+
+                input.value =
+                    link;
+
+                input.setAttribute(
+                    'readonly',
+                    ''
+                );
+
+                input.style.position =
+                    'fixed';
+
+                input.style.opacity =
+                    '0';
+
+                document.body.appendChild(
+                    input
+                );
+
+                input.select();
+
+                document.execCommand(
+                    'copy'
+                );
+
+                input.remove();
+            }
+
+            showShareStatus(
+                'Original APXN link copied'
+            );
+
+            return true;
+
+        } catch {
+
+            showShareStatus(
+                'Copy the APXN link from the address bar'
+            );
+
+            return false;
+        }
+    }
+
+
+    async function shareArticle() {
+
+        const shareData = {
+            title:
+                APXN_ARTICLE_SHARE.title,
+
+            url:
+                APXN_ARTICLE_SHARE.url
+        };
+
+        if (
+            typeof navigator.share ===
+            'function'
+        ) {
+
+            try {
+
+                await navigator.share(
+                    shareData
+                );
+
+                return;
+
+            } catch (error) {
+
+                if (
+                    error &&
+                    error.name ===
+                        'AbortError'
+                ) {
+                    return;
+                }
+            }
+        }
+
+        await copyOriginalArticleLink();
+    }
+
+</script>
+
+
+</body>
+</html>

@@ -391,7 +391,7 @@
       "topic": "How Blockchain Explorers Help Users Verify Transactions",
       "category": "Blockchain",
       "risk": "safe",
-      "status": "ready",
+      "status": "published",
       "content_mode": "external",
       "source_profile": "block_explorers",
       "knowledge_sections": [],
@@ -400,7 +400,8 @@
       "queue_priority": 11,
       "article_id": "apxn-010",
       "article_slug": "how-blockchain-explorers-help-users-verify-transactions",
-      "generated_at": "2026-09-17"
+      "generated_at": "2026-09-17",
+      "published_at": "2026-09-17"
     },
     {
       "id": "bank-027",

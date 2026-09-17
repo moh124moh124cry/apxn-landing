@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 10,
-    "published": 9,
-    "ready": 1,
+    "published": 10,
+    "ready": 0,
     "drafts": 0,
     "featured": 1
   },
@@ -1887,19 +1887,19 @@
       "category": "Blockchain",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-09-17",
       "generated_at": "2026-09-17",
       "updated_at": "2026-09-17",
-      "published_at": null,
+      "published_at": "2026-09-17",
       "reading_minutes": 5,
       "word_count": 952,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
+      "url": "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
+      "image": "https://apxn.network/blog/images/how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg",
+      "image_filename": "how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg",
       "keywords": [
         "block explorers",
         "transaction verification",
@@ -1921,7 +1921,7 @@
         "title": "How Blockchain Explorers Help Users Verify Transactions",
         "description": "Learn how block explorers provide access to Ethereum and BNB Smart Chain data including blocks, transactions, gas usage, and token details for verification purposes.",
         "canonical": "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -2097,7 +2097,8 @@
             "EXT-04"
           ]
         }
-      }
+      },
+      "published_url": "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html"
     }
   ],
   "generation_queue": [
@@ -2217,7 +2218,7 @@
       "priority": 11,
       "topic": "How Blockchain Explorers Help Users Verify Transactions",
       "category": "Blockchain",
-      "status": "ready",
+      "status": "published",
       "source": "topic_bank",
       "topic_bank_id": "bank-026",
       "language": "en",
@@ -2227,7 +2228,8 @@
       "knowledge_sections": [],
       "auto_publish_allowed": true,
       "article_id": "apxn-010",
-      "generated_at": "2026-09-17"
+      "generated_at": "2026-09-17",
+      "published_at": "2026-09-17"
     },
     {
       "priority": 12,
@@ -2294,7 +2296,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-010",
-    "last_published_article": "apxn-009",
+    "last_published_article": "apxn-010",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
