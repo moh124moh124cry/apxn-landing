@@ -1596,6 +1596,27 @@ ${safeJson(faqSchema)}
             class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14"
         >
 
+            <div
+                class="mb-8 flex w-full justify-center"
+            >
+                <a
+                    href="https://omg10.com/4/11822007"
+                    target="_blank"
+                    rel="sponsored noopener noreferrer"
+                    aria-label="Sponsored advertisement — view offer"
+                    class="inline-flex w-full max-w-2xl items-center justify-center gap-2 rounded-2xl border border-yellow-400/50 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 px-6 py-4 text-center text-sm sm:text-base font-black text-slate-950 shadow-[0_12px_32px_rgba(245,158,11,0.22)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                >
+                    <span>
+                        Sponsored Advertisement — View Offer
+                    </span>
+
+                    <span aria-hidden="true">
+                        ↗
+                    </span>
+                </a>
+            </div>
+
+
             <figure
                 class="mb-12"
             >
@@ -2739,4 +2760,5 @@ export default async function handler(
             });
     }
 }
+
 
