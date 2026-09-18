@@ -376,13 +376,16 @@
       "topic": "What Is a BEP-20 Token? A Beginner-Friendly Guide",
       "category": "BSC",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "content_mode": "external",
       "source_profile": "bep20",
       "knowledge_sections": [],
       "auto_publish_allowed": true,
       "queued_at": "2026-09-14",
-      "queue_priority": 13
+      "queue_priority": 13,
+      "article_id": "apxn-012",
+      "article_slug": "what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard",
+      "generated_at": "2026-09-18"
     },
     {
       "id": "bank-025",
@@ -548,12 +551,12 @@
     "available_topics": 22,
     "automation_eligible_available_topics": 20,
     "manual_or_review_topics": 2,
-    "queued_topics": 11,
+    "queued_topics": 10,
     "used_topics": 3,
     "category_load_after_run": {
       "APXN Guides": 4,
       "Blockchain": 3,
-      "Web3": 3,
+      "Web3": 2,
       "BSC": 3,
       "Security": 3,
       "Education": 3,

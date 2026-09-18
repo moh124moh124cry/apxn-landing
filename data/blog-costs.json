@@ -1619,9 +1619,27 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 159771500,
           "cost_usd": 0.01597715
+        },
+        {
+          "date": "2026-09-18",
+          "response_id": "bf486b9c-6e86-9b5a-8243-2e533ab669e3",
+          "model": "grok-4.3",
+          "topic": "What Is a BEP-20 Token? A Beginner-Friendly Guide",
+          "article_slug": "what-is-a-bep-20-token-a-beginner-friendly-guide",
+          "stage": "research_packet_writing",
+          "input_tokens": 5737,
+          "cached_input_tokens": 192,
+          "output_tokens": 2721,
+          "reasoning_tokens": 939,
+          "total_tokens": 8458,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 137721500,
+          "cost_usd": 0.01377215
         }
       ],
-      "total_cost_usd": 1.3824556
+      "total_cost_usd": 1.39622775
     }
   },
   "last_updated": "2026-09-18"
