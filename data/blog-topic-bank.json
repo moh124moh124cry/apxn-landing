@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-18",
+  "last_updated": "2026-09-19",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -376,7 +376,7 @@
       "topic": "What Is a BEP-20 Token? A Beginner-Friendly Guide",
       "category": "BSC",
       "risk": "safe",
-      "status": "ready",
+      "status": "published",
       "content_mode": "external",
       "source_profile": "bep20",
       "knowledge_sections": [],
@@ -385,7 +385,8 @@
       "queue_priority": 13,
       "article_id": "apxn-012",
       "article_slug": "what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard",
-      "generated_at": "2026-09-18"
+      "generated_at": "2026-09-18",
+      "published_at": "2026-09-19"
     },
     {
       "id": "bank-025",

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard</title>
+
+    <meta
+        name="description"
+        content="Explore the BEP-20 token standard on BNB Smart Chain. This guide covers core specifications, validator roles, consensus mechanics, and token methods drawn directly from"
+    >
+
+    <meta
+        name="keywords"
+        content="BEP-20, BNB Smart Chain, token standard, validators, PoSA consensus, BEP20 specification, smart contracts, transfer methods, governance"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <meta
+        name="author"
+        content="Apex Network Editorial"
+    >
+
+
+    <link
+        rel="canonical"
+        href="https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html"
+    >
+
+    <link
+        rel="icon"
+        href="../../logo2%20(1).png"
+        type="image/png"
+    >
+
+
+    <meta
+        property="og:type"
+        content="article"
+    >
+
+    <meta
+        property="og:title"
+        content="What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard"
+    >
+
+    <meta
+        property="og:description"
+        content="Explore the BEP-20 token standard on BNB Smart Chain. This guide covers core specifications, validator roles, consensus mechanics, and token methods drawn directly from"
+    >
+
+    <meta
+        property="og:url"
+        content="https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html"
+    >
+
+    <meta
+        property="og:image"
+        content="https://apxn.network/blog/images/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard-1000133863.jpg"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Apex Network"
+    >
+
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard"
+    >
+
+    <meta
+        name="twitter:description"
+        content="Explore the BEP-20 token standard on BNB Smart Chain. This guide covers core specifications, validator roles, consensus mechanics, and token methods drawn directly from"
+    >
+
+    <meta
+        name="twitter:image"
+        content="https://apxn.network/blog/images/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard-1000133863.jpg"
+    >
+
+
+    <script>
+        window.va =
+            window.va ||
+            function () {
+                (
+                    window.vaq =
+                    window.vaq ||
+                    []
+                ).push(
+                    arguments
+                );
+            };
+    </script>
+
+    <script
+        defer
+        src="/_vercel/insights/script.js"
+    ></script>
+
+
+    <script
+        src="https://cdn.tailwindcss.com"
+    ></script>
+
+
+    <style>
+
+        html {
+            background: #020617;
+        }
+
+        .gold-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #fde047,
+                    #f59e0b,
+                    #fb923c
+                );
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+        }
+
+        .article-body p {
+            color:
+                #cbd5e1;
+
+            line-height:
+                1.9;
+
+            margin:
+                1rem 0 1.5rem;
+        }
+
+        .article-body h2 {
+            color:
+                #fff;
+
+            font-size:
+                1.75rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                2.7rem;
+
+            margin-bottom:
+                1rem;
+
+            line-height:
+                1.25;
+        }
+
+        .article-body h3 {
+            color:
+                #facc15;
+
+            font-size:
+                1.2rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                1rem;
+
+            margin-bottom:
+                .75rem;
+        }
+
+        .article-body ul {
+            color:
+                #cbd5e1;
+
+            margin:
+                1rem 0 1.5rem 1.5rem;
+
+            line-height:
+                1.9;
+
+            list-style:
+                disc;
+        }
+
+        .article-body a {
+            color:
+                #facc15;
+
+            font-weight:
+                800;
+        }
+
+        .info-box {
+            background:
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .8
+                );
+
+            border:
+                1px solid
+                rgba(
+                    234,
+                    179,
+                    8,
+                    .25
+                );
+
+            border-radius:
+                1rem;
+
+            padding:
+                1.25rem;
+
+            margin:
+                1.5rem 0;
+        }
+
+    </style>
+
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard",
+  "description": "Explore the BEP-20 token standard on BNB Smart Chain. This guide covers core specifications, validator roles, consensus mechanics, and token methods drawn directly from",
+  "image": "https://apxn.network/blog/images/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard-1000133863.jpg",
+  "mainEntityOfPage": "https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html",
+  "datePublished": "2026-09-19",
+  "dateModified": "2026-09-19",
+  "author": {
+    "@type": "Organization",
+    "name": "Apex Network Editorial"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Apex Network",
+    "url": "https://apxn.network",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apxn.network/logo2%20(1).png"
+    }
+  }
+}
+    </script>
+
+    
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many validators operate on BNB Smart Chain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "BNB Smart Chain relies on a system of forty five validators under Proof of Staked Authority consensus. The active set consists of twenty one cabinet members and twenty four candidates. The most bonded validator candidates advance to produce blocks while additional validators may serve as backups. This structure supports chain finality and security through slashing logic."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What core methods does the BEP-20 specification require?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The BEP twenty specification lists required methods including name symbol decimals total supply balance of transfer transfer from approve and allowance. It also defines events such as transfer and approval. These elements establish the interface for token smart contracts on BNB Smart Chain and support cross chain token movement."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is the symbol method mandatory in BEP-20?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The symbol method returns the token symbol as a string and is required under BEP twenty. Tokens that do not implement it cannot flow across BNB Beacon Chain and BNB Smart Chain. This requirement improves usability and ensures consistent token identification within the validator governed network."
+      }
+    }
+  ]
+}
+    </script>
+            
+
+</head>
+
+
+<body
+    class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950"
+>
+
+
+<header
+    class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5"
+    >
+
+        <a
+            href="../index.html"
+            class="flex items-center gap-3 min-w-0"
+        >
+
+            <div
+                class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50"
+            >
+
+                <img
+                    src="../../logo2%20(1).png"
+                    alt="Apex Network Logo"
+                    class="w-full h-full object-cover"
+                    width="44"
+                    height="44"
+                >
+
+            </div>
+
+
+            <div>
+
+                <div
+                    class="font-black tracking-wider gold-text text-base sm:text-lg"
+                >
+                    APEX NETWORK
+                </div>
+
+                <div
+                    class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]"
+                >
+                    APXN Blog
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <div
+            class="flex items-center gap-3"
+        >
+
+            <a
+                href="../index.html"
+                class="hidden sm:inline-flex text-sm font-bold text-gray-400 hover:text-yellow-400"
+            >
+                Blog Home
+            </a>
+
+            <a
+                href="https://t.me/ApxMinerBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl"
+            >
+                Open APXN App
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <article>
+
+
+        <section
+            class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent"
+        >
+
+            <div
+                class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20"
+            >
+
+                <nav
+                    aria-label="Breadcrumb"
+                    class="text-xs text-gray-500 font-bold mb-7"
+                >
+
+                    <a
+                        href="../../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Home
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <a
+                        href="../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Blog
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <span
+                        class="text-yellow-400"
+                    >
+                        BSC
+                    </span>
+
+                </nav>
+
+
+                <span
+                    class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5"
+                >
+                    BSC
+                </span>
+
+
+                <h1
+                    class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6"
+                >
+                    What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard
+                </h1>
+
+
+                <p
+                    class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7"
+                >
+                    Explore the BEP-20 token standard on BNB Smart Chain. This guide covers core specifications, validator roles, consensus mechanics, and token methods drawn directly from
+                </p>
+
+
+                <div
+                    class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500"
+                >
+
+                    <span
+                        class="font-bold text-gray-300"
+                    >
+                        Apex Network Editorial
+                    </span>
+
+                    <span>
+                        •
+                    </span>
+
+                    <time
+                        datetime="2026-09-19"
+                    >
+                        September 19, 2026
+                    </time>
+
+                    <span>
+                        •
+                    </span>
+
+                    <span>
+                        5 min read
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="mt-8 flex flex-wrap items-center gap-3"
+                >
+
+                    <button
+                        type="button"
+                        onclick="shareArticle()"
+                        class="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm font-black text-yellow-400 hover:bg-yellow-500/15 transition-colors"
+                        aria-label="Share this article"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                        >
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+                            <line x1="8.59" y1="13.49" x2="15.42" y2="17.51"></line>
+                        </svg>
+
+                        <span>
+                            Share article
+                        </span>
+                    </button>
+
+
+                    <span
+                        id="share-status"
+                        class="hidden text-sm font-bold text-emerald-400"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Original APXN link copied
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div
+            class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14"
+        >
+
+            <div
+                class="mb-8 flex w-full justify-center"
+            >
+                <a
+                    href="https://omg10.com/4/11822007"
+                    target="_blank"
+                    rel="sponsored noopener noreferrer"
+                    aria-label="Sponsored advertisement — view offer"
+                    class="inline-flex w-full max-w-2xl items-center justify-center gap-2 rounded-2xl border border-yellow-400/50 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 px-6 py-4 text-center text-sm sm:text-base font-black text-slate-950 shadow-[0_12px_32px_rgba(245,158,11,0.22)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                >
+                    <span>
+                        Sponsored Advertisement — View Offer
+                    </span>
+
+                    <span aria-hidden="true">
+                        ↗
+                    </span>
+                </a>
+            </div>
+
+
+            <figure
+                class="mb-12"
+            >
+
+                <img
+                    src="https://apxn.network/blog/images/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard-1000133863.jpg"
+                    alt="What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard"
+                    class="w-full rounded-2xl border border-slate-800 object-cover max-h-[620px]"
+                    loading="eager"
+                >
+
+            </figure>
+
+
+            
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+    
+
+
+            <div
+                class="article-body"
+            >
+
+                <p
+                    class="text-lg"
+                >
+                    BNB Smart Chain brings programmability and interoperability to the BNB Beacon Chain through a Proof of Staked Authority system. The chain relies on forty five validators operating under this consensus to support short block times and lower fees. The most bonded validator candidates become validators that produce blocks while double sign detection and other slashing logic help maintain security stability and finality. All validators in the current set receive transaction fees in BNB as rewards since BNB itself is not inflationary. Gas fees serve as the primary reward source with a portion allocated to finality voting. BEP-20 defines an interface standard for token contracts on the chain by adapting the ERC20 protocol to enable basic transfer functionality and cross chain movement between BNB Beacon Chain and BNB Smart Chain.
+                </p>
+
+
+                
+                        <section>
+                            <h2>Chain Overview and Validator Governance</h2>
+
+                            <p>BNB Smart Chain uses a system of forty five validators under Proof of Staked Authority consensus. The most bonded candidates advance to validator status and produce blocks. This structure supports governance through staking and allows the active validator set to consist of twenty one cabinet members plus twenty four candidates. Additional validators may join as backups when needed. The overall design maintains chain finality while incorporating slashing mechanisms for stability.</p>
+<p>The symbol method under specification section five point one point one point two returns the token symbol as a string. This required method improves usability for tokens on the chain. Tokens that omit the symbol method cannot flow across BNB Beacon Chain and BNB Smart Chain. The approach ties token identification directly to validator governed network operations.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Validators Chain Security and Consensus Logic</h2>
+
+                            <p>Given more than half plus one honest validators the network operates securely under Proof of Authority principles. Byzantine validators may still attempt attacks such as clone attacks. Slashing logic penalizes double signing or unavailability to expose malicious actors quickly and reduce attack profitability. This logic supports overall chain stability and finality.</p>
+<p>The active validator set includes forty five members split into twenty one cabinet and twenty four candidates. One hundred percent Ethereum compatibility allows modern proof of stake governance. Candidates produce blocks and charge gas fees yet with lower probability than the main set while remaining subject to slashing for unavailability.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Tokens Address Events and Validator Rewards</h2>
+
+                            <p>The transfer event must trigger whenever tokens move including zero value transfers. A token contract creating new tokens should emit a transfer event with the from address set to zero x zero. Validators receive transaction fees in BNB as rewards with a portion directed toward finality voting.</p>
+<p>BNB serves as the reward token without inflationary mining incentives. Delegators and validators gain additional utility from holding BNB beyond gas fee rewards. The transfer event specification ensures consistent tracking across token operations managed within the validator secured environment.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Transfer Methods and Smart Contract Standards</h2>
+
+                            <p>The BEP twenty specification outlines methods including name symbol decimals total supply balance of transfer transfer from approve and allowance. These functions define core token behavior on BNB Smart Chain. The abstract section describes an interface for token smart contracts derived from the ERC twenty protocol.</p>
+<p>Motivation for the standard centers on enabling token transfers and third party spending approvals. Implementation guidance covers both methods and events such as transfer and approval. The design supports token movement between chains while maintaining compatibility with existing Ethereum style smart contract patterns.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Smart Contracts Candidates and Standard Compatibility</h2>
+
+                            <p>The summary proposes an interface standard specifically for token contracts on BNB Smart Chain. This standard adapts ERC twenty to provide transfer capabilities and approval mechanisms while supporting movement between BNB Beacon Chain and BNB Smart Chain. Candidates participate in block production with reduced frequency compared to the primary validator set.</p>
+<p>One hundred percent Ethereum compatibility enables modern governance features. Candidates face slashing for unavailability though at reduced scale. The standard ensures tokens implement required methods to permit cross chain flows and maintain consistent behavior across the network.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Decimals Address Methods and Token Transfer Details</h2>
+
+                            <p>The decimals method returns the number of decimals a token uses for example eight which divides the token amount by one hundred million for user representation. This required method enhances usability. Tokens lacking the decimals implementation cannot move across BNB Beacon Chain and BNB Smart Chain.</p>
+<p>The transfer from function moves a specified value from one address to another and must emit the transfer event. It supports withdrawal workflows allowing contracts to act on behalf of users after authorization. Zero value transfers are treated as standard transfers that still fire the event.</p>
+                        </section>
+                    
+
+
+                
+                <section>
+
+                    <h2>
+                        Frequently asked questions
+                    </h2>
+
+                    
+                        <div class="info-box">
+                            <h3>How many validators operate on BNB Smart Chain?</h3>
+
+                            <p>BNB Smart Chain relies on a system of forty five validators under Proof of Staked Authority consensus. The active set consists of twenty one cabinet members and twenty four candidates. The most bonded validator candidates advance to produce blocks while additional validators may serve as backups. This structure supports chain finality and security through slashing logic.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>What core methods does the BEP-20 specification require?</h3>
+
+                            <p>The BEP twenty specification lists required methods including name symbol decimals total supply balance of transfer transfer from approve and allowance. It also defines events such as transfer and approval. These elements establish the interface for token smart contracts on BNB Smart Chain and support cross chain token movement.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>Why is the symbol method mandatory in BEP-20?</h3>
+
+                            <p>The symbol method returns the token symbol as a string and is required under BEP twenty. Tokens that do not implement it cannot flow across BNB Beacon Chain and BNB Smart Chain. This requirement improves usability and ensures consistent token identification within the validator governed network.</p>
+                        </div>
+                    
+
+                </section>
+                        
+
+
+                <section>
+
+                    <h2>
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        BNB Smart Chain operates with forty five validators under Proof of Staked Authority consensus where the most bonded candidates produce blocks and receive BNB transaction fees as rewards. BEP twenty establishes the token interface standard with required methods such as symbol and decimals plus transfer events. These specifications enable token contracts while maintaining compatibility across the described chain components.
+                    </p>
+
+                </section>
+
+
+                
+                <section>
+
+                    <h2>
+                        Related reading
+                    </h2>
+
+                    <ul>
+                        
+                                        <li>
+                                            <a href="./how-blockchain-explorers-help-users-verify-transactions.html">
+                                                How Blockchain Explorers Help Users Verify Transactions
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./how-ethereum-wallet-addresses-support-account-verification-and-security.html">
+                                                How Ethereum Wallet Addresses Support Account Verification and Security
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./what-is-bnb-smart-chain-and-how-does-it-work.html">
+                                                What Is BNB Smart Chain and How Does It Work
+                                            </a>
+                                        </li>
+                                    
+                    </ul>
+
+                </section>
+            
+
+
+                <div
+                    class="info-box"
+                >
+
+                    <strong>
+                        Editorial note:
+                    </strong>
+
+                    <p>
+                        This article is educational project content and should not be treated as financial, investment, legal or tax advice.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</main>
+
+
+<footer
+    class="border-t border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 flex flex-wrap gap-4 justify-between"
+    >
+
+        <span>
+            © 2026 Apex Network
+        </span>
+
+        <a
+            href="../index.html"
+            class="hover:text-yellow-400"
+        >
+            APXN Blog
+        </a>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    const APXN_ARTICLE_SHARE = {
+        title:
+            "What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard",
+
+        url:
+            "https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html"
+    };
+
+
+    function showShareStatus(
+        message
+    ) {
+
+        const status =
+            document.getElementById(
+                'share-status'
+            );
+
+        if (!status) {
+            return;
+        }
+
+        status.textContent =
+            message;
+
+        status.classList.remove(
+            'hidden'
+        );
+
+        window.clearTimeout(
+            window.__apxnShareStatusTimer
+        );
+
+        window.__apxnShareStatusTimer =
+            window.setTimeout(
+                () => {
+                    status.classList.add(
+                        'hidden'
+                    );
+                },
+                3000
+            );
+    }
+
+
+    async function copyOriginalArticleLink() {
+
+        const link =
+            APXN_ARTICLE_SHARE.url;
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(
+                    link
+                );
+
+            } else {
+
+                const input =
+                    document.createElement(
+                        'textarea'
+                    );
+
+                input.value =
+                    link;
+
+                input.setAttribute(
+                    'readonly',
+                    ''
+                );
+
+                input.style.position =
+                    'fixed';
+
+                input.style.opacity =
+                    '0';
+
+                document.body.appendChild(
+                    input
+                );
+
+                input.select();
+
+                document.execCommand(
+                    'copy'
+                );
+
+                input.remove();
+            }
+
+            showShareStatus(
+                'Original APXN link copied'
+            );
+
+            return true;
+
+        } catch {
+
+            showShareStatus(
+                'Copy the APXN link from the address bar'
+            );
+
+            return false;
+        }
+    }
+
+
+    async function shareArticle() {
+
+        const shareData = {
+            title:
+                APXN_ARTICLE_SHARE.title,
+
+            url:
+                APXN_ARTICLE_SHARE.url
+        };
+
+        if (
+            typeof navigator.share ===
+            'function'
+        ) {
+
+            try {
+
+                await navigator.share(
+                    shareData
+                );
+
+                return;
+
+            } catch (error) {
+
+                if (
+                    error &&
+                    error.name ===
+                        'AbortError'
+                ) {
+                    return;
+                }
+            }
+        }
+
+        await copyOriginalArticleLink();
+    }
+
+</script>
+
+
+</body>
+</html>
