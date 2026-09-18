@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-17",
+  "last_updated": "2026-09-18",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -58,14 +58,16 @@
       "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "hybrid",
       "source_profile": "crypto_token_basics",
       "knowledge_sections": [
         "implemented_product_facts.points_mining"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed."
+      "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed.",
+      "queued_at": "2026-09-18",
+      "queue_priority": 22
     },
     {
       "id": "bank-002",
@@ -194,13 +196,15 @@
       "topic": "How Telegram Mini App initData Authentication Protects APXN Users",
       "category": "Security",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "hybrid",
       "source_profile": "telegram_auth",
       "knowledge_sections": [
         "implemented_product_facts.telegram_authentication"
       ],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-18",
+      "queue_priority": 19
     },
     {
       "id": "bank-012",
@@ -245,7 +249,7 @@
       "topic": "How Supabase Can Support Secure Web3 Mini App Backends",
       "category": "Development",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "hybrid",
       "source_profile": "supabase_backend",
       "knowledge_sections": [
@@ -253,14 +257,16 @@
         "implemented_product_facts.points_mining",
         "implemented_product_facts.daily_checkin"
       ],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-18",
+      "queue_priority": 21
     },
     {
       "id": "bank-016",
       "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
       "category": "Web3",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "content_mode": "hybrid",
       "source_profile": "wallet_connection",
       "knowledge_sections": [
@@ -269,7 +275,10 @@
       "auto_publish_allowed": true,
       "editorial_guard": "APXN wallet linking is UI-only in the reviewed implementation. Do not say that a wallet is persistently bound to a Telegram account.",
       "queued_at": "2026-09-14",
-      "queue_priority": 12
+      "queue_priority": 12,
+      "article_id": "apxn-011",
+      "article_slug": "wallet-connection-vs-wallet-storage-an-important-web3-distinction",
+      "generated_at": "2026-09-18"
     },
     {
       "id": "bank-017",
@@ -380,11 +389,13 @@
       "topic": "Understanding Gas Fees on BNB Smart Chain",
       "category": "BSC",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "bsc_gas",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-18",
+      "queue_priority": 18
     },
     {
       "id": "bank-026",
@@ -408,11 +419,13 @@
       "topic": "Blockchain Transactions Explained for Complete Beginners",
       "category": "Blockchain",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "blockchain_transactions",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-18",
+      "queue_priority": 16
     },
     {
       "id": "bank-028",
@@ -442,11 +455,13 @@
       "topic": "DEX vs CEX: Understanding Crypto Exchange Models",
       "category": "Education",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "exchange_models",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-18",
+      "queue_priority": 20
     },
     {
       "id": "bank-031",
@@ -497,11 +512,13 @@
       "topic": "How Telegram Mini Apps Make Web3 Applications Easier to Access",
       "category": "Web3",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "telegram_web3",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-09-18",
+      "queue_priority": 17
     },
     {
       "id": "bank-035",
@@ -527,20 +544,20 @@
     }
   ],
   "planner_state": {
-    "last_run": "2026-09-17",
-    "available_topics": 29,
-    "automation_eligible_available_topics": 27,
+    "last_run": "2026-09-18",
+    "available_topics": 22,
+    "automation_eligible_available_topics": 20,
     "manual_or_review_topics": 2,
-    "queued_topics": 5,
-    "used_topics": 2,
+    "queued_topics": 11,
+    "used_topics": 3,
     "category_load_after_run": {
-      "APXN Guides": 3,
-      "Blockchain": 2,
-      "Web3": 2,
-      "BSC": 2,
-      "Security": 2,
-      "Education": 2,
-      "Development": 2
+      "APXN Guides": 4,
+      "Blockchain": 3,
+      "Web3": 3,
+      "BSC": 3,
+      "Security": 3,
+      "Education": 3,
+      "Development": 3
     }
   }
 }

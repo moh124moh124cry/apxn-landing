@@ -1583,10 +1583,46 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 123496500,
           "cost_usd": 0.01234965
+        },
+        {
+          "date": "2026-09-18",
+          "response_id": "5c888c8c-4703-9f27-b111-64d4f88c9089",
+          "model": "grok-4.3",
+          "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+          "article_slug": "wallet-connection-vs-wallet-storage-an-important-web3-distinction",
+          "stage": "research_packet_writing",
+          "input_tokens": 5502,
+          "cached_input_tokens": 192,
+          "output_tokens": 2448,
+          "reasoning_tokens": 635,
+          "total_tokens": 7950,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 127959000,
+          "cost_usd": 0.0127959
+        },
+        {
+          "date": "2026-09-18",
+          "response_id": "15e58935-ba0f-9d91-b7af-a87a228fdd55",
+          "model": "grok-4.3",
+          "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+          "article_slug": "wallet-connection-vs-wallet-storage-an-important-web3-distinction",
+          "stage": "safe_repair_1",
+          "input_tokens": 7337,
+          "cached_input_tokens": 192,
+          "output_tokens": 2803,
+          "reasoning_tokens": 788,
+          "total_tokens": 10140,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 159771500,
+          "cost_usd": 0.01597715
         }
       ],
-      "total_cost_usd": 1.35368255
+      "total_cost_usd": 1.3824556
     }
   },
-  "last_updated": "2026-09-17"
+  "last_updated": "2026-09-18"
 }

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-17",
+  "last_updated": "2026-09-18",
   "default_language": "en",
   "stats": {
-    "total_articles": 10,
+    "total_articles": 11,
     "published": 10,
-    "ready": 0,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -2099,6 +2099,246 @@
         }
       },
       "published_url": "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html"
+    },
+    {
+      "id": "apxn-011",
+      "slug": "wallet-connection-vs-wallet-storage-an-important-web3-distinction",
+      "title": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+      "description": "Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified",
+      "excerpt": "Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified",
+      "category": "Web3",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-18",
+      "generated_at": "2026-09-18",
+      "updated_at": "2026-09-18",
+      "published_at": null,
+      "reading_minutes": 5,
+      "word_count": 981,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "web3",
+        "ethereum wallets",
+        "wallet connection",
+        "recovery phrase",
+        "scam prevention",
+        "decentralized applications",
+        "account address",
+        "seed phrase security"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "hybrid",
+      "source_profile": "wallet_connection",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+        "description": "Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified",
+        "canonical": "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+        "description": "Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified",
+        "keywords": [
+          "web3",
+          "ethereum wallets",
+          "wallet connection",
+          "recovery phrase",
+          "scam prevention",
+          "decentralized applications",
+          "account address",
+          "seed phrase security"
+        ],
+        "intro": {
+          "text": "Ethereum wallets serve as tools for buying, storing and sending crypto while supporting broader activities such as staking and interacting with decentralized applications. Resources on the topic outline core elements including what ether is, how gas fees operate, and the role of layer 2 networks. They also address Ethereum security practices and scam prevention methods. Educational material highlights distinctions between accounts, keys and addresses, noting that an account consists of a pair of keys where one creates a shareable address and the other remains secret for signing. Content further covers choosing a wallet, obtaining ETH and exploring applications while stressing the importance of understanding these components before engaging with any interface that requests address information.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Ethereum Accounts and Recovery Phrases",
+            "paragraphs": [
+              {
+                "text": "An Ethereum account consists of a pair of keys that together allow holding assets and making transactions. The public portion generates an address that can be shared, while the private portion must stay secret because it signs actions. Recovery phrases function as the master key to a wallet. Anyone obtaining this phrase gains access to all associated accounts and can move every asset. Private keys operate similarly for individual accounts. No legitimate service or support contact will ever request these details from a user.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-08",
+                  "APXN-08",
+                  "EXT-11"
+                ]
+              },
+              {
+                "text": "Staking activities appear among the documented uses of Ethereum wallets alongside running nodes and participating in pooled staking options. Educational materials list these topics without describing specific interface behaviors for any single application. The distinction between an account and its keys remains fundamental regardless of how a user later interacts with a web interface or application that displays an address.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-08",
+                  "APXN-08",
+                  "EXT-11"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Common Scams Involving Wallet Addresses",
+            "paragraphs": [
+              {
+                "text": "Giveaway scams represent one of the most frequently encountered issues in cryptocurrency. The typical pattern involves a request to send ETH to a provided address with the promise that the amount will be returned doubled. This structure is sometimes called a two for one scam. Users are advised to verify domain names carefully after following any link to reduce exposure to such tactics.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-10",
+                  "APXN-05",
+                  "APXN-09"
+                ]
+              },
+              {
+                "text": "Educational sources stress checking that a site matches the intended domain before proceeding. The same guidance applies when an interface opens and requests an address or displays one. The reviewed Telegram Mini App scope covers only connection prompts and does not extend to claims of permanent binding between any displayed address and a user account.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-10",
+                  "APXN-05",
+                  "APXN-09"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Bookmarking and Interface Verification",
+            "paragraphs": [
+              {
+                "text": "When using a web wallet, bookmarking the correct site helps guard against phishing attempts. Transactions cannot be reversed once confirmed, and recovery of access after loss is not straightforward. These points appear consistently in wallet guidance materials that also list decentralized finance, NFTs and identity tools among available applications.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-06",
+                  "APXN-07",
+                  "APXN-10"
+                ]
+              },
+              {
+                "text": "A user interface that opens and displays an address demonstrates only that the interface can request or show information from a provider. The reviewed implementation status remains UI only, meaning no dedicated persistence route exists within the examined repository. Editorial content must therefore separate the act of displaying an address from any assertion of permanent storage.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-06",
+                  "APXN-07",
+                  "APXN-10"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Address Requests in Application Interfaces",
+            "paragraphs": [
+              {
+                "text": "An interface can request an EVM account from supported injected wallet providers. It can also accept a manually entered address beginning with the 0x prefix. Such a request shows only that the interface is capable of displaying or receiving an address string. It does not establish that the address is stored permanently or approved for any later action.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "EXT-09",
+                  "APXN-03"
+                ]
+              },
+              {
+                "text": "Double checking transaction details before confirmation remains a recommended step because an Ethereum transaction is irreversible. The same caution applies when an address appears in any interface. The presence of an address on screen supplies no evidence that the address has been bound to an account in a lasting way.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "EXT-09",
+                  "APXN-03"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Wallet Providers and Account Management",
+            "paragraphs": [
+              {
+                "text": "Wallets function as the primary tools most people employ to manage digital assets and identity. A wallet interacts with an Ethereum account, and users retain the option to change providers at any time.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "EXT-05",
+                  "APXN-06"
+                ]
+              },
+              {
+                "text": "The reviewed Telegram Mini App repository contains connection behavior but no dedicated persistence API route. Editorial guidance therefore requires distinguishing between a displayed address and any claim of permanent account binding. Website dashboard code lies outside the current synchronization phase and cannot be inferred from the Mini App observations.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "EXT-05",
+                  "APXN-06"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Security Practices for Crypto Assets",
+            "paragraphs": [
+              {
+                "text": "Crypto security guidance begins with basic practices such as never sharing a recovery phrase or private keys. Hardware wallets receive mention as one option for added protection. Users are also reminded to set appropriate spend limits on smart contracts and to verify every transaction before approval.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "EXT-07",
+                  "APXN-04"
+                ]
+              },
+              {
+                "text": "Further recommendations include using strong unique passwords, enabling two factor authentication and removing unnecessary browser extensions. These steps apply across interactions with any interface that opens and requests address information. The reviewed repository contains no persistence route, reinforcing the need to treat displayed addresses as transient within that surface.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "EXT-07",
+                  "APXN-04"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What does a wallet connection prompt actually confirm?",
+            "answer": "A connection prompt in a user interface demonstrates only that the interface can request or display an address from a provider. It supplies no evidence that the address is permanently stored or bound to any account. Educational sources outline wallet uses for accounts and applications but do not describe interface prompts as creating storage.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "How should users treat an address shown in a Mini App interface?",
+            "answer": "An address shown after a connection request should be viewed as transient display output. The reviewed implementation carries UI only status and contains no dedicated persistence route. Guidance therefore separates the visible address from any assertion of lasting storage or binding to a user account within that surface.",
+            "evidence_ids": [
+              "EXT-03",
+              "APXN-01"
+            ]
+          },
+          {
+            "question": "What security topics appear alongside wallet discussions?",
+            "answer": "Security materials list practices such as avoiding recovery phrase disclosure, using hardware options when appropriate and verifying domains after following links. They also note common scam patterns including giveaway requests. The examined repository shows connection behavior without a persistence API, so displayed addresses remain separate from storage claims.",
+            "evidence_ids": [
+              "APXN-02",
+              "EXT-04"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "Ethereum resources describe wallets as tools for accounts, keys and addresses while stressing recovery phrase protection and scam awareness. A connection prompt in any interface confirms only the ability to request or display an address. Verified observations of the reviewed Mini App confirm UI only behavior without a persistence route, requiring clear separation between displayed addresses and any claim of permanent storage or binding.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "APXN-01"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -2235,7 +2475,7 @@
       "priority": 12,
       "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
       "category": "Web3",
-      "status": "waiting",
+      "status": "ready",
       "source": "topic_bank",
       "topic_bank_id": "bank-016",
       "language": "en",
@@ -2246,7 +2486,9 @@
         "features_not_to_describe_as_live.wallet_linking"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "APXN wallet linking is UI-only in the reviewed implementation. Do not say that a wallet is persistently bound to a Telegram account."
+      "editorial_guard": "APXN wallet linking is UI-only in the reviewed implementation. Do not say that a wallet is persistently bound to a Telegram account.",
+      "article_id": "apxn-011",
+      "generated_at": "2026-09-18"
     },
     {
       "priority": 13,
@@ -2292,30 +2534,153 @@
         "implemented_product_facts.daily_checkin"
       ],
       "auto_publish_allowed": true
+    },
+    {
+      "priority": 16,
+      "topic": "Blockchain Transactions Explained for Complete Beginners",
+      "category": "Blockchain",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-027",
+      "language": "en",
+      "queued_at": "2026-09-18",
+      "content_mode": "external",
+      "source_profile": "blockchain_transactions",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 17,
+      "topic": "How Telegram Mini Apps Make Web3 Applications Easier to Access",
+      "category": "Web3",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-034",
+      "language": "en",
+      "queued_at": "2026-09-18",
+      "content_mode": "external",
+      "source_profile": "telegram_web3",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 18,
+      "topic": "Understanding Gas Fees on BNB Smart Chain",
+      "category": "BSC",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-025",
+      "language": "en",
+      "queued_at": "2026-09-18",
+      "content_mode": "external",
+      "source_profile": "bsc_gas",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 19,
+      "topic": "How Telegram Mini App initData Authentication Protects APXN Users",
+      "category": "Security",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-011",
+      "language": "en",
+      "queued_at": "2026-09-18",
+      "content_mode": "hybrid",
+      "source_profile": "telegram_auth",
+      "knowledge_sections": [
+        "implemented_product_facts.telegram_authentication"
+      ],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 20,
+      "topic": "DEX vs CEX: Understanding Crypto Exchange Models",
+      "category": "Education",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-030",
+      "language": "en",
+      "queued_at": "2026-09-18",
+      "content_mode": "external",
+      "source_profile": "exchange_models",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 21,
+      "topic": "How Supabase Can Support Secure Web3 Mini App Backends",
+      "category": "Development",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-015",
+      "language": "en",
+      "queued_at": "2026-09-18",
+      "content_mode": "hybrid",
+      "source_profile": "supabase_backend",
+      "knowledge_sections": [
+        "implemented_product_facts.telegram_authentication",
+        "implemented_product_facts.points_mining",
+        "implemented_product_facts.daily_checkin"
+      ],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 22,
+      "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
+      "category": "APXN Guides",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-001",
+      "language": "en",
+      "queued_at": "2026-09-18",
+      "content_mode": "hybrid",
+      "source_profile": "crypto_token_basics",
+      "knowledge_sections": [
+        "implemented_product_facts.points_mining"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed."
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-010",
+    "last_generated_article": "apxn-011",
     "last_published_article": "apxn-010",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-09-17",
-      "added_topics": 0,
-      "added_topic_ids": [],
-      "added_categories": [],
-      "waiting_topics_after_run": 6,
+      "last_run": "2026-09-18",
+      "added_topics": 7,
+      "added_topic_ids": [
+        "bank-027",
+        "bank-034",
+        "bank-025",
+        "bank-011",
+        "bank-030",
+        "bank-015",
+        "bank-001"
+      ],
+      "added_categories": [
+        "Blockchain",
+        "Web3",
+        "BSC",
+        "Security",
+        "Education",
+        "Development",
+        "APXN Guides"
+      ],
+      "waiting_topics_after_run": 12,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
-        "APXN Guides": 3,
-        "Blockchain": 2,
-        "Web3": 2,
-        "BSC": 2,
-        "Security": 2,
-        "Education": 2,
-        "Development": 2
+        "APXN Guides": 4,
+        "Blockchain": 3,
+        "Web3": 3,
+        "BSC": 3,
+        "Security": 3,
+        "Education": 3,
+        "Development": 3
       }
     }
   }
