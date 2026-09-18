@@ -2,45 +2,51 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://apxn.network/</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://apxn.network/blog/</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://apxn.network/about.html</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://apxn.network/earn.html</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://apxn.network/contact.html</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
         <loc>https://apxn.network/editorial-policy.html</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
         <loc>https://apxn.network/disclaimer.html</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html</loc>
+        <lastmod>2026-09-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
     </url>
     <url>
         <loc>https://apxn.network/blog/articles/how-ethereum-wallet-addresses-support-account-verification-and-security.html</loc>
@@ -104,13 +110,13 @@
     </url>
     <url>
         <loc>https://apxn.network/privacy.html</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.3</priority>
     </url>
     <url>
         <loc>https://apxn.network/terms.html</loc>
-        <lastmod>2026-09-17</lastmod>
+        <lastmod>2026-09-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.3</priority>
     </url>
