@@ -1655,9 +1655,45 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 159759000,
           "cost_usd": 0.0159759
+        },
+        {
+          "date": "2026-09-19",
+          "response_id": "5aab0ec3-6b2b-973d-9ddb-5ce617f82559",
+          "model": "grok-4.3",
+          "topic": "Self-Custody Wallet Basics for Web3 Beginners",
+          "article_slug": "self-custody-wallet-basics-for-web3-beginners",
+          "stage": "research_packet_writing",
+          "input_tokens": 4631,
+          "cached_input_tokens": 192,
+          "output_tokens": 2478,
+          "reasoning_tokens": 786,
+          "total_tokens": 7109,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 117821500,
+          "cost_usd": 0.01178215
+        },
+        {
+          "date": "2026-09-19",
+          "response_id": "a76da40d-ccc5-9b48-b5b8-d7f5bb25e8fe",
+          "model": "grok-4.3",
+          "topic": "Self-Custody Wallet Basics for Web3 Beginners",
+          "article_slug": "self-custody-wallet-basics-for-web3-beginners",
+          "stage": "safe_repair_1",
+          "input_tokens": 6242,
+          "cached_input_tokens": 192,
+          "output_tokens": 3160,
+          "reasoning_tokens": 609,
+          "total_tokens": 9402,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 155009000,
+          "cost_usd": 0.0155009
         }
       ],
-      "total_cost_usd": 1.41220365
+      "total_cost_usd": 1.4394867
     }
   },
   "last_updated": "2026-09-19"

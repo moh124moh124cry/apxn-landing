@@ -302,13 +302,16 @@
       "topic": "Self-Custody Wallet Basics for Web3 Beginners",
       "category": "Education",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "content_mode": "external",
       "source_profile": "wallet_basics",
       "knowledge_sections": [],
       "auto_publish_allowed": true,
       "queued_at": "2026-09-14",
-      "queue_priority": 14
+      "queue_priority": 14,
+      "article_id": "apxn-014",
+      "article_slug": "self-custody-wallet-basics-for-web3-beginners-on-ethereum",
+      "generated_at": "2026-09-19"
     },
     {
       "id": "bank-019",
@@ -571,7 +574,7 @@
     "available_topics": 22,
     "automation_eligible_available_topics": 20,
     "manual_or_review_topics": 2,
-    "queued_topics": 10,
+    "queued_topics": 9,
     "used_topics": 4,
     "category_load_after_run": {
       "APXN Guides": 4,
