@@ -996,6 +996,106 @@
                 font-size: 15px;
             }
         }
+
+        /* =====================================
+           APXN KNOWLEDGE INPUT
+        ====================================== */
+        .knowledge-panel {
+            margin-bottom: 26px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--card);
+        }
+
+        .knowledge-panel h2 {
+            margin: 0 0 8px;
+            font-size: 21px;
+        }
+
+        .knowledge-panel p {
+            margin: 0 0 18px;
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: 13px;
+        }
+
+        .knowledge-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .knowledge-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .knowledge-field label,
+        .knowledge-text-label {
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .knowledge-control {
+            width: 100%;
+            border: 1px solid var(--border-strong);
+            border-radius: 12px;
+            padding: 12px 14px;
+            background: rgba(2, 6, 23, 0.8);
+            color: var(--text);
+            font: inherit;
+            outline: none;
+        }
+
+        .knowledge-control:focus {
+            border-color: var(--blue-light);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
+        }
+
+        .knowledge-textarea {
+            display: block;
+            min-height: 175px;
+            margin-top: 8px;
+            resize: vertical;
+            line-height: 1.7;
+        }
+
+        .knowledge-confirm {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 15px 0;
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.8;
+            cursor: pointer;
+        }
+
+        .knowledge-confirm input {
+            flex-shrink: 0;
+            width: 17px;
+            height: 17px;
+            margin-top: 3px;
+            accent-color: var(--green);
+        }
+
+        .knowledge-save-button {
+            border: 0;
+            border-radius: 12px;
+            padding: 13px 20px;
+            background: var(--green);
+            color: #022c22;
+            font: inherit;
+            font-weight: 800;
+        }
+
+        .knowledge-save-button:disabled {
+            opacity: 0.55;
+        }
     </style>
 </head>
 
@@ -1170,6 +1270,113 @@
 
             </div>
 
+
+            <!-- =========================================
+                 ADMIN-SUPPLIED APXN KNOWLEDGE
+            ========================================== -->
+            <section
+                class="knowledge-panel"
+                aria-labelledby="knowledge-heading"
+            >
+                <h2 id="knowledge-heading">
+                    إضافة معلومات إلى بنك APXN
+                </h2>
+
+                <p>
+                    أضف محادثة مع ChatGPT، أو تحديثاً لتطبيق التعدين،
+                    أو تعديلاً على الموقع أو خريطة الطريق.
+                    تُستخدم المعلومات مصدراً لمقالات APXN News
+                    ضمن جدول التوليد الحالي فقط.
+                </p>
+
+                <form id="knowledge-form">
+                    <div class="knowledge-fields">
+                        <div class="knowledge-field">
+                            <label for="knowledge-title">
+                                عنوان المعلومة (اختياري)
+                            </label>
+                            <input
+                                id="knowledge-title"
+                                class="knowledge-control"
+                                type="text"
+                                maxlength="150"
+                                placeholder="مثال: تحديث شارة EARLY ACCESS"
+                            >
+                        </div>
+
+                        <div class="knowledge-field">
+                            <label for="knowledge-type">
+                                نوع المعلومة
+                            </label>
+                            <select
+                                id="knowledge-type"
+                                class="knowledge-control"
+                            >
+                                <option value="conversation">
+                                    محادثة مع ChatGPT
+                                </option>
+                                <option value="app">
+                                    تحديث تطبيق التعدين
+                                </option>
+                                <option value="website">
+                                    تحديث الموقع
+                                </option>
+                                <option value="roadmap">
+                                    تحديث خريطة الطريق
+                                </option>
+                                <option value="other">
+                                    معلومات أخرى عن APXN
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label
+                        class="knowledge-text-label"
+                        for="knowledge-text"
+                    >
+                        النص الذي تريد إضافته
+                    </label>
+
+                    <textarea
+                        id="knowledge-text"
+                        class="knowledge-control knowledge-textarea"
+                        dir="auto"
+                        minlength="30"
+                        maxlength="50000"
+                        required
+                        placeholder="الصق المحادثة أو اكتب آخر تحديثات APXN هنا..."
+                    ></textarea>
+
+                    <label class="knowledge-confirm">
+                        <input
+                            id="knowledge-public-confirm"
+                            type="checkbox"
+                            required
+                        >
+                        <span>
+                            راجعت النص ولا يحتوي على كلمات مرور
+                            أو مفاتيح سرية أو بيانات شخصية.
+                            أفهم أنه سيُحفظ في مستودع GitHub العام.
+                        </span>
+                    </label>
+
+                    <button
+                        id="knowledge-save-button"
+                        class="knowledge-save-button"
+                        type="submit"
+                    >
+                        حفظ في بنك معلومات APXN
+                    </button>
+
+                    <div
+                        id="knowledge-message"
+                        class="message hidden"
+                        role="status"
+                        aria-live="polite"
+                    ></div>
+                </form>
+            </section>
 
             <section class="stats">
 
@@ -3911,6 +4118,164 @@
         );
 
 
+    /* =========================================
+       ADMIN KNOWLEDGE FORM
+    ========================================== */
+
+    const knowledgeForm =
+        document.getElementById(
+            'knowledge-form'
+        );
+
+    const knowledgeSaveButton =
+        document.getElementById(
+            'knowledge-save-button'
+        );
+
+    const knowledgeMessage =
+        document.getElementById(
+            'knowledge-message'
+        );
+
+    function setKnowledgeMessage(
+        message = '',
+        type = 'success'
+    ) {
+        knowledgeMessage.textContent = message;
+        knowledgeMessage.className = message
+            ? `message ${type}`
+            : 'message hidden';
+    }
+
+    knowledgeForm.addEventListener(
+        'submit',
+        async event => {
+            event.preventDefault();
+
+            if (knowledgeSaveButton.disabled) {
+                return;
+            }
+
+            const title =
+                document.getElementById(
+                    'knowledge-title'
+                ).value.trim();
+
+            const type =
+                document.getElementById(
+                    'knowledge-type'
+                ).value;
+
+            const text =
+                document.getElementById(
+                    'knowledge-text'
+                ).value.trim();
+
+            const publicContentConfirmed =
+                document.getElementById(
+                    'knowledge-public-confirm'
+                ).checked;
+
+            if (
+                text.length < 30 ||
+                !publicContentConfirmed
+            ) {
+                setKnowledgeMessage(
+                    'أدخل نصاً لا يقل عن 30 حرفاً وراجع تأكيد الأمان.',
+                    'warning'
+                );
+                return;
+            }
+
+            knowledgeSaveButton.disabled = true;
+            knowledgeSaveButton.textContent =
+                'جاري حفظ المعلومات...';
+
+            setKnowledgeMessage(
+                'جاري حفظ المعلومة في بنك APXN...',
+                'warning'
+            );
+
+            try {
+                const { response, data } =
+                    await apiRequest(
+                        '/api/blog-admin-knowledge',
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type':
+                                    'application/json'
+                            },
+                            body: JSON.stringify({
+                                title,
+                                type,
+                                text,
+                                public_content_confirmed:
+                                    publicContentConfirmed
+                            })
+                        }
+                    );
+
+                if (response.status === 401) {
+                    state.authenticated = false;
+                    showLogin();
+                    setLoginMessage(
+                        'انتهت جلسة الإدارة. سجل الدخول من جديد.',
+                        'warning'
+                    );
+                    return;
+                }
+
+                if (
+                    !response.ok ||
+                    data?.success !== true
+                ) {
+                    const messages = {
+                        DUPLICATE_SUBMISSION:
+                            'هذه المعلومة محفوظة مسبقاً في بنك APXN.',
+                        INVALID_TEXT_LENGTH:
+                            'النص غير صالح. أدخل بين 30 و50000 حرف.',
+                        PUBLIC_CONFIRMATION_REQUIRED:
+                            'يجب تأكيد مراجعة النص قبل حفظه.',
+                        SENSITIVE_CONTENT_DETECTED:
+                            'رصد النظام نصاً قد يحتوي على مفتاح أو سر. احذفه ثم حاول مجدداً.',
+                        GITHUB_CONFLICT_RETRY:
+                            'تغيّرت ملفات GitHub أثناء الحفظ. حاول مرة أخرى.',
+                        BLOG_GITHUB_TOKEN_NOT_CONFIGURED:
+                            'تعذّر الحفظ: إعداد اتصال GitHub غير متوفر.',
+                        KNOWLEDGE_SAVE_FAILED:
+                            'تعذّر حفظ المعلومة في GitHub. حاول مجدداً.'
+                    };
+
+                    throw new Error(
+                        messages[data?.error] ||
+                        'تعذّر حفظ المعلومة. حاول مجدداً.'
+                    );
+                }
+
+                knowledgeForm.reset();
+
+                setKnowledgeMessage(
+                    data.news_topic_queued
+                        ? 'تم حفظ المعلومة وإضافة موضوع APXN News إلى قائمة التوليد الحالية. ستبقى المقالة للمراجعة والنشر اليدوي.'
+                        : 'تم حفظ المعلومة في بنك APXN. يمكنك إضافة المزيد من النصوص لتكوين مادة كافية لمقال لاحق.',
+                    'success'
+                );
+
+            } catch (error) {
+                setKnowledgeMessage(
+                    error.message ||
+                    'حدث خطأ أثناء حفظ المعلومة.',
+                    'error'
+                );
+            } finally {
+                knowledgeSaveButton.disabled = false;
+                knowledgeSaveButton.textContent =
+                    'حفظ في بنك معلومات APXN';
+            }
+        }
+    );
+
     bindTabs();
 
 
@@ -3925,4 +4290,5 @@
 
 </body>
 </html>
+
 
