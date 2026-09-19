@@ -1637,10 +1637,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 137721500,
           "cost_usd": 0.01377215
+        },
+        {
+          "date": "2026-09-19",
+          "response_id": "64828cf2-1998-9149-952e-c6b0b1823961",
+          "model": "grok-4.3",
+          "topic": "APXN Project News: تحديث استراتيجي لمشروع APXN Network — 19 سبتمبر 2026 (4a9cefde074a)",
+          "article_slug": "apxn-project-news-apxn-network-19-2026-4a9cefde074a",
+          "stage": "research_packet_writing",
+          "input_tokens": 7510,
+          "cached_input_tokens": 192,
+          "output_tokens": 2716,
+          "reasoning_tokens": 452,
+          "total_tokens": 10226,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 159759000,
+          "cost_usd": 0.0159759
         }
       ],
-      "total_cost_usd": 1.39622775
+      "total_cost_usd": 1.41220365
     }
   },
-  "last_updated": "2026-09-18"
+  "last_updated": "2026-09-19"
 }

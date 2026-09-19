@@ -3,9 +3,9 @@
   "last_updated": "2026-09-19",
   "default_language": "en",
   "stats": {
-    "total_articles": 12,
+    "total_articles": 13,
     "published": 11,
-    "ready": 1,
+    "ready": 2,
     "drafts": 0,
     "featured": 1
   },
@@ -2563,6 +2563,240 @@
         }
       },
       "published_url": "https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html"
+    },
+    {
+      "id": "apxn-013",
+      "slug": "apxn-network-strategic-update-details-point-economy-and-early-access-badge-policy",
+      "title": "APXN Network Strategic Update Details Point Economy and EARLY ACCESS Badge Policy",
+      "description": "The APXN Network strategic planning document dated 19 September 2026 outlines the point economy, seven user levels, EARLY ACCESS badge conditions, activity rules, mining",
+      "excerpt": "The APXN Network strategic planning document dated 19 September 2026 outlines the point economy, seven user levels, EARLY ACCESS badge conditions, activity rules, mining",
+      "category": "APXN News",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-19",
+      "generated_at": "2026-09-19",
+      "updated_at": "2026-09-19",
+      "published_at": null,
+      "reading_minutes": 6,
+      "word_count": 1181,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "APXN Network",
+        "strategic update",
+        "EARLY ACCESS badge",
+        "point mining",
+        "Telegram app",
+        "user levels",
+        "activity policy",
+        "KYC eligibility",
+        "mining upgrades",
+        "airdrop mechanism"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "APXN Network Strategic Update Details Point Economy and EARLY ACCESS Badge Policy",
+        "description": "The APXN Network strategic planning document dated 19 September 2026 outlines the point economy, seven user levels, EARLY ACCESS badge conditions, activity rules, mining",
+        "canonical": "https://apxn.network/blog/articles/apxn-network-strategic-update-details-point-economy-and-early-access-badge-policy.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "APXN Network Strategic Update Details Point Economy and EARLY ACCESS Badge Policy",
+        "description": "The APXN Network strategic planning document dated 19 September 2026 outlines the point economy, seven user levels, EARLY ACCESS badge conditions, activity rules, mining",
+        "keywords": [
+          "APXN Network",
+          "strategic update",
+          "EARLY ACCESS badge",
+          "point mining",
+          "Telegram app",
+          "user levels",
+          "activity policy",
+          "KYC eligibility",
+          "mining upgrades",
+          "airdrop mechanism"
+        ],
+        "intro": {
+          "text": "The APXN Network released a strategic planning update on 19 September 2026. This document covers the point economy, seven levels, EARLY ACCESS badge, activity conditions, mining upgrades, KYC eligibility, account policy and future airdrop mechanism. The information comes from an updated strategic planning document for the APXN Network project. Editorial guidance states the document represents intended strategy and policies. Articles must distinguish between features that already appear or function inside the application and those that remain planned but not yet announced for launch. The project relies on point mining inside a Telegram mini app. Users collect APXN points through mining, daily login, available tasks and activities, equivalent advertisements and methods to increase mining speed according to each feature conditions. Points represent user contribution and progress inside the project. They are not tokens that automatically exist in a blockchain wallet.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Early Access Badge and Initial Participation Rules",
+            "paragraphs": [
+              {
+                "text": "The badge is designed to represent a conditional privilege tied to continued participation in the project. Articles must not present the badge auction or automatic withdrawal of badges as already active unless later information confirms implementation. The initial limited issuance does not exceed 10,000 badges for qualified early users.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "APXN-13"
+                ]
+              },
+              {
+                "text": "Withdrawn badges return to a dedicated pool for redistribution through a community auction rather than issuing new badges beyond the initial 10,000 limit. The same badge with its unique number transfers to the new owner once auction procedures complete. Previous owner points, account and participation record do not transfer with the badge. The auction remains part of the future plan and is not an announcement of open bidding, approved price or payment method.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "APXN-13"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Telegram Mini App Mining Experience",
+            "paragraphs": [
+              {
+                "text": "APXN relies on a point mining experience inside a mini application within Telegram. Users gather points through mining, daily login, tasks, activities and equivalent advertisements. Methods exist to raise mining speed according to the conditions of each feature. The document clarifies that points stand for user contribution and progress within the project rather than automatic tokens.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "APXN-14"
+                ]
+              },
+              {
+                "text": "Each Telegram account maintains its own independent counter for purchases. Failed operations do not count toward the limit and duplicate point deductions for the same operation must be prevented. A clear counter display inside the user panel is proposed to show the number of speed purchases made with points out of four. The purpose is to regulate point economy and limit large scale account operation for misuse.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "APXN-14"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Badge Absence Policy and Telegram Account Continuity",
+            "paragraphs": [
+              {
+                "text": "Under the proposed policy an EARLY ACCESS badge holder absent for fourteen days from the last qualifying activity recorded on the APXN server may have the badge and linked privilege withdrawn. Withdrawal does not delete the account or cancel earned mining points. The user retains the Telegram linked account, earned point balance, participation record and acquired level according to approved rules.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-09",
+                  "APXN-15"
+                ]
+              },
+              {
+                "text": "The user can return to the application and continue mining. Details such as absence start date, definition of qualifying activity and procedures to prevent erroneous withdrawal during technical outages should be announced before the policy activates. Badge withdrawal after fourteen days must not be described as currently operating merely because it appears in the strategic document. The badge does not automatically verify identity.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-09",
+                  "APXN-15"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Level Thresholds and Telegram YouTube Communication Channels",
+            "paragraphs": [
+              {
+                "text": "The strategy divides the user journey into seven levels according to total qualifying points earned. Level one covers twenty thousand to forty nine thousand nine hundred ninety nine points. Level two covers fifty thousand to ninety nine thousand nine hundred ninety nine points. Level three covers one hundred thousand to one hundred forty nine thousand nine hundred ninety nine points. Level four begins at one hundred fifty thousand points and carries a proposed thirty percent eligibility share of the calculated user allocation.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-10",
+                  "APXN-16"
+                ]
+              },
+              {
+                "text": "Level five ranges from two hundred fifty thousand to four hundred forty nine thousand nine hundred ninety nine points with fifty percent proposed eligibility. These levels and shares form part of the proposed distribution policy until final rules receive approval and implementation begins. The document recommends clarifying these rules inside the application, white paper and roadmap then supporting them with official posts on Telegram, X and explanations on YouTube.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-10",
+                  "APXN-16"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Point Requirements for Early Access Eligibility",
+            "paragraphs": [
+              {
+                "text": "Accounts holding fewer than twenty thousand points appear before the first level. Level six covers four hundred fifty thousand to nine hundred ninety nine thousand nine hundred ninety nine points with seventy percent proposed eligibility. Level seven starts at one million points and carries one hundred percent proposed eligibility. The total announced supply of APXN tokens equals one hundred million tokens.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-11"
+                ]
+              },
+              {
+                "text": "Previous project documents showed a sixty three percent community and airdrop allocation of total supply. This percentage differs completely from the sixty percent EARLY ACCESS badge share of the calculated user allocation and the two must not be confused. The badge grants an active holder a proposed sixty percent eligibility share of the calculated allocation even if the user has not reached the fourth level on the point ladder.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-11"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Activity Requirements and Early Badge Retention",
+            "paragraphs": [
+              {
+                "text": "The strategy aims to encourage continuous participation rather than leaving limited privileges tied indefinitely to inactive accounts. When a user qualifies for a higher share through level the higher eligibility applies without combining the two percentages. For example a user reaching level six receives the proposed seventy percent level share and does not drop to sixty percent because of holding the EARLY ACCESS badge.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-12"
+                ]
+              },
+              {
+                "text": "The badge is not merely a visual element inside the user panel. It is designed to represent a conditional privilege that requires ongoing project participation. The active badge grants the holder a proposed sixty percent eligibility share of the calculated allocation even without reaching the fourth point level. This share does not equal sixty percent of total APXN supply and does not guarantee receipt of the same number of tokens at distribution.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-12"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What does the 19 September 2026 strategic update cover for APXN Network?",
+            "answer": "The update document dated 19 September 2026 addresses the point economy, seven levels, EARLY ACCESS badge, activity conditions, mining upgrades, KYC eligibility, account policy and future airdrop mechanism. It represents intended strategy and policies. Articles must separate features already functioning inside the application from those planned but not yet announced for launch.",
+            "evidence_ids": [
+              "APXN-01",
+              "APXN-02"
+            ]
+          },
+          {
+            "question": "How does the fourteen day absence rule affect the EARLY ACCESS badge?",
+            "answer": "If an EARLY ACCESS badge holder is absent from the application for a full fourteen days since the last qualifying activity recorded on the APXN server, the badge and linked privilege may be withdrawn. Withdrawal does not delete the account or cancel earned points. The user keeps the Telegram linked account, point balance, participation record and acquired level.",
+            "evidence_ids": [
+              "APXN-03",
+              "APXN-04"
+            ]
+          },
+          {
+            "question": "What token supply and allocation figures appear in the APXN documents?",
+            "answer": "The total announced supply of APXN tokens equals one hundred million tokens. Earlier documents showed a sixty three percent community and airdrop allocation of total supply. This percentage differs from the sixty percent EARLY ACCESS badge share of the calculated user allocation and the two must not be confused.",
+            "evidence_ids": [
+              "APXN-05",
+              "APXN-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "The APXN Network strategic update dated 19 September 2026 presents planning details on the point economy, seven levels, EARLY ACCESS badge, activity conditions, mining upgrades, KYC eligibility and future airdrop mechanism. The document distinguishes between features already present inside the application and those that remain planned. Badge withdrawal after fourteen days of absence does not remove the account or earned points. Level thresholds begin at twenty thousand points and proposed eligibility shares increase at higher ranges. The initial badge issuance limit stands at ten thousand. Communication of rules is recommended through official Telegram, X and YouTube channels.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03",
+            "APXN-04"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -2873,7 +3107,7 @@
       "priority": 7,
       "topic": "APXN Project News: تحديث استراتيجي لمشروع APXN Network — 19 سبتمبر 2026 (4a9cefde074a)",
       "category": "APXN News",
-      "status": "waiting",
+      "status": "ready",
       "source": "admin_editorial_submission",
       "topic_bank_id": "bank-admin-4a9cefde074a",
       "language": "en",
@@ -2884,17 +3118,19 @@
         "editorial_submissions.submission_c50de1cb14474587.evidence"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal."
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
+      "article_id": "apxn-013",
+      "generated_at": "2026-09-19"
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-012",
+    "last_generated_article": "apxn-013",
     "last_published_article": "apxn-012",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-09-18",
+      "last_run": "2026-09-19",
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],

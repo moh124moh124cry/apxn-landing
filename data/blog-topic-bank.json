@@ -551,7 +551,7 @@
       "topic": "APXN Project News: تحديث استراتيجي لمشروع APXN Network — 19 سبتمبر 2026 (4a9cefde074a)",
       "category": "APXN News",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "source": "admin_editorial_submission",
       "content_mode": "apxn",
       "source_profile": null,
@@ -560,16 +560,19 @@
       ],
       "auto_publish_allowed": true,
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
-      "queued_at": "2026-09-19"
+      "queued_at": "2026-09-19",
+      "article_id": "apxn-013",
+      "article_slug": "apxn-network-strategic-update-details-point-economy-and-early-access-badge-policy",
+      "generated_at": "2026-09-19"
     }
   ],
   "planner_state": {
-    "last_run": "2026-09-18",
+    "last_run": "2026-09-19",
     "available_topics": 22,
     "automation_eligible_available_topics": 20,
     "manual_or_review_topics": 2,
     "queued_topics": 10,
-    "used_topics": 3,
+    "used_topics": 4,
     "category_load_after_run": {
       "APXN Guides": 4,
       "Blockchain": 3,
