@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Wallet Connection vs Wallet Storage: An Important Web3 Distinction</title>
+
+    <meta
+        name="description"
+        content="Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified"
+    >
+
+    <meta
+        name="keywords"
+        content="web3, ethereum wallets, wallet connection, recovery phrase, scam prevention, decentralized applications, account address, seed phrase security"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <meta
+        name="author"
+        content="Apex Network Editorial"
+    >
+
+
+    <link
+        rel="canonical"
+        href="https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html"
+    >
+
+    <link
+        rel="icon"
+        href="../../logo2%20(1).png"
+        type="image/png"
+    >
+
+
+    <meta
+        property="og:type"
+        content="article"
+    >
+
+    <meta
+        property="og:title"
+        content="Wallet Connection vs Wallet Storage: An Important Web3 Distinction"
+    >
+
+    <meta
+        property="og:description"
+        content="Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified"
+    >
+
+    <meta
+        property="og:url"
+        content="https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html"
+    >
+
+    <meta
+        property="og:image"
+        content="https://apxn.network/blog/images/wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Apex Network"
+    >
+
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="Wallet Connection vs Wallet Storage: An Important Web3 Distinction"
+    >
+
+    <meta
+        name="twitter:description"
+        content="Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified"
+    >
+
+    <meta
+        name="twitter:image"
+        content="https://apxn.network/blog/images/wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp"
+    >
+
+
+    <script>
+        window.va =
+            window.va ||
+            function () {
+                (
+                    window.vaq =
+                    window.vaq ||
+                    []
+                ).push(
+                    arguments
+                );
+            };
+    </script>
+
+    <script
+        defer
+        src="/_vercel/insights/script.js"
+    ></script>
+
+
+    <script
+        src="https://cdn.tailwindcss.com"
+    ></script>
+
+
+    <style>
+
+        html {
+            background: #020617;
+        }
+
+        .gold-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #fde047,
+                    #f59e0b,
+                    #fb923c
+                );
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+        }
+
+        .article-body p {
+            color:
+                #cbd5e1;
+
+            line-height:
+                1.9;
+
+            margin:
+                1rem 0 1.5rem;
+        }
+
+        .article-body h2 {
+            color:
+                #fff;
+
+            font-size:
+                1.75rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                2.7rem;
+
+            margin-bottom:
+                1rem;
+
+            line-height:
+                1.25;
+        }
+
+        .article-body h3 {
+            color:
+                #facc15;
+
+            font-size:
+                1.2rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                1rem;
+
+            margin-bottom:
+                .75rem;
+        }
+
+        .article-body ul {
+            color:
+                #cbd5e1;
+
+            margin:
+                1rem 0 1.5rem 1.5rem;
+
+            line-height:
+                1.9;
+
+            list-style:
+                disc;
+        }
+
+        .article-body a {
+            color:
+                #facc15;
+
+            font-weight:
+                800;
+        }
+
+        .info-box {
+            background:
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .8
+                );
+
+            border:
+                1px solid
+                rgba(
+                    234,
+                    179,
+                    8,
+                    .25
+                );
+
+            border-radius:
+                1rem;
+
+            padding:
+                1.25rem;
+
+            margin:
+                1.5rem 0;
+        }
+
+    </style>
+
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+  "description": "Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified",
+  "image": "https://apxn.network/blog/images/wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp",
+  "mainEntityOfPage": "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
+  "datePublished": "2026-09-20",
+  "dateModified": "2026-09-20",
+  "author": {
+    "@type": "Organization",
+    "name": "Apex Network Editorial"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Apex Network",
+    "url": "https://apxn.network",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apxn.network/logo2%20(1).png"
+    }
+  }
+}
+    </script>
+
+    
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does a wallet connection prompt actually confirm?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A connection prompt in a user interface demonstrates only that the interface can request or display an address from a provider. It supplies no evidence that the address is permanently stored or bound to any account. Educational sources outline wallet uses for accounts and applications but do not describe interface prompts as creating storage."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How should users treat an address shown in a Mini App interface?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An address shown after a connection request should be viewed as transient display output. The reviewed implementation carries UI only status and contains no dedicated persistence route. Guidance therefore separates the visible address from any assertion of lasting storage or binding to a user account within that surface."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What security topics appear alongside wallet discussions?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Security materials list practices such as avoiding recovery phrase disclosure, using hardware options when appropriate and verifying domains after following links. They also note common scam patterns including giveaway requests. The examined repository shows connection behavior without a persistence API, so displayed addresses remain separate from storage claims."
+      }
+    }
+  ]
+}
+    </script>
+            
+
+</head>
+
+
+<body
+    class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950"
+>
+
+
+<header
+    class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5"
+    >
+
+        <a
+            href="../index.html"
+            class="flex items-center gap-3 min-w-0"
+        >
+
+            <div
+                class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50"
+            >
+
+                <img
+                    src="../../logo2%20(1).png"
+                    alt="Apex Network Logo"
+                    class="w-full h-full object-cover"
+                    width="44"
+                    height="44"
+                >
+
+            </div>
+
+
+            <div>
+
+                <div
+                    class="font-black tracking-wider gold-text text-base sm:text-lg"
+                >
+                    APEX NETWORK
+                </div>
+
+                <div
+                    class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]"
+                >
+                    APXN Blog
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <div
+            class="flex items-center gap-3"
+        >
+
+            <a
+                href="../index.html"
+                class="hidden sm:inline-flex text-sm font-bold text-gray-400 hover:text-yellow-400"
+            >
+                Blog Home
+            </a>
+
+            <a
+                href="https://t.me/ApxMinerBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl"
+            >
+                Open APXN App
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <article>
+
+
+        <section
+            class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent"
+        >
+
+            <div
+                class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20"
+            >
+
+                <nav
+                    aria-label="Breadcrumb"
+                    class="text-xs text-gray-500 font-bold mb-7"
+                >
+
+                    <a
+                        href="../../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Home
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <a
+                        href="../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Blog
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <span
+                        class="text-yellow-400"
+                    >
+                        Web3
+                    </span>
+
+                </nav>
+
+
+                <span
+                    class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5"
+                >
+                    Web3
+                </span>
+
+
+                <h1
+                    class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6"
+                >
+                    Wallet Connection vs Wallet Storage: An Important Web3 Distinction
+                </h1>
+
+
+                <p
+                    class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7"
+                >
+                    Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified
+                </p>
+
+
+                <div
+                    class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500"
+                >
+
+                    <span
+                        class="font-bold text-gray-300"
+                    >
+                        Apex Network Editorial
+                    </span>
+
+                    <span>
+                        •
+                    </span>
+
+                    <time
+                        datetime="2026-09-20"
+                    >
+                        September 20, 2026
+                    </time>
+
+                    <span>
+                        •
+                    </span>
+
+                    <span>
+                        5 min read
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="mt-8 flex flex-wrap items-center gap-3"
+                >
+
+                    <button
+                        type="button"
+                        onclick="shareArticle()"
+                        class="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm font-black text-yellow-400 hover:bg-yellow-500/15 transition-colors"
+                        aria-label="Share this article"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                        >
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+                            <line x1="8.59" y1="13.49" x2="15.42" y2="17.51"></line>
+                        </svg>
+
+                        <span>
+                            Share article
+                        </span>
+                    </button>
+
+
+                    <span
+                        id="share-status"
+                        class="hidden text-sm font-bold text-emerald-400"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Original APXN link copied
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div
+            class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14"
+        >
+
+            <div
+                class="mb-8 flex w-full justify-center"
+            >
+                <a
+                    href="https://omg10.com/4/11822007"
+                    target="_blank"
+                    rel="sponsored noopener noreferrer"
+                    aria-label="Sponsored advertisement — view offer"
+                    class="inline-flex w-full max-w-2xl items-center justify-center gap-2 rounded-2xl border border-yellow-400/50 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 px-6 py-4 text-center text-sm sm:text-base font-black text-slate-950 shadow-[0_12px_32px_rgba(245,158,11,0.22)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                >
+                    <span>
+                        Sponsored Advertisement — View Offer
+                    </span>
+
+                    <span aria-hidden="true">
+                        ↗
+                    </span>
+                </a>
+            </div>
+
+
+            <figure
+                class="mb-12"
+            >
+
+                <img
+                    src="https://apxn.network/blog/images/wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp"
+                    alt="Wallet Connection vs Wallet Storage: An Important Web3 Distinction"
+                    class="w-full rounded-2xl border border-slate-800 object-cover max-h-[620px]"
+                    loading="eager"
+                >
+
+            </figure>
+
+
+            
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+    
+
+
+            <div
+                class="article-body"
+            >
+
+                <p
+                    class="text-lg"
+                >
+                    Ethereum wallets serve as tools for buying, storing and sending crypto while supporting broader activities such as staking and interacting with decentralized applications. Resources on the topic outline core elements including what ether is, how gas fees operate, and the role of layer 2 networks. They also address Ethereum security practices and scam prevention methods. Educational material highlights distinctions between accounts, keys and addresses, noting that an account consists of a pair of keys where one creates a shareable address and the other remains secret for signing. Content further covers choosing a wallet, obtaining ETH and exploring applications while stressing the importance of understanding these components before engaging with any interface that requests address information.
+                </p>
+
+
+                
+                        <section>
+                            <h2>Ethereum Accounts and Recovery Phrases</h2>
+
+                            <p>An Ethereum account consists of a pair of keys that together allow holding assets and making transactions. The public portion generates an address that can be shared, while the private portion must stay secret because it signs actions. Recovery phrases function as the master key to a wallet. Anyone obtaining this phrase gains access to all associated accounts and can move every asset. Private keys operate similarly for individual accounts. No legitimate service or support contact will ever request these details from a user.</p>
+<p>Staking activities appear among the documented uses of Ethereum wallets alongside running nodes and participating in pooled staking options. Educational materials list these topics without describing specific interface behaviors for any single application. The distinction between an account and its keys remains fundamental regardless of how a user later interacts with a web interface or application that displays an address.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Common Scams Involving Wallet Addresses</h2>
+
+                            <p>Giveaway scams represent one of the most frequently encountered issues in cryptocurrency. The typical pattern involves a request to send ETH to a provided address with the promise that the amount will be returned doubled. This structure is sometimes called a two for one scam. Users are advised to verify domain names carefully after following any link to reduce exposure to such tactics.</p>
+<p>Educational sources stress checking that a site matches the intended domain before proceeding. The same guidance applies when an interface opens and requests an address or displays one. The reviewed Telegram Mini App scope covers only connection prompts and does not extend to claims of permanent binding between any displayed address and a user account.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Bookmarking and Interface Verification</h2>
+
+                            <p>When using a web wallet, bookmarking the correct site helps guard against phishing attempts. Transactions cannot be reversed once confirmed, and recovery of access after loss is not straightforward. These points appear consistently in wallet guidance materials that also list decentralized finance, NFTs and identity tools among available applications.</p>
+<p>A user interface that opens and displays an address demonstrates only that the interface can request or show information from a provider. The reviewed implementation status remains UI only, meaning no dedicated persistence route exists within the examined repository. Editorial content must therefore separate the act of displaying an address from any assertion of permanent storage.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Address Requests in Application Interfaces</h2>
+
+                            <p>An interface can request an EVM account from supported injected wallet providers. It can also accept a manually entered address beginning with the 0x prefix. Such a request shows only that the interface is capable of displaying or receiving an address string. It does not establish that the address is stored permanently or approved for any later action.</p>
+<p>Double checking transaction details before confirmation remains a recommended step because an Ethereum transaction is irreversible. The same caution applies when an address appears in any interface. The presence of an address on screen supplies no evidence that the address has been bound to an account in a lasting way.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Wallet Providers and Account Management</h2>
+
+                            <p>Wallets function as the primary tools most people employ to manage digital assets and identity. A wallet interacts with an Ethereum account, and users retain the option to change providers at any time.</p>
+<p>The reviewed Telegram Mini App repository contains connection behavior but no dedicated persistence API route. Editorial guidance therefore requires distinguishing between a displayed address and any claim of permanent account binding. Website dashboard code lies outside the current synchronization phase and cannot be inferred from the Mini App observations.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Security Practices for Crypto Assets</h2>
+
+                            <p>Crypto security guidance begins with basic practices such as never sharing a recovery phrase or private keys. Hardware wallets receive mention as one option for added protection. Users are also reminded to set appropriate spend limits on smart contracts and to verify every transaction before approval.</p>
+<p>Further recommendations include using strong unique passwords, enabling two factor authentication and removing unnecessary browser extensions. These steps apply across interactions with any interface that opens and requests address information. The reviewed repository contains no persistence route, reinforcing the need to treat displayed addresses as transient within that surface.</p>
+                        </section>
+                    
+
+
+                
+                <section>
+
+                    <h2>
+                        Frequently asked questions
+                    </h2>
+
+                    
+                        <div class="info-box">
+                            <h3>What does a wallet connection prompt actually confirm?</h3>
+
+                            <p>A connection prompt in a user interface demonstrates only that the interface can request or display an address from a provider. It supplies no evidence that the address is permanently stored or bound to any account. Educational sources outline wallet uses for accounts and applications but do not describe interface prompts as creating storage.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>How should users treat an address shown in a Mini App interface?</h3>
+
+                            <p>An address shown after a connection request should be viewed as transient display output. The reviewed implementation carries UI only status and contains no dedicated persistence route. Guidance therefore separates the visible address from any assertion of lasting storage or binding to a user account within that surface.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>What security topics appear alongside wallet discussions?</h3>
+
+                            <p>Security materials list practices such as avoiding recovery phrase disclosure, using hardware options when appropriate and verifying domains after following links. They also note common scam patterns including giveaway requests. The examined repository shows connection behavior without a persistence API, so displayed addresses remain separate from storage claims.</p>
+                        </div>
+                    
+
+                </section>
+                        
+
+
+                <section>
+
+                    <h2>
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        Ethereum resources describe wallets as tools for accounts, keys and addresses while stressing recovery phrase protection and scam awareness. A connection prompt in any interface confirms only the ability to request or display an address. Verified observations of the reviewed Mini App confirm UI only behavior without a persistence route, requiring clear separation between displayed addresses and any claim of permanent storage or binding.
+                    </p>
+
+                </section>
+
+
+                
+                <section>
+
+                    <h2>
+                        Related reading
+                    </h2>
+
+                    <ul>
+                        
+                                        <li>
+                                            <a href="./what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html">
+                                                What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./how-blockchain-explorers-help-users-verify-transactions.html">
+                                                How Blockchain Explorers Help Users Verify Transactions
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./how-ethereum-wallet-addresses-support-account-verification-and-security.html">
+                                                How Ethereum Wallet Addresses Support Account Verification and Security
+                                            </a>
+                                        </li>
+                                    
+                    </ul>
+
+                </section>
+            
+
+
+                <div
+                    class="info-box"
+                >
+
+                    <strong>
+                        Editorial note:
+                    </strong>
+
+                    <p>
+                        APXN Points are participation points used inside the current Apex Network ecosystem. Future token distribution, conversion, listing, withdrawal and blockchain milestones remain subject to official project updates.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</main>
+
+
+<footer
+    class="border-t border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 flex flex-wrap gap-4 justify-between"
+    >
+
+        <span>
+            © 2026 Apex Network
+        </span>
+
+        <a
+            href="../index.html"
+            class="hover:text-yellow-400"
+        >
+            APXN Blog
+        </a>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    const APXN_ARTICLE_SHARE = {
+        title:
+            "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
+
+        url:
+            "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html"
+    };
+
+
+    function showShareStatus(
+        message
+    ) {
+
+        const status =
+            document.getElementById(
+                'share-status'
+            );
+
+        if (!status) {
+            return;
+        }
+
+        status.textContent =
+            message;
+
+        status.classList.remove(
+            'hidden'
+        );
+
+        window.clearTimeout(
+            window.__apxnShareStatusTimer
+        );
+
+        window.__apxnShareStatusTimer =
+            window.setTimeout(
+                () => {
+                    status.classList.add(
+                        'hidden'
+                    );
+                },
+                3000
+            );
+    }
+
+
+    async function copyOriginalArticleLink() {
+
+        const link =
+            APXN_ARTICLE_SHARE.url;
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(
+                    link
+                );
+
+            } else {
+
+                const input =
+                    document.createElement(
+                        'textarea'
+                    );
+
+                input.value =
+                    link;
+
+                input.setAttribute(
+                    'readonly',
+                    ''
+                );
+
+                input.style.position =
+                    'fixed';
+
+                input.style.opacity =
+                    '0';
+
+                document.body.appendChild(
+                    input
+                );
+
+                input.select();
+
+                document.execCommand(
+                    'copy'
+                );
+
+                input.remove();
+            }
+
+            showShareStatus(
+                'Original APXN link copied'
+            );
+
+            return true;
+
+        } catch {
+
+            showShareStatus(
+                'Copy the APXN link from the address bar'
+            );
+
+            return false;
+        }
+    }
+
+
+    async function shareArticle() {
+
+        const shareData = {
+            title:
+                APXN_ARTICLE_SHARE.title,
+
+            url:
+                APXN_ARTICLE_SHARE.url
+        };
+
+        if (
+            typeof navigator.share ===
+            'function'
+        ) {
+
+            try {
+
+                await navigator.share(
+                    shareData
+                );
+
+                return;
+
+            } catch (error) {
+
+                if (
+                    error &&
+                    error.name ===
+                        'AbortError'
+                ) {
+                    return;
+                }
+            }
+        }
+
+        await copyOriginalArticleLink();
+    }
+
+</script>
+
+
+</body>
+</html>

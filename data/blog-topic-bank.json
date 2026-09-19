@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-19",
+  "last_updated": "2026-09-20",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -266,7 +266,7 @@
       "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
       "category": "Web3",
       "risk": "safe",
-      "status": "ready",
+      "status": "published",
       "content_mode": "hybrid",
       "source_profile": "wallet_connection",
       "knowledge_sections": [
@@ -278,7 +278,8 @@
       "queue_priority": 12,
       "article_id": "apxn-011",
       "article_slug": "wallet-connection-vs-wallet-storage-an-important-web3-distinction",
-      "generated_at": "2026-09-18"
+      "generated_at": "2026-09-18",
+      "published_at": "2026-09-20"
     },
     {
       "id": "bank-017",

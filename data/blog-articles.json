@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-19",
+  "last_updated": "2026-09-20",
   "default_language": "en",
   "stats": {
     "total_articles": 14,
-    "published": 11,
-    "ready": 3,
+    "published": 12,
+    "ready": 2,
     "drafts": 0,
     "featured": 1
   },
@@ -2109,19 +2109,19 @@
       "category": "Web3",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-09-18",
       "generated_at": "2026-09-18",
-      "updated_at": "2026-09-18",
-      "published_at": null,
+      "updated_at": "2026-09-20",
+      "published_at": "2026-09-20",
       "reading_minutes": 5,
       "word_count": 981,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
+      "url": "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
+      "image": "https://apxn.network/blog/images/wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp",
+      "image_filename": "wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp",
       "keywords": [
         "web3",
         "ethereum wallets",
@@ -2143,7 +2143,7 @@
         "title": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
         "description": "Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified",
         "canonical": "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -2338,7 +2338,8 @@
           ]
         }
       },
-      "verified_against_knowledge": true
+      "verified_against_knowledge": true,
+      "published_url": "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html"
     },
     {
       "id": "apxn-012",
@@ -3152,7 +3153,7 @@
       "priority": 12,
       "topic": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
       "category": "Web3",
-      "status": "ready",
+      "status": "published",
       "source": "topic_bank",
       "topic_bank_id": "bank-016",
       "language": "en",
@@ -3165,7 +3166,8 @@
       "auto_publish_allowed": true,
       "editorial_guard": "APXN wallet linking is UI-only in the reviewed implementation. Do not say that a wallet is persistently bound to a Telegram account.",
       "article_id": "apxn-011",
-      "generated_at": "2026-09-18"
+      "generated_at": "2026-09-18",
+      "published_at": "2026-09-20"
     },
     {
       "priority": 13,
@@ -3346,7 +3348,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-014",
-    "last_published_article": "apxn-012",
+    "last_published_article": "apxn-011",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
