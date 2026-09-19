@@ -27,8 +27,8 @@
   },
   "category_policy": {
     "APXN News": {
-      "automation": "manual_source_required",
-      "rule": "Do not invent APXN news. Publish only from an approved APXN update/news source added to the knowledge system."
+      "automation": "approved_admin_source",
+      "rule": "Use only information explicitly submitted through the authenticated APXN Blog Admin. Never invent project news."
     },
     "APXN Guides": {
       "automation": "allowed"
@@ -545,6 +545,22 @@
       "source_profile": "wallet_security",
       "knowledge_sections": [],
       "auto_publish_allowed": true
+    },
+    {
+      "id": "bank-admin-4a9cefde074a",
+      "topic": "APXN Project News: تحديث استراتيجي لمشروع APXN Network — 19 سبتمبر 2026 (4a9cefde074a)",
+      "category": "APXN News",
+      "risk": "safe",
+      "status": "queued",
+      "source": "admin_editorial_submission",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "editorial_submissions.submission_c50de1cb14474587.evidence"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
+      "queued_at": "2026-09-19"
     }
   ],
   "planner_state": {

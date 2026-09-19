@@ -2868,6 +2868,23 @@
       ],
       "auto_publish_allowed": true,
       "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed."
+    },
+    {
+      "priority": 7,
+      "topic": "APXN Project News: تحديث استراتيجي لمشروع APXN Network — 19 سبتمبر 2026 (4a9cefde074a)",
+      "category": "APXN News",
+      "status": "waiting",
+      "source": "admin_editorial_submission",
+      "topic_bank_id": "bank-admin-4a9cefde074a",
+      "language": "en",
+      "queued_at": "2026-09-19",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "editorial_submissions.submission_c50de1cb14474587.evidence"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal."
     }
   ],
   "automation_state": {
