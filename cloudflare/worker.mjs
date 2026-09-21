@@ -13,6 +13,10 @@ import {
   handleDashboardLogin
 } from "./api/dashboard-login.mjs";
 
+import {
+  handleEarnTasks
+} from "./api/earn-tasks.mjs";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -59,6 +63,13 @@ export default {
       }
 
       return handleDashboardLogin(request, env);
+    }
+
+    // APXN earning tasks.
+    if (
+      url.pathname === "/api/earn-tasks"
+    ) {
+      return handleEarnTasks(request, env);
     }
 
     // Remaining API endpoints are not migrated yet.
