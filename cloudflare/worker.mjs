@@ -1,3 +1,4 @@
+
 import { handleStats } from "./api/stats.mjs";
 
 import {
@@ -7,6 +8,10 @@ import {
 import {
   handleDashboardData
 } from "./api/dashboard-data.mjs";
+
+import {
+  handleDashboardLogin
+} from "./api/dashboard-login.mjs";
 
 export default {
   async fetch(request, env) {
@@ -29,6 +34,31 @@ export default {
       url.pathname === "/api/dashboard-data"
     ) {
       return handleDashboardData(request, env);
+    }
+
+    // APXN dashboard Telegram login.
+    if (
+      url.pathname === "/api/dashboard-login"
+    ) {
+      // The original Telegram callback uses apxn.network.
+      // Do not start login from a preview domain yet.
+      if (url.hostname !== "apxn.network") {
+        return new Response(
+          JSON.stringify({
+            error: "PREVIEW_LOGIN_NOT_CONFIGURED"
+          }),
+          {
+            status: 503,
+            headers: {
+              "Content-Type":
+                "application/json; charset=utf-8",
+              "Cache-Control": "no-store"
+            }
+          }
+        );
+      }
+
+      return handleDashboardLogin(request, env);
     }
 
     // Remaining API endpoints are not migrated yet.
