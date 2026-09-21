@@ -21,6 +21,10 @@ import {
   handleBlogAdminAuth
 } from "./api/blog-admin-auth.mjs";
 
+import {
+  handleBlogAdminArticles
+} from "./api/blog-admin-articles.mjs";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -81,6 +85,13 @@ export default {
       url.pathname === "/api/blog-admin-auth"
     ) {
       return handleBlogAdminAuth(request, env);
+    }
+
+    // Authenticated blog article list.
+    if (
+      url.pathname === "/api/blog-admin-articles"
+    ) {
+      return handleBlogAdminArticles(request, env);
     }
 
     // Remaining API endpoints are not migrated yet.
