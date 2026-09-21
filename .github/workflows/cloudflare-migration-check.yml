@@ -54,5 +54,9 @@ jobs:
         run: |
           node -e "const fs=require('node:fs'); const c=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8')); if(c.main!=='cloudflare/worker.mjs'||c.assets?.directory!=='./.cloudflare-static') process.exit(1);"
 
+      - name: Test Cloudflare Worker build without deployment
+        run: |
+          npx --yes wrangler@4 deploy --dry-run --outdir .cloudflare-dry-run
+
       - name: Migration preparation successful
         run: echo "APXN Cloudflare preparation checks passed."
