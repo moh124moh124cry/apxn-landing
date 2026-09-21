@@ -1,6 +1,10 @@
 
 import { handleStats } from "./api/stats.mjs";
 
+import {
+  handleDashboardSession
+} from "./api/dashboard-session.mjs";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -8,6 +12,13 @@ export default {
     // APXN public statistics API.
     if (url.pathname === "/api/stats") {
       return handleStats(request, env);
+    }
+
+    // APXN dashboard logout.
+    if (
+      url.pathname === "/api/dashboard-session"
+    ) {
+      return handleDashboardSession(request, env);
     }
 
     // Remaining API endpoints are not migrated yet.
