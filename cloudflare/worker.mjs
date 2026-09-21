@@ -1,10 +1,16 @@
 
+import { handleStats } from "./api/stats.mjs";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // API endpoints will be migrated and tested
-    // individually before production deployment.
+    // APXN public statistics API.
+    if (url.pathname === "/api/stats") {
+      return handleStats(request, env);
+    }
+
+    // Remaining API endpoints are not migrated yet.
     if (
       url.pathname === "/api" ||
       url.pathname.startsWith("/api/")
