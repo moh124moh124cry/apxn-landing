@@ -6,6 +6,12 @@ import {
   runLegacyHandler
 } from "./legacy-adapter.mjs";
 
+const TEST_REPOSITORY =
+  "moh124moh124cry/apxn-landing";
+
+const TEST_BRANCH =
+  "cloudflare-migration";
+
 function json(data, status) {
   return new Response(
     JSON.stringify(data),
@@ -24,23 +30,54 @@ export async function handleBlogAdminKnowledge(
   request,
   env
 ) {
-  // Never allow the migration test to write
-  // to the production GitHub branch.
+  // The original Vercel handler reads process.env.
+  // Check both environment interfaces before
+  // allowing any GitHub write.
+
+  const workerBranch =
+    env.BLOG_GITHUB_BRANCH;
+
+  const originalHandlerBranch =
+    process.env.BLOG_GITHUB_BRANCH;
+
+  const workerRepository =
+    env.BLOG_GITHUB_REPO ||
+    TEST_REPOSITORY;
+
+  const originalHandlerRepository =
+    process.env.BLOG_GITHUB_REPO ||
+    TEST_REPOSITORY;
+
   if (
-    env.BLOG_GITHUB_BRANCH !==
-    "cloudflare-migration"
+    workerBranch !== TEST_BRANCH ||
+    originalHandlerBranch !== TEST_BRANCH ||
+    workerRepository !== TEST_REPOSITORY ||
+    originalHandlerRepository !== TEST_REPOSITORY
   ) {
     return json(
       {
         success: false,
         error:
-          "MIGRATION_TEST_BRANCH_REQUIRED"
+          "MIGRATION_TEST_CONFIGURATION_REQUIRED"
       },
       503
     );
   }
 
-  if (!env.BLOG_GITHUB_TOKEN) {
+  const workerToken =
+    String(
+      env.BLOG_GITHUB_TOKEN || ""
+    ).trim();
+
+  const originalHandlerToken =
+    String(
+      process.env.BLOG_GITHUB_TOKEN || ""
+    ).trim();
+
+  if (
+    workerToken.length < 20 ||
+    workerToken !== originalHandlerToken
+  ) {
     return json(
       {
         success: false,
