@@ -1691,10 +1691,46 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 155009000,
           "cost_usd": 0.0155009
+        },
+        {
+          "date": "2026-09-21",
+          "response_id": "1a697e53-0714-91d3-8e2e-cb309da0d4f8",
+          "model": "grok-4.3",
+          "topic": "Blockchain Transactions Explained for Complete Beginners",
+          "article_slug": "blockchain-transactions-explained-for-complete-beginners",
+          "stage": "research_packet_writing",
+          "input_tokens": 4702,
+          "cached_input_tokens": 192,
+          "output_tokens": 2513,
+          "reasoning_tokens": 744,
+          "total_tokens": 7215,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 119584000,
+          "cost_usd": 0.0119584
+        },
+        {
+          "date": "2026-09-21",
+          "response_id": "4a33e503-b33a-9f0d-9743-82271a3476de",
+          "model": "grok-4.3",
+          "topic": "Blockchain Transactions Explained for Complete Beginners",
+          "article_slug": "blockchain-transactions-explained-for-complete-beginners",
+          "stage": "safe_repair_1",
+          "input_tokens": 6457,
+          "cached_input_tokens": 192,
+          "output_tokens": 2627,
+          "reasoning_tokens": 767,
+          "total_tokens": 9084,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 144371500,
+          "cost_usd": 0.01443715
         }
       ],
-      "total_cost_usd": 1.4394867
+      "total_cost_usd": 1.46588225
     }
   },
-  "last_updated": "2026-09-19"
+  "last_updated": "2026-09-21"
 }

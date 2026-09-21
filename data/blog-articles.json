@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-20",
+  "last_updated": "2026-09-21",
   "default_language": "en",
   "stats": {
-    "total_articles": 14,
+    "total_articles": 15,
     "published": 12,
-    "ready": 2,
+    "ready": 3,
     "drafts": 0,
     "featured": 1
   },
@@ -3017,6 +3017,225 @@
           ]
         }
       }
+    },
+    {
+      "id": "apxn-015",
+      "slug": "blockchain-transactions-on-ethereum-explained-simply-for-beginners",
+      "title": "Blockchain Transactions on Ethereum Explained Simply for Beginners",
+      "description": "Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation.",
+      "excerpt": "Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation.",
+      "category": "Blockchain",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-21",
+      "generated_at": "2026-09-21",
+      "updated_at": "2026-09-21",
+      "published_at": null,
+      "reading_minutes": 5,
+      "word_count": 907,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "ethereum transactions",
+        "blockchain basics",
+        "transaction types",
+        "ethereum network",
+        "data storage",
+        "state changes",
+        "eip-2718",
+        "legacy transactions",
+        "eip-1559"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "external",
+      "source_profile": "blockchain_transactions",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "Blockchain Transactions on Ethereum Explained Simply for Beginners",
+        "description": "Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation.",
+        "canonical": "https://apxn.network/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "Blockchain Transactions on Ethereum Explained Simply for Beginners",
+        "description": "Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation.",
+        "keywords": [
+          "ethereum transactions",
+          "blockchain basics",
+          "transaction types",
+          "ethereum network",
+          "data storage",
+          "state changes",
+          "eip-2718",
+          "legacy transactions",
+          "eip-1559"
+        ],
+        "intro": {
+          "text": "Transactions on Ethereum are cryptographically signed instructions from accounts that initiate updates to the state of the Ethereum network. The simplest form involves transferring ETH from one account to another. Cryptographic mechanisms ensure that once transactions are verified as valid and added to the blockchain they cannot be tampered with later. The same mechanisms also ensure that all transactions are signed and executed with appropriate permissions so that only the account holder can authorize actions from that account. These foundational elements appear across Ethereum resources that describe network operations and transaction handling.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Ethereum Network and Transaction Types",
+            "paragraphs": [
+              {
+                "text": "The Ethereum network processes transactions as the primary way accounts interact with the system. Type 2 transactions introduced in EIP-1559 during the London Upgrade have become the standard transaction type. They start with the byte 0x02 and include fields such as maxPriorityFeePerGas and maxFeePerGas. These transactions separate the fee into a base fee and a priority fee to improve predictability especially during high network congestion. The TransactionType value for these transactions is 0x2.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-08"
+                ]
+              },
+              {
+                "text": "Staking relates to network participation through validators that help secure the system while transactions remain the core method for state updates. Type 2 transactions are now the default due to their flexibility and efficiency on the Ethereum network. The evidence highlights how these transactions support the fee market mechanism on the Ethereum network.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-08"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Data Structures and Network Storage",
+            "paragraphs": [
+              {
+                "text": "Blockchain data storage strategies define how information is kept across the network and accessed by participants. Transactions include data that must be added to blocks to become part of the permanent record. The design fundamentals cover data structures such as the Patricia Merkle Trie and encoding methods like Recursive-length prefix that support consistent storage and retrieval across nodes.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-07"
+                ]
+              },
+              {
+                "text": "Type 1 transactions include an accessList parameter that specifies addresses and storage keys expected to be accessed. This design element appears in EIP-2930 as part of the Berlin Upgrade. The evidence shows how such lists relate to data handling while the overall network maintains shared storage of blocks and state through defined structures.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-07"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Data Availability and Page Design Elements",
+            "paragraphs": [
+              {
+                "text": "A blockchain functions as a public database updated and shared across many computers in a network. Blocks store consecutive groups of data and state. If a user sends ETH to someone else the transaction data must be added to a block to succeed. Design fundamentals address how information is presented including page elements that open in new tabs for further reading.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "EXT-09"
+                ]
+              },
+              {
+                "text": "Page updates reference dates such as April 22 2026 and contributor counts like 17 while website updates appear under dates such as September 17 2026. These details relate to how documentation pages present information about Ethereum concepts including blocks and data availability strategies across the network.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "EXT-09"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Transaction Requests and State Changes",
+            "paragraphs": [
+              {
+                "text": "A transaction request represents a formal request for code execution on the EVM while a transaction itself is the fulfilled request along with the associated change in the EVM state. Any user can broadcast a transaction request to the network from a node. For the request to affect the agreed-upon EVM state it must be validated executed and committed to the network by another node.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-10"
+                ]
+              },
+              {
+                "text": "Execution of code causes a state change in the EVM and upon commitment this state change is broadcast to all nodes in the network. Cryptographic mechanisms ensure transactions cannot be tampered with after verification. The process maintains that only authorized parties can initiate changes from specific accounts.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-10"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Transaction Types and Byte Definitions",
+            "paragraphs": [
+              {
+                "text": "EIP-2718 enables classification of transactions through a TransactionType value that is a number between 0 and 0x7f allowing for 128 possible transaction types. The structure follows TransactionType followed by TransactionPayload where the payload is an arbitrary byte array defined by the transaction type. Type 0 legacy transactions use the original format from Ethereum launch and start with the byte 0xf8 under RLP encoding.",
+                "evidence_ids": [
+                  "EXT-06"
+                ]
+              },
+              {
+                "text": "Legacy transactions do not include features from EIP-1559 such as dynamic gas fee calculations. Their TransactionType value is 0x0. The byte definitions and ranges support consistent interpretation of different transaction formats across the network while maintaining compatibility with earlier designs.",
+                "evidence_ids": [
+                  "EXT-06"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Ethereum Nodes Clients and Technical History",
+            "paragraphs": [
+              {
+                "text": "Ethereum documentation covers nodes and clients as part of running a node and understanding network architecture. Topics include client diversity node architecture light clients and archive nodes. These elements relate to how the network maintains history and supports ongoing operations through distributed participation.",
+                "evidence_ids": [
+                  "EXT-05"
+                ]
+              },
+              {
+                "text": "Technical history and open research sections appear alongside discussions of consensus mechanisms and data analytics tools. The resources outline foundational topics such as accounts transactions blocks and the Ethereum virtual machine providing context for how the system has developed over time.",
+                "evidence_ids": [
+                  "EXT-05"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What defines a basic Ethereum transaction?",
+            "answer": "Transactions are cryptographically signed instructions from accounts that update the state of the Ethereum network. The simplest transaction transfers ETH from one account to another. Cryptographic mechanisms ensure verified transactions cannot be tampered with and that only the account holder can authorize actions from that account.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "How do dates and contributor details appear in Ethereum documentation?",
+            "answer": "Page last update references include April 22 2026 along with contributor counts such as 17. Website last updated dates appear as September 17 2026. These elements accompany explanations of blocks data availability and terminology used throughout the resources.",
+            "evidence_ids": [
+              "EXT-03",
+              "EXT-04"
+            ]
+          },
+          {
+            "question": "What numeric values define transaction types under EIP-2718?",
+            "answer": "TransactionType is a number between 0 and 0x7f supporting 128 possible types. Legacy transactions use TransactionType value 0x0 and start with byte 0xf8. EIP-2718 structures transactions as TransactionType followed by TransactionPayload allowing classification into formats such as Type 0.",
+            "evidence_ids": [
+              "EXT-05",
+              "EXT-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "Transactions serve as the mechanism for updating Ethereum network state through signed instructions. Basic transfers and more complex requests follow defined formats that include type indicators and payload structures. Documentation resources consistently describe how validation and commitment processes maintain consistency across nodes while preserving the integrity of recorded changes.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04"
+          ]
+        }
+      }
     }
   ],
   "generation_queue": [
@@ -3223,7 +3442,7 @@
       "priority": 16,
       "topic": "Blockchain Transactions Explained for Complete Beginners",
       "category": "Blockchain",
-      "status": "waiting",
+      "status": "ready",
       "source": "topic_bank",
       "topic_bank_id": "bank-027",
       "language": "en",
@@ -3231,7 +3450,9 @@
       "content_mode": "external",
       "source_profile": "blockchain_transactions",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "article_id": "apxn-015",
+      "generated_at": "2026-09-21"
     },
     {
       "priority": 17,
@@ -3347,26 +3568,26 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-014",
+    "last_generated_article": "apxn-015",
     "last_published_article": "apxn-011",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-09-19",
+      "last_run": "2026-09-21",
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 10,
+      "waiting_topics_after_run": 9,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
         "APXN Guides": 4,
         "Blockchain": 3,
-        "Web3": 2,
+        "Web3": 3,
         "BSC": 3,
         "Security": 3,
-        "Education": 3,
+        "Education": 2,
         "Development": 3
       }
     }
