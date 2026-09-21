@@ -1,3 +1,4 @@
+
 name: APXN Cloudflare Migration Check
 
 on:
@@ -27,9 +28,10 @@ jobs:
         run: |
           node --check scripts/build-cloudflare-static.mjs
           node --check cloudflare/worker.mjs
-          node --check cloudflare/api/stats.mjs
-          node --check cloudflare/api/dashboard-session.mjs
-          node --check cloudflare/api/legacy-adapter.mjs
+
+          for file in cloudflare/api/*.mjs; do
+            node --check "$file"
+          done
 
       - name: Build public website files
         run: npm run build:cloudflare
@@ -53,6 +55,102 @@ jobs:
       - name: Check Wrangler configuration
         run: |
           node -e "const fs=require('node:fs'); const c=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8')); if(c.main!=='cloudflare/worker.mjs'||c.assets?.directory!=='./.cloudflare-static') process.exit(1);"
+
+      - name: Test Worker routes without secrets
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from "node:assert/strict";
+          import worker from "./cloudflare/worker.mjs";
+
+          const env = {
+            ASSETS: {
+              fetch: async () =>
+                new Response("ASSETS_OK", {
+                  status: 200
+                })
+            }
+          };
+
+          async function endpoint(
+            path,
+            method = "GET"
+          ) {
+            return worker.fetch(
+              new Request(
+                `https://preview.apxn.test${path}`,
+                { method }
+              ),
+              env
+            );
+          }
+
+          const home = await endpoint("/");
+          assert.equal(home.status, 200);
+          assert.equal(
+            await home.text(),
+            "ASSETS_OK"
+          );
+
+          const stats = await endpoint(
+            "/api/stats"
+          );
+          assert.equal(stats.status, 500);
+
+          const login = await endpoint(
+            "/api/dashboard-login"
+          );
+          assert.equal(login.status, 503);
+
+          const articles = await endpoint(
+            "/api/blog-admin-articles"
+          );
+          assert.equal(articles.status, 401);
+
+          const knowledge = await endpoint(
+            "/api/blog-admin-knowledge",
+            "POST"
+          );
+          assert.equal(knowledge.status, 503);
+
+          const publish = await endpoint(
+            "/api/blog-admin-publish",
+            "POST"
+          );
+          assert.equal(publish.status, 503);
+
+          const tasks = await endpoint(
+            "/api/earn-tasks"
+          );
+          assert.equal(tasks.status, 200);
+
+          const tasksData = await tasks.json();
+          assert.ok(
+            Array.isArray(tasksData.tasks)
+          );
+
+          const logout = await endpoint(
+            "/api/dashboard-session",
+            "POST"
+          );
+          assert.equal(logout.status, 200);
+
+          const logoutData =
+            await logout.json();
+
+          assert.equal(
+            logoutData.authenticated,
+            false
+          );
+
+          const unknown = await endpoint(
+            "/api/not-migrated"
+          );
+          assert.equal(unknown.status, 503);
+
+          console.log(
+            "APXN Worker route tests passed."
+          );
+          NODE
 
       - name: Test Cloudflare Worker build without deployment
         run: |
