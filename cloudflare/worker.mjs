@@ -17,6 +17,10 @@ import {
   handleEarnTasks
 } from "./api/earn-tasks.mjs";
 
+import {
+  handleBlogAdminAuth
+} from "./api/blog-admin-auth.mjs";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -70,6 +74,13 @@ export default {
       url.pathname === "/api/earn-tasks"
     ) {
       return handleEarnTasks(request, env);
+    }
+
+    // APXN blog administrator authentication.
+    if (
+      url.pathname === "/api/blog-admin-auth"
+    ) {
+      return handleBlogAdminAuth(request, env);
     }
 
     // Remaining API endpoints are not migrated yet.
