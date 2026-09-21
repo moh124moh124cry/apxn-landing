@@ -28,6 +28,7 @@ jobs:
         run: |
           node --check scripts/build-cloudflare-static.mjs
           node --check scripts/test-cloudflare-auth.mjs
+          node --check scripts/test-cloudflare-articles.mjs
           node --check cloudflare/worker.mjs
 
           for file in cloudflare/api/*.mjs; do
@@ -156,6 +157,10 @@ jobs:
       - name: Test blog administrator authentication
         run: |
           node scripts/test-cloudflare-auth.mjs
+
+      - name: Test protected article access
+        run: |
+          node scripts/test-cloudflare-articles.mjs
 
       - name: Test Cloudflare Worker build without deployment
         run: |
