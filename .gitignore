@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Cloudflare generated files
+.cloudflare-static/
+.wrangler/
+
+# Local environment variables and secrets
+.env
+.env.*
+.dev.vars*
+
+# Allow safe example files
+!.env.example
+!.dev.vars.example
