@@ -27,6 +27,7 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check scripts/build-cloudflare-static.mjs
+          node --check scripts/test-cloudflare-auth.mjs
           node --check cloudflare/worker.mjs
 
           for file in cloudflare/api/*.mjs; do
@@ -151,6 +152,10 @@ jobs:
             "APXN Worker route tests passed."
           );
           NODE
+
+      - name: Test blog administrator authentication
+        run: |
+          node scripts/test-cloudflare-auth.mjs
 
       - name: Test Cloudflare Worker build without deployment
         run: |
