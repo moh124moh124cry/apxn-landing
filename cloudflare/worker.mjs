@@ -25,6 +25,10 @@ import {
   handleBlogAdminArticles
 } from "./api/blog-admin-articles.mjs";
 
+import {
+  handleBlogAdminKnowledge
+} from "./api/blog-admin-knowledge.mjs";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -92,6 +96,13 @@ export default {
       url.pathname === "/api/blog-admin-articles"
     ) {
       return handleBlogAdminArticles(request, env);
+    }
+
+    // APXN blog knowledge bank.
+    if (
+      url.pathname === "/api/blog-admin-knowledge"
+    ) {
+      return handleBlogAdminKnowledge(request, env);
     }
 
     // Remaining API endpoints are not migrated yet.
