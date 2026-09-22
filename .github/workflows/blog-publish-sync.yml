@@ -56,10 +56,96 @@ jobs:
           node -e "JSON.parse(require('fs').readFileSync('data/blog-config.json','utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('data/blog-articles.json','utf8'))"
 
+      # Only the Cloudflare migration branch uses preview links.
+      # The main branch retains its existing publication behavior.
+      - name: Prepare preview article links
+        if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+
+          const production = 'https://apxn.network';
+          const preview = 'https://apxn-landing.cherfaouimohamed377.workers.dev';
+          const manifestPath = 'data/blog-articles.json';
+          const original = fs.readFileSync(manifestPath, 'utf8');
+          const manifest = JSON.parse(original);
+          const published = Array.isArray(manifest.articles)
+            ? manifest.articles.filter(article => article?.status === 'published')
+            : [];
+
+          function previewBlogLinks(value) {
+            return typeof value === 'string'
+              ? value.replaceAll(`${production}/blog/`, `${preview}/blog/`)
+              : value;
+          }
+
+          function noindexHtml(html) {
+            return html.replace(
+              /(<meta\s+name=["']robots["']\s+content=["'])index,\s*follow(["'])/i,
+              '$1noindex, nofollow$2'
+            );
+          }
+
+          for (const article of published) {
+            for (const field of ['url', 'published_url', 'image']) {
+              article[field] = previewBlogLinks(article[field]);
+            }
+
+            if (article.seo && typeof article.seo === 'object') {
+              article.seo.canonical = previewBlogLinks(article.seo.canonical);
+              article.seo.robots = 'noindex, nofollow';
+            }
+
+            article.indexable = false;
+
+            const configuredPath = String(
+              article.path || `blog/articles/${article.slug}.html`
+            ).replace(/^\/+/, '');
+            const articleFile = path.resolve(configuredPath);
+            const articleFolder = path.resolve('blog/articles') + path.sep;
+
+            if (!articleFile.startsWith(articleFolder) || !fs.existsSync(articleFile)) {
+              throw new Error(`Published article file missing or invalid: ${configuredPath}`);
+            }
+
+            const before = fs.readFileSync(articleFile, 'utf8');
+            const after = noindexHtml(previewBlogLinks(before));
+            if (after !== before) fs.writeFileSync(articleFile, after, 'utf8');
+          }
+
+          const updated = `${JSON.stringify(manifest, null, 2)}\n`;
+          if (updated !== original) fs.writeFileSync(manifestPath, updated, 'utf8');
+          console.log(`Preview links prepared for ${published.length} published articles.`);
+          NODE
+
       - name: Rebuild blog index and sitemap
         run: |
           set -euo pipefail
           node scripts/blog-sync.mjs
+
+      - name: Prepare preview index and sitemap
+        if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const production = 'https://apxn.network';
+          const preview = 'https://apxn-landing.cherfaouimohamed377.workers.dev';
+          for (const filename of ['blog/index.html', 'sitemap.xml']) {
+            const before = fs.readFileSync(filename, 'utf8');
+            let after = before.replaceAll(`${production}/`, `${preview}/`);
+            if (filename === 'blog/index.html') {
+              after = after.replace(
+                /(<meta\s+name=["']robots["']\s+content=["'])index,\s*follow(["'])/i,
+                '$1noindex, nofollow$2'
+              );
+            }
+            if (after !== before) fs.writeFileSync(filename, after, 'utf8');
+          }
+          console.log('Preview blog index and sitemap use the Cloudflare URL.');
+          NODE
 
       - name: Check generated files
         run: |
@@ -74,6 +160,9 @@ jobs:
           git config user.email "actions@github.com"
 
           git add blog/index.html sitemap.xml
+          if [ "${TARGET_BRANCH}" = "cloudflare-migration" ]; then
+            git add data/blog-articles.json blog/articles
+          fi
 
           if git diff --cached --quiet; then
             echo "Blog index and sitemap are already synchronized."
@@ -81,7 +170,6 @@ jobs:
           fi
 
           git commit -m "Sync blog index and sitemap after publication"
-
           git pull --rebase origin "${TARGET_BRANCH}"
           git push origin "HEAD:${TARGET_BRANCH}"
 
@@ -92,7 +180,8 @@ jobs:
             echo "## APXN Blog Publish Sync"
             echo ""
             echo "Branch: ${TARGET_BRANCH}"
-            echo "The blog index and sitemap sync runs after a manual article publication creates or updates a file inside blog/articles/, or on manual workflow dispatch."
+            echo "The blog index and sitemap sync runs after manual publication or manual dispatch."
+            echo "Cloudflare migration uses preview URLs and noindex; main remains unchanged."
             echo "This workflow does not generate or publish articles automatically."
           } >> "$GITHUB_STEP_SUMMARY"
 
