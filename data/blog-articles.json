@@ -20,13 +20,13 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": true,
-      "indexable": true,
+      "indexable": false,
       "published_at": "2026-09-08",
       "updated_at": "2026-09-08",
       "reading_minutes": 8,
       "word_count": 1784,
       "path": "blog/articles/what-are-apxn-points.html",
-      "url": "https://apxn.network/blog/articles/what-are-apxn-points.html",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/what-are-apxn-points.html",
       "image": "https://apxn.network/logo2%20(1).png",
       "keywords": [
         "APXN Points",
@@ -42,8 +42,8 @@
       "knowledge_schema_version": 1,
       "verified_against_knowledge": true,
       "seo": {
-        "canonical": "https://apxn.network/blog/articles/what-are-apxn-points.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/what-are-apxn-points.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       }
@@ -59,7 +59,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-12",
       "generated_at": "2026-09-12",
       "updated_at": "2026-09-12",
@@ -67,8 +67,8 @@
       "reading_minutes": 6,
       "word_count": 1149,
       "path": "blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
-      "url": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
-      "image": "https://apxn.network/blog/images/telegram-mini-apps-features-and-web3-concepts-from-official-documentation-1000133363.png",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/telegram-mini-apps-features-and-web3-concepts-from-official-documentation-1000133363.png",
       "image_filename": "telegram-mini-apps-features-and-web3-concepts-from-official-documentation-1000133363.png",
       "keywords": [
         "Telegram Mini Apps",
@@ -92,8 +92,8 @@
       "seo": {
         "title": "Telegram Mini Apps Features and Web3 Concepts from Official Documentation",
         "description": "An overview of Telegram Mini Apps technical capabilities alongside Web3 fundamentals drawn directly from approved sources on core.telegram.org and ethereum.org.",
-        "canonical": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -260,7 +260,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-documentation.html"
     },
     {
       "id": "apxn-003",
@@ -273,7 +273,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-14",
       "generated_at": "2026-09-14",
       "updated_at": "2026-09-14",
@@ -281,8 +281,8 @@
       "reading_minutes": 5,
       "word_count": 1058,
       "path": "blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html",
-      "url": "https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html",
-      "image": "https://apxn.network/blog/images/web3-security-basics-wallet-protection-and-scam-prevention-essentials-1000133466.png",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/web3-security-basics-wallet-protection-and-scam-prevention-essentials-1000133466.png",
       "image_filename": "web3-security-basics-wallet-protection-and-scam-prevention-essentials-1000133466.png",
       "keywords": [
         "ethereum security",
@@ -306,8 +306,8 @@
       "seo": {
         "title": "Web3 Security Basics: Wallet Protection and Scam Prevention Essentials",
         "description": "Learn foundational Web3 security practices drawn from Ethereum resources and CISA guidance, covering wallet recovery phrases, authentication factors, phishing awareness, and",
-        "canonical": "https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -484,7 +484,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/web3-security-basics-wallet-protection-and-scam-prevention-essentials.html"
     },
     {
       "id": "apxn-004",
@@ -497,7 +497,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-14",
       "generated_at": "2026-09-14",
       "updated_at": "2026-09-14",
@@ -505,8 +505,8 @@
       "reading_minutes": 7,
       "word_count": 1346,
       "path": "blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
-      "url": "https://apxn.network/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
-      "image": "https://apxn.network/blog/images/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3-1000133494.png",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3-1000133494.png",
       "image_filename": "blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3-1000133494.png",
       "keywords": [
         "blockchain",
@@ -530,8 +530,8 @@
       "seo": {
         "title": "Blockchain Basics for Beginners: Understanding Blocks Ethereum and Web3",
         "description": "Learn the core ideas behind blockchain technology including blocks data structures Ethereum transactions and the transition toward Web3 using verified technical sources.",
-        "canonical": "https://apxn.network/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -706,7 +706,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3.html"
     },
     {
       "id": "apxn-005",
@@ -719,7 +719,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-15",
       "generated_at": "2026-09-15",
       "updated_at": "2026-09-15",
@@ -727,8 +727,8 @@
       "reading_minutes": 6,
       "word_count": 1249,
       "path": "blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html",
-      "url": "https://apxn.network/blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html",
-      "image": "https://apxn.network/blog/images/how-apxn-referrals-and-active-friend-mining-boosts-work-1000133615.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/how-apxn-referrals-and-active-friend-mining-boosts-work-1000133615.jpg",
       "image_filename": "how-apxn-referrals-and-active-friend-mining-boosts-work-1000133615.jpg",
       "keywords": [
         "APXN referrals",
@@ -750,8 +750,8 @@
       "seo": {
         "title": "How APXN Referrals and Active Friend Mining Boosts Work",
         "description": "Learn how the APXN referral system defines active friends through recent claim activity and applies speed boosts to the inviter's points accumulation rate under current",
-        "canonical": "https://apxn.network/blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -942,7 +942,7 @@
         }
       },
       "verified_against_knowledge": true,
-      "published_url": "https://apxn.network/blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-apxn-referrals-and-active-friend-mining-boosts-work.html"
     },
     {
       "id": "apxn-006",
@@ -955,7 +955,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-15",
       "generated_at": "2026-09-15",
       "updated_at": "2026-09-16",
@@ -963,8 +963,8 @@
       "reading_minutes": 5,
       "word_count": 1067,
       "path": "blog/articles/understanding-the-apxn-daily-check-in-reward-system.html",
-      "url": "https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html",
-      "image": "https://apxn.network/blog/images/understanding-the-apxn-daily-check-in-reward-system-1000133639.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/understanding-the-apxn-daily-check-in-reward-system-1000133639.jpg",
       "image_filename": "understanding-the-apxn-daily-check-in-reward-system-1000133639.jpg",
       "keywords": [
         "APXN Daily Check-In",
@@ -986,8 +986,8 @@
       "seo": {
         "title": "Understanding the APXN Daily Check-In Reward System",
         "description": "Explore the server-backed APXN Daily Check-In that delivers points rewards on UTC calendar dates through a seven-day cycle while distinguishing it from mining claims and",
-        "canonical": "https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -1185,7 +1185,7 @@
         }
       },
       "verified_against_knowledge": true,
-      "published_url": "https://apxn.network/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/understanding-the-apxn-daily-check-in-reward-system.html"
     },
     {
       "id": "apxn-007",
@@ -1198,7 +1198,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-16",
       "generated_at": "2026-09-16",
       "updated_at": "2026-09-16",
@@ -1206,8 +1206,8 @@
       "reading_minutes": 8,
       "word_count": 1737,
       "path": "blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
-      "url": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
-      "image": "https://apxn.network/blog/images/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones-1000133668.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones-1000133668.jpg",
       "image_filename": "apxn-development-roadmap-distinguishing-live-features-from-planned-milestones-1000133668.jpg",
       "keywords": [
         "APXN roadmap",
@@ -1231,8 +1231,8 @@
       "seo": {
         "title": "APXN Development Roadmap: Distinguishing Live Features from Planned Milestones",
         "description": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
-        "canonical": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -1436,7 +1436,7 @@
         }
       },
       "verified_against_knowledge": true,
-      "published_url": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html"
     },
     {
       "id": "apxn-008",
@@ -1449,7 +1449,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-16",
       "generated_at": "2026-09-16",
       "updated_at": "2026-09-16",
@@ -1457,8 +1457,8 @@
       "reading_minutes": 6,
       "word_count": 1212,
       "path": "blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
-      "url": "https://apxn.network/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
-      "image": "https://apxn.network/blog/images/what-is-bnb-smart-chain-and-how-does-it-work-1000133664.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/what-is-bnb-smart-chain-and-how-does-it-work-1000133664.jpg",
       "image_filename": "what-is-bnb-smart-chain-and-how-does-it-work-1000133664.jpg",
       "keywords": [
         "BNB Smart Chain",
@@ -1482,8 +1482,8 @@
       "seo": {
         "title": "What Is BNB Smart Chain and How Does It Work",
         "description": "BNB Smart Chain is a high-performance EVM-compatible blockchain that uses Proof of Staked Authority consensus with a fixed validator set. Learn its core structure, staking",
-        "canonical": "https://apxn.network/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -1656,7 +1656,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/what-is-bnb-smart-chain-and-how-does-it-work.html"
     },
     {
       "id": "apxn-009",
@@ -1669,7 +1669,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-17",
       "generated_at": "2026-09-17",
       "updated_at": "2026-09-17",
@@ -1677,8 +1677,8 @@
       "reading_minutes": 5,
       "word_count": 927,
       "path": "blog/articles/how-ethereum-wallet-addresses-support-account-verification-and-security.html",
-      "url": "https://apxn.network/blog/articles/how-ethereum-wallet-addresses-support-account-verification-and-security.html",
-      "image": "https://apxn.network/blog/images/how-ethereum-wallet-addresses-support-account-verification-and-security-1000133743.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-ethereum-wallet-addresses-support-account-verification-and-security.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/how-ethereum-wallet-addresses-support-account-verification-and-security-1000133743.jpg",
       "image_filename": "how-ethereum-wallet-addresses-support-account-verification-and-security-1000133743.jpg",
       "keywords": [
         "ethereum wallets",
@@ -1700,8 +1700,8 @@
       "seo": {
         "title": "How Ethereum Wallet Addresses Support Account Verification and Security",
         "description": "Learn the fundamentals of Ethereum wallet addresses, account types, and verification processes drawn directly from official Ethereum documentation on wallets and accounts.",
-        "canonical": "https://apxn.network/blog/articles/how-ethereum-wallet-addresses-support-account-verification-and-security.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-ethereum-wallet-addresses-support-account-verification-and-security.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -1876,7 +1876,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/how-ethereum-wallet-addresses-support-account-verification-and-security.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-ethereum-wallet-addresses-support-account-verification-and-security.html"
     },
     {
       "id": "apxn-010",
@@ -1889,7 +1889,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-17",
       "generated_at": "2026-09-17",
       "updated_at": "2026-09-17",
@@ -1897,8 +1897,8 @@
       "reading_minutes": 5,
       "word_count": 952,
       "path": "blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
-      "url": "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
-      "image": "https://apxn.network/blog/images/how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg",
       "image_filename": "how-blockchain-explorers-help-users-verify-transactions-1000133748.jpg",
       "keywords": [
         "block explorers",
@@ -1920,8 +1920,8 @@
       "seo": {
         "title": "How Blockchain Explorers Help Users Verify Transactions",
         "description": "Learn how block explorers provide access to Ethereum and BNB Smart Chain data including blocks, transactions, gas usage, and token details for verification purposes.",
-        "canonical": "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -2098,7 +2098,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/how-blockchain-explorers-help-users-verify-transactions.html"
     },
     {
       "id": "apxn-011",
@@ -2111,7 +2111,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-18",
       "generated_at": "2026-09-18",
       "updated_at": "2026-09-20",
@@ -2119,8 +2119,8 @@
       "reading_minutes": 5,
       "word_count": 981,
       "path": "blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
-      "url": "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
-      "image": "https://apxn.network/blog/images/wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp",
       "image_filename": "wallet-connection-vs-wallet-storage-an-important-web3-distinction-1000133966.webp",
       "keywords": [
         "web3",
@@ -2142,8 +2142,8 @@
       "seo": {
         "title": "Wallet Connection vs Wallet Storage: An Important Web3 Distinction",
         "description": "Learn the difference between a wallet connection prompt in an interface and actual persistent wallet storage or binding, using facts from Ethereum resources and verified",
-        "canonical": "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -2339,7 +2339,7 @@
         }
       },
       "verified_against_knowledge": true,
-      "published_url": "https://apxn.network/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/wallet-connection-vs-wallet-storage-an-important-web3-distinction.html"
     },
     {
       "id": "apxn-012",
@@ -2352,7 +2352,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-18",
       "generated_at": "2026-09-18",
       "updated_at": "2026-09-19",
@@ -2360,8 +2360,8 @@
       "reading_minutes": 5,
       "word_count": 922,
       "path": "blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html",
-      "url": "https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html",
-      "image": "https://apxn.network/blog/images/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard-1000133863.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard-1000133863.jpg",
       "image_filename": "what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard-1000133863.jpg",
       "keywords": [
         "BEP-20",
@@ -2384,8 +2384,8 @@
       "seo": {
         "title": "What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard",
         "description": "Explore the BEP-20 token standard on BNB Smart Chain. This guide covers core specifications, validator roles, consensus mechanics, and token methods drawn directly from",
-        "canonical": "https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -2563,7 +2563,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html"
     },
     {
       "id": "apxn-013",
@@ -2810,7 +2810,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-19",
       "generated_at": "2026-09-19",
       "updated_at": "2026-09-22",
@@ -2818,8 +2818,8 @@
       "reading_minutes": 8,
       "word_count": 1617,
       "path": "blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
-      "url": "https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
-      "image": "https://apxn.network/blog/images/self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg",
       "image_filename": "self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg",
       "keywords": [
         "ethereum wallets",
@@ -2841,8 +2841,8 @@
       "seo": {
         "title": "Self-Custody Wallet Basics for Web3 Beginners on Ethereum",
         "description": "Learn core concepts of Ethereum wallets and accounts for Web3 beginners using official guidance on keys, accounts, and safe practices from ethereum.org resources.",
-        "canonical": "https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -3017,7 +3017,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html"
     },
     {
       "id": "apxn-015",
