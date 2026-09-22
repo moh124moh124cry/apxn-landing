@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-21",
+  "last_updated": "2026-09-22",
   "default_language": "en",
   "stats": {
     "total_articles": 15,
-    "published": 12,
-    "ready": 3,
+    "published": 13,
+    "ready": 2,
     "drafts": 0,
     "featured": 1
   },
@@ -2808,19 +2808,19 @@
       "category": "Education",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-09-19",
       "generated_at": "2026-09-19",
-      "updated_at": "2026-09-19",
-      "published_at": null,
+      "updated_at": "2026-09-22",
+      "published_at": "2026-09-22",
       "reading_minutes": 8,
       "word_count": 1617,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
+      "url": "https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
+      "image": "https://apxn.network/blog/images/self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg",
+      "image_filename": "self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg",
       "keywords": [
         "ethereum wallets",
         "self custody",
@@ -2842,7 +2842,7 @@
         "title": "Self-Custody Wallet Basics for Web3 Beginners on Ethereum",
         "description": "Learn core concepts of Ethereum wallets and accounts for Web3 beginners using official guidance on keys, accounts, and safe practices from ethereum.org resources.",
         "canonical": "https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -3016,7 +3016,8 @@
             "EXT-04"
           ]
         }
-      }
+      },
+      "published_url": "https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html"
     },
     {
       "id": "apxn-015",
@@ -3409,7 +3410,7 @@
       "priority": 14,
       "topic": "Self-Custody Wallet Basics for Web3 Beginners",
       "category": "Education",
-      "status": "ready",
+      "status": "published",
       "source": "topic_bank",
       "topic_bank_id": "bank-018",
       "language": "en",
@@ -3419,7 +3420,8 @@
       "knowledge_sections": [],
       "auto_publish_allowed": true,
       "article_id": "apxn-014",
-      "generated_at": "2026-09-19"
+      "generated_at": "2026-09-19",
+      "published_at": "2026-09-22"
     },
     {
       "priority": 15,
@@ -3569,7 +3571,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-015",
-    "last_published_article": "apxn-011",
+    "last_published_article": "apxn-014",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,

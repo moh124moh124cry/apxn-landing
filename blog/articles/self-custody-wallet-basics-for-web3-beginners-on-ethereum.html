@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Self-Custody Wallet Basics for Web3 Beginners on Ethereum</title>
+
+    <meta
+        name="description"
+        content="Learn core concepts of Ethereum wallets and accounts for Web3 beginners using official guidance on keys, accounts, and safe practices from ethereum.org resources."
+    >
+
+    <meta
+        name="keywords"
+        content="ethereum wallets, self custody, web3 basics, ethereum accounts, private keys, decentralized apps, wallet security, ethereum nodes"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <meta
+        name="author"
+        content="Apex Network Editorial"
+    >
+
+
+    <link
+        rel="canonical"
+        href="https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html"
+    >
+
+    <link
+        rel="icon"
+        href="../../logo2%20(1).png"
+        type="image/png"
+    >
+
+
+    <meta
+        property="og:type"
+        content="article"
+    >
+
+    <meta
+        property="og:title"
+        content="Self-Custody Wallet Basics for Web3 Beginners on Ethereum"
+    >
+
+    <meta
+        property="og:description"
+        content="Learn core concepts of Ethereum wallets and accounts for Web3 beginners using official guidance on keys, accounts, and safe practices from ethereum.org resources."
+    >
+
+    <meta
+        property="og:url"
+        content="https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html"
+    >
+
+    <meta
+        property="og:image"
+        content="https://apxn.network/blog/images/self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Apex Network"
+    >
+
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="Self-Custody Wallet Basics for Web3 Beginners on Ethereum"
+    >
+
+    <meta
+        name="twitter:description"
+        content="Learn core concepts of Ethereum wallets and accounts for Web3 beginners using official guidance on keys, accounts, and safe practices from ethereum.org resources."
+    >
+
+    <meta
+        name="twitter:image"
+        content="https://apxn.network/blog/images/self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg"
+    >
+
+
+    <script>
+        window.va =
+            window.va ||
+            function () {
+                (
+                    window.vaq =
+                    window.vaq ||
+                    []
+                ).push(
+                    arguments
+                );
+            };
+    </script>
+
+    <script
+        defer
+        src="/_vercel/insights/script.js"
+    ></script>
+
+
+    <script
+        src="https://cdn.tailwindcss.com"
+    ></script>
+
+
+    <style>
+
+        html {
+            background: #020617;
+        }
+
+        .gold-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #fde047,
+                    #f59e0b,
+                    #fb923c
+                );
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+        }
+
+        .article-body p {
+            color:
+                #cbd5e1;
+
+            line-height:
+                1.9;
+
+            margin:
+                1rem 0 1.5rem;
+        }
+
+        .article-body h2 {
+            color:
+                #fff;
+
+            font-size:
+                1.75rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                2.7rem;
+
+            margin-bottom:
+                1rem;
+
+            line-height:
+                1.25;
+        }
+
+        .article-body h3 {
+            color:
+                #facc15;
+
+            font-size:
+                1.2rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                1rem;
+
+            margin-bottom:
+                .75rem;
+        }
+
+        .article-body ul {
+            color:
+                #cbd5e1;
+
+            margin:
+                1rem 0 1.5rem 1.5rem;
+
+            line-height:
+                1.9;
+
+            list-style:
+                disc;
+        }
+
+        .article-body a {
+            color:
+                #facc15;
+
+            font-weight:
+                800;
+        }
+
+        .info-box {
+            background:
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .8
+                );
+
+            border:
+                1px solid
+                rgba(
+                    234,
+                    179,
+                    8,
+                    .25
+                );
+
+            border-radius:
+                1rem;
+
+            padding:
+                1.25rem;
+
+            margin:
+                1.5rem 0;
+        }
+
+    </style>
+
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Self-Custody Wallet Basics for Web3 Beginners on Ethereum",
+  "description": "Learn core concepts of Ethereum wallets and accounts for Web3 beginners using official guidance on keys, accounts, and safe practices from ethereum.org resources.",
+  "image": "https://apxn.network/blog/images/self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg",
+  "mainEntityOfPage": "https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html",
+  "datePublished": "2026-09-22",
+  "dateModified": "2026-09-22",
+  "author": {
+    "@type": "Organization",
+    "name": "Apex Network Editorial"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Apex Network",
+    "url": "https://apxn.network",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apxn.network/logo2%20(1).png"
+    }
+  }
+}
+    </script>
+
+    
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What role do wallets play with Ethereum accounts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Wallets act as tools that let users interact with their Ethereum accounts. They support activities such as obtaining ETH and exploring applications. Resources note that wallets can manage multiple accounts and that users may switch providers while retaining access to the same accounts on the network. The materials explain that wallets serve as the everyday interface for working with accounts and that they do not replace the accounts themselves. This distinction helps beginners understand that the account exists on the ledger while the wallet provides the means to access and manage it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do externally owned accounts differ from contract accounts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Externally owned accounts connect to key pairs that users control directly. Contract accounts contain code and execute when called by other accounts. Documentation lists these distinctions along with details on validator keys and the overall structure of accounts on Ethereum. The resources present these differences as part of the basic account types that exist on the network and note that wallets are separate from both types. This overview gives beginners a clear starting point for recognizing which account type they are using in different situations."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What basic steps help protect Ethereum accounts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Basic steps include obtaining ETH for application use and following community guidance on security. Resources recommend reviewing official materials about protecting funds and applying consistent verification practices when working with accounts and wallets. The content encourages users to consult community sources that discuss protecting yourself and your funds while reminding readers to handle recovery information with care. These combined recommendations give beginners practical direction for maintaining account safety from the start."
+      }
+    }
+  ]
+}
+    </script>
+            
+
+</head>
+
+
+<body
+    class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950"
+>
+
+
+<header
+    class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5"
+    >
+
+        <a
+            href="../index.html"
+            class="flex items-center gap-3 min-w-0"
+        >
+
+            <div
+                class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50"
+            >
+
+                <img
+                    src="../../logo2%20(1).png"
+                    alt="Apex Network Logo"
+                    class="w-full h-full object-cover"
+                    width="44"
+                    height="44"
+                >
+
+            </div>
+
+
+            <div>
+
+                <div
+                    class="font-black tracking-wider gold-text text-base sm:text-lg"
+                >
+                    APEX NETWORK
+                </div>
+
+                <div
+                    class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]"
+                >
+                    APXN Blog
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <div
+            class="flex items-center gap-3"
+        >
+
+            <a
+                href="../index.html"
+                class="hidden sm:inline-flex text-sm font-bold text-gray-400 hover:text-yellow-400"
+            >
+                Blog Home
+            </a>
+
+            <a
+                href="https://t.me/ApxMinerBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl"
+            >
+                Open APXN App
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <article>
+
+
+        <section
+            class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent"
+        >
+
+            <div
+                class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20"
+            >
+
+                <nav
+                    aria-label="Breadcrumb"
+                    class="text-xs text-gray-500 font-bold mb-7"
+                >
+
+                    <a
+                        href="../../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Home
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <a
+                        href="../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Blog
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <span
+                        class="text-yellow-400"
+                    >
+                        Education
+                    </span>
+
+                </nav>
+
+
+                <span
+                    class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5"
+                >
+                    Education
+                </span>
+
+
+                <h1
+                    class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6"
+                >
+                    Self-Custody Wallet Basics for Web3 Beginners on Ethereum
+                </h1>
+
+
+                <p
+                    class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7"
+                >
+                    Learn core concepts of Ethereum wallets and accounts for Web3 beginners using official guidance on keys, accounts, and safe practices from ethereum.org resources.
+                </p>
+
+
+                <div
+                    class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500"
+                >
+
+                    <span
+                        class="font-bold text-gray-300"
+                    >
+                        Apex Network Editorial
+                    </span>
+
+                    <span>
+                        •
+                    </span>
+
+                    <time
+                        datetime="2026-09-22"
+                    >
+                        September 22, 2026
+                    </time>
+
+                    <span>
+                        •
+                    </span>
+
+                    <span>
+                        8 min read
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="mt-8 flex flex-wrap items-center gap-3"
+                >
+
+                    <button
+                        type="button"
+                        onclick="shareArticle()"
+                        class="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm font-black text-yellow-400 hover:bg-yellow-500/15 transition-colors"
+                        aria-label="Share this article"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                        >
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+                            <line x1="8.59" y1="13.49" x2="15.42" y2="17.51"></line>
+                        </svg>
+
+                        <span>
+                            Share article
+                        </span>
+                    </button>
+
+
+                    <span
+                        id="share-status"
+                        class="hidden text-sm font-bold text-emerald-400"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Original APXN link copied
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div
+            class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14"
+        >
+
+            <div
+                class="mb-8 flex w-full justify-center"
+            >
+                <a
+                    href="https://omg10.com/4/11822007"
+                    target="_blank"
+                    rel="sponsored noopener noreferrer"
+                    aria-label="Sponsored advertisement — view offer"
+                    class="inline-flex w-full max-w-2xl items-center justify-center gap-2 rounded-2xl border border-yellow-400/50 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 px-6 py-4 text-center text-sm sm:text-base font-black text-slate-950 shadow-[0_12px_32px_rgba(245,158,11,0.22)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                >
+                    <span>
+                        Sponsored Advertisement — View Offer
+                    </span>
+
+                    <span aria-hidden="true">
+                        ↗
+                    </span>
+                </a>
+            </div>
+
+
+            <figure
+                class="mb-12"
+            >
+
+                <img
+                    src="https://apxn.network/blog/images/self-custody-wallet-basics-for-web3-beginners-on-ethereum-1000134275.jpg"
+                    alt="Self-Custody Wallet Basics for Web3 Beginners on Ethereum"
+                    class="w-full rounded-2xl border border-slate-800 object-cover max-h-[620px]"
+                    loading="eager"
+                >
+
+            </figure>
+
+
+            
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+    
+
+
+            <div
+                class="article-body"
+            >
+
+                <p
+                    class="text-lg"
+                >
+                    Ethereum wallets serve as tools for interacting with accounts on the network. They allow users to manage digital assets and engage with applications built on Ethereum. Official resources highlight that wallets help with buying, storing, and sending crypto while supporting activities such as staking and exploring decentralized apps. Understanding these distinctions forms the foundation for safe participation. Resources also cover topics like gas fees, layer two networks, and privacy considerations to give beginners a broad starting point before selecting specific tools or exploring further guides. The materials explain how people use Ethereum through structured sections on foundational topics and practical examples. They also address Ethereum security and scam prevention along with details on what is ether and the overall Ethereum network. This overview helps new users connect concepts such as smart contracts and Web3 before moving into more specific learning paths. The content emphasizes choosing a wallet and getting ETH as initial steps that connect directly to later exploration of applications and staking options.
+                </p>
+
+
+                
+                        <section>
+                            <h2>Ethereum Accounts and Private Keys</h2>
+
+                            <p>An Ethereum account consists of a pair of cryptographic keys that include both a public key and a private key. These keys help prove that a transaction was signed by the actual sender and help prevent forgeries. The private key grants custody over the funds tied to the account. Users never directly hold cryptocurrency itself but instead hold the private keys while the funds remain on the Ethereum ledger. This structure applies to externally owned accounts that interact with staking options and various apps on the network. The documentation further explains that an account is made up of this key pair and that the private key is what signs transactions to establish ownership. Resources stress that the funds stay on the ledger at all times and that users manage access through the keys rather than holding tokens directly.</p>
+<p>Resources from ethereum.org describe how wallets function as interfaces to these accounts. They note that staking activities and interactions with decentralized applications rely on proper account management. The distinction between holding keys and holding assets directly on the ledger remains central to understanding self custody on Ethereum. Additional context shows that wallets provide the practical means to work with externally owned accounts while the underlying ledger records all balances and transactions. This separation keeps the focus on key management as the core responsibility for users who want to participate in staking or use apps built on the network.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Decentralized Applications and Learning Resources</h2>
+
+                            <p>Ethereum supports a wide range of decentralized applications that users access through wallets. Official pages list guides on payments, stablecoins, prediction markets, and decentralized finance. These resources emphasize that learning occurs through structured sections covering foundational topics and practical use cases. The site structure opens pathways for beginners to explore Ethereum development and related concepts at their own pace. Content is organized to help users move from basic overviews into more detailed areas such as how people use Ethereum and what Web3 means in practice. The materials also connect these ideas to guides on getting ETH and choosing a wallet so that beginners can follow a logical sequence of steps.</p>
+<p>Safety recommendations include writing down recovery phrases and storing them securely away from computers. Bookmarking wallet sites and triple checking transaction details help protect against common issues. Transactions cannot be reversed, which reinforces the need for careful verification at every step. The guidance further advises users to avoid storing sensitive information on devices connected to the internet and to verify sites before entering any details. These practices are presented as standard steps that apply whenever someone interacts with decentralized applications or manages accounts on the network.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Account Types and Safe Practices</h2>
+
+                            <p>Ethereum documentation outlines key differences between externally owned accounts and contract accounts. Each account type serves distinct roles within the network. Externally owned accounts link directly to key pairs, while contract accounts execute code when triggered. A note on wallets clarifies that they act as tools rather than the accounts themselves. The materials also cover validator keys and provide a visual demo that illustrates how accounts function. This overview helps beginners recognize that different account types exist for different purposes and that wallets serve as the everyday interface for managing externally owned accounts on the network.</p>
+<p>Additional guidance stresses the importance of obtaining ETH to interact with applications. Community resources provide further tips on protecting funds and maintaining security. These materials encourage users to explore Ethereum through verified channels and to apply consistent caution when handling accounts. The content points to community sources that discuss protecting yourself and your funds while reminding readers that ETH is required to use most applications on the network. This combination of official and community materials gives beginners multiple perspectives on safe account practices.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Nodes, Clients, and Wallet Tools</h2>
+
+                            <p>Running a node forms part of the broader Ethereum ecosystem that supports account activity. Documentation covers client diversity, node architecture, and different types of nodes including light clients and archive nodes. These elements contribute to the overall operation of the network that wallets interact with. The resources explain how nodes help maintain the network and how various client options exist for different needs. This background helps users see the connection between account tools and the underlying infrastructure that keeps the system running.</p>
+<p>Wallets enable most people to handle digital assets and identity on Ethereum. Users can create accounts and switch between wallet providers at any time. Many applications also allow management of several accounts from within a single interface, providing flexibility for everyday use. The documentation notes that a wallet is a tool for interacting with an Ethereum account and that users remain free to change providers without losing access to their accounts. This flexibility is presented as a standard feature of how wallets and accounts work together on the network.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Key Pairs, Hash Functions, and Account Creation</h2>
+
+                            <p>Visual demonstrations illustrate hash functions and key pairs using educational tools. These resources show how hash functions process data and how public private key pairs operate together. Understanding these cryptographic building blocks helps clarify how accounts are formed and secured on Ethereum. The demonstrations break down the steps involved in creating addresses from public keys and the role of private keys in signing. Such explanations give beginners a clearer view of the technical foundation that supports every Ethereum account.</p>
+<p>An Ethereum account is defined as a pair of keys. The public key generates an address that can be shared, while the private key must remain secret because it signs transactions. These keys together enable holding assets and performing actions on the network. The materials stress the importance of keeping the private key secure at all times and explain that the address derived from the public key is the part meant for sharing. This clear separation between public and private information forms a basic principle for anyone beginning to use Ethereum accounts.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Data Structures and Account Design</h2>
+
+                            <p>Ethereum accounts represent entities that hold an ether balance and can send messages across the network. Accounts may be controlled by users or deployed in the form of smart contracts. This dual nature supports both individual participation and automated contract behavior within the system. Documentation describes accounts as entities with balances that participate in sending messages and notes that they can take either user-controlled or contract-deployed forms. This description provides the basic definition that beginners encounter when first learning about accounts on Ethereum.</p>
+<p>Design fundamentals for Web3 interfaces draw attention to decentralized exchange patterns and user experience considerations. Documentation also addresses data availability and storage strategies that underpin account functionality. These topics provide context for how accounts fit into the larger architecture of Ethereum. The materials connect these design ideas to broader discussions of how data is handled and how interfaces should be built to support decentralized use cases while keeping the focus on the core definition of accounts.</p>
+                        </section>
+                    
+
+
+                
+                <section>
+
+                    <h2>
+                        Frequently asked questions
+                    </h2>
+
+                    
+                        <div class="info-box">
+                            <h3>What role do wallets play with Ethereum accounts?</h3>
+
+                            <p>Wallets act as tools that let users interact with their Ethereum accounts. They support activities such as obtaining ETH and exploring applications. Resources note that wallets can manage multiple accounts and that users may switch providers while retaining access to the same accounts on the network. The materials explain that wallets serve as the everyday interface for working with accounts and that they do not replace the accounts themselves. This distinction helps beginners understand that the account exists on the ledger while the wallet provides the means to access and manage it.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>How do externally owned accounts differ from contract accounts?</h3>
+
+                            <p>Externally owned accounts connect to key pairs that users control directly. Contract accounts contain code and execute when called by other accounts. Documentation lists these distinctions along with details on validator keys and the overall structure of accounts on Ethereum. The resources present these differences as part of the basic account types that exist on the network and note that wallets are separate from both types. This overview gives beginners a clear starting point for recognizing which account type they are using in different situations.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>What basic steps help protect Ethereum accounts?</h3>
+
+                            <p>Basic steps include obtaining ETH for application use and following community guidance on security. Resources recommend reviewing official materials about protecting funds and applying consistent verification practices when working with accounts and wallets. The content encourages users to consult community sources that discuss protecting yourself and your funds while reminding readers to handle recovery information with care. These combined recommendations give beginners practical direction for maintaining account safety from the start.</p>
+                        </div>
+                    
+
+                </section>
+                        
+
+
+                <section>
+
+                    <h2>
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        Official Ethereum resources outline the relationship between wallets, accounts, and keys. They distinguish account types and stress practical safety measures such as secure storage of recovery information. These materials provide a foundation for beginners to understand how accounts function and how wallets serve as the primary interface for network participation. The content connects these ideas across multiple guides that cover topics from basic definitions to safety practices. This structure allows new users to build knowledge step by step using the same official sources that explain Ethereum wallets, accounts, and related concepts in detail.
+                    </p>
+
+                </section>
+
+
+                
+                <section>
+
+                    <h2>
+                        Related reading
+                    </h2>
+
+                    <ul>
+                        
+                                        <li>
+                                            <a href="./what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html">
+                                                What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./wallet-connection-vs-wallet-storage-an-important-web3-distinction.html">
+                                                Wallet Connection vs Wallet Storage: An Important Web3 Distinction
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./how-blockchain-explorers-help-users-verify-transactions.html">
+                                                How Blockchain Explorers Help Users Verify Transactions
+                                            </a>
+                                        </li>
+                                    
+                    </ul>
+
+                </section>
+            
+
+
+                <div
+                    class="info-box"
+                >
+
+                    <strong>
+                        Editorial note:
+                    </strong>
+
+                    <p>
+                        This article is educational project content and should not be treated as financial, investment, legal or tax advice.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</main>
+
+
+<footer
+    class="border-t border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 flex flex-wrap gap-4 justify-between"
+    >
+
+        <span>
+            © 2026 Apex Network
+        </span>
+
+        <a
+            href="../index.html"
+            class="hover:text-yellow-400"
+        >
+            APXN Blog
+        </a>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    const APXN_ARTICLE_SHARE = {
+        title:
+            "Self-Custody Wallet Basics for Web3 Beginners on Ethereum",
+
+        url:
+            "https://apxn.network/blog/articles/self-custody-wallet-basics-for-web3-beginners-on-ethereum.html"
+    };
+
+
+    function showShareStatus(
+        message
+    ) {
+
+        const status =
+            document.getElementById(
+                'share-status'
+            );
+
+        if (!status) {
+            return;
+        }
+
+        status.textContent =
+            message;
+
+        status.classList.remove(
+            'hidden'
+        );
+
+        window.clearTimeout(
+            window.__apxnShareStatusTimer
+        );
+
+        window.__apxnShareStatusTimer =
+            window.setTimeout(
+                () => {
+                    status.classList.add(
+                        'hidden'
+                    );
+                },
+                3000
+            );
+    }
+
+
+    async function copyOriginalArticleLink() {
+
+        const link =
+            APXN_ARTICLE_SHARE.url;
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(
+                    link
+                );
+
+            } else {
+
+                const input =
+                    document.createElement(
+                        'textarea'
+                    );
+
+                input.value =
+                    link;
+
+                input.setAttribute(
+                    'readonly',
+                    ''
+                );
+
+                input.style.position =
+                    'fixed';
+
+                input.style.opacity =
+                    '0';
+
+                document.body.appendChild(
+                    input
+                );
+
+                input.select();
+
+                document.execCommand(
+                    'copy'
+                );
+
+                input.remove();
+            }
+
+            showShareStatus(
+                'Original APXN link copied'
+            );
+
+            return true;
+
+        } catch {
+
+            showShareStatus(
+                'Copy the APXN link from the address bar'
+            );
+
+            return false;
+        }
+    }
+
+
+    async function shareArticle() {
+
+        const shareData = {
+            title:
+                APXN_ARTICLE_SHARE.title,
+
+            url:
+                APXN_ARTICLE_SHARE.url
+        };
+
+        if (
+            typeof navigator.share ===
+            'function'
+        ) {
+
+            try {
+
+                await navigator.share(
+                    shareData
+                );
+
+                return;
+
+            } catch (error) {
+
+                if (
+                    error &&
+                    error.name ===
+                        'AbortError'
+                ) {
+                    return;
+                }
+            }
+        }
+
+        await copyOriginalArticleLink();
+    }
+
+</script>
+
+
+</body>
+</html>

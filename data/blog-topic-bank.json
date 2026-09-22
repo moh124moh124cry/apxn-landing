@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-21",
+  "last_updated": "2026-09-22",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -303,7 +303,7 @@
       "topic": "Self-Custody Wallet Basics for Web3 Beginners",
       "category": "Education",
       "risk": "safe",
-      "status": "ready",
+      "status": "published",
       "content_mode": "external",
       "source_profile": "wallet_basics",
       "knowledge_sections": [],
@@ -312,7 +312,8 @@
       "queue_priority": 14,
       "article_id": "apxn-014",
       "article_slug": "self-custody-wallet-basics-for-web3-beginners-on-ethereum",
-      "generated_at": "2026-09-19"
+      "generated_at": "2026-09-19",
+      "published_at": "2026-09-22"
     },
     {
       "id": "bank-019",
