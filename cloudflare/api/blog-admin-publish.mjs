@@ -1,4 +1,3 @@
-
 import blogAdminPublishHandler
   from "../../api/blog-admin-publish.js";
 
@@ -6,11 +5,20 @@ import {
   runLegacyHandler
 } from "./legacy-adapter.mjs";
 
-const TEST_REPOSITORY =
+const REPOSITORY =
   "moh124moh124cry/apxn-landing";
 
-const TEST_BRANCH =
+const PREVIEW_BRANCH =
   "cloudflare-migration";
+
+const PRODUCTION_BRANCH =
+  "main";
+
+const PREVIEW_HOST =
+  "apxn-landing.cherfaouimohamed377.workers.dev";
+
+const PRODUCTION_HOST =
+  "apxn.network";
 
 function json(data, status) {
   return new Response(
@@ -30,58 +38,62 @@ export async function handleBlogAdminPublish(
   request,
   env
 ) {
-  // Do not permit the migration preview
-  // to publish to the production branch.
+  const hostname =
+    new URL(request.url).hostname.toLowerCase();
 
   const workerBranch =
-    env.BLOG_GITHUB_BRANCH;
+    String(env.BLOG_GITHUB_BRANCH || "").trim();
 
-  const originalHandlerBranch =
-    process.env.BLOG_GITHUB_BRANCH;
+  const legacyBranch =
+    String(process.env.BLOG_GITHUB_BRANCH || "").trim();
 
   const workerRepository =
-    env.BLOG_GITHUB_REPO ||
-    TEST_REPOSITORY;
+    String(env.BLOG_GITHUB_REPO || REPOSITORY).trim();
 
-  const originalHandlerRepository =
-    process.env.BLOG_GITHUB_REPO ||
-    TEST_REPOSITORY;
+  const legacyRepository =
+    String(process.env.BLOG_GITHUB_REPO || REPOSITORY).trim();
+
+  // A preview hostname may write only to the preview branch.
+  // The real hostname may write only to main.
+  // Never allow a branch/hostname mix-up to publish an article.
+  const previewConfigured =
+    hostname === PREVIEW_HOST &&
+    workerBranch === PREVIEW_BRANCH &&
+    legacyBranch === PREVIEW_BRANCH;
+
+  const productionConfigured =
+    hostname === PRODUCTION_HOST &&
+    workerBranch === PRODUCTION_BRANCH &&
+    legacyBranch === PRODUCTION_BRANCH;
 
   if (
-    workerBranch !== TEST_BRANCH ||
-    originalHandlerBranch !== TEST_BRANCH ||
-    workerRepository !== TEST_REPOSITORY ||
-    originalHandlerRepository !== TEST_REPOSITORY
+    (!previewConfigured && !productionConfigured) ||
+    workerRepository !== REPOSITORY ||
+    legacyRepository !== REPOSITORY
   ) {
     return json(
       {
         success: false,
-        error:
-          "MIGRATION_TEST_CONFIGURATION_REQUIRED"
+        error: "BLOG_PUBLISH_ENVIRONMENT_MISMATCH"
       },
       503
     );
   }
 
   const workerToken =
-    String(
-      env.BLOG_GITHUB_TOKEN || ""
-    ).trim();
+    String(env.BLOG_GITHUB_TOKEN || "").trim();
 
-  const originalHandlerToken =
-    String(
-      process.env.BLOG_GITHUB_TOKEN || ""
-    ).trim();
+  const legacyToken =
+    String(process.env.BLOG_GITHUB_TOKEN || "").trim();
 
   if (
     workerToken.length < 20 ||
-    workerToken !== originalHandlerToken
+    workerToken !== legacyToken
   ) {
     return json(
       {
         success: false,
-        error:
-          "BLOG_GITHUB_TOKEN_NOT_CONFIGURED"
+        error: "BLOG_GITHUB_TOKEN_NOT_CONFIGURED"
       },
       503
     );
@@ -92,3 +104,4 @@ export async function handleBlogAdminPublish(
     blogAdminPublishHandler
   );
 }
+
