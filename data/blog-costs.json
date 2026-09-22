@@ -1727,10 +1727,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 144371500,
           "cost_usd": 0.01443715
+        },
+        {
+          "date": "2026-09-22",
+          "response_id": "a2d6fb01-9e91-9337-95d4-1a4cda9b792f",
+          "model": "grok-4.3",
+          "topic": "How Telegram Mini Apps Make Web3 Applications Easier to Access",
+          "article_slug": "how-telegram-mini-apps-make-web3-applications-easier-to-access",
+          "stage": "research_packet_writing",
+          "input_tokens": 4642,
+          "cached_input_tokens": 192,
+          "output_tokens": 2851,
+          "reasoning_tokens": 1044,
+          "total_tokens": 7493,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 127284000,
+          "cost_usd": 0.0127284
         }
       ],
-      "total_cost_usd": 1.46588225
+      "total_cost_usd": 1.47861065
     }
   },
-  "last_updated": "2026-09-21"
+  "last_updated": "2026-09-22"
 }

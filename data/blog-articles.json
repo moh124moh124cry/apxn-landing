@@ -3,9 +3,9 @@
   "last_updated": "2026-09-22",
   "default_language": "en",
   "stats": {
-    "total_articles": 15,
+    "total_articles": 16,
     "published": 13,
-    "ready": 2,
+    "ready": 3,
     "drafts": 0,
     "featured": 1
   },
@@ -3237,6 +3237,231 @@
           ]
         }
       }
+    },
+    {
+      "id": "apxn-016",
+      "slug": "telegram-mini-apps-features-and-web3-concepts-from-official-sources",
+      "title": "Telegram Mini Apps Features and Web3 Concepts from Official Sources",
+      "description": "An overview of Telegram Mini Apps documentation and Web3 fundamentals drawn directly from approved external sources on bots and ethereum.org.",
+      "excerpt": "An overview of Telegram Mini Apps documentation and Web3 fundamentals drawn directly from approved external sources on bots and ethereum.org.",
+      "category": "Web3",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-09-22",
+      "generated_at": "2026-09-22",
+      "updated_at": "2026-09-22",
+      "published_at": null,
+      "reading_minutes": 5,
+      "word_count": 952,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "telegram mini apps",
+        "web3",
+        "ethereum",
+        "main button",
+        "loading screen",
+        "debug mode",
+        "back button",
+        "ownership",
+        "education",
+        "menu button"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "external",
+      "source_profile": "telegram_web3",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "Telegram Mini Apps Features and Web3 Concepts from Official Sources",
+        "description": "An overview of Telegram Mini Apps documentation and Web3 fundamentals drawn directly from approved external sources on bots and ethereum.org.",
+        "canonical": "https://apxn.network/blog/articles/telegram-mini-apps-features-and-web3-concepts-from-official-sources.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "Telegram Mini Apps Features and Web3 Concepts from Official Sources",
+        "description": "An overview of Telegram Mini Apps documentation and Web3 fundamentals drawn directly from approved external sources on bots and ethereum.org.",
+        "keywords": [
+          "telegram mini apps",
+          "web3",
+          "ethereum",
+          "main button",
+          "loading screen",
+          "debug mode",
+          "back button",
+          "ownership",
+          "education",
+          "menu button"
+        ],
+        "intro": {
+          "text": "Telegram Mini Apps documentation outlines several interface controls and customization options. The main button includes methods such as setText to change displayed text along with onClick and offClick handlers that manage press events through aliases for specific WebApp events. A show method controls visibility with the note that attachment menu launches keep the button hidden until user interaction occurs. Debug mode requires tapping the Settings icon ten times on iOS to enable Web View Inspection then connecting via USB to inspect in Safari. Mini Apps can also adjust their loading screen with custom icons and theme colors while using a balance of Telegram Stars to send gifts to users.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Button Controls and Web3 Overview",
+            "paragraphs": [
+              {
+                "text": "The main button object provides several functions detailed in the Telegram Mini Apps reference. setText accepts a string to update the label shown to users. onClick registers a callback that fires on press while offClick removes that same handler. Both act as shortcuts for listening to the mainButtonClicked event. The show function makes the button visible under normal launch conditions. These interface elements appear alongside broader descriptions of Web3 as an extension of earlier web eras focused on ownership and decentralized ideas.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              },
+              {
+                "text": "Web3 discussions on ethereum.org introduce core topics including smart contracts, wallets, gas fees, and layer two networks. The material lists foundational items such as payments, stablecoins, and prediction markets as example use cases. It also covers staking approaches and privacy considerations without specifying any particular application platform. The documentation emphasizes learning paths that begin with choosing a wallet and acquiring ether before exploring applications.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Debug Tools and Transaction Cost Context",
+            "paragraphs": [
+              {
+                "text": "Debug mode on iOS involves tapping the Settings icon ten times to reveal the Allow Web View Inspection toggle. After enabling the option a USB connection to a computer allows Safari to display the running Mini App under the Develop menu for the connected device. This process helps locate issues that appear only inside the Telegram client environment.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              },
+              {
+                "text": "Web3 accessibility notes indicate that features such as Sign-in with Ethereum exist at zero cost yet transaction fees remain a barrier in less wealthy or developing regions. On Ethereum the described roadmap addresses these cost challenges through layer two solutions that require greater adoption to reach broader availability. The text states the technology is prepared but emphasizes the need for wider layer two usage.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Menu Access and Web Eras Timeline",
+            "paragraphs": [
+              {
+                "text": "Mini Apps support launch from a customized menu button that functions identically to an inline button launch while providing quicker entry. This method is listed among seven total launch options including profile button, keyboard button, inline button, bot menu button, inline mode, direct link, and attachment menu. The menu button approach is presented as a straightforward alternative for reaching the same application content.",
+                "evidence_ids": [
+                  "EXT-05",
+                  "EXT-10"
+                ]
+              },
+              {
+                "text": "Web history on ethereum.org divides periods into Web 1.0 described as read-only from nineteen ninety to two thousand four, Web 2.0 labeled read-write from two thousand four onward, and Web 3.0 characterized as read-write-own. The section places current developments within this progression and notes additional topics such as ownership, censorship resistance, and decentralized autonomous organizations.",
+                "evidence_ids": [
+                  "EXT-05",
+                  "EXT-10"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Back Button Methods and Web3 Fundamentals",
+            "paragraphs": [
+              {
+                "text": "The BackButton object includes show and hide functions introduced in Bot API version six point one. Each method returns the button object itself to allow chaining of calls. The BottomButton object separately manages the button displayed at the bottom of the Mini App view inside the Telegram interface.",
+                "evidence_ids": [
+                  "EXT-06",
+                  "EXT-09"
+                ]
+              },
+              {
+                "text": "Web3 material covers centralization benefits in onboarding users alongside the creation of stable infrastructure. It lists improved security, cheaper transactions, better user experience, and privacy as goals. Additional sections address Ethereum improvement proposals, energy consumption, and governance processes while providing links to reports and community resources.",
+                "evidence_ids": [
+                  "EXT-06",
+                  "EXT-09"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Launch Methods and Educational Needs",
+            "paragraphs": [
+              {
+                "text": "Seven different launch paths exist for Mini Apps ranging from a profile button to an attachment menu. Each path leads to the same application experience with variations only in entry point. The inline button and menu button options receive specific mention for their convenience during normal use.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "EXT-12"
+                ]
+              },
+              {
+                "text": "Web3 requires users to adopt different mental models compared with Web2.0 practices. Similar education efforts occurred when Web1.0 expanded and relied on metaphors plus media broadcasts. Initiatives that explain these new paradigms remain important because Web3 is described as different rather than inherently difficult.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "EXT-12"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Gifts, Loading Screens, and Ownership Examples",
+            "paragraphs": [
+              {
+                "text": "Mini Apps hold the ability to send gifts to users by drawing from a balance of Telegram Stars. The same documentation covers paid subscriptions and gifts through the Bot API. Loading screen customization allows an app icon plus separate color choices for light and dark themes.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-11"
+                ]
+              },
+              {
+                "text": "Ownership in Web3 contexts is illustrated by contrasting a web2 game scenario where purchased in-game items remain tied to an account. If the account is removed or the user stops playing, access to those items ends. Web3 is presented as offering a different relationship to digital assets through ownership mechanics.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-11"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What button methods are available in Telegram Mini Apps?",
+            "answer": "The main button supports setText to update its label, onClick to register a press callback, and offClick to remove that handler. The show method controls visibility except when the Mini App opens from the attachment menu. These functions are documented with event aliases for mainButtonClicked.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "How many launch options exist for Mini Apps?",
+            "answer": "Telegram currently supports seven different ways of launching Mini Apps including from a profile button, keyboard button, inline button, bot menu button, via inline mode, from a direct link, and from the attachment menu.",
+            "evidence_ids": [
+              "EXT-03",
+              "EXT-04"
+            ]
+          },
+          {
+            "question": "Which BackButton methods were added in Bot API 6.1?",
+            "answer": "Bot API 6.1 added show and hide methods to the BackButton object. Both methods return the button instance so calls can be chained together. The BottomButton object manages the separate button shown at the bottom of the Mini App.",
+            "evidence_ids": [
+              "EXT-05",
+              "EXT-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "The reviewed sources describe specific Mini App controls such as button handlers, debug inspection steps that require ten taps, loading customization, and gift features using Telegram Stars. Separate Web3 material outlines historical web eras, ownership contrasts, accessibility through layer two networks, and the value of education for new mental models. These points remain distinct within the supplied documentation.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04"
+          ]
+        }
+      }
     }
   ],
   "generation_queue": [
@@ -3460,7 +3685,7 @@
       "priority": 17,
       "topic": "How Telegram Mini Apps Make Web3 Applications Easier to Access",
       "category": "Web3",
-      "status": "waiting",
+      "status": "ready",
       "source": "topic_bank",
       "topic_bank_id": "bank-034",
       "language": "en",
@@ -3468,7 +3693,9 @@
       "content_mode": "external",
       "source_profile": "telegram_web3",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "article_id": "apxn-016",
+      "generated_at": "2026-09-22"
     },
     {
       "priority": 18,
@@ -3570,26 +3797,26 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-015",
+    "last_generated_article": "apxn-016",
     "last_published_article": "apxn-014",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-09-21",
+      "last_run": "2026-09-22",
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 9,
+      "waiting_topics_after_run": 8,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
         "APXN Guides": 4,
-        "Blockchain": 3,
+        "Blockchain": 2,
         "Web3": 3,
         "BSC": 3,
         "Security": 3,
-        "Education": 2,
+        "Education": 3,
         "Development": 3
       }
     }
