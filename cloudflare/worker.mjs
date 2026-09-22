@@ -1,4 +1,3 @@
-
 import { handleStats } from "./api/stats.mjs";
 
 import {
@@ -60,9 +59,23 @@ export default {
     if (
       url.pathname === "/api/dashboard-login"
     ) {
-      // The original Telegram callback uses apxn.network.
-      // Do not start login from a preview domain yet.
-      if (url.hostname !== "apxn.network") {
+      // Fail closed unless the registered redirect URI belongs
+      // to the host that received this request. Never silently
+      // send a preview-domain login callback to apxn.network.
+      const expectedRedirectUri =
+        `${url.origin}/api/dashboard-login`;
+
+      const configuredRedirectUri =
+        env.TELEGRAM_REDIRECT_URI ||
+        (url.hostname === "apxn.network"
+          ? "https://apxn.network/api/dashboard-login"
+          : "");
+
+      if (
+        configuredRedirectUri !== expectedRedirectUri ||
+        !env.TELEGRAM_CLIENT_ID ||
+        !env.TELEGRAM_CLIENT_SECRET
+      ) {
         return new Response(
           JSON.stringify({
             error: "PREVIEW_LOGIN_NOT_CONFIGURED"
@@ -141,3 +154,4 @@ export default {
     return env.ASSETS.fetch(request);
   }
 };
+
