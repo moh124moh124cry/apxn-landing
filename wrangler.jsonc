@@ -1,4 +1,3 @@
-
 {
   "name": "apxn-landing",
   "main": "cloudflare/worker.mjs",
@@ -6,6 +5,7 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "keep_vars": true,
   "vars": {
     "BLOG_GITHUB_REPO": "moh124moh124cry/apxn-landing",
     "BLOG_GITHUB_BRANCH": "cloudflare-migration"
