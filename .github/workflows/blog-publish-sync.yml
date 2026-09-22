@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - cloudflare-migration
     paths:
       - "blog/articles/**"
 
@@ -13,19 +14,23 @@ permissions:
   contents: write
 
 concurrency:
-  group: apxn-blog-publish-sync
+  group: apxn-blog-publish-sync-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   sync-blog:
     name: Sync Blog Index and Sitemap
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/cloudflare-migration' }}
     runs-on: ubuntu-latest
+
+    env:
+      TARGET_BRANCH: ${{ github.ref_name }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -33,32 +38,38 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Update local main
+      - name: Update selected branch
         run: |
-          git pull --rebase origin main
+          set -euo pipefail
+          git pull --rebase origin "${TARGET_BRANCH}"
 
       - name: Validate required files
         run: |
+          set -euo pipefail
           test -f scripts/blog-sync.mjs
           test -f data/blog-config.json
           test -f data/blog-articles.json
 
       - name: Validate JSON files
         run: |
+          set -euo pipefail
           node -e "JSON.parse(require('fs').readFileSync('data/blog-config.json','utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('data/blog-articles.json','utf8'))"
 
       - name: Rebuild blog index and sitemap
         run: |
+          set -euo pipefail
           node scripts/blog-sync.mjs
 
       - name: Check generated files
         run: |
+          set -euo pipefail
           test -f blog/index.html
           test -f sitemap.xml
 
       - name: Commit synchronized blog files
         run: |
+          set -euo pipefail
           git config user.name "APXN Blog Bot"
           git config user.email "actions@github.com"
 
@@ -71,8 +82,8 @@ jobs:
 
           git commit -m "Sync blog index and sitemap after publication"
 
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin "HEAD:${TARGET_BRANCH}"
 
       - name: Summary
         if: always()
@@ -80,7 +91,8 @@ jobs:
           {
             echo "## APXN Blog Publish Sync"
             echo ""
-            echo "The blog index and sitemap sync runs only after a manual article publication creates or updates a file inside blog/articles/."
-            echo ""
+            echo "Branch: ${TARGET_BRANCH}"
+            echo "The blog index and sitemap sync runs after a manual article publication creates or updates a file inside blog/articles/, or on manual workflow dispatch."
             echo "This workflow does not generate or publish articles automatically."
           } >> "$GITHUB_STEP_SUMMARY"
+
