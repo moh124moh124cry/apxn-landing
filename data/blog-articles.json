@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-21",
+  "last_updated": "2026-09-22",
   "default_language": "en",
   "stats": {
     "total_articles": 15,
@@ -3565,6 +3565,23 @@
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
       "article_id": "apxn-013",
       "generated_at": "2026-09-19"
+    },
+    {
+      "priority": 7,
+      "topic": "APXN Project News: APXN Website Infrastructure Development and Gradual Migration to Cloudflare (275da7c331eb)",
+      "category": "APXN News",
+      "status": "waiting",
+      "source": "admin_editorial_submission",
+      "topic_bank_id": "bank-admin-275da7c331eb",
+      "language": "en",
+      "queued_at": "2026-09-22",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "editorial_submissions.submission_06e93b5ee7693be9.evidence"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal."
     }
   ],
   "automation_state": {

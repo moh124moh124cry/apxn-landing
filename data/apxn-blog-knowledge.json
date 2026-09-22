@@ -1045,6 +1045,23 @@
         "امتياز محدود يرتبط بالنشاط وفق السياسة التي سيعلن المشروع بدء تطبيقها."
       ],
       "queued_for_article_id": "bank-admin-4a9cefde074a"
+    },
+    "submission_06e93b5ee7693be9": {
+      "title": "APXN Website Infrastructure Development and Gradual Migration to Cloudflare",
+      "type": "conversation",
+      "submitted_at": "2026-09-22",
+      "source_status": "administrator_supplied",
+      "verification_note": "Founder-provided information. A discussion or proposal is not automatically an implemented feature.",
+      "evidence": [
+        "APXN Website Infrastructure Development and Gradual Migration to Cloudflare Source Type: APXN Project Technical Update Period: September 2026 Status: Development and testing phase ahead of the official migration. The APXN team began exploring improvements to the website’s technical infrastructure to prepare for community growth and increased activity, while seeking to improve hosting efficiency and manage operating costs. This initiative followed a review of current hosting resource consumption and an evaluation of options",
+        "that could help the project scale gradually. Cloudflare was selected as part of the development plan, based on one fundamental principle: test the new version before migrating the official website, while maintaining uninterrupted access to existing services for users. Development Stages The first phase focused on preparing a test version of the website to operate on the new infrastructure while preserving its existing pages and core services instead of rebuilding the entire",
+        "project from scratch. Testing covered website loading, content pages, database connectivity, user authentication, account information display, and the tasks and rewards page. The initial build tests were successful. It was also possible to sign in to the test version and display information from a real account associated with the project. Rewards System Testing During testing, a real reward claim of 50 APXN Points was performed. A database check confirmed that the reward",
+        "had been successfully recorded. However, the test revealed a user interface issue: after refreshing the page, the previous claim status was not displayed correctly. The issue was found to be related to restoring reward status in the interface, rather than a failure to credit the points. A mechanism was developed to allow the test version to retrieve previous reward claim records from the database. A subsequent service test confirmed that the system",
+        "successfully identified the task for which the user had already received a reward. Work then continued on improving how reward statuses are displayed on the page, ensuring that completed claims remain clearly visible after a page refresh. The Importance of Gradual Testing This phase demonstrated that improving technical infrastructure involves more than simply running a website on a new hosting platform. It also requires verifying the integration of authentication, user accounts, rewards,",
+        "and user interfaces. It also reinforced the importance of testing services with real data in a controlled development environment, while avoiding announcements that any phase has been completed before it has been fully verified. What Comes Next? The APXN team continues to review the remaining functionality and improve the user experience in the test version. The official migration will depend on the results of these tests and confirmation that essential services are",
+        "ready, with website stability and uninterrupted access remaining top priorities. Conclusion The planned migration from Vercel to Cloudflare is part of APXN’s ongoing efforts to strengthen its technical infrastructure and prepare for future stages of growth. The test version has made progress in website operation, user authentication, database connectivity, and rewards system testing. The official migration remains in preparation until the final verification process is complete."
+      ],
+      "queued_for_article_id": "bank-admin-275da7c331eb"
     }
   }
 }

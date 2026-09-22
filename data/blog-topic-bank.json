@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-21",
+  "last_updated": "2026-09-22",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -571,6 +571,22 @@
       "article_id": "apxn-013",
       "article_slug": "apxn-network-strategic-update-details-point-economy-and-early-access-badge-policy",
       "generated_at": "2026-09-19"
+    },
+    {
+      "id": "bank-admin-275da7c331eb",
+      "topic": "APXN Project News: APXN Website Infrastructure Development and Gradual Migration to Cloudflare (275da7c331eb)",
+      "category": "APXN News",
+      "risk": "safe",
+      "status": "queued",
+      "source": "admin_editorial_submission",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "editorial_submissions.submission_06e93b5ee7693be9.evidence"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
+      "queued_at": "2026-09-22"
     }
   ],
   "planner_state": {
