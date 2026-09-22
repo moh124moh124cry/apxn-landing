@@ -14,7 +14,7 @@ permissions:
 
 
 concurrency:
-  group: apxn-blog-ready-writer
+  group: apxn-blog-ready-writer-${{ github.ref_name }}
   cancel-in-progress: false
 
 
@@ -23,6 +23,10 @@ jobs:
 
     name: Generate Ready Blog Article
 
+    # The scheduled workflow remains on main. Manual runs may target
+    # main or the isolated Cloudflare migration branch, but no other branch.
+    if: ${{ github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/cloudflare-migration') }}
+
     runs-on: ubuntu-latest
 
     timeout-minutes: 20
@@ -30,6 +34,7 @@ jobs:
 
     env:
       TZ: "Africa/Algiers"
+      TARGET_BRANCH: ${{ github.ref_name }}
 
 
     steps:
@@ -41,7 +46,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-          ref: main
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
 
@@ -365,7 +370,7 @@ jobs:
             -m "chore(blog): add ready article"
 
 
-          git push origin main
+          git push origin "HEAD:${TARGET_BRANCH}"
 
 
       # ============================================
@@ -383,7 +388,6 @@ jobs:
 
             exit 0
           fi
-
 
           if git diff --quiet -- data/blog-costs.json; then
 
@@ -413,7 +417,7 @@ jobs:
             -m "chore(blog): record failed generation cost"
 
 
-          git push origin main
+          git push origin "HEAD:${TARGET_BRANCH}"
 
 
       # ============================================
