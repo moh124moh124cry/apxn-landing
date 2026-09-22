@@ -22,6 +22,7 @@ const TELEGRAM_JWKS_URL =
 
 
 const REDIRECT_URI =
+    process.env.TELEGRAM_REDIRECT_URI ||
     'https://apxn.network/api/dashboard-login';
 
 
@@ -1173,3 +1174,4 @@ export default async function handler(
         config
     );
 }
+
