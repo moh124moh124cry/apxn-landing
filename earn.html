@@ -1316,6 +1316,14 @@
         let currentTasks =
             [];
 
+        // Reward history is read from the authenticated API.
+        // sessionStorage is only used to remember an opened link.
+        let claimedTaskKeys =
+            new Set();
+
+        let claimHistoryUnavailable =
+            false;
+
         function show(
             id,
             display
@@ -1559,6 +1567,11 @@
                     task
                 );
 
+            const claimed =
+                claimedTaskKeys.has(
+                    String(task.key)
+                );
+
             article.innerHTML =
                 `
                 <div class="flex items-start justify-between gap-3 mb-5">
@@ -1581,9 +1594,13 @@
 
                 <div class="status-message text-[11px] text-gray-600 mb-3" data-status>
                     ${
-                        opened
-                            ? 'Activity opened. You can claim your reward.'
-                            : 'Open the activity first.'
+                        claimed
+                            ? 'You already received the reward for this activity.'
+                            : claimHistoryUnavailable
+                                ? 'Reward history unavailable. Refresh to try again.'
+                                : opened
+                                    ? 'Activity opened. You can claim your reward.'
+                                    : 'Open the activity first.'
                     }
                 </div>
 
@@ -1600,11 +1617,11 @@
 
                     <button
                         type="button"
-                        class="claim-btn"
+                        class="claim-btn ${claimed ? 'claimed' : ''}"
                         data-claim
-                        ${opened ? '' : 'disabled'}
+                        ${claimed || claimHistoryUnavailable || !opened ? 'disabled' : ''}
                     >
-                        Claim +${task.reward}
+                        ${claimed ? 'Already Claimed' : 'Claim +' + task.reward}
                     </button>
                 </div>
                 `;
@@ -1631,6 +1648,20 @@
                         markOpened(
                             task
                         );
+
+                        if (claimed) {
+                            status.textContent =
+                                'You already received the reward for this activity.';
+
+                            return;
+                        }
+
+                        if (claimHistoryUnavailable) {
+                            status.textContent =
+                                'Reward history unavailable. Refresh to try again.';
+
+                            return;
+                        }
 
                         status.textContent =
                             'Activity opened. Return and claim your reward.';
@@ -1690,6 +1721,41 @@
             return escapeHtml(
                 value
             );
+        }
+
+        function updateAvailableTotals() {
+            const availableTasks =
+                currentTasks.filter(
+                    (task) =>
+                        !claimedTaskKeys.has(
+                            String(task.key)
+                        )
+                );
+
+            const totalRewards =
+                availableTasks.reduce(
+                    (sum, task) =>
+                        sum + Number(task.reward || 0),
+                    0
+                );
+
+            document
+                .getElementById(
+                    'available-count'
+                )
+                .textContent =
+                    claimHistoryUnavailable
+                        ? '—'
+                        : String(availableTasks.length);
+
+            document
+                .getElementById(
+                    'available-rewards'
+                )
+                .textContent =
+                    claimHistoryUnavailable
+                        ? '—'
+                        : `${formatNumber(totalRewards)} APXN`;
         }
 
         function renderTasks(
@@ -1772,36 +1838,7 @@
                     : 'block'
             );
 
-            const totalRewards =
-                currentTasks
-                    .reduce(
-                        (
-                            sum,
-                            task
-                        ) =>
-                            sum +
-                            Number(
-                                task.reward ||
-                                0
-                            ),
-                        0
-                    );
-
-            document
-                .getElementById(
-                    'available-count'
-                )
-                .textContent =
-                    String(
-                        currentTasks.length
-                    );
-
-            document
-                .getElementById(
-                    'available-rewards'
-                )
-                .textContent =
-                    `${formatNumber(totalRewards)} APXN`;
+            updateAvailableTotals();
         }
 
         async function loadTasks() {
@@ -1826,6 +1863,20 @@
                 const data =
                     await response
                         .json();
+
+                // The Cloudflare API verifies claims using Supabase.
+                // If a claim history error occurs, do not assume
+                // that previous rewards are unclaimed.
+                claimedTaskKeys =
+                    data?.claimStatusLoaded === true &&
+                    Array.isArray(data?.claimedKeys)
+                        ? new Set(data.claimedKeys.map(String))
+                        : new Set();
+
+                // Older API responses without this optional field
+                // retain the original page behavior on Vercel.
+                claimHistoryUnavailable =
+                    data?.claimStatusLoaded === false;
 
                 renderTasks(
                     data?.tasks ||
@@ -1991,6 +2042,22 @@
             button,
             status
         ) {
+            if (claimedTaskKeys.has(String(task.key))) {
+                button.disabled = true;
+                button.classList.add('claimed');
+                button.textContent = 'Already Claimed';
+                status.textContent =
+                    'You already received the reward for this activity.';
+                return;
+            }
+
+            if (claimHistoryUnavailable) {
+                button.disabled = true;
+                status.textContent =
+                    'Reward history unavailable. Refresh to try again.';
+                return;
+            }
+
             if (
                 !accountReady
             ) {
@@ -2108,6 +2175,12 @@
                     button.textContent =
                         'Already Claimed';
 
+                    claimedTaskKeys.add(
+                        String(task.key)
+                    );
+
+                    updateAvailableTotals();
+
                     status.textContent =
                         'You already received the reward for this activity.';
 
@@ -2142,6 +2215,12 @@
 
                     button.textContent =
                         `+${task.reward} Added ✓`;
+
+                    claimedTaskKeys.add(
+                        String(task.key)
+                    );
+
+                    updateAvailableTotals();
 
                     status.textContent =
                         `${task.reward} APXN Points added to your account.`;
@@ -2200,3 +2279,4 @@
     </script>
 </body>
 </html>
+
