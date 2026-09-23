@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-09-22",
+  "last_updated": "2026-09-23",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -577,7 +577,7 @@
       "topic": "APXN Project News: APXN Website Infrastructure Development and Gradual Migration to Cloudflare (275da7c331eb)",
       "category": "APXN News",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "source": "admin_editorial_submission",
       "content_mode": "apxn",
       "source_profile": null,
@@ -586,11 +586,14 @@
       ],
       "auto_publish_allowed": true,
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
-      "queued_at": "2026-09-22"
+      "queued_at": "2026-09-22",
+      "article_id": "apxn-016",
+      "article_slug": "apxn-technical-update-details-website-infrastructure-development-and-cloudflare-migration-",
+      "generated_at": "2026-09-23"
     }
   ],
   "planner_state": {
-    "last_run": "2026-09-21",
+    "last_run": "2026-09-23",
     "available_topics": 22,
     "automation_eligible_available_topics": 20,
     "manual_or_review_topics": 2,
@@ -598,7 +601,7 @@
     "used_topics": 5,
     "category_load_after_run": {
       "APXN Guides": 4,
-      "Blockchain": 3,
+      "Blockchain": 2,
       "Web3": 3,
       "BSC": 3,
       "Security": 3,
