@@ -3030,7 +3030,7 @@
       "author": "Apex Network Editorial",
       "status": "published",
       "featured": false,
-      "indexable": true,
+      "indexable": false,
       "created_at": "2026-09-21",
       "generated_at": "2026-09-21",
       "updated_at": "2026-09-24",
@@ -3038,8 +3038,8 @@
       "reading_minutes": 5,
       "word_count": 907,
       "path": "blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html",
-      "url": "https://apxn.network/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html",
-      "image": "https://apxn.network/blog/images/blockchain-transactions-on-ethereum-explained-simply-for-beginners-1000134733.jpg",
+      "url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html",
+      "image": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/images/blockchain-transactions-on-ethereum-explained-simply-for-beginners-1000134733.jpg",
       "image_filename": "blockchain-transactions-on-ethereum-explained-simply-for-beginners-1000134733.jpg",
       "keywords": [
         "ethereum transactions",
@@ -3062,8 +3062,8 @@
       "seo": {
         "title": "Blockchain Transactions on Ethereum Explained Simply for Beginners",
         "description": "Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation.",
-        "canonical": "https://apxn.network/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html",
-        "robots": "index, follow",
+        "canonical": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html",
+        "robots": "noindex, nofollow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -3237,7 +3237,7 @@
           ]
         }
       },
-      "published_url": "https://apxn.network/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html"
+      "published_url": "https://apxn-landing.cherfaouimohamed377.workers.dev/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html"
     },
     {
       "id": "apxn-016",
