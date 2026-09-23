@@ -1045,6 +1045,20 @@
         "امتياز محدود يرتبط بالنشاط وفق السياسة التي سيعلن المشروع بدء تطبيقها."
       ],
       "queued_for_article_id": "bank-admin-4a9cefde074a"
+    },
+    "submission_bd73e45d260e2020": {
+      "title": "### APXN Telegram Mining App Migration from Vercel to Cloudflare",
+      "type": "conversation",
+      "submitted_at": "2026-09-23",
+      "source_status": "administrator_supplied",
+      "verification_note": "Founder-provided information. A discussion or proposal is not automatically an implemented feature.",
+      "evidence": [
+        "### APXN Telegram Mining App Migration from Vercel to Cloudflare We began migrating the APXN Telegram mining application from Vercel to Cloudflare to improve performance and reduce Vercel resource consumption while preserving user data and existing application functionality. We created an independent testing environment named `apxn-miner-preview` and connected it to the application's GitHub repository through the `cloudflare-migration` branch, without modifying the official version used by the APXN community. After resolving build and",
+        "authentication issues, the test application successfully launched inside Telegram using a separate test bot. Testing confirmed that balances, referrals, active days, mining status, and boosts matched accurately between Cloudflare and Vercel. The tasks, upgrades, and project information sections also displayed successfully. A few daily task links still require configuration and will be completed later. Following the successful testing phase, we began preparing a separate Cloudflare deployment for the official application under the",
+        "name `apxn-miner-live`. The new deployment has been created, connected to GitHub, and configured with the necessary build and runtime environment variables. ### Current Status The Cloudflare test application is running successfully, while the new deployment intended for the official application is being prepared. Users have not yet been migrated to Cloudflare. The official Telegram application, bot, and webhook remain operational on Vercel without any changes. ### Next Phase Complete the build and",
+        "deployment of `apxn-miner-live`, verify its readiness, establish an official APXN project URL, and carry out a gradual migration after confirming that all essential application functions operate correctly."
+      ],
+      "queued_for_article_id": null
     }
   }
 }
