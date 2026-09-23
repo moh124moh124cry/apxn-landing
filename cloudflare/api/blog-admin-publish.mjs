@@ -15,7 +15,7 @@ const PRODUCTION_BRANCH =
   "main";
 
 const PREVIEW_HOST =
-  "apxn-landing.cherfaouimohamed377.workers.dev";
+  "apxn-landing.apxn-network.workers.dev";
 
 const PRODUCTION_HOST =
   "apxn.network";
