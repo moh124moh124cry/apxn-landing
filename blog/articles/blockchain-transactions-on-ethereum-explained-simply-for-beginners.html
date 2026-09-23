@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Blockchain Transactions on Ethereum Explained Simply for Beginners</title>
+
+    <meta
+        name="description"
+        content="Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation."
+    >
+
+    <meta
+        name="keywords"
+        content="ethereum transactions, blockchain basics, transaction types, ethereum network, data storage, state changes, eip-2718, legacy transactions, eip-1559"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <meta
+        name="author"
+        content="Apex Network Editorial"
+    >
+
+
+    <link
+        rel="canonical"
+        href="https://apxn.network/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html"
+    >
+
+    <link
+        rel="icon"
+        href="../../logo2%20(1).png"
+        type="image/png"
+    >
+
+
+    <meta
+        property="og:type"
+        content="article"
+    >
+
+    <meta
+        property="og:title"
+        content="Blockchain Transactions on Ethereum Explained Simply for Beginners"
+    >
+
+    <meta
+        property="og:description"
+        content="Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation."
+    >
+
+    <meta
+        property="og:url"
+        content="https://apxn.network/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html"
+    >
+
+    <meta
+        property="og:image"
+        content="https://apxn.network/blog/images/blockchain-transactions-on-ethereum-explained-simply-for-beginners-1000134733.jpg"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Apex Network"
+    >
+
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="Blockchain Transactions on Ethereum Explained Simply for Beginners"
+    >
+
+    <meta
+        name="twitter:description"
+        content="Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation."
+    >
+
+    <meta
+        name="twitter:image"
+        content="https://apxn.network/blog/images/blockchain-transactions-on-ethereum-explained-simply-for-beginners-1000134733.jpg"
+    >
+
+
+    <script>
+        window.va =
+            window.va ||
+            function () {
+                (
+                    window.vaq =
+                    window.vaq ||
+                    []
+                ).push(
+                    arguments
+                );
+            };
+    </script>
+
+    <script
+        defer
+        src="/_vercel/insights/script.js"
+    ></script>
+
+
+    <script
+        src="https://cdn.tailwindcss.com"
+    ></script>
+
+
+    <style>
+
+        html {
+            background: #020617;
+        }
+
+        .gold-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #fde047,
+                    #f59e0b,
+                    #fb923c
+                );
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+        }
+
+        .article-body p {
+            color:
+                #cbd5e1;
+
+            line-height:
+                1.9;
+
+            margin:
+                1rem 0 1.5rem;
+        }
+
+        .article-body h2 {
+            color:
+                #fff;
+
+            font-size:
+                1.75rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                2.7rem;
+
+            margin-bottom:
+                1rem;
+
+            line-height:
+                1.25;
+        }
+
+        .article-body h3 {
+            color:
+                #facc15;
+
+            font-size:
+                1.2rem;
+
+            font-weight:
+                900;
+
+            margin-top:
+                1rem;
+
+            margin-bottom:
+                .75rem;
+        }
+
+        .article-body ul {
+            color:
+                #cbd5e1;
+
+            margin:
+                1rem 0 1.5rem 1.5rem;
+
+            line-height:
+                1.9;
+
+            list-style:
+                disc;
+        }
+
+        .article-body a {
+            color:
+                #facc15;
+
+            font-weight:
+                800;
+        }
+
+        .info-box {
+            background:
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .8
+                );
+
+            border:
+                1px solid
+                rgba(
+                    234,
+                    179,
+                    8,
+                    .25
+                );
+
+            border-radius:
+                1rem;
+
+            padding:
+                1.25rem;
+
+            margin:
+                1.5rem 0;
+        }
+
+    </style>
+
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Blockchain Transactions on Ethereum Explained Simply for Beginners",
+  "description": "Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation.",
+  "image": "https://apxn.network/blog/images/blockchain-transactions-on-ethereum-explained-simply-for-beginners-1000134733.jpg",
+  "mainEntityOfPage": "https://apxn.network/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html",
+  "datePublished": "2026-09-24",
+  "dateModified": "2026-09-24",
+  "author": {
+    "@type": "Organization",
+    "name": "Apex Network Editorial"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Apex Network",
+    "url": "https://apxn.network",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apxn.network/logo2%20(1).png"
+    }
+  }
+}
+    </script>
+
+    
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What defines a basic Ethereum transaction?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Transactions are cryptographically signed instructions from accounts that update the state of the Ethereum network. The simplest transaction transfers ETH from one account to another. Cryptographic mechanisms ensure verified transactions cannot be tampered with and that only the account holder can authorize actions from that account."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do dates and contributor details appear in Ethereum documentation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Page last update references include April 22 2026 along with contributor counts such as 17. Website last updated dates appear as September 17 2026. These elements accompany explanations of blocks data availability and terminology used throughout the resources."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What numeric values define transaction types under EIP-2718?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TransactionType is a number between 0 and 0x7f supporting 128 possible types. Legacy transactions use TransactionType value 0x0 and start with byte 0xf8. EIP-2718 structures transactions as TransactionType followed by TransactionPayload allowing classification into formats such as Type 0."
+      }
+    }
+  ]
+}
+    </script>
+            
+
+</head>
+
+
+<body
+    class="bg-slate-950 text-white font-sans overflow-x-hidden selection:bg-yellow-500 selection:text-slate-950"
+>
+
+
+<header
+    class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-5"
+    >
+
+        <a
+            href="../index.html"
+            class="flex items-center gap-3 min-w-0"
+        >
+
+            <div
+                class="w-11 h-11 shrink-0 rounded-full overflow-hidden border border-yellow-500/50"
+            >
+
+                <img
+                    src="../../logo2%20(1).png"
+                    alt="Apex Network Logo"
+                    class="w-full h-full object-cover"
+                    width="44"
+                    height="44"
+                >
+
+            </div>
+
+
+            <div>
+
+                <div
+                    class="font-black tracking-wider gold-text text-base sm:text-lg"
+                >
+                    APEX NETWORK
+                </div>
+
+                <div
+                    class="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-[0.2em]"
+                >
+                    APXN Blog
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <div
+            class="flex items-center gap-3"
+        >
+
+            <a
+                href="../index.html"
+                class="hidden sm:inline-flex text-sm font-bold text-gray-400 hover:text-yellow-400"
+            >
+                Blog Home
+            </a>
+
+            <a
+                href="https://t.me/ApxMinerBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-950 font-black text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl"
+            >
+                Open APXN App
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <article>
+
+
+        <section
+            class="border-b border-slate-800 bg-gradient-to-b from-yellow-500/[0.06] to-transparent"
+        >
+
+            <div
+                class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20"
+            >
+
+                <nav
+                    aria-label="Breadcrumb"
+                    class="text-xs text-gray-500 font-bold mb-7"
+                >
+
+                    <a
+                        href="../../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Home
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <a
+                        href="../index.html"
+                        class="hover:text-yellow-400"
+                    >
+                        Blog
+                    </a>
+
+                    <span class="mx-2">
+                        /
+                    </span>
+
+                    <span
+                        class="text-yellow-400"
+                    >
+                        Blockchain
+                    </span>
+
+                </nav>
+
+
+                <span
+                    class="inline-flex border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5"
+                >
+                    Blockchain
+                </span>
+
+
+                <h1
+                    class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6"
+                >
+                    Blockchain Transactions on Ethereum Explained Simply for Beginners
+                </h1>
+
+
+                <p
+                    class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-7"
+                >
+                    Learn how Ethereum transactions function as signed instructions that update network state, including basic types and data structures from official documentation.
+                </p>
+
+
+                <div
+                    class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-500"
+                >
+
+                    <span
+                        class="font-bold text-gray-300"
+                    >
+                        Apex Network Editorial
+                    </span>
+
+                    <span>
+                        •
+                    </span>
+
+                    <time
+                        datetime="2026-09-24"
+                    >
+                        September 24, 2026
+                    </time>
+
+                    <span>
+                        •
+                    </span>
+
+                    <span>
+                        5 min read
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="mt-8 flex flex-wrap items-center gap-3"
+                >
+
+                    <button
+                        type="button"
+                        onclick="shareArticle()"
+                        class="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm font-black text-yellow-400 hover:bg-yellow-500/15 transition-colors"
+                        aria-label="Share this article"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                        >
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+                            <line x1="8.59" y1="13.49" x2="15.42" y2="17.51"></line>
+                        </svg>
+
+                        <span>
+                            Share article
+                        </span>
+                    </button>
+
+
+                    <span
+                        id="share-status"
+                        class="hidden text-sm font-bold text-emerald-400"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Original APXN link copied
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div
+            class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14"
+        >
+
+            <div
+                class="mb-8 flex w-full justify-center"
+            >
+                <a
+                    href="https://omg10.com/4/11822007"
+                    target="_blank"
+                    rel="sponsored noopener noreferrer"
+                    aria-label="Sponsored advertisement — view offer"
+                    class="inline-flex w-full max-w-2xl items-center justify-center gap-2 rounded-2xl border border-yellow-400/50 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 px-6 py-4 text-center text-sm sm:text-base font-black text-slate-950 shadow-[0_12px_32px_rgba(245,158,11,0.22)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                >
+                    <span>
+                        Sponsored Advertisement — View Offer
+                    </span>
+
+                    <span aria-hidden="true">
+                        ↗
+                    </span>
+                </a>
+            </div>
+
+
+            <figure
+                class="mb-12"
+            >
+
+                <img
+                    src="https://apxn.network/blog/images/blockchain-transactions-on-ethereum-explained-simply-for-beginners-1000134733.jpg"
+                    alt="Blockchain Transactions on Ethereum Explained Simply for Beginners"
+                    class="w-full rounded-2xl border border-slate-800 object-cover max-h-[620px]"
+                    loading="eager"
+                >
+
+            </figure>
+
+
+            
+            <!-- 300x250 Banner Ad -->
+            <div
+                class="my-12 flex justify-center"
+                aria-label="Advertisement"
+            >
+                <div
+                    class="w-[300px] max-w-full overflow-hidden"
+                >
+                    <script>
+                        atOptions = {
+                            'key' : 'f6cf8bc3afbc43f716d86cf2b6beb84c',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+
+                    <script
+                        src="https://www.highrevenueformat.com/f6cf8bc3afbc43f716d86cf2b6beb84c/invoke.js"
+                    ></script>
+                </div>
+            </div>
+    
+
+
+            <div
+                class="article-body"
+            >
+
+                <p
+                    class="text-lg"
+                >
+                    Transactions on Ethereum are cryptographically signed instructions from accounts that initiate updates to the state of the Ethereum network. The simplest form involves transferring ETH from one account to another. Cryptographic mechanisms ensure that once transactions are verified as valid and added to the blockchain they cannot be tampered with later. The same mechanisms also ensure that all transactions are signed and executed with appropriate permissions so that only the account holder can authorize actions from that account. These foundational elements appear across Ethereum resources that describe network operations and transaction handling.
+                </p>
+
+
+                
+                        <section>
+                            <h2>Ethereum Network and Transaction Types</h2>
+
+                            <p>The Ethereum network processes transactions as the primary way accounts interact with the system. Type 2 transactions introduced in EIP-1559 during the London Upgrade have become the standard transaction type. They start with the byte 0x02 and include fields such as maxPriorityFeePerGas and maxFeePerGas. These transactions separate the fee into a base fee and a priority fee to improve predictability especially during high network congestion. The TransactionType value for these transactions is 0x2.</p>
+<p>Staking relates to network participation through validators that help secure the system while transactions remain the core method for state updates. Type 2 transactions are now the default due to their flexibility and efficiency on the Ethereum network. The evidence highlights how these transactions support the fee market mechanism on the Ethereum network.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Data Structures and Network Storage</h2>
+
+                            <p>Blockchain data storage strategies define how information is kept across the network and accessed by participants. Transactions include data that must be added to blocks to become part of the permanent record. The design fundamentals cover data structures such as the Patricia Merkle Trie and encoding methods like Recursive-length prefix that support consistent storage and retrieval across nodes.</p>
+<p>Type 1 transactions include an accessList parameter that specifies addresses and storage keys expected to be accessed. This design element appears in EIP-2930 as part of the Berlin Upgrade. The evidence shows how such lists relate to data handling while the overall network maintains shared storage of blocks and state through defined structures.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Data Availability and Page Design Elements</h2>
+
+                            <p>A blockchain functions as a public database updated and shared across many computers in a network. Blocks store consecutive groups of data and state. If a user sends ETH to someone else the transaction data must be added to a block to succeed. Design fundamentals address how information is presented including page elements that open in new tabs for further reading.</p>
+<p>Page updates reference dates such as April 22 2026 and contributor counts like 17 while website updates appear under dates such as September 17 2026. These details relate to how documentation pages present information about Ethereum concepts including blocks and data availability strategies across the network.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Transaction Requests and State Changes</h2>
+
+                            <p>A transaction request represents a formal request for code execution on the EVM while a transaction itself is the fulfilled request along with the associated change in the EVM state. Any user can broadcast a transaction request to the network from a node. For the request to affect the agreed-upon EVM state it must be validated executed and committed to the network by another node.</p>
+<p>Execution of code causes a state change in the EVM and upon commitment this state change is broadcast to all nodes in the network. Cryptographic mechanisms ensure transactions cannot be tampered with after verification. The process maintains that only authorized parties can initiate changes from specific accounts.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Transaction Types and Byte Definitions</h2>
+
+                            <p>EIP-2718 enables classification of transactions through a TransactionType value that is a number between 0 and 0x7f allowing for 128 possible transaction types. The structure follows TransactionType followed by TransactionPayload where the payload is an arbitrary byte array defined by the transaction type. Type 0 legacy transactions use the original format from Ethereum launch and start with the byte 0xf8 under RLP encoding.</p>
+<p>Legacy transactions do not include features from EIP-1559 such as dynamic gas fee calculations. Their TransactionType value is 0x0. The byte definitions and ranges support consistent interpretation of different transaction formats across the network while maintaining compatibility with earlier designs.</p>
+                        </section>
+                    
+
+                        <section>
+                            <h2>Ethereum Nodes Clients and Technical History</h2>
+
+                            <p>Ethereum documentation covers nodes and clients as part of running a node and understanding network architecture. Topics include client diversity node architecture light clients and archive nodes. These elements relate to how the network maintains history and supports ongoing operations through distributed participation.</p>
+<p>Technical history and open research sections appear alongside discussions of consensus mechanisms and data analytics tools. The resources outline foundational topics such as accounts transactions blocks and the Ethereum virtual machine providing context for how the system has developed over time.</p>
+                        </section>
+                    
+
+
+                
+                <section>
+
+                    <h2>
+                        Frequently asked questions
+                    </h2>
+
+                    
+                        <div class="info-box">
+                            <h3>What defines a basic Ethereum transaction?</h3>
+
+                            <p>Transactions are cryptographically signed instructions from accounts that update the state of the Ethereum network. The simplest transaction transfers ETH from one account to another. Cryptographic mechanisms ensure verified transactions cannot be tampered with and that only the account holder can authorize actions from that account.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>How do dates and contributor details appear in Ethereum documentation?</h3>
+
+                            <p>Page last update references include April 22 2026 along with contributor counts such as 17. Website last updated dates appear as September 17 2026. These elements accompany explanations of blocks data availability and terminology used throughout the resources.</p>
+                        </div>
+                    
+
+                        <div class="info-box">
+                            <h3>What numeric values define transaction types under EIP-2718?</h3>
+
+                            <p>TransactionType is a number between 0 and 0x7f supporting 128 possible types. Legacy transactions use TransactionType value 0x0 and start with byte 0xf8. EIP-2718 structures transactions as TransactionType followed by TransactionPayload allowing classification into formats such as Type 0.</p>
+                        </div>
+                    
+
+                </section>
+                        
+
+
+                <section>
+
+                    <h2>
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        Transactions serve as the mechanism for updating Ethereum network state through signed instructions. Basic transfers and more complex requests follow defined formats that include type indicators and payload structures. Documentation resources consistently describe how validation and commitment processes maintain consistency across nodes while preserving the integrity of recorded changes.
+                    </p>
+
+                </section>
+
+
+                
+                <section>
+
+                    <h2>
+                        Related reading
+                    </h2>
+
+                    <ul>
+                        
+                                        <li>
+                                            <a href="./self-custody-wallet-basics-for-web3-beginners-on-ethereum.html">
+                                                Self-Custody Wallet Basics for Web3 Beginners on Ethereum
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard.html">
+                                                What Is a BEP-20 Token? A Beginner-Friendly Guide to the BNB Smart Chain Standard
+                                            </a>
+                                        </li>
+                                    
+                                        <li>
+                                            <a href="./wallet-connection-vs-wallet-storage-an-important-web3-distinction.html">
+                                                Wallet Connection vs Wallet Storage: An Important Web3 Distinction
+                                            </a>
+                                        </li>
+                                    
+                    </ul>
+
+                </section>
+            
+
+
+                <div
+                    class="info-box"
+                >
+
+                    <strong>
+                        Editorial note:
+                    </strong>
+
+                    <p>
+                        This article is educational project content and should not be treated as financial, investment, legal or tax advice.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</main>
+
+
+<footer
+    class="border-t border-slate-800"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 flex flex-wrap gap-4 justify-between"
+    >
+
+        <span>
+            © 2026 Apex Network
+        </span>
+
+        <a
+            href="../index.html"
+            class="hover:text-yellow-400"
+        >
+            APXN Blog
+        </a>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    const APXN_ARTICLE_SHARE = {
+        title:
+            "Blockchain Transactions on Ethereum Explained Simply for Beginners",
+
+        url:
+            "https://apxn.network/blog/articles/blockchain-transactions-on-ethereum-explained-simply-for-beginners.html"
+    };
+
+
+    function showShareStatus(
+        message
+    ) {
+
+        const status =
+            document.getElementById(
+                'share-status'
+            );
+
+        if (!status) {
+            return;
+        }
+
+        status.textContent =
+            message;
+
+        status.classList.remove(
+            'hidden'
+        );
+
+        window.clearTimeout(
+            window.__apxnShareStatusTimer
+        );
+
+        window.__apxnShareStatusTimer =
+            window.setTimeout(
+                () => {
+                    status.classList.add(
+                        'hidden'
+                    );
+                },
+                3000
+            );
+    }
+
+
+    async function copyOriginalArticleLink() {
+
+        const link =
+            APXN_ARTICLE_SHARE.url;
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(
+                    link
+                );
+
+            } else {
+
+                const input =
+                    document.createElement(
+                        'textarea'
+                    );
+
+                input.value =
+                    link;
+
+                input.setAttribute(
+                    'readonly',
+                    ''
+                );
+
+                input.style.position =
+                    'fixed';
+
+                input.style.opacity =
+                    '0';
+
+                document.body.appendChild(
+                    input
+                );
+
+                input.select();
+
+                document.execCommand(
+                    'copy'
+                );
+
+                input.remove();
+            }
+
+            showShareStatus(
+                'Original APXN link copied'
+            );
+
+            return true;
+
+        } catch {
+
+            showShareStatus(
+                'Copy the APXN link from the address bar'
+            );
+
+            return false;
+        }
+    }
+
+
+    async function shareArticle() {
+
+        const shareData = {
+            title:
+                APXN_ARTICLE_SHARE.title,
+
+            url:
+                APXN_ARTICLE_SHARE.url
+        };
+
+        if (
+            typeof navigator.share ===
+            'function'
+        ) {
+
+            try {
+
+                await navigator.share(
+                    shareData
+                );
+
+                return;
+
+            } catch (error) {
+
+                if (
+                    error &&
+                    error.name ===
+                        'AbortError'
+                ) {
+                    return;
+                }
+            }
+        }
+
+        await copyOriginalArticleLink();
+    }
+
+</script>
+
+
+</body>
+</html>
