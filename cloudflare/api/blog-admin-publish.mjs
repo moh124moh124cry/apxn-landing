@@ -11,8 +11,11 @@ const REPOSITORY =
 const PREVIEW_BRANCH =
   "cloudflare-migration";
 
+// The official domain is served from cloudflare-migration
+// during the Cloudflare cutover. Keep publication on the
+// same branch until the production deployment moves to main.
 const PRODUCTION_BRANCH =
-  "main";
+  "cloudflare-migration";
 
 const PREVIEW_HOST =
   "apxn-landing.apxn-network.workers.dev";
@@ -53,9 +56,9 @@ export async function handleBlogAdminPublish(
   const legacyRepository =
     String(process.env.BLOG_GITHUB_REPO || REPOSITORY).trim();
 
-  // A preview hostname may write only to the preview branch.
-  // The real hostname may write only to main.
-  // Never allow a branch/hostname mix-up to publish an article.
+  // Only the two known APXN hosts may publish to the
+  // configured Cloudflare migration branch at this stage.
+  // Never allow a hostname or branch mismatch to write.
   const previewConfigured =
     hostname === PREVIEW_HOST &&
     workerBranch === PREVIEW_BRANCH &&
