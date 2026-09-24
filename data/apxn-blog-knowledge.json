@@ -1059,6 +1059,18 @@
         "deployment of `apxn-miner-live`, verify its readiness, establish an official APXN project URL, and carry out a gradual migration after confirming that all essential application functions operate correctly."
       ],
       "queued_for_article_id": null
+    },
+    "submission_b37c64c887a67919": {
+      "title": "APXN Network — Successful Migration to Cloudflare 🚀",
+      "type": "conversation",
+      "submitted_at": "2026-09-24",
+      "source_status": "administrator_supplied",
+      "verification_note": "Founder-provided information. A discussion or proposal is not automatically an implemented feature.",
+      "evidence": [
+        "APXN Network — Successful Migration to Cloudflare 🚀 Update Date: September 24, 2026 The APXN Network development team has completed an important milestone in the project's technical infrastructure by successfully migrating the official website, APXN Blog, mining application, and Telegram bot from Vercel to Cloudflare. The migration was completed while preserving users' balances and maintaining access to mining, referrals, rewards, and daily tasks. The website, application, and bot were tested to verify",
+        "that services were responding correctly before the old Vercel projects were removed. Cloudflare analytics showed continued activity across APXN services, with approximately 30,000 total requests recorded over a 24-hour period and no Worker execution errors reported during the monitored period. This achievement marks an important step toward strengthening APXN's technical infrastructure and supporting future development as the global APXN community continues to grow. APXN Network — Building for the Future."
+      ],
+      "queued_for_article_id": null
     }
   }
 }
