@@ -56,9 +56,10 @@ jobs:
           node -e "JSON.parse(require('fs').readFileSync('data/blog-config.json','utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('data/blog-articles.json','utf8'))"
 
-      # Only the Cloudflare migration branch uses preview links.
-      # The main branch retains its existing publication behavior.
-      - name: Prepare preview article links
+      # The Cloudflare migration branch now serves the live apxn.network website.
+      # Normalize old preview links in the manifest and published article HTML.
+      # Keep the main branch behavior unchanged.
+      - name: Prepare production article links
         if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
         run: |
           set -euo pipefail
@@ -67,7 +68,10 @@ jobs:
           import path from 'node:path';
 
           const production = 'https://apxn.network';
-          const preview = 'https://apxn-landing.cherfaouimohamed377.workers.dev';
+          const oldOrigins = [
+            'https://apxn-landing.cherfaouimohamed377.workers.dev',
+            'https://apxn-landing.apxn-network.workers.dev'
+          ];
           const manifestPath = 'data/blog-articles.json';
           const original = fs.readFileSync(manifestPath, 'utf8');
           const manifest = JSON.parse(original);
@@ -75,30 +79,37 @@ jobs:
             ? manifest.articles.filter(article => article?.status === 'published')
             : [];
 
-          function previewBlogLinks(value) {
-            return typeof value === 'string'
-              ? value.replaceAll(`${production}/blog/`, `${preview}/blog/`)
-              : value;
+          function productionLinks(value) {
+            if (typeof value !== 'string') return value;
+            return oldOrigins.reduce(
+              (result, origin) => result.replaceAll(origin, production),
+              value
+            );
           }
 
-          function noindexHtml(html) {
-            return html.replace(
-              /(<meta\s+name=["']robots["']\s+content=["'])index,\s*follow(["'])/i,
-              '$1noindex, nofollow$2'
-            );
+          function restorePublicIndexing(html) {
+            return html.replace(/<meta\b[^>]*>/gi, tag => {
+              if (!/\bname\s*=\s*["']robots["']/i.test(tag)) return tag;
+              return tag.replace(
+                /(\bcontent\s*=\s*["'])\s*noindex\s*,\s*nofollow\s*(["'])/i,
+                '$1index, follow$2'
+              );
+            });
           }
 
           for (const article of published) {
             for (const field of ['url', 'published_url', 'image']) {
-              article[field] = previewBlogLinks(article[field]);
+              article[field] = productionLinks(article[field]);
             }
 
             if (article.seo && typeof article.seo === 'object') {
-              article.seo.canonical = previewBlogLinks(article.seo.canonical);
-              article.seo.robots = 'noindex, nofollow';
+              article.seo.canonical = productionLinks(article.seo.canonical);
+              if (article.seo.robots === 'noindex, nofollow') {
+                article.seo.robots = 'index, follow';
+              }
             }
 
-            article.indexable = false;
+            if (article.indexable === false) article.indexable = true;
 
             const configuredPath = String(
               article.path || `blog/articles/${article.slug}.html`
@@ -111,13 +122,13 @@ jobs:
             }
 
             const before = fs.readFileSync(articleFile, 'utf8');
-            const after = noindexHtml(previewBlogLinks(before));
+            const after = restorePublicIndexing(productionLinks(before));
             if (after !== before) fs.writeFileSync(articleFile, after, 'utf8');
           }
 
           const updated = `${JSON.stringify(manifest, null, 2)}\n`;
           if (updated !== original) fs.writeFileSync(manifestPath, updated, 'utf8');
-          console.log(`Preview links prepared for ${published.length} published articles.`);
+          console.log(`Production links prepared for ${published.length} published articles.`);
           NODE
 
       - name: Rebuild blog index and sitemap
@@ -125,26 +136,35 @@ jobs:
           set -euo pipefail
           node scripts/blog-sync.mjs
 
-      - name: Prepare preview index and sitemap
+      - name: Prepare production index and sitemap
         if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const production = 'https://apxn.network';
-          const preview = 'https://apxn-landing.cherfaouimohamed377.workers.dev';
+          const oldOrigins = [
+            'https://apxn-landing.cherfaouimohamed377.workers.dev',
+            'https://apxn-landing.apxn-network.workers.dev'
+          ];
           for (const filename of ['blog/index.html', 'sitemap.xml']) {
             const before = fs.readFileSync(filename, 'utf8');
-            let after = before.replaceAll(`${production}/`, `${preview}/`);
+            let after = oldOrigins.reduce(
+              (result, origin) => result.replaceAll(origin, production),
+              before
+            );
             if (filename === 'blog/index.html') {
-              after = after.replace(
-                /(<meta\s+name=["']robots["']\s+content=["'])index,\s*follow(["'])/i,
-                '$1noindex, nofollow$2'
-              );
+              after = after.replace(/<meta\b[^>]*>/gi, tag => {
+                if (!/\bname\s*=\s*["']robots["']/i.test(tag)) return tag;
+                return tag.replace(
+                  /(\bcontent\s*=\s*["'])\s*noindex\s*,\s*nofollow\s*(["'])/i,
+                  '$1index, follow$2'
+                );
+              });
             }
             if (after !== before) fs.writeFileSync(filename, after, 'utf8');
           }
-          console.log('Preview blog index and sitemap use the Cloudflare URL.');
+          console.log('Production blog index and sitemap use apxn.network.');
           NODE
 
       - name: Check generated files
@@ -181,7 +201,7 @@ jobs:
             echo ""
             echo "Branch: ${TARGET_BRANCH}"
             echo "The blog index and sitemap sync runs after manual publication or manual dispatch."
-            echo "Cloudflare migration uses preview URLs and noindex; main remains unchanged."
+            echo "Cloudflare migration publishes canonical apxn.network links; main remains unchanged."
             echo "This workflow does not generate or publish articles automatically."
           } >> "$GITHUB_STEP_SUMMARY"
 
