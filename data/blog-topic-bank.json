@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-10-05",
+  "last_updated": "2026-10-07",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -249,7 +249,7 @@
       "topic": "How Supabase Can Support Secure Web3 Mini App Backends",
       "category": "Development",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "content_mode": "hybrid",
       "source_profile": "supabase_backend",
       "knowledge_sections": [
@@ -259,7 +259,10 @@
       ],
       "auto_publish_allowed": true,
       "queued_at": "2026-09-18",
-      "queue_priority": 21
+      "queue_priority": 21,
+      "article_id": "apxn-019",
+      "article_slug": "how-supabase-supports-secure-backends-for-telegram-mini-apps",
+      "generated_at": "2026-10-07"
     },
     {
       "id": "bank-016",
@@ -599,17 +602,17 @@
     }
   ],
   "planner_state": {
-    "last_run": "2026-10-05",
+    "last_run": "2026-10-07",
     "available_topics": 22,
     "automation_eligible_available_topics": 20,
     "manual_or_review_topics": 2,
-    "queued_topics": 6,
+    "queued_topics": 5,
     "used_topics": 5,
     "category_load_after_run": {
       "APXN Guides": 4,
       "Blockchain": 2,
       "Web3": 2,
-      "BSC": 3,
+      "BSC": 2,
       "Security": 3,
       "Education": 2,
       "Development": 3

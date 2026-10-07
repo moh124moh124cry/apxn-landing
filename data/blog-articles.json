@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-10-05",
+  "last_updated": "2026-10-07",
   "default_language": "en",
   "stats": {
-    "total_articles": 18,
+    "total_articles": 19,
     "published": 12,
-    "ready": 6,
+    "ready": 7,
     "drafts": 0,
     "featured": 1
   },
@@ -3890,6 +3890,232 @@
           ]
         }
       }
+    },
+    {
+      "id": "apxn-019",
+      "slug": "how-supabase-supports-secure-backends-for-telegram-mini-apps",
+      "title": "How Supabase Supports Secure Backends for Telegram Mini Apps",
+      "description": "Learn how Supabase Row Level Security and authentication features help protect data in Telegram Mini App backends that track APXN Points through mining-style claims and daily",
+      "excerpt": "Learn how Supabase Row Level Security and authentication features help protect data in Telegram Mini App backends that track APXN Points through mining-style claims and daily",
+      "category": "Development",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-10-07",
+      "generated_at": "2026-10-07",
+      "updated_at": "2026-10-07",
+      "published_at": null,
+      "reading_minutes": 6,
+      "word_count": 1252,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "Supabase",
+        "Telegram Mini App",
+        "Row Level Security",
+        "APXN Points",
+        "authentication",
+        "database policies",
+        "secure backend",
+        "mining claims",
+        "daily check-in",
+        "data access"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "hybrid",
+      "source_profile": "supabase_backend",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "How Supabase Supports Secure Backends for Telegram Mini Apps",
+        "description": "Learn how Supabase Row Level Security and authentication features help protect data in Telegram Mini App backends that track APXN Points through mining-style claims and daily",
+        "canonical": "https://apxn.network/blog/articles/how-supabase-supports-secure-backends-for-telegram-mini-apps.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "How Supabase Supports Secure Backends for Telegram Mini Apps",
+        "description": "Learn how Supabase Row Level Security and authentication features help protect data in Telegram Mini App backends that track APXN Points through mining-style claims and daily",
+        "keywords": [
+          "Supabase",
+          "Telegram Mini App",
+          "Row Level Security",
+          "APXN Points",
+          "authentication",
+          "database policies",
+          "secure backend",
+          "mining claims",
+          "daily check-in",
+          "data access"
+        ],
+        "intro": {
+          "text": "Supabase provides tools for managing data access in application backends. External documentation outlines steps for securing tables through Row Level Security. These steps include enabling RLS, writing policies for each operation, creating test files, and running the test suite. APXN implements Telegram authentication by parsing signed initData payloads and verifying HMAC signatures to derive trusted user identity. The system tracks APXN Points as an in-app participation balance. Editorial content may describe the experience as APXN Points mining while clarifying that the backend calculates and records points rather than performing proof-of-work blockchain mining. These elements together illustrate how Supabase can be used to support secure data handling in Telegram Mini App environments.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Telegram Authentication and Points Tracking",
+            "paragraphs": [
+              {
+                "text": "APXN uses Telegram Mini App initData as the authentication input for protected requests. The server parses the signed payload, verifies the Telegram HMAC signature with the bot token, and derives the trusted user identity from the verified Telegram user object rather than trusting a client-supplied user ID. External guidance on Row Level Security recommends enabling RLS on every table and writing policies that match the application needs. Policies can express access logic using SQL rules so that data remains protected when accessed through the API or third-party tooling.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "APXN-01"
+                ]
+              },
+              {
+                "text": "The current APXN community product uses a mining-style points experience inside Telegram where the tracked balance consists of APXN Points. The word mining describes the user experience of accumulating points over time. Technical explanations clarify that the system calculates and records points in the application backend. Editorial phrasing such as APXN Points mining experience or collect APXN Points remains acceptable when the distinction from proof-of-work blockchain mining is stated immediately.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-10"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Row Level Security Policies and Reward Logic",
+            "paragraphs": [
+              {
+                "text": "Supabase Row Level Security documentation explains that policies translate into implicit conditions on queries such as restricting rows where the authenticated user ID matches the row owner. This approach provides defense in depth because RLS is a Postgres primitive that continues to enforce rules even when data is reached through other tooling. The same documentation advises writing a policy per operation and testing each policy with dedicated test files that assert allow and deny behavior for different roles.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-07"
+                ]
+              },
+              {
+                "text": "APXN tracks APXN Points as an in-app participation balance. When a claim appears eligible the database logic performs an authoritative re-check while protecting the user's mutable balance row. This protects against concurrent requests that could otherwise award the same elapsed period twice. The reward formula uses elapsed seconds multiplied by the total mining rate that starts from the user's base rate and may include active-referral bonuses before adding the resulting points to the existing balance.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-18"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Authentication Time Limits and Database Documentation",
+            "paragraphs": [
+              {
+                "text": "The current APXN policy accepts Telegram authentication data for up to twenty four hours and rejects timestamps that are too far in the future. These checks function as application-security controls and are described as current implementation details. Supabase documentation on Row Level Security includes related content that covers performance tuning, advanced testing helpers, schema-wide test patterns, and column level security for restricting access to individual columns.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "APXN-03"
+                ]
+              },
+              {
+                "text": "External guides direct developers to the Row Level Security reference section that documents helper functions and patterns used inside policy expressions. The same guides also point to resources on testing the database through the CLI workflow and on securing the API with grants and dedicated schemas. APXN documentation notes that the twelve-hour cooldown for normal claims is represented in database logic as forty three thousand two hundred seconds and that requests before cooldown expiration receive no new reward.",
+                "evidence_ids": [
+                  "APXN-08",
+                  "APXN-16"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Server-Side Reward Calculation and Data Protection",
+            "paragraphs": [
+              {
+                "text": "Supabase documentation on securing data lists multiple access options each with its own security model. The Data API uses client libraries or REST with a publishable key and requires Row Level Security plus grants limited to the privileges each role needs. APXN writes check-in streaks and rewards through trusted server-side database logic instead of allowing the browser to select its own reward amount.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "APXN-11"
+                ]
+              },
+              {
+                "text": "The twelve-hour claim rule and rate formula are presented as current product mechanics. Articles must be updated from executable logic if the application later changes its rate or cooldown values. The twelve-hour cooldown appears in database logic as twelve hours represented by forty three thousand two hundred seconds. Requests arriving before the cooldown expires do not receive a new reward and the API can return remaining retry time for interface display.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-17"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Authentication Methods and Balance Handling",
+            "paragraphs": [
+              {
+                "text": "Supabase Auth documentation covers phone authentication providers and notes that charges apply based on monthly active users. APXN distinguishes the Daily Check-In from mining-style claims by using a calendar-day streak reward while mining claims rely on elapsed-time and mining-rate calculations. Both mechanisms can increase APXN Points yet they remain separate product mechanics with different eligibility rules.",
+                "evidence_ids": [
+                  "EXT-05",
+                  "EXT-08"
+                ]
+              },
+              {
+                "text": "The APXN Points balance functions as an application participation balance. It must not be described as a bank deposit, guaranteed cash balance, guaranteed investment return, or currently withdrawable cryptocurrency balance. Token distribution, conversion, and withdrawal belong to separate future project stages that require their own official activation. Articles therefore present the balance strictly as an engagement metric inside the current ecosystem.",
+                "evidence_ids": [
+                  "APXN-09",
+                  "APXN-21"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Database Logic and Mining Experience Clarification",
+            "paragraphs": [
+              {
+                "text": "Supabase Row Level Security guidance states that once RLS is enabled no data remains accessible through the API when using a publishable key until policies are created. The documentation also instructs developers to enable RLS on the table and then set grants to match the roles used by the application. APXN requires that the automated blog describe the system as an in-app points system rather than proof-of-work blockchain mining.",
+                "evidence_ids": [
+                  "EXT-06",
+                  "APXN-04"
+                ]
+              },
+              {
+                "text": "When a claim appears eligible the database logic performs an authoritative re-check that protects the user's mutable balance row against concurrent requests. The seven-day reward cycle functions as a reward schedule. Missing a day affects streak progression and the next reward tier but does not by itself imply deletion of previously accumulated APXN Points. The implementation rejects excessively large initData and timestamps too far in the future.",
+                "evidence_ids": [
+                  "APXN-07",
+                  "APXN-20"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "How does Supabase Row Level Security help protect tables used by Telegram Mini Apps?",
+            "answer": "Supabase Row Level Security documentation explains that developers enable RLS on each table, write a policy for every operation, create a test file that asserts allow and deny behavior for different roles, and run the test suite. Policies translate into implicit query conditions such as restricting rows where the authenticated user ID matches the row owner. This Postgres primitive continues to enforce rules even when data is reached through third-party tooling, providing defense in depth when combined with Supabase Auth.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "What current implementation details apply to APXN claim cooldowns and reward calculations?",
+            "answer": "The current APXN policy accepts Telegram authentication data for up to twenty four hours. Normal claims use a twelve-hour cooldown represented in database logic as forty three thousand two hundred seconds. The reward formula multiplies elapsed seconds by the total mining rate that begins with the user's base rate and may include active-referral bonuses. The twelve-hour claim rule and rate formula are current product mechanics that articles must update if the application later changes these values.",
+            "evidence_ids": [
+              "EXT-03",
+              "EXT-04"
+            ]
+          },
+          {
+            "question": "How does APXN separate Daily Check-In rewards from mining-style claims?",
+            "answer": "APXN distinguishes Daily Check-In from mining-style claims because the former uses a calendar-day streak reward while the latter relies on elapsed-time and mining-rate calculations. The seven-day cycle awards increasing APXN Points amounts that reset after day seven. The Daily Check-In reward is described as an engagement reward inside the current ecosystem and must not be presented as an on-chain staking yield or guaranteed investment return.",
+            "evidence_ids": [
+              "EXT-05",
+              "EXT-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "Supabase Row Level Security requires enabling RLS, writing policies per operation, and running dedicated tests for each table. APXN derives trusted identity from verified Telegram initData payloads and records APXN Points through server-side logic that protects balance rows from concurrent claims. Current mechanics include a twenty four hour authentication window and a twelve-hour claim cooldown. These facts illustrate how Supabase features align with the authentication and data handling needs of Telegram Mini App backends that track participation balances.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -4174,7 +4400,7 @@
       "priority": 21,
       "topic": "How Supabase Can Support Secure Web3 Mini App Backends",
       "category": "Development",
-      "status": "waiting",
+      "status": "ready",
       "source": "topic_bank",
       "topic_bank_id": "bank-015",
       "language": "en",
@@ -4186,7 +4412,9 @@
         "implemented_product_facts.points_mining",
         "implemented_product_facts.daily_checkin"
       ],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "article_id": "apxn-019",
+      "generated_at": "2026-10-07"
     },
     {
       "priority": 22,
@@ -4245,24 +4473,24 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-018",
+    "last_generated_article": "apxn-019",
     "last_published_article": "apxn-011",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-10-05",
+      "last_run": "2026-10-07",
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 7,
+      "waiting_topics_after_run": 6,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
         "APXN Guides": 4,
         "Blockchain": 2,
         "Web3": 2,
-        "BSC": 3,
+        "BSC": 2,
         "Security": 3,
         "Education": 2,
         "Development": 3

@@ -1804,10 +1804,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 117746500,
           "cost_usd": 0.01177465
+        },
+        {
+          "date": "2026-10-07",
+          "response_id": "2c302eb7-9fe8-97de-8e96-a7b8fd103865",
+          "model": "grok-4.3",
+          "topic": "How Supabase Can Support Secure Web3 Mini App Backends",
+          "article_slug": "how-supabase-can-support-secure-web3-mini-app-backends",
+          "stage": "research_packet_writing",
+          "input_tokens": 7313,
+          "cached_input_tokens": 192,
+          "output_tokens": 2924,
+          "reasoning_tokens": 720,
+          "total_tokens": 10237,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 162496500,
+          "cost_usd": 0.01624965
         }
       ],
-      "total_cost_usd": 0.0234568
+      "total_cost_usd": 0.03970645
     }
   },
-  "last_updated": "2026-10-05"
+  "last_updated": "2026-10-07"
 }
