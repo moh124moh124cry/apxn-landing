@@ -1822,10 +1822,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 162496500,
           "cost_usd": 0.01624965
+        },
+        {
+          "date": "2026-10-10",
+          "response_id": "d0686c72-6cb9-98c9-b29c-b0cb2b6f7ea6",
+          "model": "grok-4.3",
+          "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
+          "article_slug": "apxn-points-vs-crypto-tokens-understanding-the-difference",
+          "stage": "research_packet_writing",
+          "input_tokens": 7241,
+          "cached_input_tokens": 128,
+          "output_tokens": 3039,
+          "reasoning_tokens": 1024,
+          "total_tokens": 10280,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 165143500,
+          "cost_usd": 0.01651435
         }
       ],
-      "total_cost_usd": 0.03970645
+      "total_cost_usd": 0.0562208
     }
   },
-  "last_updated": "2026-10-07"
+  "last_updated": "2026-10-10"
 }

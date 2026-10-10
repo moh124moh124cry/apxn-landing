@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-10-07",
+  "last_updated": "2026-10-10",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -58,7 +58,7 @@
       "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "content_mode": "hybrid",
       "source_profile": "crypto_token_basics",
       "knowledge_sections": [
@@ -67,27 +67,32 @@
       "auto_publish_allowed": true,
       "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed.",
       "queued_at": "2026-09-18",
-      "queue_priority": 22
+      "queue_priority": 22,
+      "article_id": "apxn-020",
+      "article_slug": "apxn-points-versus-ethereum-crypto-tokens-core-differences-explained",
+      "generated_at": "2026-10-10"
     },
     {
       "id": "bank-002",
       "topic": "How the 12-Hour APXN Points Claim Cycle Works",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "apxn",
       "source_profile": null,
       "knowledge_sections": [
         "implemented_product_facts.points_mining"
       ],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-10-10",
+      "queue_priority": 27
     },
     {
       "id": "bank-003",
       "topic": "How APXN Mining Speed Is Calculated Inside the Telegram Mini App",
       "category": "APXN Guides",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "apxn",
       "source_profile": null,
       "knowledge_sections": [
@@ -95,7 +100,9 @@
         "implemented_product_facts.referrals"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "Use APXN Points terminology and never describe the current claim system as proof-of-work or proof-of-stake blockchain mining."
+      "editorial_guard": "Use APXN Points terminology and never describe the current claim system as proof-of-work or proof-of-stake blockchain mining.",
+      "queued_at": "2026-10-10",
+      "queue_priority": 29
     },
     {
       "id": "bank-004",
@@ -211,22 +218,26 @@
       "topic": "What Is HMAC Verification and Why Telegram Mini Apps Use It",
       "category": "Security",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "telegram_auth",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-10-10",
+      "queue_priority": 25
     },
     {
       "id": "bank-013",
       "topic": "Why Server-Side Validation Matters in Telegram Mini Apps",
       "category": "Security",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "telegram_auth",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-10-10",
+      "queue_priority": 28
     },
     {
       "id": "bank-014",
@@ -449,11 +460,13 @@
       "topic": "Testnet vs Mainnet: What Is the Difference?",
       "category": "Blockchain",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "external",
       "source_profile": "testnet_mainnet",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "queued_at": "2026-10-10",
+      "queue_priority": 23
     },
     {
       "id": "bank-029",
@@ -485,21 +498,23 @@
       "topic": "How to Read the APXN Development Roadmap Responsibly",
       "category": "Development",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "apxn",
       "source_profile": null,
       "knowledge_sections": [
         "roadmap"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "Every unfinished roadmap item must be described as planned, targeted, scheduled, or proposed. Roadmap timing must never be presented as guaranteed."
+      "editorial_guard": "Every unfinished roadmap item must be described as planned, targeted, scheduled, or proposed. Roadmap timing must never be presented as guaranteed.",
+      "queued_at": "2026-10-10",
+      "queue_priority": 24
     },
     {
       "id": "bank-032",
       "topic": "Live Features vs Planned Features in the APXN Ecosystem",
       "category": "Development",
       "risk": "safe",
-      "status": "available",
+      "status": "queued",
       "content_mode": "apxn",
       "source_profile": null,
       "knowledge_sections": [
@@ -508,7 +523,9 @@
         "roadmap"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "Keep implemented, UI-only, planned, and verify-before-publish statuses distinct throughout the article."
+      "editorial_guard": "Keep implemented, UI-only, planned, and verify-before-publish statuses distinct throughout the article.",
+      "queued_at": "2026-10-10",
+      "queue_priority": 26
     },
     {
       "id": "bank-033",
@@ -602,20 +619,20 @@
     }
   ],
   "planner_state": {
-    "last_run": "2026-10-07",
-    "available_topics": 22,
-    "automation_eligible_available_topics": 20,
+    "last_run": "2026-10-10",
+    "available_topics": 15,
+    "automation_eligible_available_topics": 13,
     "manual_or_review_topics": 2,
-    "queued_topics": 5,
+    "queued_topics": 11,
     "used_topics": 5,
     "category_load_after_run": {
-      "APXN Guides": 4,
-      "Blockchain": 2,
+      "APXN Guides": 6,
+      "Blockchain": 3,
       "Web3": 2,
       "BSC": 2,
-      "Security": 3,
+      "Security": 5,
       "Education": 2,
-      "Development": 3
+      "Development": 4
     }
   }
 }

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-10-07",
+  "last_updated": "2026-10-10",
   "default_language": "en",
   "stats": {
-    "total_articles": 19,
+    "total_articles": 20,
     "published": 12,
-    "ready": 7,
+    "ready": 8,
     "drafts": 0,
     "featured": 1
   },
@@ -4116,6 +4116,252 @@
         }
       },
       "verified_against_knowledge": true
+    },
+    {
+      "id": "apxn-020",
+      "slug": "apxn-points-versus-ethereum-crypto-tokens-core-differences-explained",
+      "title": "APXN Points Versus Ethereum Crypto Tokens: Core Differences Explained",
+      "description": "Explore how APXN Points operate as an application participation balance and how they compare to token standards such as ERC-20 that run on the Ethereum network.",
+      "excerpt": "Explore how APXN Points operate as an application participation balance and how they compare to token standards such as ERC-20 that run on the Ethereum network.",
+      "category": "APXN Guides",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-10-10",
+      "generated_at": "2026-10-10",
+      "updated_at": "2026-10-10",
+      "published_at": null,
+      "reading_minutes": 5,
+      "word_count": 1067,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "APXN Points",
+        "Ethereum tokens",
+        "ERC-20 standard",
+        "points mining",
+        "crypto tokens",
+        "application balance",
+        "token standards",
+        "claim cooldown"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "hybrid",
+      "source_profile": "crypto_token_basics",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "APXN Points Versus Ethereum Crypto Tokens: Core Differences Explained",
+        "description": "Explore how APXN Points operate as an application participation balance and how they compare to token standards such as ERC-20 that run on the Ethereum network.",
+        "canonical": "https://apxn.network/blog/articles/apxn-points-versus-ethereum-crypto-tokens-core-differences-explained.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "APXN Points Versus Ethereum Crypto Tokens: Core Differences Explained",
+        "description": "Explore how APXN Points operate as an application participation balance and how they compare to token standards such as ERC-20 that run on the Ethereum network.",
+        "keywords": [
+          "APXN Points",
+          "Ethereum tokens",
+          "ERC-20 standard",
+          "points mining",
+          "crypto tokens",
+          "application balance",
+          "token standards",
+          "claim cooldown"
+        ],
+        "intro": {
+          "text": "APXN Points represent an in-application participation balance earned through a mining-style experience inside Telegram. The balance tracked by the application is described as APXN Points. The term mining refers only to the user experience of accumulating points over time. The current claim action is not proof-of-work, does not solve cryptographic puzzles, and should not be described as blockchain consensus mining. On the Ethereum network, tokens can represent reputation points, skills, financial assets, or other items. The ERC-20 standard supplies a common interface so that token applications remain interoperable with other products and services across the network. These two systems follow separate design goals and technical paths.",
+          "evidence_ids": [
+            "APXN-01",
+            "EXT-01",
+            "EXT-02"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "How APXN Points Are Accumulated",
+            "paragraphs": [
+              {
+                "text": "A normal APXN Points mining claim operates with a twelve-hour cooldown represented in the database logic as forty three thousand two hundred seconds. Requests submitted before the cooldown expires do not receive a new reward. The API can return the remaining retry time so the interface can display when the next claim becomes available. Editorial content may use phrases such as APXN Points mining experience or collect APXN Points. Technical explanations must immediately clarify that the system calculates and records points in the application backend rather than performing proof-of-work blockchain mining on Ethereum.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "EXT-07",
+                  "EXT-11"
+                ]
+              },
+              {
+                "text": "The base rate in the reviewed implementation equals zero point zero zero zero two five points per second. The user's effective rate can increase when active referred friends qualify for the referral-speed bonus. The server-side claim logic applies the effective rate when calculating the amount credited after an eligible claim. Ethereum addresses and token standards operate independently of this points system.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "EXT-07",
+                  "EXT-11"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Security and Program Design on Ethereum",
+            "paragraphs": [
+              {
+                "text": "The ERC-20 standard defines a common set of rules that developers follow when building token applications on Ethereum. This standard enables interoperability so that tokens can interact with other products and services without custom integration work for each new contract. Alternative standards such as ERC-223 or ERC-1363 have emerged to address certain limitations. The APXN Points program uses server-side logic to manage claims and balances inside the application rather than deploying token contracts that follow these Ethereum standards.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "APXN-06",
+                  "EXT-09",
+                  "EXT-12"
+                ]
+              },
+              {
+                "text": "Security considerations for Ethereum tokens include proper implementation of functions that handle transfers and approvals. The APXN Points system applies its own cooldown rules and rate calculations through database operations. These operations remain separate from the security model used by ERC-20 contracts deployed on the Ethereum network. The points program therefore follows an application-level design rather than the token-standard design described in the external documentation.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "APXN-06",
+                  "EXT-09",
+                  "EXT-12"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Token Standards and Address Handling",
+            "paragraphs": [
+              {
+                "text": "ERC-20 tokens on Ethereum rely on a standardized interface that includes events such as Transfer with indexed address fields for from and to. These indexed parameters allow external tools to monitor token movements efficiently across the network. The APXN Points balance does not use these events because it exists as an application participation record rather than a token deployed under the ERC-20 specification.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "APXN-08",
+                  "EXT-05",
+                  "EXT-14"
+                ]
+              },
+              {
+                "text": "An Ethereum address can hold ERC-20 tokens that follow the standard methods for balance queries and transfers. In contrast, the APXN Points system tracks balances through internal application records. Editorial references to mining or claiming therefore describe user actions inside the Telegram application and do not imply deployment of token contracts or use of indexed events on the Ethereum blockchain.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "APXN-08",
+                  "EXT-05",
+                  "EXT-14"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Balance Tracking and Application Standards",
+            "paragraphs": [
+              {
+                "text": "The current application tracks APXN Points as an in-app participation balance. This balance must not be described as a bank deposit, a guaranteed cash balance, a guaranteed investment return, or a currently withdrawable cryptocurrency balance. Token distribution, conversion, and withdrawal remain separate future project stages that require their own official activation. Ethereum token standards define how balances are recorded on-chain for ERC-20 implementations.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-05",
+                  "EXT-06",
+                  "EXT-13"
+                ]
+              },
+              {
+                "text": "Application-level balances operate under different rules than tokens that implement the ERC-20 interface on Ethereum. The APXN Points balance updates through server-side database logic after each successful claim. This approach does not rely on the token standards or balance-tracking methods defined for Ethereum tokens. The distinction keeps the points system clearly separated from any on-chain token behavior.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-05",
+                  "EXT-06",
+                  "EXT-13"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Functions and Transfer Mechanics",
+            "paragraphs": [
+              {
+                "text": "The reward formula for APXN Points multiplies elapsed seconds by the total mining rate. The total mining rate begins with the user's base mining rate and may include active-referral bonuses. The resulting points are added to the existing balance and the successful claim time becomes the new last-claim timestamp. This calculation occurs entirely within the application backend.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-04",
+                  "EXT-10",
+                  "EXT-15"
+                ]
+              },
+              {
+                "text": "Ethereum token standards define functions such as transfer and balanceOf that operate on addresses and return values according to the ERC-20 specification. These functions enable token movement between addresses on the network. The APXN Points system does not implement these functions because it maintains balances through application records rather than through smart-contract token logic on Ethereum.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-04",
+                  "EXT-10",
+                  "EXT-15"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Data Models and Token Standards Overview",
+            "paragraphs": [
+              {
+                "text": "Popular token standards on Ethereum include ERC-20 for fungible tokens, ERC-721 for non-fungible tokens, and ERC-1155 for mixed token types. Each standard specifies how contracts should expose data such as balances and ownership. The APXN Points system uses an application-level data model that records participation balances without reference to these Ethereum token standards.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-04",
+                  "EXT-08",
+                  "APXN-10"
+                ]
+              },
+              {
+                "text": "Account data for ERC-20 tokens resides on the Ethereum network and follows defined interfaces for reading and updating values. In comparison, the APXN Points balance resides in the application backend and updates through claim actions governed by cooldown rules. The two approaches therefore represent distinct methods of tracking value or participation for users.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "EXT-04",
+                  "EXT-08",
+                  "APXN-10"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What is the current status of APXN Points accumulation?",
+            "answer": "The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. The word mining describes the user experience of accumulating points over time. The current claim action is not proof-of-work and should not be described as blockchain consensus mining.",
+            "evidence_ids": [
+              "APXN-01",
+              "EXT-01"
+            ]
+          },
+          {
+            "question": "How do ERC-20 tokens differ from APXN Points in structure?",
+            "answer": "Tokens can represent virtually anything on Ethereum and the ERC-20 standard supplies a common interface so token applications remain interoperable. The APXN Points balance is an application participation balance that must not be described as a currently withdrawable cryptocurrency balance. Token distribution and conversion remain separate future stages.",
+            "evidence_ids": [
+              "EXT-02",
+              "APXN-02"
+            ]
+          },
+          {
+            "question": "How is the APXN Points reward calculated?",
+            "answer": "The reward formula is based on elapsed seconds multiplied by the total mining rate. The total mining rate begins with the user's base mining rate and can include active-referral bonuses. The resulting APXN Points are added to the existing balance and the successful claim time becomes the new last-claim timestamp.",
+            "evidence_ids": [
+              "APXN-03",
+              "APXN-04"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "APXN Points function as an application participation balance earned through timed claim actions. This system remains separate from ERC-20 tokens that follow standardized interfaces on the Ethereum network. The points balance updates through server-side logic while Ethereum tokens rely on on-chain contract methods. Users should treat the two systems as distinct participation and token mechanisms.",
+          "evidence_ids": [
+            "APXN-01",
+            "EXT-01",
+            "EXT-02",
+            "APXN-02"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -4420,7 +4666,7 @@
       "priority": 22,
       "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
       "category": "APXN Guides",
-      "status": "waiting",
+      "status": "ready",
       "source": "topic_bank",
       "topic_bank_id": "bank-001",
       "language": "en",
@@ -4431,7 +4677,9 @@
         "implemented_product_facts.points_mining"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed."
+      "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed.",
+      "article_id": "apxn-020",
+      "generated_at": "2026-10-10"
     },
     {
       "priority": 7,
@@ -4470,30 +4718,158 @@
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
       "article_id": "apxn-016",
       "generated_at": "2026-09-23"
+    },
+    {
+      "priority": 23,
+      "topic": "Testnet vs Mainnet: What Is the Difference?",
+      "category": "Blockchain",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-028",
+      "language": "en",
+      "queued_at": "2026-10-10",
+      "content_mode": "external",
+      "source_profile": "testnet_mainnet",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 24,
+      "topic": "How to Read the APXN Development Roadmap Responsibly",
+      "category": "Development",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-031",
+      "language": "en",
+      "queued_at": "2026-10-10",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "roadmap"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Every unfinished roadmap item must be described as planned, targeted, scheduled, or proposed. Roadmap timing must never be presented as guaranteed."
+    },
+    {
+      "priority": 25,
+      "topic": "What Is HMAC Verification and Why Telegram Mini Apps Use It",
+      "category": "Security",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-012",
+      "language": "en",
+      "queued_at": "2026-10-10",
+      "content_mode": "external",
+      "source_profile": "telegram_auth",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 26,
+      "topic": "Live Features vs Planned Features in the APXN Ecosystem",
+      "category": "Development",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-032",
+      "language": "en",
+      "queued_at": "2026-10-10",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts",
+        "features_not_to_describe_as_live",
+        "roadmap"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Keep implemented, UI-only, planned, and verify-before-publish statuses distinct throughout the article."
+    },
+    {
+      "priority": 27,
+      "topic": "How the 12-Hour APXN Points Claim Cycle Works",
+      "category": "APXN Guides",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-002",
+      "language": "en",
+      "queued_at": "2026-10-10",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.points_mining"
+      ],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 28,
+      "topic": "Why Server-Side Validation Matters in Telegram Mini Apps",
+      "category": "Security",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-013",
+      "language": "en",
+      "queued_at": "2026-10-10",
+      "content_mode": "external",
+      "source_profile": "telegram_auth",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
+    },
+    {
+      "priority": 29,
+      "topic": "How APXN Mining Speed Is Calculated Inside the Telegram Mini App",
+      "category": "APXN Guides",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-003",
+      "language": "en",
+      "queued_at": "2026-10-10",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "implemented_product_facts.points_mining",
+        "implemented_product_facts.referrals"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use APXN Points terminology and never describe the current claim system as proof-of-work or proof-of-stake blockchain mining."
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-019",
+    "last_generated_article": "apxn-020",
     "last_published_article": "apxn-011",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-10-07",
-      "added_topics": 0,
-      "added_topic_ids": [],
-      "added_categories": [],
-      "waiting_topics_after_run": 6,
+      "last_run": "2026-10-10",
+      "added_topics": 7,
+      "added_topic_ids": [
+        "bank-028",
+        "bank-031",
+        "bank-012",
+        "bank-032",
+        "bank-002",
+        "bank-013",
+        "bank-003"
+      ],
+      "added_categories": [
+        "Blockchain",
+        "Development",
+        "Security",
+        "Development",
+        "APXN Guides",
+        "Security",
+        "APXN Guides"
+      ],
+      "waiting_topics_after_run": 12,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
-        "APXN Guides": 4,
-        "Blockchain": 2,
+        "APXN Guides": 6,
+        "Blockchain": 3,
         "Web3": 2,
         "BSC": 2,
-        "Security": 3,
+        "Security": 5,
         "Education": 2,
-        "Development": 3
+        "Development": 4
       }
     }
   }
