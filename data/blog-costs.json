@@ -1840,10 +1840,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 165143500,
           "cost_usd": 0.01651435
+        },
+        {
+          "date": "2026-10-12",
+          "response_id": "f7aa2ea1-6484-9c18-80fa-bc9136d7cfa0",
+          "model": "grok-4.3",
+          "topic": "How to Read the APXN Development Roadmap Responsibly",
+          "article_slug": "how-to-read-the-apxn-development-roadmap-responsibly",
+          "stage": "research_packet_writing",
+          "input_tokens": 4685,
+          "cached_input_tokens": 128,
+          "output_tokens": 2673,
+          "reasoning_tokens": 537,
+          "total_tokens": 7358,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 124043500,
+          "cost_usd": 0.01240435
         }
       ],
-      "total_cost_usd": 0.0562208
+      "total_cost_usd": 0.06862515
     }
   },
-  "last_updated": "2026-10-10"
+  "last_updated": "2026-10-12"
 }
