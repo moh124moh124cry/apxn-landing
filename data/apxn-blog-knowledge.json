@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "last_reviewed_at": "2026-09-12",
+  "last_reviewed_at": "2026-11-03",
   "knowledge_scope": {
     "purpose": "Canonical editorial knowledge for the Apex Network website, APXN Blog and automated article pipeline.",
     "core_separation": {
@@ -19,7 +19,7 @@
   },
   "generated_from": {
     "project": "Apex Network ecosystem",
-    "reviewed_at": "2026-09-12",
+    "reviewed_at": "2026-11-03",
     "repositories": {
       "website": {
         "name": "moh124moh124cry/apxn-landing",
@@ -117,7 +117,7 @@
     }
   },
   "current_ecosystem_status": {
-    "reviewed_at": "2026-09-12",
+    "reviewed_at": "2026-11-03",
     "website": {
       "status": "implemented",
       "label": "Active",
@@ -149,19 +149,19 @@
       "description": "Withdrawals are not active and must not be presented as available."
     },
     "presale_ico": {
-      "status": "planned",
-      "label": "Planned / Not Live",
-      "description": "A 1% project allocation is reserved for a phased Presale / ICO in the current tokenomics plan, but no live public sale should be represented as active at the time of this review."
+      "status": "not_active",
+      "label": "Not Active / No Public Sale Announced",
+      "description": "There is no active APXN public Presale or ICO confirmed by the revised Q4 2026–Q2 2028 roadmap. The token allocation now reserves 2% for a planned Q3 2027 CEX Launchpad. Any participation process and pricing must be officially confirmed before being described as live."
     },
     "testnet": {
       "status": "planned",
-      "label": "Planned",
-      "description": "Apex Testnet is a future roadmap stage."
+      "label": "Planned / Q4 2027 Target",
+      "description": "The APXN Testnet launch is a roadmap target for Q4 2027, not currently live."
     },
     "mainnet": {
       "status": "planned",
-      "label": "Planned",
-      "description": "Apex Mainnet is a long-term roadmap stage."
+      "label": "Planned / Q2 2028 Target",
+      "description": "The planned APXN Mainnet launch target is Q2 2028; no live Mainnet is implied."
     },
     "staking": {
       "status": "planned",
@@ -179,7 +179,11 @@
       "Roadmap",
       "Project news and official updates",
       "APXN Blog and education",
-      "Official community and support links"
+      "Official community and support links",
+      "APXN Membership & Loyalty KYC plans",
+      "Seven-level community distribution",
+      "Early Access Badge instructions",
+      "2027 first and second airdrop plans"
     ],
     "secondary_features": [
       "Earn APXN Points page",
@@ -565,10 +569,10 @@
       ]
     },
     "presale_ico": {
-      "status": "planned",
+      "status": "not_active",
       "current_public_status": "Not Live",
-      "allocation_percent": 1,
-      "editorial_rule": "Do not publish a live sale, purchase flow, active sale price or active wallet-purchase instruction unless the official project status is manually updated after launch."
+      "allocation_percent": 0,
+      "editorial_rule": "The revised plan reserves 2% of total supply for a planned Q3 2027 CEX Launchpad. Do not represent that allocation as a presently active Presale/ICO, price or sale. Remove old 1% Presale claims."
     },
     "token_distribution": {
       "status": "not_active",
@@ -589,203 +593,147 @@
   },
   "roadmap": {
     "status": "planned",
-    "source_policy": "The detailed Telegram Mini App roadmap and the simplified website roadmap describe the same project direction at different levels of detail. Use the detailed phases below for chronology and the public summary for general website wording.",
+    "source_policy": "The November 2026 APXN roadmap is Q4 2026 through Q2 2028. This is the approved canonical chronology, aligned across the website and Telegram Mini App. Future milestone dates are targets, not guarantees.",
     "article_evidence": [
-      "The APXN roadmap is a forward-looking development plan, not a guarantee that every milestone will happen on an exact date. Articles should describe future phases with terms such as planned, targeted or scheduled and should avoid language that turns roadmap timing into a contractual promise.",
-      "Current feature status must be determined independently from roadmap dates. Some community features can exist before a roadmap phase that mentions their formal launch or expansion. Conversely, a future roadmap item does not become live merely because the calendar reaches the quarter printed beside it.",
-      "The 2026 foundation centers on the Telegram community experience, APXN Points, check-ins, tasks, referrals and the official project website. The website should present this as the current ecosystem foundation while keeping token distribution, withdrawals, Presale / ICO, Testnet, staking and Mainnet clearly separated as later stages.",
-      "The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale / ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale / ICO must continue to be described as planned rather than live.",
-      "The 2028 roadmap moves toward platform optimization, token preparation, later listing and points-transition announcements and the planned Apex Testnet stage. Naming DEX or CEX support in a roadmap does not itself confirm a listing relationship with any specific exchange.",
-      "The roadmap places the Apex Testnet launch target in Q4 2028 after earlier token-preparation and listing-announcement stages. Testnet articles can explain what the project plans to test, but they must not claim that a public testnet network, explorer or developer endpoint exists before a verified launch.",
-      "The 2029 roadmap includes Testnet expansion, staking preparation and implementation targets, Mainnet preparation and a planned Mainnet launch. Staking rewards, validators, nodes, native Mainnet APXN and a Mainnet Explorer must remain future-tense until those systems are actually deployed and verified.",
-      "Roadmap summaries on the website can group detailed quarterly milestones into yearly sections as long as they preserve the same chronology and status. A simplified summary must not move a planned feature earlier, imply that a planned item is already active or introduce an exchange, price or partnership not present in verified sources.",
-      "If development priorities change, the roadmap can change. Blog articles about roadmap history should identify the version or review date they are based on and should not reuse obsolete dates after the official project roadmap has been updated.",
-      "The safest APXN roadmap article combines two layers: verified current product facts for what users can use today, and clearly labeled roadmap information for what the project intends to build later. This prevents readers from confusing an existing APXN Points feature with a future token, network or financial function.",
-      "The roadmap should also be separated from tokenomics. A token allocation percentage describes how the project currently plans to allocate supply, while a roadmap period describes when development or launch stages are targeted. Neither one, by itself, proves that a sale, listing, distribution, withdrawal or network launch is currently available."
+      "The November 2026 APXN roadmap runs from Q4 2026 through Q2 2028. Do not reuse superseded Mainnet or Testnet timing from prior roadmap editions.",
+      "Q4 2026 covers APXN Points mining, check-ins, social and daily tasks, referrals, boosts, staking-related app features and ongoing Telegram Mini App development. APXN Points are not automatically transferable on-chain APXN tokens.",
+      "Q1 2027 targets launch of APXN Membership & Loyalty KYC. A 100 APXN first-airdrop reward is planned to appear in the accounts of 10,000 qualified Early Access Badge holders after they complete required KYC tasks. Display is not immediate on-chain delivery; claim is planned for Q2 2027.",
+      "Q2 2027 targets continued development, partnerships and marketing, and a second airdrop of approximately 2,000,000 APXN funded from the 15,000,000 APXN partnerships, marketing, development and airdrop allocation. Claims for the first and second airdrops are planned for that quarter, subject to official rules.",
+      "Q3 2027 targets the APXN DEX and a CEX Launchpad. The Launchpad has a separate 2,000,000 APXN token allocation. Neither a live token sale nor a confirmed exchange is implied by a planned milestone.",
+      "Q4 2027 targets the APXN Testnet and potential CEX/DEX listings. Do not imply any network or listing is live before officially confirmed activation.",
+      "Q1 2028 targets mainnet preparation and new APXN ecosystem products. Q2 2028 targets the APXN Mainnet launch.",
+      "APXN may amend milestones and dates due to development, security, regulatory, global financial-market conditions or force majeure. All future milestones remain plans rather than guarantees.",
+      "Token distribution is distinct from APXN Points collection. Users must complete all stages of APXN Membership & Loyalty KYC before a verified level and APXN allocation will appear on the Dashboard. Final seven-level allocations will be officially announced before the planned distribution and listing."
     ],
     "public_summary": [
       {
-        "period": "2026",
-        "title": "Genesis & Community Foundation",
+        "period": "Q4 2026",
+        "title": "Mining, Tasks & Referrals",
         "status": "current_foundation",
         "items": [
-          "APXN Points community experience and mining-style claim system",
-          "Daily check-ins, social tasks and referrals",
-          "Official website and project-information foundation",
-          "Clear separation between APXN Points and token/project communications"
+          "APXN Points mining and daily participation",
+          "Referrals, social and daily tasks, upgrades and staking features",
+          "Telegram Mini App improvements"
         ]
       },
       {
-        "period": "2027",
-        "title": "Growth & Infrastructure",
+        "period": "Q1 2027",
+        "title": "APXN Membership & Loyalty KYC",
         "status": "planned",
         "items": [
-          "Community growth and ecosystem upgrades",
-          "Security and infrastructure improvements",
-          "Rig and engagement upgrades",
-          "Phased presale stages beginning only when officially activated"
+          "Loyalty KYC launch",
+          "100 APXN displayed for each of 10,000 qualified Badge holders completing required KYC tasks",
+          "First airdrop claim planned for Q2 2027"
         ]
       },
       {
-        "period": "2028",
-        "title": "Token Preparation, Listing Stages & Testnet",
+        "period": "Q2 2027",
+        "title": "Development, Partnerships & Airdrops",
         "status": "planned",
         "items": [
-          "Platform optimization and token-preparation stages",
-          "Listing and TGE-related announcements when project requirements are met",
-          "Distribution and withdrawal systems only after official activation",
-          "Apex Testnet stage"
+          "Partnerships and marketing",
+          "Approximately 2,000,000 APXN second airdrop from the 15 million APXN partnerships/marketing/development/airdrops fund",
+          "Claims for the first and second airdrops under official rules"
         ]
       },
       {
-        "period": "2029",
-        "title": "Testnet Expansion, Staking & Mainnet",
+        "period": "Q3 2027",
+        "title": "APXN DEX & CEX Launchpad",
         "status": "planned",
         "items": [
-          "Testnet optimization and expansion",
-          "Planned staking implementation",
-          "Mainnet preparation",
-          "Planned Apex Mainnet launch"
+          "APXN DEX launch target",
+          "CEX Launchpad target"
+        ]
+      },
+      {
+        "period": "Q4 2027",
+        "title": "Testnet & Exchange Listings",
+        "status": "planned",
+        "items": [
+          "APXN Testnet target",
+          "CEX/DEX listings target"
+        ]
+      },
+      {
+        "period": "Q1 2028",
+        "title": "Mainnet Preparation & New Products",
+        "status": "planned",
+        "items": [
+          "Prepare APXN Mainnet",
+          "New APXN ecosystem products"
+        ]
+      },
+      {
+        "period": "Q2 2028",
+        "title": "APXN Mainnet Launch",
+        "status": "planned",
+        "items": [
+          "Target APXN Mainnet launch"
         ]
       }
     ],
     "phases": [
       {
         "period": "Q4 2026",
-        "title": "Genesis Launch",
+        "title": "Mining, Tasks & Referrals",
         "items": [
-          "Official launch / rollout milestone for the Telegram app",
-          "APXN Points accumulation",
-          "Daily Check-In and Social Tasks",
-          "Referral rewards",
-          "Wallet-linking integration target"
+          "APXN Points mining and daily participation",
+          "Referrals, social and daily tasks, upgrades and staking features",
+          "Continued improvements to the Telegram Mini App"
         ]
       },
       {
         "period": "Q1 2027",
-        "title": "Mining & Engagement",
+        "title": "APXN Membership & Loyalty KYC",
         "items": [
-          "Mining speed enhancements",
-          "Daily streak improvements",
-          "Additional tasks and rewards",
-          "Referral/activity tier upgrades",
-          "Telegram UI/UX improvements"
+          "Launch the planned APXN Membership & Loyalty KYC program",
+          "Display 100 APXN in the accounts of 10,000 qualified Badge holders completing the required KYC tasks",
+          "First-airdrop claims are planned for Q2 2027, subject to official conditions"
         ]
       },
       {
         "period": "Q2 2027",
-        "title": "Rig Upgrades & Presale",
+        "title": "Development, Partnerships & Airdrops",
         "items": [
-          "Rig upgrades",
-          "Burning points for internal upgrades",
-          "Initiation of phased presale"
+          "Continue APXN development, partnerships and marketing",
+          "Plan a second airdrop of approximately 2,000,000 APXN from the partnerships, marketing, development and airdrop fund",
+          "Open claims for the first and second airdrops, under official claim rules"
         ]
       },
       {
         "period": "Q3 2027",
-        "title": "Community & Growth",
+        "title": "APXN DEX & CEX Launchpad",
         "items": [
-          "Referral system expansion",
-          "Advanced user tiers",
-          "Community campaigns",
-          "Phased presale ongoing"
+          "Target the launch of APXN DEX",
+          "Target a Launchpad on a centralized exchange (CEX)"
         ]
       },
       {
         "period": "Q4 2027",
-        "title": "Ecosystem Expansion",
+        "title": "Testnet & Exchange Listings",
         "items": [
-          "Mini App optimization",
-          "Mining/upgrades enhancements",
-          "Security infrastructure development",
-          "Technical preparation"
+          "Target the APXN Testnet launch",
+          "Target APXN listings on CEX and DEX platforms"
         ]
       },
       {
         "period": "Q1 2028",
-        "title": "Platform Optimization",
+        "title": "Mainnet Preparation & New Products",
         "items": [
-          "Speed, stability and point-economy improvements",
-          "Security stress tests",
-          "Token transition preparation",
-          "Phased presale ongoing"
+          "Prepare APXN Mainnet",
+          "Develop and release new products in the APXN ecosystem"
         ]
       },
       {
         "period": "Q2 2028",
-        "title": "Token Preparation",
+        "title": "APXN Mainnet Launch",
         "items": [
-          "APXN tokenomics preparation",
-          "Security systems final review",
-          "Community expansion",
-          "Major announcement preparation"
-        ]
-      },
-      {
-        "period": "Q3 2028",
-        "title": "Listing Announcement",
-        "items": [
-          "Conclusion of phased presale",
-          "Official listing announcement",
-          "Announcement of supported DEX/CEX platforms",
-          "Points-to-token transition announcement",
-          "Apex Testnet announcement"
-        ]
-      },
-      {
-        "period": "Q4 2028",
-        "title": "Apex Testnet",
-        "items": [
-          "Testnet launch",
-          "Network, transaction and security testing",
-          "Developer access",
-          "Testnet Explorer"
-        ]
-      },
-      {
-        "period": "Q1 2029",
-        "title": "Testnet Expansion",
-        "items": [
-          "Performance optimization",
-          "Bug fixes and scaling",
-          "Developer support",
-          "Staking preparation"
-        ]
-      },
-      {
-        "period": "Q2 2029",
-        "title": "Staking Implementation",
-        "items": [
-          "Apex Staking",
-          "APXN staking rewards",
-          "Validator/node testing",
-          "Staking security audits"
-        ]
-      },
-      {
-        "period": "Q3 2029",
-        "title": "Mainnet Preparation",
-        "items": [
-          "Final security audits",
-          "Mainnet and Explorer preparation",
-          "Validator setup and documentation",
-          "Readiness announcement"
-        ]
-      },
-      {
-        "period": "Q4 2029",
-        "title": "Apex Mainnet Launch",
-        "items": [
-          "Planned Mainnet launch",
-          "Planned APXN native Mainnet stage",
-          "Planned Mainnet staking activation",
-          "Planned Mainnet Explorer",
-          "Ecosystem and partnership expansion"
+          "Target the official launch of APXN Mainnet"
         ]
       }
     ],
-    "status_rule": "Roadmap dates do not determine whether a feature is currently live. Current feature status must come from verified implemented facts or an explicit official activation update.",
-    "editorial_rule": "Always use future-tense or planned language for unfinished roadmap phases and never present roadmap timing as guaranteed."
+    "status_rule": "All milestones after the current foundation are planned and require official verification before being called active.",
+    "editorial_rule": "Use Q4 2026–Q2 2028 milestones, avoid old 2029 dates, and do not represent planned claims, listings, Testnet or Mainnet as live. Do not promise a fixed APXN Points conversion rate."
   },
   "tokenomics_and_contract_content": {
     "status": "official_project_information",
@@ -796,38 +744,75 @@
     "total_supply_displayed": "100,000,000 APXN",
     "distribution": [
       {
-        "bucket": "Community & Airdrop",
-        "percent": 63
+        "bucket": "Community",
+        "percent": 63,
+        "amount_apxn": 63000000
       },
       {
-        "bucket": "DEX & CEX Liquidity",
-        "percent": 20
+        "bucket": "Listings & Exchanges",
+        "percent": 15,
+        "amount_apxn": 15000000
       },
       {
-        "bucket": "Marketing & Partners",
-        "percent": 10
+        "bucket": "Partnerships, Marketing, Development & Airdrops",
+        "percent": 15,
+        "amount_apxn": 15000000
       },
       {
-        "bucket": "Core Team",
-        "percent": 6
+        "bucket": "Project Team",
+        "percent": 5,
+        "amount_apxn": 5000000
       },
       {
-        "bucket": "Phased Presale / ICO",
-        "percent": 1
+        "bucket": "CEX Launchpad",
+        "percent": 2,
+        "amount_apxn": 2000000
       }
     ],
-    "presale_ico_status": "Planned / Not Live",
+    "presale_ico_status": "Not Live / no active public sale",
     "current_sale_price": null,
     "sale_price_rule": "Do not publish a current APXN sale price as official unless an active sale is launched and the price is manually verified.",
-    "points_relationship": "APXN Points are a separate participation balance. The project may later announce eligibility, allocation or points-to-token transition rules, but no guaranteed fixed conversion amount should be inferred.",
-    "points_conversion_ui_statement": "The project has described a future points-to-token transition around later token stages. Conversion mechanics, eligibility criteria and any ratio remain subject to the final official implementation and announcement.",
+    "points_relationship": "APXN Points are a separate in-app participation balance. 63,000,000 APXN are reserved for community allocation across seven levels based on verified APXN Points, subject to future eligibility and official distribution rules. No fixed points-to-token conversion rate is guaranteed.",
+    "points_conversion_ui_statement": "Every user level is based on verified APXN Points. Each of the seven levels has its own APXN pool, distributed proportionally within that level according to eligible users’ verified points. A user’s level and APXN share appear on the Dashboard only after completing all APXN Membership & Loyalty KYC stages. The final level-pool allocations will be announced ahead of distribution and listing.",
     "contract_verification_note": "The contract address is publicly linked on BscScan by the official website. Explorer visibility must not be described as proof of an independent security audit.",
-    "editorial_rule": "Tokenomics may be described as the current official APXN project allocation plan. Do not convert project allocation statements into guaranteed financial outcomes, guaranteed listings, guaranteed liquidity, a live sale or an audited-security claim.",
+    "editorial_rule": "Use the approved allocation 63% Community, 15% Listings & Exchanges, 15% Partnerships/Marketing/Development/Airdrops, 5% Team, 2% CEX Launchpad. The approximately 2,000,000 APXN second airdrop is included within the 15% fund, not extra supply; the 2,000,000 APXN Launchpad pool is separately allocated. No sale, listing, withdrawal or distribution is live unless officially verified.",
     "source_paths": [
       "apxn-landing/index.html",
       "apex-miner/app/page.js",
       "apex-miner/README.md"
-    ]
+    ],
+    "airdrop_program": {
+      "first_airdrop": {
+        "target_period_eligibility": "Q1 2027",
+        "target_period_claim": "Q2 2027",
+        "eligible_badge_holders_target": 10000,
+        "planned_apxn_per_qualified_holder": 100,
+        "notice": "Balance display in Q1 is not immediate blockchain delivery; final eligibility and claim rules will be published officially."
+      },
+      "second_airdrop": {
+        "target_period": "Q2 2027",
+        "approximate_tokens": 2000000,
+        "fund": "Partnerships, Marketing, Development & Airdrops (15% allocation)",
+        "notice": "Included within the existing 15 million token allocation; planned claims subject to official terms."
+      }
+    },
+    "early_access_badge_guidance": "Official instructions will be published separately covering Badge eligibility, activity requirements, holder benefits and retention conditions. Do not invent final policies or sale/transfer mechanisms.",
+    "levels": {
+      "count": 7,
+      "labels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6",
+        "L7"
+      ],
+      "total_community_allocation_apxn": 63000000,
+      "distribution_method": "Within each level, the level token allocation is distributed proportionally to eligible users’ verified APXN Points divided by the total verified APXN Points of eligible users in that level. It is not an equal split.",
+      "dashboard_display_requirement": "Complete every stage of APXN Membership & Loyalty KYC",
+      "allocation_announcement": "The final allocation for each level will be officially announced before the distribution and listing described in the Whitepaper."
+    }
   },
   "claims_requiring_manual_confirmation": [
     {
@@ -851,9 +836,9 @@
       "reason": "A named exchange listing requires a current official listing announcement or direct exchange confirmation."
     },
     {
-      "claim": "The APXN Presale / ICO is currently active or has a current public price.",
+      "claim": "A public CEX Launchpad is already operating or a current sale price is official.",
       "status": "blocked_auto_publish",
-      "reason": "The current unified project status is Planned / Not Live. A live sale must be manually activated and verified before publication."
+      "reason": "CEX Launchpad is a planned Q3 2027 milestone with a 2% allocation, not evidence of a live public token sale or confirmed price."
     },
     {
       "claim": "APXN Points have a fixed guaranteed token-conversion ratio or guaranteed monetary value.",
@@ -889,7 +874,7 @@
     "Never promise profits, guaranteed returns, guaranteed token price, guaranteed listing date, guaranteed exchange listing, guaranteed point-conversion value or guaranteed eligibility.",
     "Never state that pressing Claim performs blockchain consensus mining. Explain that the Mini App calculates and records ecosystem points programmatically.",
     "Never present a roadmap item, Soon feature, disabled upgrade, staking feature, Testnet, Mainnet, Presale / ICO, token distribution or withdrawal as already live unless the knowledge status is updated after verification.",
-    "Do not publish a live APXN Presale / ICO price or purchase instruction while presale_ico_status is Planned / Not Live.",
+    "Do not publish an APXN Launchpad, Presale / ICO price, purchase instructions or exchange participation as live unless a new official activation and pricing are verified.",
     "Do not describe BscScan visibility as an independent smart-contract audit.",
     "Do not claim wallet persistence or withdrawal-address binding for the Telegram Mini App until that implementation is specifically verified.",
     "Dashboard and website wallet/withdrawal implementation are outside the current editorial synchronization phase; do not infer or publish new implementation claims about them.",
@@ -1074,3 +1059,4 @@
     }
   }
 }
+
