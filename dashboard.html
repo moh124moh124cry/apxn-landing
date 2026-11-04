@@ -321,6 +321,35 @@
                 </div>
             </div>
 
+            <!-- APXN WALLET: read-only display of the BSC address registered in the Telegram Mini App -->
+            <section class="glass panel-3d border border-indigo-400/35 rounded-3xl p-6 md:p-8 mb-8"
+                     aria-label="Registered BSC wallet">
+                <div class="relative z-10">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <h3 class="text-xl font-black text-white">🔗 BSC Wallet Address</h3>
+                        <span id="bsc-wallet-status"
+                              class="inline-flex items-center rounded-full border border-slate-600/50 bg-slate-800/50 px-4 py-2 text-xs font-black text-slate-300">
+                            Checking...
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-3">
+                        Your BNB Smart Chain (BEP-20) address, synchronized with the APXN Telegram Mini App.
+                    </p>
+                    <div id="bsc-wallet-address"
+                         class="w-full break-all select-text rounded-xl border border-indigo-400/30 bg-slate-950/80 p-4 font-mono text-sm text-white">
+                        Checking your wallet...
+                    </div>
+                    <p id="bsc-wallet-detail" class="text-xs text-slate-400 mt-3" aria-live="polite">
+                        Wallet information is linked to your Telegram account.
+                    </p>
+                    <p class="text-[11px] text-slate-500 mt-3 leading-relaxed">
+                        Wallet Verified confirms registration of this address with your APXN Telegram account.
+                        It is not an on-chain proof of wallet ownership or a guarantee of airdrop eligibility.
+                        Withdrawals are not active.
+                    </p>
+                </div>
+            </section>
+
             <!-- CURRENT APXN POINTS DATA -->
             <div class="mb-4 flex items-end justify-between gap-4">
                 <div>
@@ -475,7 +504,7 @@
                         <div class="text-[10px] uppercase tracking-widest text-gray-600 font-black mb-1">Stage 05</div>
                         <h4 class="font-black mb-2">Wallet & Withdrawal</h4>
                         <p class="text-xs text-gray-500 leading-relaxed">
-                            Wallet linking and withdrawals remain disabled until officially launched.
+                            Wallet registration is available in the APXN Telegram Mini App. Withdrawals remain inactive.
                         </p>
                     </div>
                 </div>
@@ -1026,6 +1055,37 @@
                 'block';
         }
 
+        function populateBscWallet(wallet) {
+            const address = typeof wallet?.address === 'string'
+                ? wallet.address.trim()
+                : '';
+            const isValidBscAddress = /^0x[a-fA-F0-9]{40}$/.test(address) &&
+                !/^0x0{40}$/i.test(address) &&
+                Number(wallet?.chainId ?? 56) === 56;
+            const verified = isValidBscAddress && wallet?.verified === true;
+            const badge = document.getElementById('bsc-wallet-status');
+
+            setText('bsc-wallet-address', isValidBscAddress
+                ? address
+                : 'No BSC wallet registered yet.');
+            setText('bsc-wallet-detail', isValidBscAddress
+                ? verified
+                    ? 'Your wallet address is registered and verified within APXN.'
+                    : 'Your wallet address is registered in APXN.'
+                : 'Save your personal BSC wallet in the APXN Telegram Mini App to see it here automatically.');
+
+            if (!badge) return;
+            badge.textContent = verified
+                ? '✓ Wallet Verified'
+                : isValidBscAddress ? 'Wallet Registered' : 'Not Registered';
+            badge.className = 'inline-flex items-center rounded-full border px-4 py-2 text-xs font-black ' +
+                (verified
+                    ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-300'
+                    : isValidBscAddress
+                        ? 'border-sky-400/30 bg-sky-500/10 text-sky-300'
+                        : 'border-slate-600/50 bg-slate-800/50 text-slate-300');
+        }
+
         function populateDashboard(data) {
             const user = data?.user || {};
 
@@ -1091,8 +1151,10 @@
 
             setFutureStageState(
                 voucher,
-                null
+                data?.wallet || null
             );
+
+            populateBscWallet(data?.wallet || null);
 
             populateEarlyAccessBadge(
                 data?.badges ||
@@ -1194,6 +1256,50 @@
             window.location.replace('/dashboard.html');
         }
 
+        // Keep an open Dashboard in sync when the user saves a wallet in Telegram.
+        // The existing authenticated dashboard API remains the only data source.
+        let walletSyncInProgress = false;
+
+        async function refreshBscWalletOnDashboard() {
+            if (walletSyncInProgress ||
+                document.visibilityState !== 'visible' ||
+                sections.dashboard?.style.display !== 'block') {
+                return;
+            }
+
+            walletSyncInProgress = true;
+            try {
+                const response = await fetch('/api/dashboard-data', {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    headers: { Accept: 'application/json' },
+                    cache: 'no-store'
+                });
+                if (response.status === 401) {
+                    showSection('login');
+                    return;
+                }
+                if (!response.ok) return;
+                const data = await response.json();
+                if (data?.miningAccount !== false && data?.user) {
+                    populateBscWallet(data?.wallet || null);
+                }
+            } catch (error) {
+                // Keep the last valid wallet display on a temporary network error.
+                console.warn('APXN wallet synchronization unavailable');
+            } finally {
+                walletSyncInProgress = false;
+            }
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                void refreshBscWalletOnDashboard();
+            }
+        });
+        window.addEventListener('focus', refreshBscWalletOnDashboard);
+        setInterval(refreshBscWalletOnDashboard, 20000);
+
         window.addEventListener(
             'DOMContentLoaded',
             loadDashboard
@@ -1201,4 +1307,5 @@
     </script>
 </body>
 </html>
+
 
