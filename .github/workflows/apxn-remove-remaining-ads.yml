@@ -1,0 +1,316 @@
+name: APXN - Remove Remaining Third-Party Ads (Cloudflare Only)
+
+# A one-time cleanup on the cloudflare-migration branch ONLY.
+# Installing this workflow on that branch triggers the cleanup automatically.
+on:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - '.github/workflows/apxn-remove-remaining-ads.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-remove-remaining-ads-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  clean-remaining-ads:
+    if: github.ref == 'refs/heads/cloudflare-migration'
+    name: Clean 14 articles, 3 templates and orphaned ad file
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Cloudflare migration branch ONLY
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Confirm branch safety
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/cloudflare-migration"
+          test "$(git branch --show-current)" = "cloudflare-migration"
+
+      - name: Remove old advertisements without changing editorial content
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          #!/usr/bin/env python3
+          """Clean third-party ads from APXN blog articles and their generators.
+          
+          Run from the repository root of the cloudflare-migration branch.
+          Only the 14 known articles, 3 template source files, and orphaned ad file are changed.
+          Does not alter website content, account state, tokenomics or auto-generation schedule.
+          """
+          from __future__ import annotations
+          
+          import re
+          import subprocess
+          from pathlib import Path
+          
+          ROOT = Path.cwd()
+          ARTICLES = [
+              "apxn-development-roadmap-distinguishing-live-features-from-planned-milestones",
+              "blockchain-basics-for-beginners-understanding-blocks-ethereum-and-web3",
+              "blockchain-transactions-on-ethereum-explained-simply-for-beginners",
+              "how-apxn-referrals-and-active-friend-mining-boosts-work",
+              "how-blockchain-explorers-help-users-verify-transactions",
+              "how-ethereum-wallet-addresses-support-account-verification-and-security",
+              "self-custody-wallet-basics-for-web3-beginners-on-ethereum",
+              "telegram-mini-apps-features-and-web3-concepts-from-official-documentation",
+              "understanding-the-apxn-daily-check-in-reward-system",
+              "wallet-connection-vs-wallet-storage-an-important-web3-distinction",
+              "web3-security-basics-wallet-protection-and-scam-prevention-essentials",
+              "what-are-apxn-points",
+              "what-is-a-bep-20-token-a-beginner-friendly-guide-to-the-bnb-smart-chain-standard",
+              "what-is-bnb-smart-chain-and-how-does-it-work",
+          ]
+          AD_COMMENT = '<!-- 300x250 Banner Ad -->'
+          OLD_LINK = 'https://omg10.com/4/11822007'
+          AD_MARKERS = re.compile(
+              r'www\.highrevenueformat\.com|omg10\.com/4/11822007|'
+              r'ad-320x50\.html|\batOptions\b|'
+              r'Sponsored Advertisement|300x250 Banner Ad|'
+              r'ISOLATED 320x50 ADVERTISEMENT', re.I,
+          )
+          DIV = re.compile(r'<(/?)div\b[^>]*>', re.I | re.S)
+          SPONSOR_WRAPPER = re.compile(
+              r'<div\s+class="mb-8 flex w-full justify-center"\s*>', re.I
+          )
+          SPONSOR_HREF = re.compile(
+              r'href\s*=\s*["\']https://omg10\.com/4/11822007["\']', re.I
+          )
+          
+          
+          def relative(p: Path) -> str:
+              return p.relative_to(ROOT).as_posix()
+          
+          
+          def read(p: Path) -> str:
+              if not p.is_file():
+                  raise FileNotFoundError(f'Required file does not exist: {relative(p)}')
+              return p.read_text(encoding='utf-8')
+          
+          
+          def remove_span(text: str, start: int, end: int) -> str:
+              """Drop exactly an HTML block including indentation/newline when stand-alone."""
+              before_line = text.rfind('\n', 0, start) + 1
+              if not text[before_line:start].strip():
+                  start = before_line
+              after_line = text.find('\n', end)
+              if after_line >= 0 and not text[end:after_line].strip():
+                  end = after_line + 1
+              return text[:start] + text[end:]
+          
+          
+          def div_end(text: str, opening: int) -> int:
+              first = DIV.match(text, opening)
+              if not first or first.group(1):
+                  raise ValueError('Expected an opening <div>')
+              depth = 0
+              for match in DIV.finditer(text, opening):
+                  depth += (-1 if match.group(1) else 1)
+                  if depth < 0:
+                      raise ValueError('Unbalanced HTML div elements')
+                  if depth == 0:
+                      return match.end()
+              raise ValueError('Unclosed ad <div>')
+          
+          
+          def remove_banner(text: str, filename: str) -> tuple[str, int]:
+              count = text.count(AD_COMMENT)
+              if count == 0:
+                  return text, 0
+              if count != 1:
+                  raise ValueError(f'{filename}: expected at most one known banner, found {count}')
+              start = text.index(AD_COMMENT)
+              nextdiv = re.search(r'<div\b', text[start + len(AD_COMMENT):], re.I)
+              if nextdiv is None:
+                  raise ValueError(f'{filename}: banner has no <div>')
+              opening = start + len(AD_COMMENT) + nextdiv.start()
+              if text[start + len(AD_COMMENT):opening].strip():
+                  raise ValueError(f'{filename}: unexpected content before ad container')
+              end = div_end(text, opening)
+              ad = text[start:end]
+              if ('highrevenueformat.com' not in ad or 'atOptions' not in ad
+                      or 'Advertisement' not in ad):
+                  raise ValueError(f'{filename}: advertising block did not match expectations')
+              return remove_span(text, start, end), 1
+          
+          
+          def remove_sponsor(text: str, filename: str) -> tuple[str, int]:
+              refs = list(SPONSOR_HREF.finditer(text))
+              if not refs:
+                  return text, 0
+              if len(refs) != 1:
+                  raise ValueError(f'{filename}: unexpected sponsored link count: {len(refs)}')
+              ref = refs[0]
+              wrappers = [m for m in SPONSOR_WRAPPER.finditer(text, 0, ref.start())]
+              if not wrappers:
+                  raise ValueError(f'{filename}: sponsored link has no known wrapper')
+              opening = wrappers[-1].start()
+              end = div_end(text, opening)
+              block = text[opening:end]
+              if (ref.start() >= end or OLD_LINK not in block
+                      or 'Sponsored Advertisement' not in block):
+                  raise ValueError(f'{filename}: unknown sponsored link markup')
+              return remove_span(text, opening, end), 1
+          
+          
+          def remove_blog_index_template_ad(text: str) -> tuple[str, int]:
+              marker = '<!-- ISOLATED 320x50 ADVERTISEMENT -->'
+              count = text.count(marker)
+              if count == 0:
+                  return text, 0
+              if count != 1:
+                  raise ValueError('scripts/blog-sync.mjs contains repeated ad sections')
+              i = text.index(marker)
+              start = re.search(r'<section\b', text[i + len(marker):], re.I)
+              if start is None:
+                  raise ValueError('Blog index ad section missing')
+              section_start = i + len(marker) + start.start()
+              if text[i + len(marker):section_start].strip():
+                  raise ValueError('Unexpected content before blog index ad section')
+              close = re.search(r'</section\s*>', text[section_start:], re.I)
+              if close is None:
+                  raise ValueError('Blog index ad section not closed')
+              end = section_start + close.end()
+              block = text[i:end]
+              if '/ad-320x50.html' not in block or 'Advertisement' not in block:
+                  raise ValueError('Unexpected blog index ad section')
+              return remove_span(text, i, end), 1
+          
+          
+          def save_if_changed(path: Path, original: str, clean: str) -> bool:
+              if AD_MARKERS.search(clean):
+                  raise ValueError(f'{relative(path)} still contains old advertising')
+              if clean != original:
+                  path.write_text(clean, encoding='utf-8', newline='')
+                  print(f'CLEANED  {relative(path)}')
+                  return True
+              print(f'ALREADY CLEAN  {relative(path)}')
+              return False
+          
+          
+          def main() -> None:
+              # GitHub Actions checkout establishes the exact protected branch.
+              try:
+                  branch = subprocess.check_output(
+                      ['git', 'branch', '--show-current'], text=True, stderr=subprocess.DEVNULL
+                  ).strip()
+                  if branch and branch != 'cloudflare-migration':
+                      raise RuntimeError(f'Safety stop: wrong branch {branch!r}')
+              except (FileNotFoundError, subprocess.CalledProcessError):
+                  # Allows local fixture tests without a complete git repository.
+                  pass
+          
+              article_changes = 0
+              banner_changes = 0
+              sponsor_changes = 0
+              for name in ARTICLES:
+                  file = ROOT / 'blog' / 'articles' / f'{name}.html'
+                  original = read(file)
+                  text, n_banner = remove_banner(original, relative(file))
+                  text, n_sponsor = remove_sponsor(text, relative(file))
+                  article_changes += int(save_if_changed(file, original, text))
+                  banner_changes += n_banner
+                  sponsor_changes += n_sponsor
+          
+              writer = ROOT / 'scripts' / 'blog-writer.mjs'
+              original = read(writer)
+              clean, writer_banners = remove_banner(original, relative(writer))
+              save_if_changed(writer, original, clean)
+          
+              publish = ROOT / 'api' / 'blog-admin-publish.js'
+              original = read(publish)
+              clean, publish_banners = remove_banner(original, relative(publish))
+              clean, publish_sponsored = remove_sponsor(clean, relative(publish))
+              save_if_changed(publish, original, clean)
+          
+              blog_sync = ROOT / 'scripts' / 'blog-sync.mjs'
+              original = read(blog_sync)
+              clean, sync_ads = remove_blog_index_template_ad(original)
+              save_if_changed(blog_sync, original, clean)
+          
+              # Validate all HTML pages (not only the selected articles). The blog index
+              # has been cleaned already, and blog-sync.mjs is now safe to regenerate it.
+              for path in ROOT.rglob('*.html'):
+                  if any(parent in ('.git', 'node_modules', '.cloudflare-static')
+                         for parent in path.parts):
+                      continue
+                  if path.name == 'ad-320x50.html':
+                      continue
+                  content = path.read_text(encoding='utf-8')
+                  if AD_MARKERS.search(content):
+                      raise ValueError(f'Old advertisement remains in {relative(path)}')
+          
+              orphan = ROOT / 'ad-320x50.html'
+              if orphan.exists():
+                  orphan.unlink()
+                  print('REMOVED  ad-320x50.html (orphaned advertisement file)')
+          
+              # Check all intended regeneration points after the orphan is deleted.
+              for path in [blog_sync, writer, publish]:
+                  if AD_MARKERS.search(read(path)):
+                      raise ValueError(f'Ad-generator verification failed: {relative(path)}')
+          
+              print('\nAPXN CLEANUP COMPLETE (local branch working tree)')
+              print('Articles updated:', article_changes, '/', len(ARTICLES))
+              print('Published article banners removed:', banner_changes)
+              print('Published sponsored links removed:', sponsor_changes)
+              print('Templates cleaned:', writer_banners + publish_banners + publish_sponsored + sync_ads)
+              print('No old ad markers remain in HTML pages or blog generators.')
+              print('No change was made to article texts, images, publishing schedules, or main branch.')
+          
+          
+          if __name__ == '__main__':
+              main()
+          PYCODE
+
+      - name: Verify syntax, diff and scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          node --check scripts/blog-writer.mjs
+          node --check scripts/blog-sync.mjs
+          node --check api/blog-admin-publish.js
+          if grep -RinE 'highrevenueformat\.com|omg10\.com/4/11822007|ad-320x50\.html|atOptions|Sponsored Advertisement|300x250 Banner Ad' blog/articles/*.html blog/index.html scripts/blog-writer.mjs scripts/blog-sync.mjs api/blog-admin-publish.js; then
+            echo 'ERROR: Old ad code remains in article/template files' >&2
+            exit 1
+          fi
+          echo 'Ad marker check: PASS'
+          echo 'Syntax and diff checks: PASS'
+
+      - name: Commit cleaned files to Cloudflare migration ONLY
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'APXN Ad Cleanup Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A -- blog/articles scripts/blog-writer.mjs scripts/blog-sync.mjs api/blog-admin-publish.js
+          if git ls-files --error-unmatch ad-320x50.html > /dev/null 2>&1; then
+            git add -u -- ad-320x50.html
+          fi
+          if git diff --cached --quiet; then
+            echo 'No changes required; files are already clean.'
+            exit 0
+          fi
+          git diff --cached --check
+          git commit -m 'Remove third-party advertising from APXN articles and templates'
+          git push origin HEAD:cloudflare-migration
+
+      - name: Summary
+        if: always()
+        run: |
+          echo '### APXN old-ad cleanup' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Target: cloudflare-migration only' >> "$GITHUB_STEP_SUMMARY"
+          echo '14 articles, three generators/synchronizers, and orphaned ad page.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No changes to main, AdSense, article copy or automation schedule.' >> "$GITHUB_STEP_SUMMARY"
+
