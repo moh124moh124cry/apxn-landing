@@ -32,69 +32,7 @@ import {
   handleBlogAdminPublish
 } from "./api/blog-admin-publish.mjs";
 
-// Cloudflare invokes this handler only after Cron Triggers are configured.
-// Article writing remains in GitHub Actions; publishing remains manual.
-const BLOG_GENERATION_CRONS = new Set([
-  "17 8 * * 1",
-  "17 8 * * 3",
-  "17 8 * * 6"
-]);
-
-async function dispatchReadyBlogGeneration(env) {
-  const repository = String(env.BLOG_GITHUB_REPO || "").trim();
-  const branch = String(env.BLOG_GITHUB_BRANCH || "").trim();
-
-  // Never trigger the writer on main or an unexpected repository.
-  if (
-    repository !== "moh124moh124cry/apxn-landing" ||
-    branch !== "cloudflare-migration"
-  ) {
-    throw new Error("APXN_BLOG_CRON_REPOSITORY_OR_BRANCH_MISMATCH");
-  }
-
-  // Separate, least-privilege token: GitHub Actions permission = write.
-  // Configure BLOG_ACTIONS_TOKEN as a Cloudflare secret, not in this file.
-  const token = String(env.BLOG_ACTIONS_TOKEN || "").trim();
-  if (!token) {
-    throw new Error("APXN_BLOG_CRON_ACTIONS_TOKEN_MISSING");
-  }
-
-  const response = await fetch(
-    "https://api.github.com/repos/moh124moh124cry/apxn-landing" +
-      "/actions/workflows/blog-writer.yml/dispatches",
-    {
-      method: "POST",
-      headers: {
-        "Accept": "application/vnd.github+json",
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "User-Agent": "APXN-Cloudflare-Blog-Cron",
-        "X-GitHub-Api-Version": "2022-11-28"
-      },
-      body: JSON.stringify({ ref: "cloudflare-migration" })
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      `APXN_BLOG_CRON_DISPATCH_FAILED_HTTP_${response.status}`
-    );
-  }
-
-  console.log("APXN ready-article generation dispatched to GitHub Actions.");
-}
-
 export default {
-  async scheduled(controller, env) {
-    // Do not run any other scheduled task through this blog trigger.
-    if (!BLOG_GENERATION_CRONS.has(controller.cron)) {
-      console.log("Ignoring unrecognized APXN blog cron trigger.");
-      return;
-    }
-
-    await dispatchReadyBlogGeneration(env);
-  },
-
   async fetch(request, env) {
     const url = new URL(request.url);
 
