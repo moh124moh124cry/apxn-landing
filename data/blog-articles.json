@@ -1190,9 +1190,9 @@
     {
       "id": "apxn-007",
       "slug": "apxn-development-roadmap-distinguishing-live-features-from-planned-milestones",
-      "title": "APXN Development Roadmap: Distinguishing Live Features from Planned Milestones",
-      "description": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
-      "excerpt": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
+      "title": "APXN Whitepaper and Roadmap 2026–2028: Tokenomics and KYC",
+      "description": "Read the updated Apex Network roadmap through Q2 2028, 100 million APXN tokenomics, seven community levels, Membership and Loyalty KYC and planned airdrops.",
+      "excerpt": "Read the updated Apex Network roadmap through Q2 2028, 100 million APXN tokenomics, seven community levels, Membership and Loyalty KYC and planned airdrops.",
       "category": "Development",
       "language": "en",
       "author": "Apex Network Editorial",
@@ -1201,25 +1201,25 @@
       "indexable": true,
       "created_at": "2026-09-16",
       "generated_at": "2026-09-16",
-      "updated_at": "2026-09-16",
+      "updated_at": "2026-11-09",
       "published_at": "2026-09-16",
-      "reading_minutes": 8,
-      "word_count": 1737,
+      "reading_minutes": 7,
+      "word_count": 1287,
       "path": "blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
       "url": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
       "image": "https://apxn.network/blog/images/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones-1000133668.jpg",
       "image_filename": "apxn-development-roadmap-distinguishing-live-features-from-planned-milestones-1000133668.jpg",
       "keywords": [
-        "APXN roadmap",
-        "Telegram Mini App",
+        "Apex Network roadmap",
+        "APXN Whitepaper",
+        "APXN tokenomics",
+        "100 million APXN",
         "APXN Points",
-        "planned milestones",
-        "current features",
-        "authentication",
-        "mining rate",
-        "roadmap phases",
-        "points balance",
-        "development status"
+        "Membership and Loyalty KYC",
+        "APXN airdrops",
+        "APXN DEX",
+        "CEX Launchpad",
+        "APXN Mainnet 2028"
       ],
       "source": "automated_research_packet_pipeline",
       "content_mode": "apxn",
@@ -1229,210 +1229,147 @@
       "duplicate_check": true,
       "quality_check": true,
       "seo": {
-        "title": "APXN Development Roadmap: Distinguishing Live Features from Planned Milestones",
-        "description": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
+        "title": "APXN Whitepaper and Roadmap 2026–2028: Tokenomics and KYC",
+        "description": "Read the updated Apex Network roadmap through Q2 2028, 100 million APXN tokenomics, seven community levels, Membership and Loyalty KYC and planned airdrops.",
         "canonical": "https://apxn.network/blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html",
         "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
       "content": {
-        "title": "APXN Development Roadmap: Distinguishing Live Features from Planned Milestones",
-        "description": "An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028",
+        "title": "APXN Whitepaper and Roadmap 2026–2028: Tokenomics and KYC",
+        "description": "Read the updated Apex Network roadmap through Q2 2028, 100 million APXN tokenomics, seven community levels, Membership and Loyalty KYC and planned airdrops.",
         "keywords": [
-          "APXN roadmap",
-          "Telegram Mini App",
+          "Apex Network roadmap",
+          "APXN Whitepaper",
+          "APXN tokenomics",
+          "100 million APXN",
           "APXN Points",
-          "planned milestones",
-          "current features",
-          "authentication",
-          "mining rate",
-          "roadmap phases",
-          "points balance",
-          "development status"
+          "Membership and Loyalty KYC",
+          "APXN airdrops",
+          "APXN DEX",
+          "CEX Launchpad",
+          "APXN Mainnet 2028"
         ],
         "intro": {
-          "text": "The APXN roadmap functions as a forward-looking development plan rather than a guarantee that every milestone will occur on an exact date. Future phases should be described with terms such as planned, targeted or scheduled to avoid turning roadmap timing into a contractual promise. The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. Roadmap summaries on the website can group detailed quarterly milestones into yearly sections as long as they preserve the same chronology and status. A simplified summary must not move a planned feature earlier, imply that a planned item is already active or introduce an exchange, price or partnership not present in verified sources. Current feature status must be determined independently from roadmap dates.",
-          "evidence_ids": [
-            "APXN-01",
-            "APXN-02",
-            "APXN-03"
-          ]
+          "text": "Apex Network (APXN) combines a Telegram-based community experience with a longer-term blockchain development plan. The updated November 2026 Whitepaper sets a total supply of 100,000,000 APXN and describes how the project intends to distribute tokens, while the Roadmap outlines development targets from Q4 2026 to Q2 2028. Those documents serve different purposes: APXN Points earned in the app measure participation, whereas APXN tokens are a separate blockchain asset with eligibility and claim rules. This guide summarizes the approved plan and distinguishes features available today from milestones that have not yet launched. Dates are targets, not guarantees."
         },
         "sections": [
           {
-            "heading": "Current Foundation and Safe Article Structure",
+            "heading": "The Current APXN Ecosystem and APXN Points",
             "paragraphs": [
               {
-                "text": "The 2026 foundation centers on the Telegram community experience, APXN Points, check-ins, tasks, referrals and the official project website. The website should present this as the current ecosystem foundation while keeping token distribution, withdrawals, Presale or ICO, Testnet, staking and Mainnet clearly separated as later stages. The safest APXN roadmap article combines two layers: verified current product facts for what users can use today, and clearly labeled roadmap information for what the project intends to build later. This prevents readers from confusing an existing APXN Points feature with a future token, network or financial function. The welcome tiers are APXN Points rewards inside the application. The tiers describe the current registration reward logic and may change if the product rules are updated in the future.",
-                "evidence_ids": [
-                  "APXN-01",
-                  "APXN-08",
-                  "APXN-14",
-                  "APXN-21"
-                ]
+                "text": "The current APXN community experience is built around the Telegram Mini App. Users can engage with mining-style point claims, daily check-ins, tasks and referrals according to the rules displayed by the application. These activities record APXN Points. They do not constitute blockchain proof-of-work mining or an immediate transfer of APXN tokens to a wallet."
               },
               {
-                "text": "If development priorities change, the roadmap can change. Blog articles about roadmap history should identify the version or review date they are based on and should not reuse obsolete dates after the official project roadmap has been updated. The detailed Telegram Mini App roadmap and the simplified website roadmap describe the same project direction at different levels of detail. Use the detailed phases below for chronology and the public summary for general website wording. The 2026 foundation centers on the Telegram community experience, APXN Points, check-ins, tasks, referrals and the official project website. The website should present this as the current ecosystem foundation while keeping token distribution, withdrawals, Presale or ICO, Testnet, staking and Mainnet clearly separated as later stages.",
-                "evidence_ids": [
-                  "APXN-01",
-                  "APXN-08",
-                  "APXN-14",
-                  "APXN-21"
-                ]
+                "text": "Verified APXN Points are the basis for the planned seven-level community allocation system, but a points balance is not a promise of a fixed conversion rate, a cash value or an immediately withdrawable token amount. Future eligibility and claims remain separate from today’s points collection. The official website and application will identify the relevant stages when they are enabled."
               }
             ]
           },
           {
-            "heading": "2028 Targets and Authentication Controls",
+            "heading": "APXN Whitepaper: 100 Million Token Supply",
             "paragraphs": [
               {
-                "text": "The roadmap places the Apex Testnet launch target in Q4 2028 after earlier token-preparation and listing-announcement stages. Testnet articles can explain what the project plans to test, but they must not claim that a public testnet network, explorer or developer endpoint exists before a verified launch. The 2028 roadmap moves toward platform optimization, token preparation, later listing and points-transition announcements and the planned Apex Testnet stage. Naming DEX or CEX support in a roadmap does not itself confirm a listing relationship with any specific exchange. Roadmap summaries on the website can group detailed quarterly milestones into yearly sections as long as they preserve the same chronology and status.",
-                "evidence_ids": [
-                  "APXN-03",
-                  "APXN-07",
-                  "APXN-15",
-                  "APXN-17"
-                ]
+                "text": "The total announced supply is 100,000,000 APXN. The approved allocation is 63,000,000 APXN (63%) for the community; 15,000,000 (15%) for listings and exchanges; 15,000,000 (15%) for partnerships, marketing, development and airdrops; 5,000,000 (5%) for the team; and 2,000,000 (2%) for the planned CEX Launchpad. These percentages total 100% of the supply."
               },
               {
-                "text": "The current APXN policy accepts Telegram authentication data for up to 24 hours and rejects authentication timestamps that are too far in the future. These checks are application-security controls and should be described as current implementation details rather than universal requirements for every Telegram Mini App. The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. The word mining describes the user experience of accumulating points over time; the current claim action is not proof-of-work, does not solve cryptographic puzzles and should not be described as blockchain consensus mining.",
-                "evidence_ids": [
-                  "APXN-03",
-                  "APXN-07",
-                  "APXN-15",
-                  "APXN-17"
-                ]
+                "text": "The second airdrop, planned for Q2 2027, draws approximately 2,000,000 APXN from the existing 15% partnerships, marketing, development and airdrops fund. It is not an additional allocation on top of the stated token supply. The 2,000,000 APXN Launchpad allocation is a different, separately reserved fund. Neither allocation is evidence of a live token sale or confirmed exchange listing."
               }
             ]
           },
           {
-            "heading": "2027 Focus Areas and Account Registration",
+            "heading": "Seven Community Levels and Proportional Distribution",
             "paragraphs": [
               {
-                "text": "The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. If development priorities change, the roadmap can change. Blog articles about roadmap history should identify the version or review date they are based on and should not reuse obsolete dates after the official project roadmap has been updated. The detailed Telegram Mini App roadmap and the simplified website roadmap describe the same project direction at different levels of detail.",
-                "evidence_ids": [
-                  "APXN-02",
-                  "APXN-09",
-                  "APXN-13",
-                  "APXN-20"
-                ]
+                "text": "The 63,000,000 APXN community allocation is organized into seven levels, L1 through L7. A participant’s level is determined using verified APXN Points. Each level has its own token pool, and eligible participants share that pool in proportion to their verified points compared with the total verified points of eligible participants in the same level. The tokens are not divided equally among users simply because they belong to one level."
               },
               {
-                "text": "A new APXN Telegram Mini App account is registered through server-side logic after Telegram initData has been validated. The server derives the Telegram user identity from the verified payload and passes the trusted identity to the registration RPC rather than accepting an arbitrary browser-supplied account identifier. The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. Current feature status must be determined independently from roadmap dates.",
-                "evidence_ids": [
-                  "APXN-02",
-                  "APXN-09",
-                  "APXN-13",
-                  "APXN-20"
-                ]
+                "text": "The final amount assigned to each level will be announced before the planned distribution and listing, taking account of the eligible active community. Users must complete the applicable Membership & Loyalty KYC stages before their confirmed level and APXN allocation are shown on the dashboard. The project has not activated token withdrawals merely by publishing these rules."
               }
             ]
           },
           {
-            "heading": "Telegram Authentication and Points Separation",
+            "heading": "Q4 2026: Mining, Tasks and Community Foundation",
             "paragraphs": [
               {
-                "text": "Current feature status must be determined independently from roadmap dates. Some community features can exist before a roadmap phase that mentions their formal launch or expansion. Conversely, a future roadmap item does not become live merely because the calendar reaches the quarter printed beside it. APXN uses Telegram Mini App initData as the authentication input for protected application requests. The server does not simply trust a Telegram user ID sent by browser code. It parses the signed initData payload, verifies the Telegram HMAC signature with the bot token and then derives the trusted user identity from the verified Telegram user object.",
-                "evidence_ids": [
-                  "APXN-04",
-                  "APXN-10",
-                  "APXN-16",
-                  "APXN-23"
-                ]
-              },
-              {
-                "text": "Four clear separation points exist between APXN Points and token or project communications. The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. Level one is named APXN Miners. The reward formula is based on elapsed seconds multiplied by the total mining rate. The total mining rate begins with the user's base mining rate and can include active-referral bonuses. The resulting APXN Points are added to the existing balance and the successful claim time becomes the new last-claim timestamp.",
-                "evidence_ids": [
-                  "APXN-04",
-                  "APXN-10",
-                  "APXN-16",
-                  "APXN-23"
-                ]
+                "text": "The foundation phase covers mining-style APXN Points participation, daily and social tasks, referrals, and continued development of the Telegram Mini App. Community activity is the current product experience, and the roadmap describes how this foundation supports later allocation and blockchain infrastructure work. Any upgrades or staking-style features should be understood according to their actual current implementation and in-app availability, rather than assumed to be live because they are mentioned in development plans."
               }
             ]
           },
           {
-            "heading": "2029 Preparation and Mining Mechanics",
+            "heading": "Q1 2027: Membership & Loyalty KYC",
             "paragraphs": [
               {
-                "text": "The 2029 roadmap includes Testnet expansion, staking preparation and implementation targets, Mainnet preparation and a planned Mainnet launch. Staking rewards, validators, nodes, native Mainnet APXN and a Mainnet Explorer must remain future-tense until those systems are actually deployed and verified. The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. The word mining describes the user experience of accumulating points over time; the current claim action is not proof-of-work, does not solve cryptographic puzzles and should not be described as blockchain consensus mining.",
-                "evidence_ids": [
-                  "APXN-05",
-                  "APXN-11",
-                  "APXN-18",
-                  "APXN-22"
-                ]
+                "text": "The roadmap targets Q1 2027 for the APXN Membership & Loyalty KYC program (KYC الانتماء والولاء). This is the project’s participation and loyalty program; it should not be presented as a claim that a government-identity verification process is already operating. Eligibility depends on completing the program’s required tasks and paying the Telegram Stars amount displayed for the process when that functionality launches."
               },
               {
-                "text": "The reward formula is based on elapsed seconds multiplied by the total mining rate. The total mining rate begins with the user's base mining rate and can include active-referral bonuses. The resulting APXN Points are added to the existing balance and the successful claim time becomes the new last-claim timestamp. The boost store status is planned. The current APXN community product uses a mining-style points experience inside Telegram. The balance tracked by the application is APXN Points. The word mining describes the user experience of accumulating points over time.",
-                "evidence_ids": [
-                  "APXN-05",
-                  "APXN-11",
-                  "APXN-18",
-                  "APXN-22"
-                ]
+                "text": "Each eligible account that completes all requirements is planned to receive a one-time bonus of 20,000 verified APXN Points. There is no fixed cap on the number of qualified recipients for this points bonus. A separate reward of 100 APXN is planned for the first 10,000 eligible Badge holders who complete the required program stages and payment. Once those 10,000 token allocations have been assigned, later qualified participants can still receive the 20,000-point bonus, without a further 100 APXN reward from this limited offer."
               }
             ]
           },
           {
-            "heading": "Tokenomics Separation and Balance Description",
+            "heading": "Q2 2027: First and Second Airdrop Claims",
             "paragraphs": [
               {
-                "text": "The roadmap should also be separated from tokenomics. A token allocation percentage describes how the project currently plans to allocate supply, while a roadmap period describes when development or launch stages are targeted. Neither one, by itself, proves that a sale, listing, distribution, withdrawal or network launch is currently available. A wallet connection prompt in a user interface proves only that the interface can request or display an address. It does not by itself prove that the wallet address is permanently stored, uniquely bound to an APXN account or approved for a future withdrawal.",
-                "evidence_ids": [
-                  "APXN-06",
-                  "APXN-12",
-                  "APXN-19",
-                  "APXN-24"
-                ]
+                "text": "The first limited 100 APXN allocation for qualifying Badge holders is intended to be displayed in their APXN accounts, not transferred to the blockchain at the moment the future KYC program is completed. Claims for the first airdrop are targeted to open in Q2 2027 under the announced eligibility and claim conditions."
               },
               {
-                "text": "The APXN Points balance is an application participation balance. It must not be described as a bank deposit, a guaranteed cash balance, a guaranteed investment return or a currently withdrawable cryptocurrency balance. Token distribution, conversion and withdrawal are separate future project stages that require their own official activation. The currency used for the described level is APXN. The APXN Points balance is an application participation balance. It must not be described as a bank deposit, a guaranteed cash balance, a guaranteed investment return or a currently withdrawable cryptocurrency balance.",
-                "evidence_ids": [
-                  "APXN-06",
-                  "APXN-12",
-                  "APXN-19",
-                  "APXN-24"
-                ]
+                "text": "The roadmap also targets the launch of a second airdrop in Q2 2027. Approximately 2,000,000 APXN have been earmarked from the existing partnerships, marketing, development and airdrops fund for that campaign. Claims for both the first and second airdrops are planned for the same quarter, subject to the applicable requirements. No claim is live solely because an airdrop appears in a future roadmap period."
+              }
+            ]
+          },
+          {
+            "heading": "Q3 2027: APXN DEX and CEX Launchpad",
+            "paragraphs": [
+              {
+                "text": "The project targets an APXN decentralized exchange (DEX) and a Launchpad on a centralized exchange (CEX) for Q3 2027. The Launchpad allocation is 2,000,000 APXN, or 2% of total supply, as described in the Whitepaper. The choice of launch platform, any sale terms, participation conditions and prices require official confirmation. A roadmap target does not constitute an active public token sale, a guaranteed exchange partnership or a confirmed launch date."
+              }
+            ]
+          },
+          {
+            "heading": "Q4 2027: APXN Testnet and Planned Listings",
+            "paragraphs": [
+              {
+                "text": "The updated roadmap places the APXN Testnet target in Q4 2027, alongside potential centralized and decentralized exchange listings. A Testnet is a planned environment for development and testing, not proof that a Mainnet is already operational. Similarly, an exchange listing remains a target until the relevant exchange and the APXN team officially confirm it. Readers should check project announcements rather than treat roadmap dates as live services."
+              }
+            ]
+          },
+          {
+            "heading": "Q1–Q2 2028: Mainnet Preparation and Planned Launch",
+            "paragraphs": [
+              {
+                "text": "Q1 2028 is assigned to preparations for the APXN Mainnet and new ecosystem products. The Mainnet launch target is Q2 2028. These are the approved dates in the November 2026 roadmap, replacing earlier versions that described a later network launch. The plan may evolve because of security reviews, engineering work, market conditions, regulatory requirements or other project circumstances."
+              },
+              {
+                "text": "The APXN team reserves the right to revise the roadmap, priorities and target dates. Users should evaluate each stage according to the officially announced current status, not a promise of guaranteed returns, prices, token withdrawals or exchange availability."
               }
             ]
           }
         ],
         "faq": [
           {
-            "question": "How does the roadmap distinguish current features from later phases?",
-            "answer": "The roadmap is a forward-looking development plan, not a guarantee that every milestone will happen on an exact date. The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. Current feature status must be determined independently from roadmap dates. Some community features can exist before a roadmap phase that mentions their formal launch or expansion.",
-            "evidence_ids": [
-              "APXN-01",
-              "APXN-02"
-            ]
+            "question": "How many APXN tokens are planned in total?",
+            "answer": "The announced total is 100,000,000 APXN. The allocation is 63% community, 15% listings and exchanges, 15% partnerships/marketing/development/airdrops, 5% team and 2% for a planned CEX Launchpad."
           },
           {
-            "question": "What authentication method does the current application use?",
-            "answer": "APXN uses Telegram Mini App initData as the authentication input for protected application requests. The server does not simply trust a Telegram user ID sent by browser code. It parses the signed initData payload, verifies the Telegram HMAC signature with the bot token and then derives the trusted user identity from the verified Telegram user object. The current APXN policy accepts Telegram authentication data for up to twenty four hours and rejects authentication timestamps that are too far in the future. These checks are application-security controls.",
-            "evidence_ids": [
-              "APXN-03",
-              "APXN-04"
-            ]
+            "question": "How are community APXN tokens allocated?",
+            "answer": "The 63 million APXN community allocation spans seven levels. Within a level, eligible users share its pool proportionally to verified APXN Points, not equally per account."
           },
           {
-            "question": "How are APXN Points balances described relative to future stages?",
-            "answer": "The 2029 roadmap includes Testnet expansion, staking preparation and implementation targets, Mainnet preparation and a planned Mainnet launch. The APXN Points balance is an application participation balance. It must not be described as a bank deposit, a guaranteed cash balance, a guaranteed investment return or a currently withdrawable cryptocurrency balance. Token distribution, conversion and withdrawal are separate future project stages that require their own official activation. The reward formula is based on elapsed seconds multiplied by the total mining rate.",
-            "evidence_ids": [
-              "APXN-05",
-              "APXN-06"
-            ]
+            "question": "What does completing APXN Membership & Loyalty KYC provide?",
+            "answer": "Qualified users who complete the required tasks and displayed Telegram Stars payment are planned to receive 20,000 verified APXN Points once per account, without a recipient cap. The first 10,000 qualified Badge holders also have a separate planned 100 APXN allocation."
+          },
+          {
+            "question": "When are the APXN airdrops expected to be claimable?",
+            "answer": "Claims for both the first and second airdrops are targeted for Q2 2027, subject to official eligibility conditions and activation."
+          },
+          {
+            "question": "When are APXN Testnet and Mainnet planned?",
+            "answer": "The updated roadmap targets APXN Testnet in Q4 2027 and Mainnet in Q2 2028. These dates are development goals, not guaranteed live launches."
           }
         ],
         "conclusion": {
-          "text": "The APXN roadmap is a forward-looking development plan, not a guarantee that every milestone will happen on an exact date. The 2027 roadmap focuses on engagement growth, application improvements, rig or upgrade concepts, security infrastructure and a phased Presale or ICO target beginning in Q2 2027. Until an official activation notice exists, the Presale or ICO must continue to be described as planned rather than live. Current feature status must be determined independently from roadmap dates. APXN uses Telegram Mini App initData as the authentication input for protected application requests. The APXN Points balance is an application participation balance and must not be described as a currently withdrawable cryptocurrency balance.",
-          "evidence_ids": [
-            "APXN-01",
-            "APXN-02",
-            "APXN-03",
-            "APXN-04"
-          ]
+          "text": "APXN’s November 2026 Whitepaper and roadmap establish a defined token supply, a seven-level points-based community distribution model and a sequence of planned stages from Q4 2026 through Q2 2028. Participation points remain separate from transferable APXN tokens; future KYC completion, airdrop claims, exchange listings, Testnet and Mainnet milestones require official activation. For the latest version of the plan, consult the official Apex Network Whitepaper and Roadmap on apxn.network."
         }
       },
       "verified_against_knowledge": true,
