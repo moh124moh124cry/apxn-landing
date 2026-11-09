@@ -1,0 +1,66 @@
+name: APXN - Remove Legacy Vercel Analytics from Homepage (One-time)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - .github/workflows/apxn-clean-homepage-vercel.yml
+
+permissions:
+  contents: write
+
+jobs:
+  clean-homepage:
+    if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Cloudflare migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          persist-credentials: true
+
+      - name: Remove only the obsolete Vercel analytics block
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          original = path.read_text(encoding='utf-8')
+          block = '''    <script>
+                  window.va = window.va || function () {
+                      (window.vaq = window.vaq || []).push(arguments);
+                  };
+              </script>
+              <script defer src="/_vercel/insights/script.js"></script>
+          '''
+          if original.count(block) != 1:
+              raise SystemExit('Safety stop: expected exactly one matching Vercel analytics block in index.html')
+          updated = original.replace(block, '', 1)
+          if '_vercel/insights/' in updated or 'window.vaq' in updated:
+              raise SystemExit('Safety stop: an unrecognized Vercel analytics reference remains')
+          if updated.count('<link rel="preconnect" href="https://cdn.tailwindcss.com">') != original.count('<link rel="preconnect" href="https://cdn.tailwindcss.com">'):
+              raise SystemExit('Safety stop: unexpected change')
+          path.write_text(updated, encoding='utf-8')
+          print('Removed Vercel analytics from index.html only.')
+          PY
+          git diff --check
+          git diff --stat -- index.html
+          git diff -- index.html
+
+      - name: Commit homepage-only cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- index.html
+          test "$(git diff --cached --name-only)" = "index.html"
+          git commit -m 'chore(homepage): remove legacy Vercel Insights'
+          git push origin HEAD:cloudflare-migration
+
