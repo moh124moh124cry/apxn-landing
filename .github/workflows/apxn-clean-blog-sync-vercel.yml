@@ -1,0 +1,66 @@
+name: APXN - Clean Blog Index Generator (One-Time)
+
+on:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - .github/workflows/apxn-clean-blog-sync-vercel.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  clean-blog-sync:
+    if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Cloudflare migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Remove obsolete Vercel Analytics from blog index generator only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          file = Path('scripts/blog-sync.mjs')
+          source = file.read_text(encoding='utf-8')
+          # Match the dedicated Vercel block without touching unrelated scripts.
+          import re
+          pattern = re.compile(
+              r'^[ \t]*<script>\n'
+              r'[ \t]*window\.va = window\.va \|\| function \(\) \{ \(window\.vaq = window\.vaq \|\| \[\]\)\.push\(arguments\); \};\n'
+              r'[ \t]*</script>\n'
+              r'[ \t]*<script defer src="/_vercel/insights/script\.js"></script>\n\n',
+              re.MULTILINE
+          )
+          updated, occurrences = pattern.subn('', source)
+          if occurrences != 1:
+              raise SystemExit(f'Expected one Vercel analytics block; found {occurrences}. No change made.')
+          if '_vercel/insights' in updated or 'window.vaq' in updated:
+              raise SystemExit('Residual legacy Vercel Analytics detected. No change made.')
+          file.write_text(updated, encoding='utf-8')
+          print('Removed exactly one obsolete Vercel Analytics block from scripts/blog-sync.mjs')
+          PY
+          node --check scripts/blog-sync.mjs
+          git diff --check
+          test "$(git diff --name-only)" = 'scripts/blog-sync.mjs'
+          git diff --stat -- scripts/blog-sync.mjs
+
+      - name: Commit only the generator update
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- scripts/blog-sync.mjs
+          git commit -m 'chore(blog): remove obsolete Vercel Insights from blog index generator'
+          git push origin HEAD:cloudflare-migration
+
