@@ -1057,7 +1057,7 @@
         "name `apxn-miner-live`. The new deployment has been created, connected to GitHub, and configured with the necessary build and runtime environment variables. ### Current Status The Cloudflare test application is running successfully, while the new deployment intended for the official application is being prepared. Users have not yet been migrated to Cloudflare. The official Telegram application, bot, and webhook remain operational on Vercel without any changes. ### Next Phase Complete the build and",
         "deployment of `apxn-miner-live`, verify its readiness, establish an official APXN project URL, and carry out a gradual migration after confirming that all essential application functions operate correctly."
       ],
-      "queued_for_article_id": null
+      "queued_for_article_id": "bank-admin-4296740a7d5e"
     },
     "submission_b37c64c887a67919": {
       "title": "APXN Network — Successful Migration to Cloudflare 🚀",
@@ -1069,7 +1069,21 @@
         "APXN Network — Successful Migration to Cloudflare 🚀 Update Date: September 24, 2026 The APXN Network development team has completed an important milestone in the project's technical infrastructure by successfully migrating the official website, APXN Blog, mining application, and Telegram bot from Vercel to Cloudflare. The migration was completed while preserving users' balances and maintaining access to mining, referrals, rewards, and daily tasks. The website, application, and bot were tested to verify",
         "that services were responding correctly before the old Vercel projects were removed. Cloudflare analytics showed continued activity across APXN services, with approximately 30,000 total requests recorded over a 24-hour period and no Worker execution errors reported during the monitored period. This achievement marks an important step toward strengthening APXN's technical infrastructure and supporting future development as the global APXN community continues to grow. APXN Network — Building for the Future."
       ],
-      "queued_for_article_id": null
+      "queued_for_article_id": "bank-admin-4296740a7d5e"
+    },
+    "submission_e911c3ba00bf02a0": {
+      "title": "🚀 OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update 💎",
+      "type": "conversation",
+      "submitted_at": "2026-11-09",
+      "source_status": "administrator_supplied",
+      "verification_note": "Founder-provided information. A discussion or proposal is not automatically an implemented feature.",
+      "evidence": [
+        "🚀 OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update 💎 🌍 The Apex Network team is pleased to announce an update to the 7-level reward system, based exclusively on Verified APXN Points. 🏆 THE 7 APXN LEVELS: 🥉 Level 1 🔹 20,000 – 49,999 Verified APXN Points. 🥉 Level 2 🔹 50,000 – 99,999 Verified APXN Points. 🥈 Level 3 🔹 100,000 – 149,999 Verified APXN Points. 🥈 Level 4 🔹",
+        "150,000 – 249,999 Verified APXN Points. 🥇 Level 5 🔹 250,000 – 349,999 Verified APXN Points. 💎 Level 6 🔹 350,000 – 500,000 Verified APXN Points. 👑 Level 7 🔹 More than 500,000 Verified APXN Points. 📌 Important Note: All levels are determined exclusively by Verified APXN Points. If a balance contains decimal values, the user's level is determined by whether they have reached the actual minimum threshold. 🎁 MEMBERSHIP & LOYALTY",
+        "KYC | Q1 2027 ✅ Every eligible user who successfully completes all required KYC tasks will instantly receive 20,000 Verified APXN Points, credited directly to their balance. 🚀 This allows new users to reach Level 1 immediately! 🎯 The first 10,000 eligible users will also receive an allocation of 100 APXN each, with claiming scheduled to open in Q2 2027. ⛏️ After the first 10,000 participants have received their allocation, the 20,000",
+        "Verified APXN Points reward will remain available to all eligible users, with no limit on the number of recipients. 💰 63,000,000 APXN are allocated to the community, distributed through the 7-level system proportionally to Verified APXN Points within each level. 🌐 apxn.network 🤖 t.me/ApxMinerBot APEX NETWORK (APXN) MINE TODAY. BUILD TOMORROW. 🚀"
+      ],
+      "queued_for_article_id": "bank-admin-4296740a7d5e"
     }
   }
 }

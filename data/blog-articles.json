@@ -3956,6 +3956,25 @@
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
       "article_id": "apxn-013",
       "generated_at": "2026-09-19"
+    },
+    {
+      "priority": 7,
+      "topic": "APXN Project News: Latest Project Development Updates (4296740a7d5e)",
+      "category": "APXN News",
+      "status": "waiting",
+      "source": "admin_editorial_submission",
+      "topic_bank_id": "bank-admin-4296740a7d5e",
+      "language": "en",
+      "queued_at": "2026-11-09",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "editorial_submissions.submission_bd73e45d260e2020.evidence",
+        "editorial_submissions.submission_b37c64c887a67919.evidence",
+        "editorial_submissions.submission_e911c3ba00bf02a0.evidence"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal."
     }
   ],
   "automation_state": {
