@@ -1885,7 +1885,7 @@
                 showLogin();
 
                 setLoginMessage(
-                    'BLOG_ADMIN_SECRET غير مضبوط في Vercel.',
+                    'BLOG_ADMIN_SECRET غير مضبوط في إعدادات Cloudflare.',
                     'warning'
                 );
 
@@ -1978,7 +1978,7 @@
             ) {
 
                 setLoginMessage(
-                    'BLOG_ADMIN_SECRET غير مضبوط في Vercel.',
+                    'BLOG_ADMIN_SECRET غير مضبوط في إعدادات Cloudflare.',
                     'warning'
                 );
 
@@ -3031,7 +3031,7 @@
         const messages = {
 
             BLOG_GITHUB_TOKEN_NOT_CONFIGURED:
-                'BLOG_GITHUB_TOKEN غير مضبوط في Vercel أو يحتاج إلى إعادة نشر المشروع.',
+                'BLOG_GITHUB_TOKEN غير مضبوط في إعدادات Cloudflare أو يحتاج إلى إعادة نشر المشروع.',
 
             MISSING_PUBLISH_DATA:
                 'بيانات النشر غير مكتملة.',
@@ -3084,7 +3084,7 @@
             messages[
                 code
             ] ||
-            'تعذر نشر المقال. تحقق من إعدادات GitHub وVercel ثم حاول مرة أخرى.'
+            'تعذر نشر المقال. تحقق من إعدادات GitHub وCloudflare ثم حاول مرة أخرى.'
         );
     }
 
@@ -3320,7 +3320,7 @@
 
 
             alert(
-                'تم نشر المقال بنجاح.\n\nسيقوم Vercel بنشر التحديث الجديد تلقائيًا خلال وقت قصير.'
+                'تم نشر المقال بنجاح.\n\nسيظهر التحديث على موقع Cloudflare بعد اكتمال عملية النشر.'
             );
 
 
@@ -3724,7 +3724,7 @@
                                 ? `
                                     <div class="preview-missing">
                                         محتوى المقال الكامل غير متاح في هذه النسخة.
-                                        اضغط تحديث بعد اكتمال نشر Vercel.
+                                        اضغط تحديث بعد اكتمال نشر Cloudflare.
                                     </div>
                                 `
                                 : ''
