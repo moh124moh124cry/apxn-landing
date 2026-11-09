@@ -1,0 +1,99 @@
+name: APXN - Remove Legacy Vercel Insights From Blog Publisher (One-time)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - .github/workflows/apxn-remove-vercel-insights.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-remove-vercel-insights-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  remove-vercel-insights:
+    name: Clean Vercel Insights Only From Publisher Template
+    if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Cloudflare migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          persist-credentials: true
+
+      - name: Remove only obsolete Vercel Analytics snippet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('api/blog-admin-publish.js')
+          original = path.read_text(encoding='utf-8')
+
+          # Match the exact legacy Analytics bootstrap and Vercel script tag.
+          # The Tailwind script and every other part of the HTML template remain.
+          pattern = re.compile(
+              r'(?m)^    <script>\n'
+              r'        window\.va =\n'
+              r'[\s\S]*?'
+              r'^    </script>\n\n'
+              r'^    <script\n'
+              r'        defer\n'
+              r'        src="/_vercel/insights/script\.js"\n'
+              r'    ></script>\n\n',
+              flags=re.MULTILINE,
+          )
+          matches = list(pattern.finditer(original))
+
+          if not matches:
+              if ('/_vercel/insights/script.js' not in original
+                      and 'window.vaq' not in original
+                      and 'window.va =' not in original):
+                  print('Template already cleaned. Nothing to change.')
+              else:
+                  raise SystemExit('Safety stop: obsolete script exists in unexpected form')
+          elif len(matches) != 1:
+              raise SystemExit(f'Safety stop: expected one Analytics block, found {len(matches)}')
+          else:
+              block = matches[0].group(0)
+              if (block.count('window.va =') != 1
+                      or block.count('window.vaq') != 2
+                      or block.count('/_vercel/insights/script.js') != 1):
+                  raise SystemExit('Safety stop: unexpected Analytics block contents')
+              updated = original[:matches[0].start()] + original[matches[0].end():]
+              if ('/_vercel/insights/script.js' in updated
+                      or 'window.vaq' in updated
+                      or 'window.va =' in updated):
+                  raise SystemExit('Safety stop: Vercel Insights references remain')
+              if 'src="https://cdn.tailwindcss.com"' not in updated:
+                  raise SystemExit('Safety stop: unexpected damage to article template')
+              path.write_text(updated, encoding='utf-8')
+              print('Removed only the Vercel Insights script block from article template.')
+          PY
+
+          git diff --check
+          git diff --stat -- api/blog-admin-publish.js
+
+      - name: Commit corrected publisher template only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- api/blog-admin-publish.js
+          if git diff --cached --quiet; then
+            echo 'Publisher template is already clean.'
+            exit 0
+          fi
+          git commit -m 'fix(blog): remove obsolete Vercel Insights from article template'
+          git push origin HEAD:cloudflare-migration
+
