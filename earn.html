@@ -27,24 +27,6 @@
         type="image/png"
     >
 
-    <script>
-        window.va =
-            window.va ||
-            function () {
-                (
-                    window.vaq =
-                        window.vaq ||
-                        []
-                ).push(
-                    arguments
-                );
-            };
-    </script>
-
-    <script
-        defer
-        src="/_vercel/insights/script.js"
-    ></script>
 
     <script
         src="https://cdn.tailwindcss.com"
@@ -1006,7 +988,7 @@
                         APXN Points are not currently an on-chain token balance.
                         Final allocation, distribution and conversion rules will
                         be announced officially before withdrawals are activated.
-                        No fixed conversion rate is active today.
+                        No fixed conversion rate is active today. These website tasks (50 or 100 APXN Points per eligible task) are separate from the planned APXN Membership &amp; Loyalty KYC completion reward of 20,000 verified APXN Points. The planned KYC program requires completion of its own tasks and the stated Telegram Stars payment. The first 10,000 qualifying Badge holders also have a limited planned 100 APXN allocation, targeted for claim in Q2 2027.
                     </p>
                 </div>
             </div>
@@ -1135,8 +1117,8 @@
                 id="task-empty"
                 class="hidden-section rounded-2xl border border-slate-800 bg-slate-900/45 p-6 text-center text-sm text-gray-500"
             >
-                No task links are active yet. Add the task links in Vercel
-                Environment Variables.
+                No task links are active yet. The APXN team must configure the task links in the project
+                settings.
             </div>
         </section>
 
@@ -1184,8 +1166,8 @@
                 id="join-empty"
                 class="hidden-section rounded-2xl border border-slate-800 bg-slate-900/45 p-6 text-center text-sm text-gray-500"
             >
-                No join links are active yet. Add the join links in Vercel
-                Environment Variables.
+                No join links are active yet. The APXN team must configure the join links in the project
+                settings.
             </div>
         </section>
 
@@ -1858,7 +1840,7 @@
                         : new Set();
 
                 // Older API responses without this optional field
-                // retain the original page behavior on Vercel.
+                // retain the original page behavior on Cloudflare.
                 claimHistoryUnavailable =
                     data?.claimStatusLoaded === false;
 

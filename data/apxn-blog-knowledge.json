@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "last_reviewed_at": "2026-11-03",
+  "last_reviewed_at": "2026-11-09",
   "knowledge_scope": {
     "purpose": "Canonical editorial knowledge for the Apex Network website, APXN Blog and automated article pipeline.",
     "core_separation": {
@@ -597,7 +597,7 @@
     "article_evidence": [
       "The November 2026 APXN roadmap runs from Q4 2026 through Q2 2028. Do not reuse superseded Mainnet or Testnet timing from prior roadmap editions.",
       "Q4 2026 covers APXN Points mining, check-ins, social and daily tasks, referrals, boosts, staking-related app features and ongoing Telegram Mini App development. APXN Points are not automatically transferable on-chain APXN tokens.",
-      "Q1 2027 targets launch of APXN Membership & Loyalty KYC. A 100 APXN first-airdrop reward is planned to appear in the accounts of 10,000 qualified Early Access Badge holders after they complete required KYC tasks. Display is not immediate on-chain delivery; claim is planned for Q2 2027.",
+      "Q1 2027 targets the planned APXN Membership & Loyalty KYC launch. After all required KYC tasks and displayed Telegram Stars payment, each eligible completer earns a one-time 20,000 verified APXN Points bonus, with no cap for points recipients. The first 10,000 qualifying Badge holders also receive a planned 100 APXN allocation for claim in Q2 2027; after those slots fill, the points bonus remains available to qualifying completers. No immediate token transfer is implied.",
       "Q2 2027 targets continued development, partnerships and marketing, and a second airdrop of approximately 2,000,000 APXN funded from the 15,000,000 APXN partnerships, marketing, development and airdrop allocation. Claims for the first and second airdrops are planned for that quarter, subject to official rules.",
       "Q3 2027 targets the APXN DEX and a CEX Launchpad. The Launchpad has a separate 2,000,000 APXN token allocation. Neither a live token sale nor a confirmed exchange is implied by a planned milestone.",
       "Q4 2027 targets the APXN Testnet and potential CEX/DEX listings. Do not imply any network or listing is live before officially confirmed activation.",
@@ -621,9 +621,9 @@
         "title": "APXN Membership & Loyalty KYC",
         "status": "planned",
         "items": [
-          "Loyalty KYC launch",
-          "100 APXN displayed for each of 10,000 qualified Badge holders completing required KYC tasks",
-          "First airdrop claim planned for Q2 2027"
+          "Launch the planned APXN Membership & Loyalty KYC program in Q1 2027",
+          "Eligible program completers receive a one-time 20,000 verified APXN Points bonus after all required KYC tasks and the displayed Telegram Stars payment; no recipient cap for this points reward",
+          "The first 10,000 qualifying Badge holders also have a limited planned 100 APXN allocation, targeted for claim in Q2 2027; the 20,000-point bonus continues afterward"
         ]
       },
       {
@@ -686,9 +686,9 @@
         "period": "Q1 2027",
         "title": "APXN Membership & Loyalty KYC",
         "items": [
-          "Launch the planned APXN Membership & Loyalty KYC program",
-          "Display 100 APXN in the accounts of 10,000 qualified Badge holders completing the required KYC tasks",
-          "First-airdrop claims are planned for Q2 2027, subject to official conditions"
+          "Launch the planned APXN Membership & Loyalty KYC program in Q1 2027",
+          "Eligible program completers receive a one-time 20,000 verified APXN Points bonus after all required KYC tasks and the displayed Telegram Stars payment; no recipient cap for this points reward",
+          "The first 10,000 qualifying Badge holders also have a limited planned 100 APXN allocation, targeted for claim in Q2 2027; the 20,000-point bonus continues afterward"
         ]
       },
       {
@@ -787,7 +787,7 @@
         "target_period_claim": "Q2 2027",
         "eligible_badge_holders_target": 10000,
         "planned_apxn_per_qualified_holder": 100,
-        "notice": "Balance display in Q1 is not immediate blockchain delivery; final eligibility and claim rules will be published officially."
+        "notice": "The first 10,000 qualified Badge holders completing all required Membership & Loyalty KYC tasks and the displayed Telegram Stars payment have a planned 100 APXN allocation for claim in Q2 2027. A separate one-time 20,000 verified APXN Points bonus continues for qualified KYC completers even after those 10,000 limited allocations are exhausted. The allocation is not an immediate on-chain token transfer; all claims remain subject to officially announced conditions."
       },
       "second_airdrop": {
         "target_period": "Q2 2027",
@@ -812,6 +812,19 @@
       "distribution_method": "Within each level, the level token allocation is distributed proportionally to eligible users’ verified APXN Points divided by the total verified APXN Points of eligible users in that level. It is not an equal split.",
       "dashboard_display_requirement": "Complete every stage of APXN Membership & Loyalty KYC",
       "allocation_announcement": "The final allocation for each level will be officially announced before the distribution and listing described in the Whitepaper."
+    },
+    "membership_and_loyalty_kyc_november_2026": {
+      "program": "APXN Membership & Loyalty KYC / KYC الانتماء والولاء",
+      "target_launch": "Q1 2027 (planned)",
+      "verified_points_completion_bonus": 20000,
+      "points_bonus_frequency": "Once per eligible account after required program tasks and the displayed Telegram Stars payment",
+      "points_bonus_recipient_cap": null,
+      "first_airdrop_apxn_per_eligible_account": 100,
+      "first_airdrop_recipient_cap": 10000,
+      "first_airdrop_eligibility": "First 10,000 qualifying Badge holders completing the specified KYC tasks and Telegram Stars payment",
+      "first_airdrop_target_claim": "Q2 2027",
+      "after_first_airdrop_cap": "Qualified new KYC completers still receive the one-time 20,000 verified APXN Points completion bonus; the 100 APXN limited allocation closes",
+      "important": "APXN Points are not on-chain APXN tokens; planned airdrop allocation is not an immediate on-chain transfer. Do not frame KYC as government identity-document verification."
     }
   },
   "claims_requiring_manual_confirmation": [
@@ -886,7 +899,8 @@
     "Every article must contain useful educational or informational value beyond promotion.",
     "Include an appropriate non-financial-advice disclaimer on tokenomics, presale, market, listing or digital-asset risk topics.",
     "Block automatic publication whenever an article requires a fact marked verify_before_publish or blocked_auto_publish.",
-    "Do not use old blog articles as evidence for a new APXN fact when current code or current official project information says something different."
+    "Do not use old blog articles as evidence for a new APXN fact when current code or current official project information says something different.",
+    "For current APXN project policy use the Q4 2026–Q2 2028 roadmap, approved 100 million APXN tokenomics and membership_and_loyalty_kyc_november_2026. Old September 2026 editorial submissions and older blog posts are historical, may mention identity-document checks, 2027 ICO/Presale or 2029 Mainnet, and must not be used as current policy. KYC الانتماء والولاء is membership/loyalty participation and not an assertion that ID verification is live."
   ],
   "blog_strategy": {
     "primary_goal": "Build a trustworthy APXN knowledge hub that supports the Apex Network project without confusing community points with token or blockchain functionality.",
@@ -1059,4 +1073,3 @@
     }
   }
 }
-
