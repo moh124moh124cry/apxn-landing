@@ -1,0 +1,92 @@
+name: APXN - Remove Legacy Vercel Analytics From Published Articles
+
+on:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - .github/workflows/apxn-remove-vercel-analytics-articles.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-cleanup-article-vercel-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  clean-published-articles:
+    name: Remove Vercel Analytics only from article HTML
+    if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout Cloudflare migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Remove only verified legacy analytics snippets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          folder = Path('blog/articles')
+          articles = sorted(folder.glob('*.html'))
+          expected_count = 15
+          if len(articles) != expected_count:
+              raise SystemExit(
+                  f'Safety check: expected {expected_count} article files, found {len(articles)}; no changes written'
+              )
+
+          # Both supported formats: multi-line and single-line Vercel Insights snippet.
+          # Anchor to the window.va initialization and exact Vercel script URL.
+          analytics_block = re.compile(
+              r'(?m)\n[ \t]*<script>\s*window\.va\s*=.*?</script>'
+              r'\s*<script\b[^>]*\bsrc\s*=\s*["\']/_vercel/insights/script\.js["\']'
+              r'[^>]*></script>[ \t]*\n',
+              flags=re.DOTALL,
+          )
+
+          changed = {}
+          for article in articles:
+              before = article.read_text(encoding='utf-8')
+              updated, count = analytics_block.subn('\n', before)
+              if count != 1:
+                  raise SystemExit(
+                      f'Safety check: expected 1 Vercel snippet in {article}, got {count}; no changes written'
+                  )
+              if (re.search(r'/_vercel/insights|window\.vaq|window\.va\s*=', updated)):
+                  raise SystemExit(f'Safety check: old Vercel JS remains in {article}; no changes written')
+              changed[article] = updated
+
+          # Write only after ALL articles pass validation.
+          for article, updated in changed.items():
+              article.write_text(updated, encoding='utf-8')
+              print(f'CLEANED {article}')
+          print(f'Validated and cleaned {len(changed)} article HTML files')
+          PY
+          git diff --check
+          git diff --stat -- blog/articles
+          if git diff --quiet -- blog/articles; then
+            echo '::error::No article changes detected.'
+            exit 1
+          fi
+
+      - name: Commit only article HTML files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- 'blog/articles/*.html'
+          git diff --cached --check
+          git commit -m 'chore(blog): remove legacy Vercel Insights from published articles'
+          git push origin HEAD:cloudflare-migration
+
