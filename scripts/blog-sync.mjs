@@ -351,11 +351,6 @@ function buildBlogIndex(config, publishedArticles) {
 
     <link rel="icon" href="../logo2%20(1).png" type="image/png">
 
-    <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <script src="https://cdn.tailwindcss.com"></script>
 
