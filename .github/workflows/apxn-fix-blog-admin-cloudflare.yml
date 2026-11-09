@@ -1,0 +1,74 @@
+name: APXN - Fix Blog Admin Cloudflare Messages (One-time)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - .github/workflows/apxn-fix-blog-admin-cloudflare.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix-blog-admin-messages:
+    name: Update legacy Vercel text on Cloudflare branch only
+    if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Cloudflare branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          persist-credentials: true
+
+      - name: Replace six legacy interface messages only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('blog-admin/index.html')
+          before = p.read_text(encoding='utf-8')
+          replacements = [
+              ("'BLOG_ADMIN_SECRET غير مضبوط في Vercel.'",
+               "'BLOG_ADMIN_SECRET غير مضبوط في إعدادات Cloudflare.'", 2),
+              ("'BLOG_GITHUB_TOKEN غير مضبوط في Vercel أو يحتاج إلى إعادة نشر المشروع.'",
+               "'BLOG_GITHUB_TOKEN غير مضبوط في إعدادات Cloudflare أو يحتاج إلى إعادة نشر المشروع.'", 1),
+              ("'تعذر نشر المقال. تحقق من إعدادات GitHub وVercel ثم حاول مرة أخرى.'",
+               "'تعذر نشر المقال. تحقق من إعدادات GitHub وCloudflare ثم حاول مرة أخرى.'", 1),
+              ("'تم نشر المقال بنجاح.\\n\\nسيقوم Vercel بنشر التحديث الجديد تلقائيًا خلال وقت قصير.'",
+               "'تم نشر المقال بنجاح.\\n\\nسيظهر التحديث على موقع Cloudflare بعد اكتمال عملية النشر.'", 1),
+              ("اضغط تحديث بعد اكتمال نشر Vercel.",
+               "اضغط تحديث بعد اكتمال نشر Cloudflare.", 1),
+          ]
+          text = before
+          for old, new, expected_count in replacements:
+              count = text.count(old)
+              if count != expected_count:
+                  raise SystemExit(f'Aborting: expected {expected_count} occurrences of {old!r}, got {count}')
+              text = text.replace(old, new)
+          if 'vercel' in text.lower():
+              raise SystemExit('Aborting: an unexpected Vercel reference remains')
+          if text == before:
+              raise SystemExit('Aborting: nothing changed')
+          p.write_text(text, encoding='utf-8')
+          print('Updated exactly six user-visible Vercel references. Other UI/code unchanged.')
+          PY
+          git diff --check
+          git diff --stat -- blog-admin/index.html
+
+      - name: Commit only the blog admin UI file
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- blog-admin/index.html
+          git diff --cached --quiet && { echo 'No changes to commit'; exit 0; }
+          git commit -m 'fix(blog-admin): replace legacy Vercel messages with Cloudflare'
+          git push origin HEAD:cloudflare-migration
+
