@@ -1,0 +1,427 @@
+name: APXN - Refresh Roadmap Article (November 2026)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - ".github/workflows/apxn-refresh-roadmap-article.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-roadmap-article-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  refresh-roadmap-article:
+    name: Update one published article and its editorial manifest
+    if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout production Cloudflare branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Update article content, SEO and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+          import html as html_lib
+          import json
+          import math
+          from pathlib import Path
+          import re
+
+          ARTICLE = Path('blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html')
+          MANIFEST = Path('data/blog-articles.json')
+          KNOWLEDGE = Path('data/apxn-blog-knowledge.json')
+          ARTICLE_ID = 'apxn-007'
+          DATE = '2026-11-09'
+          OLD_TITLE = 'APXN Development Roadmap: Distinguishing Live Features from Planned Milestones'
+          NEW_TITLE = 'APXN Whitepaper and Roadmap 2026–2028: Tokenomics and KYC'
+          NEW_DESCRIPTION = ('Read the updated Apex Network roadmap through Q2 2028, 100 million APXN tokenomics, '
+                             'seven community levels, Membership and Loyalty KYC and planned airdrops.')
+          KEYWORDS = [
+              'Apex Network roadmap', 'APXN Whitepaper', 'APXN tokenomics', '100 million APXN',
+              'APXN Points', 'Membership and Loyalty KYC', 'APXN airdrops', 'APXN DEX',
+              'CEX Launchpad', 'APXN Mainnet 2028'
+          ]
+          INTRO = (
+              'Apex Network (APXN) combines a Telegram-based community experience with a longer-term '
+              'blockchain development plan. The updated November 2026 Whitepaper sets a total supply '
+              'of 100,000,000 APXN and describes how the project intends to distribute tokens, while '
+              'the Roadmap outlines development targets from Q4 2026 to Q2 2028. Those documents serve '
+              'different purposes: APXN Points earned in the app measure participation, whereas APXN '
+              'tokens are a separate blockchain asset with eligibility and claim rules. This guide '
+              'summarizes the approved plan and distinguishes features available today from milestones '
+              'that have not yet launched. Dates are targets, not guarantees.'
+          )
+          SECTIONS = [
+              (
+                  'The Current APXN Ecosystem and APXN Points',
+                  [
+                      'The current APXN community experience is built around the Telegram Mini App. '
+                      'Users can engage with mining-style point claims, daily check-ins, tasks and '
+                      'referrals according to the rules displayed by the application. These activities '
+                      'record APXN Points. They do not constitute blockchain proof-of-work mining or '
+                      'an immediate transfer of APXN tokens to a wallet.',
+                      'Verified APXN Points are the basis for the planned seven-level community '
+                      'allocation system, but a points balance is not a promise of a fixed conversion '
+                      'rate, a cash value or an immediately withdrawable token amount. Future eligibility '
+                      'and claims remain separate from today’s points collection. The official website '
+                      'and application will identify the relevant stages when they are enabled.'
+                  ]
+              ),
+              (
+                  'APXN Whitepaper: 100 Million Token Supply',
+                  [
+                      'The total announced supply is 100,000,000 APXN. The approved allocation is '
+                      '63,000,000 APXN (63%) for the community; 15,000,000 (15%) for listings and '
+                      'exchanges; 15,000,000 (15%) for partnerships, marketing, development and '
+                      'airdrops; 5,000,000 (5%) for the team; and 2,000,000 (2%) for the planned '
+                      'CEX Launchpad. These percentages total 100% of the supply.',
+                      'The second airdrop, planned for Q2 2027, draws approximately 2,000,000 APXN '
+                      'from the existing 15% partnerships, marketing, development and airdrops fund. '
+                      'It is not an additional allocation on top of the stated token supply. The '
+                      '2,000,000 APXN Launchpad allocation is a different, separately reserved fund. '
+                      'Neither allocation is evidence of a live token sale or confirmed exchange listing.'
+                  ]
+              ),
+              (
+                  'Seven Community Levels and Proportional Distribution',
+                  [
+                      'The 63,000,000 APXN community allocation is organized into seven levels, L1 '
+                      'through L7. A participant’s level is determined using verified APXN Points. '
+                      'Each level has its own token pool, and eligible participants share that pool '
+                      'in proportion to their verified points compared with the total verified '
+                      'points of eligible participants in the same level. The tokens are not divided '
+                      'equally among users simply because they belong to one level.',
+                      'The final amount assigned to each level will be announced before the planned '
+                      'distribution and listing, taking account of the eligible active community. '
+                      'Users must complete the applicable Membership & Loyalty KYC stages before '
+                      'their confirmed level and APXN allocation are shown on the dashboard. '
+                      'The project has not activated token withdrawals merely by publishing these rules.'
+                  ]
+              ),
+              (
+                  'Q1 2027: Membership & Loyalty KYC',
+                  [
+                      'The roadmap targets Q1 2027 for the APXN Membership & Loyalty KYC program '
+                      '(KYC الانتماء والولاء). This is the project’s participation and loyalty '
+                      'program; it should not be presented as a claim that a government-identity '
+                      'verification process is already operating. Eligibility depends on completing '
+                      'the program’s required tasks and paying the Telegram Stars amount displayed '
+                      'for the process when that functionality launches.',
+                      'Each eligible account that completes all requirements is planned to receive '
+                      'a one-time bonus of 20,000 verified APXN Points. There is no fixed cap on '
+                      'the number of qualified recipients for this points bonus. A separate reward '
+                      'of 100 APXN is planned for the first 10,000 eligible Badge holders who '
+                      'complete the required program stages and payment. Once those 10,000 token '
+                      'allocations have been assigned, later qualified participants can still '
+                      'receive the 20,000-point bonus, without a further 100 APXN reward from '
+                      'this limited offer.'
+                  ]
+              ),
+              (
+                  'Q2 2027: First and Second Airdrop Claims',
+                  [
+                      'The first limited 100 APXN allocation for qualifying Badge holders is '
+                      'intended to be displayed in their APXN accounts, not transferred to the '
+                      'blockchain at the moment the future KYC program is completed. Claims for '
+                      'the first airdrop are targeted to open in Q2 2027 under the announced '
+                      'eligibility and claim conditions.',
+                      'The roadmap also targets the launch of a second airdrop in Q2 2027. '
+                      'Approximately 2,000,000 APXN have been earmarked from the existing '
+                      'partnerships, marketing, development and airdrops fund for that campaign. '
+                      'Claims for both the first and second airdrops are planned for the same '
+                      'quarter, subject to the applicable requirements. No claim is live solely '
+                      'because an airdrop appears in a future roadmap period.'
+                  ]
+              ),
+              (
+                  'Q4 2026: Mining, Tasks and Community Foundation',
+                  [
+                      'The foundation phase covers mining-style APXN Points participation, '
+                      'daily and social tasks, referrals, and continued development of the '
+                      'Telegram Mini App. Community activity is the current product experience, '
+                      'and the roadmap describes how this foundation supports later allocation '
+                      'and blockchain infrastructure work. Any upgrades or staking-style '
+                      'features should be understood according to their actual current '
+                      'implementation and in-app availability, rather than assumed to be '
+                      'live because they are mentioned in development plans.'
+                  ]
+              ),
+              (
+                  'Q3 2027: APXN DEX and CEX Launchpad',
+                  [
+                      'The project targets an APXN decentralized exchange (DEX) and a Launchpad '
+                      'on a centralized exchange (CEX) for Q3 2027. The Launchpad allocation '
+                      'is 2,000,000 APXN, or 2% of total supply, as described in the '
+                      'Whitepaper. The choice of launch platform, any sale terms, participation '
+                      'conditions and prices require official confirmation. A roadmap target '
+                      'does not constitute an active public token sale, a guaranteed exchange '
+                      'partnership or a confirmed launch date.'
+                  ]
+              ),
+              (
+                  'Q4 2027: APXN Testnet and Planned Listings',
+                  [
+                      'The updated roadmap places the APXN Testnet target in Q4 2027, '
+                      'alongside potential centralized and decentralized exchange listings. '
+                      'A Testnet is a planned environment for development and testing, '
+                      'not proof that a Mainnet is already operational. Similarly, an '
+                      'exchange listing remains a target until the relevant exchange and '
+                      'the APXN team officially confirm it. Readers should check project '
+                      'announcements rather than treat roadmap dates as live services.'
+                  ]
+              ),
+              (
+                  'Q1–Q2 2028: Mainnet Preparation and Planned Launch',
+                  [
+                      'Q1 2028 is assigned to preparations for the APXN Mainnet and new '
+                      'ecosystem products. The Mainnet launch target is Q2 2028. These are '
+                      'the approved dates in the November 2026 roadmap, replacing earlier '
+                      'versions that described a later network launch. The plan may evolve '
+                      'because of security reviews, engineering work, market conditions, '
+                      'regulatory requirements or other project circumstances.',
+                      'The APXN team reserves the right to revise the roadmap, priorities '
+                      'and target dates. Users should evaluate each stage according to the '
+                      'officially announced current status, not a promise of guaranteed '
+                      'returns, prices, token withdrawals or exchange availability.'
+                  ]
+              ),
+          ]
+          SECTIONS.insert(3, SECTIONS.pop(5))  # Present the roadmap chronologically from Q4 2026.
+
+          FAQ = [
+              ('How many APXN tokens are planned in total?',
+               'The announced total is 100,000,000 APXN. The allocation is 63% community, '
+               '15% listings and exchanges, 15% partnerships/marketing/development/airdrops, '
+               '5% team and 2% for a planned CEX Launchpad.'),
+              ('How are community APXN tokens allocated?',
+               'The 63 million APXN community allocation spans seven levels. Within a level, '
+               'eligible users share its pool proportionally to verified APXN Points, not equally per account.'),
+              ('What does completing APXN Membership & Loyalty KYC provide?',
+               'Qualified users who complete the required tasks and displayed Telegram Stars '
+               'payment are planned to receive 20,000 verified APXN Points once per account, '
+               'without a recipient cap. The first 10,000 qualified Badge holders also have '
+               'a separate planned 100 APXN allocation.'),
+              ('When are the APXN airdrops expected to be claimable?',
+               'Claims for both the first and second airdrops are targeted for Q2 2027, '
+               'subject to official eligibility conditions and activation.'),
+              ('When are APXN Testnet and Mainnet planned?',
+               'The updated roadmap targets APXN Testnet in Q4 2027 and Mainnet in Q2 2028. '
+               'These dates are development goals, not guaranteed live launches.'),
+          ]
+          CONCLUSION = (
+              'APXN’s November 2026 Whitepaper and roadmap establish a defined token supply, '
+              'a seven-level points-based community distribution model and a sequence of '
+              'planned stages from Q4 2026 through Q2 2028. Participation points remain '
+              'separate from transferable APXN tokens; future KYC completion, airdrop claims, '
+              'exchange listings, Testnet and Mainnet milestones require official activation. '
+              'For the latest version of the plan, consult the official '
+              'Apex Network Whitepaper and Roadmap on apxn.network.'
+          )
+
+          # Guard against stale assumptions or accidental modification of another article.
+          assert ARTICLE.is_file() and MANIFEST.is_file() and KNOWLEDGE.is_file(), 'Required source files are missing.'
+          knowledge = json.loads(KNOWLEDGE.read_text(encoding='utf-8'))
+          tokenomics = knowledge['tokenomics_and_contract_content']
+          assert tokenomics['total_supply_displayed'] == '100,000,000 APXN', 'Unexpected official total supply'
+          assert {d['bucket']: d['percent'] for d in tokenomics['distribution']} == {
+              'Community': 63, 'Listings & Exchanges': 15,
+              'Partnerships, Marketing, Development & Airdrops': 15,
+              'Project Team': 5, 'CEX Launchpad': 2
+          }, 'Tokenomics source does not match approved distribution'
+          assert knowledge['roadmap']['public_summary'][-1]['period'] == 'Q2 2028', 'Unexpected Mainnet target'
+          assert tokenomics['airdrop_program']['first_airdrop']['eligible_badge_holders_target'] == 10000, 'Unexpected limited airdrop group'
+          assert tokenomics['airdrop_program']['first_airdrop']['planned_apxn_per_qualified_holder'] == 100, 'Unexpected token reward'
+          assert '20,000 verified APXN Points' in tokenomics['airdrop_program']['first_airdrop']['notice'], 'KYC points reward differs from current knowledge'
+
+          manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
+          matches = [a for a in manifest['articles'] if a.get('id') == ARTICLE_ID]
+          assert len(matches) == 1, 'Article ID not found or duplicated'
+          a = matches[0]
+          assert a.get('status') == 'published', 'Only a previously published article may be updated'
+          assert a.get('title') == OLD_TITLE, 'Article title has changed; stop rather than overwrite'
+          assert a.get('path') == ARTICLE.as_posix(), 'Path mismatch'
+          original_image = a['image']; original_url = a['url']; original_published = a['published_at']
+
+          source = ARTICLE.read_text(encoding='utf-8')
+          assert source.count(OLD_TITLE) >= 3, 'Cannot recognize original article layout'
+          assert source.count('class="article-body"') == 1, 'Unexpected article body markup'
+          assert 'Historical APXN roadmap article' in source, 'The historical note is missing'
+          assert '<script type="application/ld+json">' in source, 'Missing structured data'
+
+          # Refresh article metadata and visible heading while retaining the old permanent URL.
+          assert 'Historical September 2026 APXN roadmap article, superseded by the current roadmap covering Q4 2026 through Q2 2028.' in source
+          source = source.replace(OLD_TITLE, NEW_TITLE)
+          source = source.replace(
+              'Historical September 2026 APXN roadmap article, superseded by the current roadmap covering Q4 2026 through Q2 2028.',
+              NEW_DESCRIPTION
+          )
+          old_keywords = ', '.join(a['keywords'])
+          assert source.count(old_keywords) >= 1, 'Article keyword metadata not found'
+          source = source.replace(old_keywords, ', '.join(KEYWORDS))
+
+          # Convert the older historical warning to a current editorial update note.
+          note_pattern = r'<aside role="note"[^>]*>.*?</aside>'
+          new_note = (
+              '<aside role="note" style="margin:24px auto;padding:20px;border:1px solid #f59e0b;'
+              'border-radius:14px;background:#111827;color:#f8fafc;max-width:840px;line-height:1.7">'
+              '<strong>Updated November 9, 2026.</strong> This guide reflects the approved '
+              '<a href="https://apxn.network/#roadmap" style="color:#facc15;text-decoration:underline">'
+              'APXN Roadmap</a> and '
+              '<a href="https://apxn.network/#token" style="color:#facc15;text-decoration:underline">'
+              'Whitepaper / Tokenomics</a>, including the Q2 2028 Mainnet target. '
+              'All future dates and benefits remain subject to official conditions and announcements.'
+              '</aside>'
+          )
+          source, n = re.subn(note_pattern, new_note, source, flags=re.S)
+          assert n == 1, f'Expected one update note; got {n}'
+
+          # The page has two JSON-LD scripts: Article and FAQPage.
+          schema_pattern = re.compile(r'(<script type="application/ld\+json">\s*)(.*?)(\s*</script>)', flags=re.S)
+          seen_types = []
+          def update_schema(m):
+              obj = json.loads(m.group(2))
+              kind = obj.get('@type')
+              seen_types.append(kind)
+              if kind == 'Article':
+                  obj['headline'] = NEW_TITLE
+                  obj['description'] = NEW_DESCRIPTION
+                  obj['dateModified'] = DATE
+              elif kind == 'FAQPage':
+                  obj['mainEntity'] = [
+                      {'@type':'Question','name':q,'acceptedAnswer':{'@type':'Answer','text':ans}}
+                      for q,ans in FAQ
+                  ]
+              else:
+                  raise AssertionError(f'Unexpected JSON-LD type: {kind}')
+              return m.group(1) + json.dumps(obj, ensure_ascii=False, indent=2) + m.group(3)
+          source = schema_pattern.sub(update_schema, source)
+          assert seen_types == ['Article','FAQPage'], f'JSON-LD mismatch: {seen_types}'
+
+          # Replace the whole article body, while retaining the surrounding site design,
+          # original image, share links and footer. No hidden or unreviewed text remains.
+          def esc(v): return html_lib.escape(v, quote=False)
+          chunks = ['<p class="text-lg">' + esc(INTRO) + '</p>']
+          for heading, paragraphs in SECTIONS:
+              chunks.append('<section><h2>' + esc(heading) + '</h2>')
+              chunks.extend('<p>' + esc(p) + '</p>' for p in paragraphs)
+              chunks.append('</section>')
+          chunks.append('<section><h2>Frequently asked questions</h2>')
+          for q, ans in FAQ:
+              chunks.append('<div class="info-box"><h3>' + esc(q) + '</h3><p>' + esc(ans) + '</p></div>')
+          chunks.append('</section>')
+          chunks.append('<section><h2>Conclusion</h2><p>' + esc(CONCLUSION) + '</p></section>')
+          chunks.append('''<section><h2>Related reading</h2><ul>
+          <li><a href="./what-is-bnb-smart-chain-and-how-does-it-work.html">What Is BNB Smart Chain and How Does It Work</a></li>
+          <li><a href="./understanding-the-apxn-daily-check-in-reward-system.html">Understanding the APXN Daily Check-In Reward System</a></li>
+          <li><a href="./how-apxn-referrals-and-active-friend-mining-boosts-work.html">How APXN Referrals and Active Friend Mining Boosts Work</a></li>
+          </ul></section>''')
+          chunks.append('<div class="info-box"><strong>Editorial note:</strong><p>'
+                        'APXN Points are participation points, not an on-chain token balance. '
+                        'The roadmap may be revised; no token price, listing or withdrawal is guaranteed.'
+                        '</p></div>')
+          new_body = '\n\n'.join(chunks)
+          body_pattern = re.compile(
+              r'(?P<prefix><div\s+class="article-body"\s*>)(?P<body>.*?)(?P<suffix>\n\s*</div>\s*\n\s*</div>\s*\n\s*</article>)',
+              flags=re.S
+          )
+          source, n = body_pattern.subn(lambda m: m.group('prefix') + '\n' + new_body + '\n' + m.group('suffix'), source)
+          assert n == 1, f'Expected one original article body; got {n}'
+          assert not re.search(r'\b2029\b|presale|\bICO\b|historical september|historical apxn', source, flags=re.I), 'Obsolete roadmap references remain in HTML'
+          assert original_image in source and original_url in source, 'Image or canonical URL was lost'
+          assert f'<title>{NEW_TITLE}</title>' in source, 'Page title was not updated'
+          assert source.count('<script type="application/ld+json">') == 2
+
+          content = {
+              'title': NEW_TITLE,
+              'description': NEW_DESCRIPTION,
+              'keywords': KEYWORDS,
+              'intro': {'text': INTRO},
+              'sections': [
+                  {'heading': heading, 'paragraphs': [{'text': p} for p in paragraphs]}
+                  for heading, paragraphs in SECTIONS
+              ],
+              'faq': [{'question': q, 'answer': ans} for q, ans in FAQ],
+              'conclusion': {'text': CONCLUSION}
+          }
+          word_text = ' '.join([INTRO] + [p for _, paragraphs in SECTIONS for p in paragraphs] +
+                               [q+' '+ans for q,ans in FAQ] + [CONCLUSION])
+          word_count = len(re.findall(r"[\w’'-]+", word_text, flags=re.UNICODE))
+          a.update({
+              'title': NEW_TITLE,
+              'description': NEW_DESCRIPTION,
+              'excerpt': NEW_DESCRIPTION,
+              'keywords': KEYWORDS,
+              'content': content,
+              'updated_at': DATE,
+              'word_count': word_count,
+              'reading_minutes': max(4, math.ceil(word_count/200))
+          })
+          a['seo'].update({'title': NEW_TITLE, 'description': NEW_DESCRIPTION, 'article_schema': True, 'faq_schema': True})
+          assert a['url'] == original_url and a['image'] == original_image and a['published_at'] == original_published
+          assert a['status'] == 'published', 'Published status changed unexpectedly'
+          assert not re.search(r'\b2029\b|presale|\bICO\b', json.dumps(a, ensure_ascii=False), flags=re.I), 'Obsolete roadmap text remains in article manifest'
+
+          # Write only once every safety assertion has passed.
+          ARTICLE.write_text(source, encoding='utf-8')
+          MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(f'Updated {ARTICLE} and its manifest entry ({ARTICLE_ID}); {word_count} words.')
+          print('Preserved image, slug, canonical URL, September 2026 publication date and published status.')
+          PY
+
+      - name: Verify no unrelated project files changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          expected = {
+              'blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html',
+              'data/blog-articles.json',
+          }
+          changed = set(subprocess.check_output(
+              ['git', 'diff', '--name-only'], text=True).splitlines())
+          assert changed == expected, f'Unexpected changed files: {sorted(changed)}'
+          print('Confirmed only article HTML and its JSON manifest changed.')
+          PY
+
+      - name: Commit to Cloudflare branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --             blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html             data/blog-articles.json
+          git diff --cached --check
+          git commit -m 'fix(blog): align APXN roadmap article with November whitepaper'
+          git pull --rebase origin cloudflare-migration
+          git push origin HEAD:cloudflare-migration
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## APXN Roadmap article editorial update"
+            echo "Branch: cloudflare-migration"
+            echo "Article: apxn-007"
+            echo "The permanent article link and image remain unchanged."
+            echo "No other articles or admin access settings are modified."
+            echo "The existing blog index and sitemap workflow can synchronize the updated title."
+          } >> "$GITHUB_STEP_SUMMARY"
+
