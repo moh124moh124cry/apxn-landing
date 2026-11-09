@@ -1,0 +1,338 @@
+name: APXN - Align All Public Pages (One-Time)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - '.github/workflows/apxn-align-all-pages.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-align-all-pages-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  align-public-pages:
+    name: Align APXN website pages and canonical knowledge
+    if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Cloudflare production branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Preflight branch and expected source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = 'cloudflare-migration'
+          for f in about.html contact.html disclaimer.html earn.html editorial-policy.html privacy.html terms.html index.html data/apxn-blog-knowledge.json blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html; do
+            test -f "$f"
+          done
+
+      - name: Apply fully validated one-time APXN alignment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import json
+
+          # Changes are prepared in memory, validated, and written only after all checks pass.
+          BRANCH_SCOPE = 'cloudflare-migration'
+          UPDATED = 'November 9, 2026'
+          changes = {}
+
+          def read(path):
+              p = Path(path)
+              if not p.is_file():
+                  raise SystemExit(f'Missing required file: {path}')
+              if path not in changes:
+                  changes[path] = [p.read_text(encoding='utf-8'), None]
+              return changes[path][1] if changes[path][1] is not None else changes[path][0]
+
+          def put(path, text):
+              if path not in changes:
+                  read(path)
+              changes[path][1] = text
+
+          def sub1(path, pattern, value, marker=None):
+              s = read(path)
+              if marker and marker in s and not re.search(pattern, s, flags=re.S):
+                  return
+              t, n = re.subn(pattern, lambda _m: value, s, count=1, flags=re.S)
+              if n != 1:
+                  raise SystemExit(f'Unexpected page structure ({path}): expected exactly one match for {pattern[:85]!r}, got {n}')
+              put(path, t)
+
+          def plain1(path, old, new):
+              s = read(path)
+              if old not in s:
+                  if new in s:
+                      return
+                  raise SystemExit(f'Unexpected page structure ({path}): missing {old[:105]!r}')
+              if s.count(old) != 1:
+                  raise SystemExit(f'Ambiguous text in {path}: {old[:70]!r}')
+              put(path, s.replace(old, new, 1))
+
+          ANALYTICS = re.compile(r'[ \t]*<script>\s*window\.va\s*=.*?</script>\s*<script\b[^>]*\bsrc\s*=\s*["\']/_vercel/insights/script\.js["\'][^>]*></script>[ \t]*\n?', re.S)
+
+          def clean_analytics(path):
+              s = read(path)
+              t, n = ANALYTICS.subn('', s)
+              if n == 0 and not re.search(r'/_vercel/insights/script\.js|window\.vaq', s):
+                  return
+              if n != 1 or re.search(r'/_vercel/insights/script\.js|window\.vaq', t):
+                  raise SystemExit(f'Cannot safely clean legacy analytics: {path} (matches: {n})')
+              put(path, t)
+
+          # Safe to re-run: a completed run becomes a no-op, rather than failing on old-text guards.
+          _k=Path('data/apxn-blog-knowledge.json')
+          _if_ready=(_k.is_file() and 'membership_and_loyalty_kyc_november_2026' in _k.read_text(encoding='utf-8'))
+          if _if_ready and '20,000 verified APXN Points' in Path('index.html').read_text(encoding='utf-8') and 'Historical APXN roadmap article' in Path('blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html').read_text(encoding='utf-8'):
+              print('All APXN alignment steps already completed; nothing to change.')
+              raise SystemExit(0)
+
+          # Only the pages known to have legacy Vercel Analytics. The homepage, dashboard,
+          # blog index and published articles were already cleaned in prior commits.
+          for page in ['about.html','contact.html','disclaimer.html','earn.html','editorial-policy.html']:
+              clean_analytics(page)
+
+          # About: align text with current canonical tokenomics, loyalty program and roadmap.
+          plain1('about.html',
+              'Learn about Apex Network (APXN), its Telegram Mini App, APXN Points system, educational Web3 focus, community features and long-term development goals.',
+              'Learn about Apex Network, the APXN Telegram Mini App, 100 million APXN tokenomics, community rewards, Membership & Loyalty KYC and the Q4 2026–Q2 2028 roadmap.')
+          sub1('about.html',
+              r'Apex Network is a Web3 project focused on creating an accessible\s+community experience through Telegram\. Its current Mini App allows\s+participants to collect APXN Points through app activity while the\s+broader APXN ecosystem continues to develop\.',
+              'Apex Network (APXN) is a Web3 ecosystem with a Telegram Mini App for APXN Points participation and an official website for token information, the Whitepaper, roadmap and development updates. APXN Points are separate from transferable APXN tokens.')
+          plain1('about.html', 'APXN Points and the Future APXN Token', 'APXN Points, Tokenomics & Community Rewards')
+          sub1('about.html',
+              r'The project plans future token-related milestones, including\s+a Token Generation Event\. Any future conversion mechanics,\s+eligibility rules, timing or other token-related details\s+depend on the project\'s final implementation and may change\s+during development\.',
+              'The total planned APXN supply is 100,000,000: 63% for the community across seven levels based on verified APXN Points, 15% for listings and exchanges, 15% for partnerships, marketing, development and airdrops, 5% for the team and 2% for a planned CEX Launchpad. Allocations within each community level are proportional to eligible users\' verified points, not equal shares. The planned Q1 2027 APXN Membership &amp; Loyalty KYC offers a one-time 20,000 verified APXN Points completion reward after required tasks and Telegram Stars payment, without a recipient cap for the points reward. The first 10,000 qualifying Badge holders also receive a planned 100 APXN allocation, with claims targeted for Q2 2027. Once that limited allocation is exhausted, the 20,000-point completion reward continues for later qualifying accounts. Future eligibility and claims follow official rules; no token value or listing is guaranteed.')
+          sub1('about.html',
+              r'Apex Network has a longer-term development roadmap that may include\s+additional Web3 infrastructure and token-related functionality\.\s+Roadmap entries represent project goals and planned milestones,\s+not guarantees that a feature is already available\.',
+              'The official APXN roadmap covers Q4 2026 through Q2 2028: Telegram mining, referrals and tasks in Q4 2026; Membership &amp; Loyalty KYC in Q1 2027; the second airdrop and planned claims for both airdrops in Q2 2027; APXN DEX and a CEX Launchpad in Q3 2027; APXN Testnet and planned CEX/DEX listings in Q4 2027; Mainnet preparation in Q1 2028; and the targeted APXN Mainnet launch in Q2 2028. The planned second airdrop is approximately 2,000,000 APXN from the existing 15% partnerships/marketing/development/airdrops allocation.')
+
+          # Disclaimer: distinguish the announced tokenomics from current points; don't promise value.
+          plain1('disclaimer.html','Last updated: September 8, 2026',f'Last updated: {UPDATED}')
+          sub1('disclaimer.html',
+              r'Apex Network may describe future plans involving\s+an APXN token, a Token Generation Event \(TGE\),\s+point conversion mechanisms, blockchain\s+infrastructure or other token-related features\.',
+              'The project has published planned tokenomics totaling 100,000,000 APXN: 63% community allocation across seven levels, 15% listings, 15% partnerships/marketing/development/airdrops, 5% team and 2% CEX Launchpad. APXN Points are not automatically on-chain APXN tokens, and no fixed points-to-token conversion or cash value is guaranteed.')
+          sub1('disclaimer.html',
+              r'These items are development plans unless\s+explicitly confirmed as live\. Their timing,\s+technical implementation, eligibility rules,\s+conversion mechanics and availability may change\s+before launch\.',
+              'The APXN Membership &amp; Loyalty KYC program is planned for Q1 2027. A one-time 20,000 verified APXN Points completion reward is planned for eligible accounts completing required tasks and Telegram Stars payment; the first 10,000 qualifying Badge holders also have a planned 100 APXN allocation targeted for claim in Q2 2027. Those tokens are not delivered on-chain merely by appearing in an account. Dates, eligibility rules, rewards, listings and development milestones can change under official project policies.')
+
+          # Earn: website task rewards remain separate from the future loyalty bonus.
+          plain1('earn.html', 'No task links are active yet. Add the task links in Vercel', 'No task links are active yet. The APXN team must configure the task links in the project')
+          plain1('earn.html', 'No join links are active yet. Add the join links in Vercel', 'No join links are active yet. The APXN team must configure the join links in the project')
+          plain1('earn.html', 'Environment Variables.', 'settings.') if read('earn.html').count('Environment Variables.') == 1 else None
+          # There are two environment-variable suffixes; keep these messages user-friendly.
+          s = read('earn.html')
+          if 'Environment Variables.' in s:
+              put('earn.html', s.replace('Environment Variables.', 'settings.'))
+          plain1('earn.html', '// retain the original page behavior on Vercel.', '// retain the original page behavior on Cloudflare.')
+          plain1('earn.html',
+              'No fixed conversion rate is active today.',
+              'No fixed conversion rate is active today. These website tasks (50 or 100 APXN Points per eligible task) are separate from the planned APXN Membership &amp; Loyalty KYC completion reward of 20,000 verified APXN Points. The planned KYC program requires completion of its own tasks and the stated Telegram Stars payment. The first 10,000 qualifying Badge holders also have a limited planned 100 APXN allocation, targeted for claim in Q2 2027.')
+
+          # Editorial policy: refer to the approved Whitepaper, avoid classing live staking as universally future.
+          plain1('editorial-policy.html','Last updated: September 8, 2026',f'Last updated: {UPDATED}')
+          sub1('editorial-policy.html',
+              r'Roadmap milestones, testnet plans, mainnet plans,\s+staking, presale activity, exchange listings and other\s+future features should not be presented as live unless\s+their status has been verified\.',
+              'Current application features, including in-app staking where available, must be distinguished from planned blockchain Testnet, Mainnet, CEX Launchpad, APXN DEX, airdrop claims and exchange listings. Editorial claims about KYC, rewards and the seven-level distribution must match the latest approved APXN Whitepaper and roadmap rather than archived articles or older promotional plans.')
+
+          # Privacy & terms: remove outdated assurances, make project-stage disclosures more accurate.
+          plain1('privacy.html','Last updated: September 12, 2026',f'Last updated: {UPDATED}')
+          sub1('privacy.html',
+              r'Apex Network operates primarily as a Telegram Mini-App\.\s+We collect basic public Telegram profile information such\s+as your User ID, username, and first name strictly for\s+account creation, balance tracking, and managing the\s+in-app mining ecosystem\.',
+              'Apex Network operates an official website and a Telegram Mini App. Depending on the feature used, project systems process Telegram account identifiers and profile fields, APXN Points activity, referral and task history, and account-related records such as linked wallet addresses or eligible reward transactions. Please do not send private keys, wallet recovery phrases or passwords to APXN support.')
+          sub1('privacy.html',
+              r'Your data is used solely to maintain your mining points,\s+process referral rewards, manage speed boosts, and secure\s+your account against unauthorized access or bots\.',
+              'Account information is used to operate the APXN Mini App, maintain participation balances, process available tasks and referrals, support account and wallet functions, investigate abuse and provide support. Future Membership &amp; Loyalty KYC stages will have their own officially published participation conditions. Participation in KYC is not a claim that government identity-document checks are currently active.')
+          sub1('privacy.html',
+              r'We implement industry-standard security protocols,\s+including database-level Row Level Security \(RLS\) via\s+Supabase, to ensure your information and balances remain\s+safe and isolated\.',
+              'APXN uses access controls and backend security measures, including Supabase Row Level Security (RLS) where configured. No internet service can guarantee absolute security; contact the project if you believe your account or data has been exposed.')
+
+          plain1('terms.html','Last updated: September 12, 2026',f'Last updated: {UPDATED}')
+          sub1('terms.html',
+              r'Points accumulated within the Telegram bot represent\s+pre-launch rewards and engagement metrics\. They are subject\s+to conversion ratios prior to the official Token Generation\s+Event \(TGE\)\.',
+              'APXN Points represent participation in the APXN ecosystem and are not currently withdrawable on-chain APXN tokens. The project plans to allocate 63,000,000 APXN to its community across seven levels, with eligible shares determined proportionally by verified APXN Points within each level. No fixed conversion rate, future token value, return or listing is promised. The planned Membership &amp; Loyalty KYC program has separate eligibility, tasks, Telegram Stars payment and one-time reward rules; claims are subject to official announcements and the project roadmap.')
+
+          # Homepage already has current roadmap and supply; align the latest 20,000-point KYC rule.
+          plain1('index.html',
+              'An APXN balance of <strong class="text-yellow-300">100 APXN</strong> is scheduled to appear in the accounts of 10,000 qualified Early Access Badge holders after they complete the required loyalty KYC tasks.',
+              'After completing the required Membership &amp; Loyalty KYC tasks and the displayed Telegram Stars payment, eligible accounts receive a one-time <strong class="text-yellow-300">20,000 verified APXN Points</strong> reward without a recipient cap. The first 10,000 qualifying Badge holders also receive a limited planned allocation of <strong class="text-yellow-300">100 APXN</strong>; once those slots are exhausted, the verified-points completion reward continues.')
+          plain1('index.html',
+              '<li>Display 100 APXN in the accounts of 10,000 qualified Badge holders completing the required KYC tasks</li>',
+              '<li>Grant a one-time 20,000 verified APXN Points completion reward after the required KYC tasks and displayed Telegram Stars payment; no cap on qualified points recipients</li>\n                            <li>Allocate 100 APXN to the first 10,000 qualifying Badge holders; first-airdrop claims are planned for Q2 2027</li>')
+
+          # Canonical editorial source for future manual blog generation.
+          kp='data/apxn-blog-knowledge.json'
+          knowledge=json.loads(read(kp))
+          tok=knowledge['tokenomics_and_contract_content']
+          kyc_details={
+              'program': 'APXN Membership & Loyalty KYC / KYC الانتماء والولاء',
+              'target_launch': 'Q1 2027 (planned)',
+              'verified_points_completion_bonus': 20000,
+              'points_bonus_frequency': 'Once per eligible account after required program tasks and the displayed Telegram Stars payment',
+              'points_bonus_recipient_cap': None,
+              'first_airdrop_apxn_per_eligible_account': 100,
+              'first_airdrop_recipient_cap': 10000,
+              'first_airdrop_eligibility': 'First 10,000 qualifying Badge holders completing the specified KYC tasks and Telegram Stars payment',
+              'first_airdrop_target_claim': 'Q2 2027',
+              'after_first_airdrop_cap': 'Qualified new KYC completers still receive the one-time 20,000 verified APXN Points completion bonus; the 100 APXN limited allocation closes',
+              'important': 'APXN Points are not on-chain APXN tokens; planned airdrop allocation is not an immediate on-chain transfer. Do not frame KYC as government identity-document verification.',
+          }
+          tok['membership_and_loyalty_kyc_november_2026'] = kyc_details
+          tok['airdrop_program']['first_airdrop']['notice']=(
+              'The first 10,000 qualified Badge holders completing all required Membership & Loyalty KYC tasks and the displayed Telegram Stars payment have a planned 100 APXN allocation for claim in Q2 2027. '
+              'A separate one-time 20,000 verified APXN Points bonus continues for qualified KYC completers even after those 10,000 limited allocations are exhausted. '
+              'The allocation is not an immediate on-chain token transfer; all claims remain subject to officially announced conditions.'
+          )
+          # Harmonize canonical Q1 2027 statements; preserve the unchanged roadmap quarters.
+          updated_q1=[
+              'Launch the planned APXN Membership & Loyalty KYC program in Q1 2027',
+              'Eligible program completers receive a one-time 20,000 verified APXN Points bonus after all required KYC tasks and the displayed Telegram Stars payment; no recipient cap for this points reward',
+              'The first 10,000 qualifying Badge holders also have a limited planned 100 APXN allocation, targeted for claim in Q2 2027; the 20,000-point bonus continues afterward',
+          ]
+          for section in ['public_summary','phases']:
+              matches=[row for row in knowledge['roadmap'][section] if row.get('period')=='Q1 2027']
+              if len(matches)!=1:
+                  raise SystemExit(f'Unexpected roadmap Q1 layout: {section}')
+              matches[0]['items']=updated_q1
+          old_q1='Q1 2027 targets launch of APXN Membership & Loyalty KYC. A 100 APXN first-airdrop reward is planned to appear in the accounts of 10,000 qualified Early Access Badge holders after they complete required KYC tasks. Display is not immediate on-chain delivery; claim is planned for Q2 2027.'
+          if old_q1 in knowledge['roadmap']['article_evidence']:
+              knowledge['roadmap']['article_evidence'][knowledge['roadmap']['article_evidence'].index(old_q1)] = (
+                  'Q1 2027 targets the planned APXN Membership & Loyalty KYC launch. After all required KYC tasks and displayed Telegram Stars payment, each eligible completer earns a one-time 20,000 verified APXN Points bonus, with no cap for points recipients. The first 10,000 qualifying Badge holders also receive a planned 100 APXN allocation for claim in Q2 2027; after those slots fill, the points bonus remains available to qualifying completers. No immediate token transfer is implied.'
+              )
+
+          # Add a clear rule over old historical planning submissions while preserving history.
+          policy_priority_text=(
+              'For current APXN project policy use the Q4 2026–Q2 2028 roadmap, approved 100 million APXN tokenomics and membership_and_loyalty_kyc_november_2026. '
+              'Old September 2026 editorial submissions and older blog posts are historical, may mention identity-document checks, 2027 ICO/Presale or 2029 Mainnet, and must not be used as current policy. '
+              'KYC الانتماء والولاء is membership/loyalty participation and not an assertion that ID verification is live.'
+          )
+          if not isinstance(knowledge['automation_editorial_rules'], list):
+              raise SystemExit('Unexpected editorial rules structure')
+          if policy_priority_text not in knowledge['automation_editorial_rules']:
+              knowledge['automation_editorial_rules'].append(policy_priority_text)
+          knowledge['last_reviewed_at']='2026-11-09'
+          # Other pre-existing roadmap language may refer to 100 APXN alone; preserve it but
+          # attach updated rules instead of silently deleting historical entries.
+          put(kp,json.dumps(knowledge,ensure_ascii=False,indent=2)+'\n')
+
+          # Mark the September 2026 roadmap article as historical without deleting it or
+          # altering its old quotations. Readers get the authoritative current link.
+          oldarticle='blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html'
+          text=read(oldarticle)
+          notice_marker='Historical APXN roadmap article — superseded November 2026'
+          notice='''<aside role="note" style="margin:24px auto;padding:20px;border:2px solid #f59e0b;border-radius:14px;background:#111827;color:#f8fafc;max-width:840px;line-height:1.7"><strong>Historical APXN roadmap article — superseded November 2026.</strong> This September 2026 article describes an older planning version, including dates and proposed sale stages that are no longer current. The approved APXN roadmap runs from Q4 2026 through Q2 2028, with APXN Mainnet targeted for Q2 2028 and a planned CEX Launchpad in Q3 2027. For current information read the <a href="https://apxn.network/#roadmap" style="color:#facc15;text-decoration:underline">official APXN Roadmap</a> and <a href="https://apxn.network/#token" style="color:#facc15;text-decoration:underline">Whitepaper / Tokenomics</a>. Original article text remains below for historical context.</aside>'''
+          if notice_marker not in text:
+              old_summary='An evidence-based overview that separates the current APXN Telegram community experience and points system from later roadmap phases including 2027 Presale targets, 2028'
+              new_summary='Historical September 2026 APXN roadmap article, superseded by the current roadmap covering Q4 2026 through Q2 2028.'
+              if old_summary not in text:
+                  raise SystemExit('Outdated roadmap article summary was changed; manual review required')
+              text=text.replace(old_summary,new_summary)
+              text=text.replace('\"dateModified\": \"2026-09-16\"', '\"dateModified\": \"2026-11-09\"')
+              marker='<div\n                class="article-body"'
+              if marker not in text:
+                  raise SystemExit('Unexpected historical roadmap article layout')
+              text=text.replace(marker,notice+'\n\n            '+marker,1)
+              put(oldarticle,text)
+
+          # Verify all target file changes prior to writing.
+          expected={
+          'about.html','contact.html','disclaimer.html','earn.html','editorial-policy.html',
+          'privacy.html','terms.html','index.html',kp,oldarticle
+          }
+          if set(changes)!=expected:
+              raise SystemExit(f'Unexpected patch targets: {set(changes) ^ expected}')
+          for path,(old,new) in changes.items():
+              if new is None:
+                  changes[path][1]=old
+              data=changes[path][1]
+              if not data:
+                  raise SystemExit(f'Empty file after patch: {path}')
+              if path.endswith('.html') and not data.lstrip().startswith('<!DOCTYPE html>'):
+                  raise SystemExit(f'HTML document wrapper altered: {path}')
+              if path in {'about.html','contact.html','disclaimer.html','earn.html','editorial-policy.html'}:
+                  if '/_vercel/insights/script.js' in data or 'window.vaq' in data:
+                      raise SystemExit(f'Vercel Analytics not fully removed in {path}')
+              if path.endswith('.html'):
+                  for tag in ['section','article','h1','h2','p']:
+                      a=len(re.findall(fr'<{tag}(?:\s|>)',data,re.I))
+                      b=len(re.findall(fr'</{tag}\s*>',data,re.I))
+                      if a != b:
+                          raise SystemExit(f'Unbalanced <{tag}> in {path}: {a} vs {b}')
+          json.loads(changes[kp][1])
+          for path,(old,new) in changes.items():
+              if new != old:
+                  Path(path).write_text(new,encoding='utf-8')
+                  print(f'UPDATED: {path} ({len(new)-len(old):+d} chars)')
+              else:
+                  print(f'UNCHANGED: {path}')
+
+          PY
+
+      - name: Validate patch scope and whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --stat
+          while IFS= read -r changed; do
+            case "$changed" in
+              about.html|contact.html|disclaimer.html|earn.html|editorial-policy.html|privacy.html|terms.html|index.html|data/apxn-blog-knowledge.json|blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html) ;;
+              *) echo "Unexpected changed file: $changed"; exit 1 ;;
+            esac
+          done < <(git diff --name-only)
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          k=json.loads(Path('data/apxn-blog-knowledge.json').read_text(encoding='utf-8'))
+          assert k['tokenomics_and_contract_content']['membership_and_loyalty_kyc_november_2026']['verified_points_completion_bonus']==20000
+          assert k['tokenomics_and_contract_content']['distribution'][0]['amount_apxn']==63000000
+          assert len(k['roadmap']['phases'])==7
+          assert 'Historical APXN roadmap article' in Path('blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html').read_text(encoding='utf-8')
+          assert '20,000 verified APXN Points' in Path('index.html').read_text(encoding='utf-8')
+          assert '/_vercel/insights/' not in Path('about.html').read_text(encoding='utf-8')
+          print('Validated canonical tokenomics, rewards, roadmap and legacy analytics cleanup.')
+          PY
+
+      - name: Commit only the reviewed public-facing files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- about.html contact.html disclaimer.html earn.html editorial-policy.html privacy.html terms.html index.html data/apxn-blog-knowledge.json blog/articles/apxn-development-roadmap-distinguishing-live-features-from-planned-milestones.html
+          if git diff --cached --quiet; then
+            echo 'No changes required: files already aligned.'
+            exit 0
+          fi
+          git commit -m 'chore(site): align APXN public pages with November 2026 whitepaper and roadmap'
+          git pull --rebase origin cloudflare-migration
+          git push origin HEAD:cloudflare-migration
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## APXN public-page alignment'
+            echo 'Target branch: cloudflare-migration only.'
+            echo 'Reviewed about, contact, disclaimer, earn, editorial policy, privacy, terms and home pages.'
+            echo 'Aligned canonical blog knowledge and annotated one historical roadmap article.'
+            echo 'Kept blog generation, admin login, claim logic and manual publishing unchanged.'
+            echo 'Did not modify main branch or deploy to Vercel.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
