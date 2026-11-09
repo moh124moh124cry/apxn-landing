@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 17,
-    "published": 14,
-    "ready": 3,
+    "published": 15,
+    "ready": 2,
     "drafts": 0,
     "featured": 1
   },
@@ -3473,19 +3473,19 @@
       "category": "BSC",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-11-09",
       "generated_at": "2026-11-09",
       "updated_at": "2026-11-09",
-      "published_at": null,
+      "published_at": "2026-11-09",
       "reading_minutes": 5,
       "word_count": 902,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/understanding-gas-fees-on-bnb-smart-chain-through-validator-rewards.html",
+      "url": "https://apxn.network/blog/articles/understanding-gas-fees-on-bnb-smart-chain-through-validator-rewards.html",
+      "image": "https://apxn.network/blog/images/understanding-gas-fees-on-bnb-smart-chain-through-validator-rewards-1000137440.jpg",
+      "image_filename": "understanding-gas-fees-on-bnb-smart-chain-through-validator-rewards-1000137440.jpg",
       "keywords": [
         "BNB Smart Chain",
         "gas fees",
@@ -3509,7 +3509,7 @@
         "title": "Understanding Gas Fees on BNB Smart Chain Through Validator Rewards",
         "description": "Learn how transaction fees in BNB support the validator system on BNB Smart Chain, including staking mechanics, rewards distribution, and network security details drawn from",
         "canonical": "https://apxn.network/blog/articles/understanding-gas-fees-on-bnb-smart-chain-through-validator-rewards.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -3681,7 +3681,8 @@
             "EXT-04"
           ]
         }
-      }
+      },
+      "published_url": "https://apxn.network/blog/articles/understanding-gas-fees-on-bnb-smart-chain-through-validator-rewards.html"
     }
   ],
   "generation_queue": [
@@ -3922,7 +3923,7 @@
       "priority": 18,
       "topic": "Understanding Gas Fees on BNB Smart Chain",
       "category": "BSC",
-      "status": "ready",
+      "status": "published",
       "source": "topic_bank",
       "topic_bank_id": "bank-025",
       "language": "en",
@@ -3932,7 +3933,8 @@
       "knowledge_sections": [],
       "auto_publish_allowed": true,
       "article_id": "apxn-017",
-      "generated_at": "2026-11-09"
+      "generated_at": "2026-11-09",
+      "published_at": "2026-11-09"
     },
     {
       "priority": 19,
@@ -4021,7 +4023,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-017",
-    "last_published_article": "apxn-015",
+    "last_published_article": "apxn-017",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,

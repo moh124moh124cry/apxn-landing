@@ -398,7 +398,7 @@
       "topic": "Understanding Gas Fees on BNB Smart Chain",
       "category": "BSC",
       "risk": "safe",
-      "status": "ready",
+      "status": "published",
       "content_mode": "external",
       "source_profile": "bsc_gas",
       "knowledge_sections": [],
@@ -407,7 +407,8 @@
       "queue_priority": 18,
       "article_id": "apxn-017",
       "article_slug": "understanding-gas-fees-on-bnb-smart-chain-through-validator-rewards",
-      "generated_at": "2026-11-09"
+      "generated_at": "2026-11-09",
+      "published_at": "2026-11-09"
     },
     {
       "id": "bank-026",
