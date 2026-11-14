@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "language": "en",
-  "last_updated": "2026-11-09",
+  "last_updated": "2026-11-14",
   "purpose": "Editorially controlled topic bank for automated APXN Blog publishing, designed to support high-quality, original, policy-conscious content.",
   "rules": {
     "english_only": true,
@@ -598,6 +598,22 @@
       "auto_publish_allowed": true,
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
       "queued_at": "2026-11-09"
+    },
+    {
+      "id": "bank-admin-4d400ac6462c",
+      "topic": "APXN Project News: 🚀 Apex Network (APXN): The Green Badge Unlocks Exclusive Privileges and New Mining Rewards in 2027! 🟢💎 (4d400ac6462c)",
+      "category": "APXN News",
+      "risk": "safe",
+      "status": "queued",
+      "source": "admin_editorial_submission",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "editorial_submissions.submission_53bc43d2aa1dc21b.evidence"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
+      "queued_at": "2026-11-14"
     }
   ],
   "planner_state": {
