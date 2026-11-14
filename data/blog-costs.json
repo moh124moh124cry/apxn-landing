@@ -1786,10 +1786,46 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 146706000,
           "cost_usd": 0.0146706
+        },
+        {
+          "date": "2026-11-14",
+          "response_id": "12de43cd-c3ba-94df-841d-8c3afcba04fd",
+          "model": "grok-4.3",
+          "topic": "APXN Project News: 🚀 Apex Network (APXN): The Green Badge Unlocks Exclusive Privileges and New Mining Rewards in 2027! 🟢💎 (4d400ac6462c)",
+          "article_slug": "apxn-project-news-apex-network-apxn-the-green-badge-unlocks-exclusive-privileges-and-new-m",
+          "stage": "research_packet_writing",
+          "input_tokens": 4839,
+          "cached_input_tokens": 128,
+          "output_tokens": 2970,
+          "reasoning_tokens": 534,
+          "total_tokens": 7809,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 133393500,
+          "cost_usd": 0.01333935
+        },
+        {
+          "date": "2026-11-14",
+          "response_id": "7ad270b3-3da0-9cf3-90ae-573cbdb61801",
+          "model": "grok-4.3",
+          "topic": "APXN Project News: 🚀 Apex Network (APXN): The Green Badge Unlocks Exclusive Privileges and New Mining Rewards in 2027! 🟢💎 (4d400ac6462c)",
+          "article_slug": "apxn-project-news-apex-network-apxn-the-green-badge-unlocks-exclusive-privileges-and-new-m",
+          "stage": "safe_repair_1",
+          "input_tokens": 7139,
+          "cached_input_tokens": 128,
+          "output_tokens": 3437,
+          "reasoning_tokens": 1028,
+          "total_tokens": 10576,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 173818500,
+          "cost_usd": 0.01738185
         }
       ],
-      "total_cost_usd": 0.02662995
+      "total_cost_usd": 0.05735115
     }
   },
-  "last_updated": "2026-11-09"
+  "last_updated": "2026-11-14"
 }
