@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 18,
-    "published": 15,
-    "ready": 3,
+    "published": 16,
+    "ready": 2,
     "drafts": 0,
     "featured": 1
   },
@@ -3630,19 +3630,19 @@
       "category": "APXN News",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-11-14",
       "generated_at": "2026-11-14",
       "updated_at": "2026-11-14",
-      "published_at": null,
+      "published_at": "2026-11-14",
       "reading_minutes": 6,
       "word_count": 1265,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/apex-network-apxn-green-early-access-badge-privileges-and-2027-rewards-program.html",
+      "url": "https://apxn.network/blog/articles/apex-network-apxn-green-early-access-badge-privileges-and-2027-rewards-program.html",
+      "image": "https://apxn.network/blog/images/apex-network-apxn-green-early-access-badge-privileges-and-2027-rewards-program-1000151417.jpg",
+      "image_filename": "apex-network-apxn-green-early-access-badge-privileges-and-2027-rewards-program-1000151417.jpg",
       "keywords": [
         "Apex Network",
         "APXN",
@@ -3666,7 +3666,7 @@
         "title": "Apex Network APXN Green Early Access Badge Privileges and 2027 Rewards Program",
         "description": "Apex Network APXN explains the Green Early Access Badge for exclusive privileges, withdrawal options, KYC program eligibility, and 2027 airdrop priorities based on official AP",
         "canonical": "https://apxn.network/blog/articles/apex-network-apxn-green-early-access-badge-privileges-and-2027-rewards-program.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -3843,7 +3843,8 @@
           ]
         }
       },
-      "verified_against_knowledge": true
+      "verified_against_knowledge": true,
+      "published_url": "https://apxn.network/blog/articles/apex-network-apxn-green-early-access-badge-privileges-and-2027-rewards-program.html"
     }
   ],
   "generation_queue": [
@@ -4204,7 +4205,7 @@
       "priority": 6,
       "topic": "APXN Project News: 🚀 Apex Network (APXN): The Green Badge Unlocks Exclusive Privileges and New Mining Rewards in 2027! 🟢💎 (4d400ac6462c)",
       "category": "APXN News",
-      "status": "ready",
+      "status": "published",
       "source": "admin_editorial_submission",
       "topic_bank_id": "bank-admin-4d400ac6462c",
       "language": "en",
@@ -4217,12 +4218,13 @@
       "auto_publish_allowed": true,
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
       "article_id": "apxn-018",
-      "generated_at": "2026-11-14"
+      "generated_at": "2026-11-14",
+      "published_at": "2026-11-14"
     }
   ],
   "automation_state": {
     "last_generated_article": "apxn-018",
-    "last_published_article": "apxn-017",
+    "last_published_article": "apxn-018",
     "next_queue_priority": 7,
     "automatic_generation": true,
     "automatic_publishing": false,

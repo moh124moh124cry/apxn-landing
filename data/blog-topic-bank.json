@@ -604,7 +604,7 @@
       "topic": "APXN Project News: 🚀 Apex Network (APXN): The Green Badge Unlocks Exclusive Privileges and New Mining Rewards in 2027! 🟢💎 (4d400ac6462c)",
       "category": "APXN News",
       "risk": "safe",
-      "status": "ready",
+      "status": "published",
       "source": "admin_editorial_submission",
       "content_mode": "apxn",
       "source_profile": null,
@@ -616,7 +616,8 @@
       "queued_at": "2026-11-14",
       "article_id": "apxn-018",
       "article_slug": "apex-network-apxn-green-early-access-badge-privileges-and-2027-rewards-program",
-      "generated_at": "2026-11-14"
+      "generated_at": "2026-11-14",
+      "published_at": "2026-11-14"
     }
   ],
   "planner_state": {
