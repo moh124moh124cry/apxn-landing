@@ -1,0 +1,272 @@
+name: APXN Official Article Correction
+
+on:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - ".github/workflows/apxn-article-official-update.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-official-article-correction-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  correct-official-article:
+    if: ${{ github.ref == 'refs/heads/cloudflare-migration' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout APXN Website
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Replace article with official announcement and correct the manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          #!/usr/bin/env python3
+          """Apply the founder-supplied official APXN announcement to the existing article."""
+          import html as html_lib
+          import json
+          import math
+          import re
+          from pathlib import Path
+
+          ROOT = Path.cwd()
+          MANIFEST = ROOT / 'data/blog-articles.json'
+          ARTICLE = ROOT / 'blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html'
+
+          TITLE = 'OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update'
+          DESCRIPTION = ('Apex Network announces seven updated Verified APXN Points levels, '
+                         'Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.')
+          KEYWORDS = ['Apex Network', 'APXN', 'Verified APXN Points', 'APXN Level System',
+                      'Membership and Loyalty KYC', 'APXN Rewards', '100 APXN Airdrop', 'APXN Community Allocation']
+          INTRO = ('The Apex Network team is pleased to announce an update to the 7-level reward system, '
+                   'based exclusively on Verified APXN Points.')
+          LEVELS = [
+              ('🥉', 'Level 1', '20,000 – 49,999 Verified APXN Points.'),
+              ('🥉', 'Level 2', '50,000 – 99,999 Verified APXN Points.'),
+              ('🥈', 'Level 3', '100,000 – 149,999 Verified APXN Points.'),
+              ('🥈', 'Level 4', '150,000 – 249,999 Verified APXN Points.'),
+              ('🥇', 'Level 5', '250,000 – 349,999 Verified APXN Points.'),
+              ('💎', 'Level 6', '350,000 – 500,000 Verified APXN Points.'),
+              ('👑', 'Level 7', 'More than 500,000 Verified APXN Points.'),
+          ]
+          NOTE = ("Important Note: All levels are determined exclusively by Verified APXN Points. "
+                  "If a balance contains decimal values, the user's level is determined by whether "
+                  "they have reached the actual minimum threshold.")
+          KYC = [
+              ('Every eligible user who successfully completes all required KYC tasks will instantly '
+               'receive 20,000 Verified APXN Points, credited directly to their balance.'),
+              'This allows new users to reach Level 1 immediately!',
+              ('The first 10,000 eligible users will also receive an allocation of 100 APXN each, '
+               'with claiming scheduled to open in Q2 2027.'),
+              ('After the first 10,000 participants have received their allocation, the 20,000 Verified '
+               'APXN Points reward will remain available to all eligible users, with no limit on the '
+               'number of recipients.'),
+          ]
+          COMMUNITY = ('63,000,000 APXN are allocated to the community, distributed through the 7-level '
+                       'system proportionally to Verified APXN Points within each level.')
+          SIGNOFF = 'APEX NETWORK (APXN) — MINE TODAY. BUILD TOMORROW.'
+
+          def escape(v):
+              return html_lib.escape(str(v), quote=True)
+
+          def article_body():
+              out = [
+                  '            <div class="article-body">',
+                  '              <p class="text-lg">🌍 ' + escape(INTRO) + '</p>',
+                  '              <section>',
+                  '                <h2>🏆 THE 7 APXN LEVELS</h2>',
+                  '                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">',
+              ]
+              for badge, level, threshold in LEVELS:
+                  out.extend([
+                      '                  <div class="info-box !my-0">',
+                      '                    <h3 class="text-xl font-black text-yellow-400">' + escape(badge+' '+level) + '</h3>',
+                      '                    <p>' + escape(threshold) + '</p>',
+                      '                  </div>',
+                  ])
+              out.extend([
+                  '                </div>',
+                  '              </section>',
+                  '              <section>',
+                  '                <p class="info-box">📌 ' + escape(NOTE) + '</p>',
+                  '              </section>',
+                  '              <section>',
+                  '                <h2>🎁 MEMBERSHIP &amp; LOYALTY KYC | Q1 2027</h2>',
+              ])
+              symbols = ['✅', '🚀', '🎯', '⛏️']
+              for symbol, value in zip(symbols, KYC):
+                  out.append('                <p>' + escape(symbol+' '+value) + '</p>')
+              out.extend([
+                  '              </section>',
+                  '              <section>',
+                  '                <h2>💰 63,000,000 APXN FOR THE COMMUNITY</h2>',
+                  '                <p>' + escape(COMMUNITY) + '</p>',
+                  '              </section>',
+                  '              <section>',
+                  '                <p>🌐 <a href="https://apxn.network" rel="noopener noreferrer">apxn.network</a></p>',
+                  '                <p>🤖 <a href="https://t.me/ApxMinerBot" target="_blank" rel="noopener noreferrer">t.me/ApxMinerBot</a></p>',
+                  '                <p class="font-black text-yellow-400">🚀 ' + escape(SIGNOFF) + '</p>',
+                  '              </section>',
+                  '            </div>',
+              ])
+              return '\n'.join(out)
+
+          manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
+          matches = [a for a in manifest['articles'] if a.get('id') == 'apxn-019']
+          if len(matches) != 1:
+              raise SystemExit('Article apxn-019 not uniquely located')
+          record = matches[0]
+          if record.get('status') != 'published':
+              raise SystemExit('Article apxn-019 not published. No changes applied.')
+
+          # Keep the original slug, canonical URL, publication date and any existing image.
+          record['title'] = TITLE
+          record['description'] = DESCRIPTION
+          record['excerpt'] = DESCRIPTION
+          record['keywords'] = KEYWORDS
+          record['updated_at'] = '2026-11-15'
+          record['source'] = 'founder_supplied_official_announcement'
+          record['facts_verified'] = True
+          record['quality_check'] = True
+          record['seo_ready'] = True
+          record.setdefault('seo', {})
+          record['seo'].update({'title': TITLE, 'description': DESCRIPTION, 'faq_schema': False})
+
+          paragraphs = [INTRO] + [level+' '+threshold for _,level,threshold in LEVELS] + [NOTE] + KYC + [COMMUNITY, SIGNOFF]
+          record['word_count'] = len(' '.join(paragraphs).split())
+          record['reading_minutes'] = max(1, math.ceil(record['word_count'] / 220))
+          record['content'] = {
+              'title': TITLE,
+              'description': DESCRIPTION,
+              'keywords': KEYWORDS,
+              'intro': {'text': INTRO, 'evidence_ids': []},
+              'sections': [
+                  {'heading': 'THE 7 APXN LEVELS', 'paragraphs': [
+                      {'text': badge+' '+level+' — '+threshold, 'evidence_ids': []}
+                      for badge,level,threshold in LEVELS]},
+                  {'heading': 'Important Note', 'paragraphs': [{'text': NOTE, 'evidence_ids': []}]},
+                  {'heading': 'MEMBERSHIP & LOYALTY KYC | Q1 2027', 'paragraphs': [
+                      {'text': x, 'evidence_ids': []} for x in KYC]},
+                  {'heading': '63,000,000 APXN Community Allocation', 'paragraphs': [
+                      {'text': COMMUNITY, 'evidence_ids': []}]}
+              ],
+              'faq': [],
+              'conclusion': {'text': SIGNOFF, 'evidence_ids': []}
+          }
+
+          html_text = ARTICLE.read_text(encoding='utf-8')
+          old_title = re.search(r'<title>([^<]+)</title>', html_text)
+          if not old_title:
+              raise SystemExit('Could not identify article <title>')
+          old_title = old_title.group(1)
+          old_description_match = re.search(r'<meta\s+name="description"\s+content="([^"]+)"', html_text)
+          if not old_description_match:
+              raise SystemExit('Could not identify meta description')
+          old_description = html_lib.unescape(old_description_match.group(1))
+          html_text = html_text.replace(old_title, escape(TITLE))
+          html_text = html_text.replace(escape(old_description), escape(DESCRIPTION))
+
+          # Replace entire old editorial body, including the unwanted Q&A and editorial note.
+          start_match = re.search(r'<div\s+class="article-body"\s*>', html_text)
+          if not start_match:
+              raise SystemExit('Article body start is missing')
+          start = start_match.start()
+          closing = '\n            </div>\n\n        </div>\n\n    </article>'
+          end = html_text.find(closing, start)
+          if end < 0:
+              raise SystemExit('Article body closing boundary not found')
+          html_text = html_text[:start] + article_body() + html_text[end+len('\n            </div>'):]
+
+          # Remove any stale FAQPage JSON-LD. Update Article JSON-LD to mirror public text.
+          ld_pattern = re.compile(r'<script type="application/ld\+json">\s*({.*?})\s*</script>', re.S)
+          def update_json_ld(match):
+              try:
+                  obj = json.loads(match.group(1))
+              except json.JSONDecodeError:
+                  return match.group(0)
+              if obj.get('@type') == 'FAQPage':
+                  return ''
+              if obj.get('@type') == 'Article':
+                  obj['headline'] = TITLE
+                  obj['description'] = DESCRIPTION
+                  return '<script type="application/ld+json">\n'+json.dumps(obj,indent=2,ensure_ascii=False)+'\n</script>'
+              return match.group(0)
+          html_text = ld_pattern.sub(update_json_ld,html_text)
+
+          # Correct SEO keywords in the HTML head while retaining the original canonical URL.
+          html_text, changed_keywords = re.subn(
+              r'(<meta\s+name="keywords"\s+content=")[^"]+("\s*>)',
+              lambda m: m.group(1)+escape(', '.join(KEYWORDS))+m.group(2),
+              html_text, count=1, flags=re.S)
+          if changed_keywords != 1:
+              raise SystemExit('Could not update SEO keywords')
+          # Update displayed read time to actual shortened official announcement.
+          html_text = re.sub(r'\b\d+ min read\b',str(record['reading_minutes'])+' min read',html_text,count=1)
+
+          # Release checks: values and questions from the prior incorrect version must be gone.
+          body=html_text[html_text.index('class="article-body"'):html_text.index('</article>')]
+          assert '350,000 – 500,000' in body and 'More than 500,000' in body
+          assert '450,000' not in body and '1,000,000' not in body
+          assert 'Frequently asked questions' not in body and 'Editorial note:' not in body
+          assert 'Cloudflare' not in body and 'Vercel' not in body
+          assert 'Q1 2027' in body and 'Q2 2027' in body
+          assert '63,000,000 APXN' in body and '20,000 Verified APXN Points' in body
+          assert '100 APXN' in body and '10,000' in body
+
+          ARTICLE.write_text(html_text,encoding='utf-8')
+          MANIFEST.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('Corrected article:',TITLE)
+          print('Correct L6: 350,000–500,000 | L7: more than 500,000')
+          print('Old FAQ section: removed')
+          print('Word count:',record['word_count'])
+          print('Canonical URL: unchanged')
+          PY
+
+      - name: Sync blog index and sitemap
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/blog-sync.mjs
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html').read_text(encoding='utf-8')
+          ix=Path('blog/index.html').read_text(encoding='utf-8')
+          assert '350,000 – 500,000' in p
+          assert 'More than 500,000' in p
+          assert '450,000' not in p and '1,000,000' not in p
+          assert 'Frequently asked questions' not in p
+          assert 'OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update' in ix
+          print('Official text, level thresholds and index: VERIFIED')
+          PY
+
+      - name: Commit corrected article
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "APXN Blog Bot"
+          git config user.email "actions@github.com"
+          git add data/blog-articles.json blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html blog/index.html sitemap.xml
+          if git diff --cached --quiet; then
+            echo "Article already matches official announcement."
+            exit 0
+          fi
+          git commit -m "fix(blog): publish founder-approved APXN seven-level announcement"
+          git pull --rebase origin cloudflare-migration
+          git push origin HEAD:cloudflare-migration
+
