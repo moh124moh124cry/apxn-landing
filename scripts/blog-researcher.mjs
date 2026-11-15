@@ -90,6 +90,9 @@ const STOP_WORDS = new Set([
   "user", "guide", "understanding", "explained", "beginner", "beginners", "important"
 ]);
 
+// Confidential infrastructure information is not public news evidence.
+const PUBLIC_SITE_OPERATIONS_PATTERN = /\b(?:cloudflare|vercel|workers?\.dev|github(?:\s+actions?|\s+repository)?|webhooks?|runtime\s+configuration|environment\s+variables?|preview\s+environment|test(?:ing)?\s+bot|staging|production\s+server|(?:test|preview|internal|site|application|production)\s+deploy(?:ed|ment|ments)?|hosting\s+(?:provider|migration)|infrastructure\s+migration|worker\s+execution|apxn-miner-(?:preview|live)|cloudflare-migration|internal\s+(?:branch|server|analytics)|api\s+keys?|secrets?)\b/i;
+
 const GLOBAL_FORBIDDEN_CLAIMS = [
   "Do not invent facts from model memory or open-web knowledge.",
   "Do not invent integrations, partnerships, listings, prices, yields, profits or investment outcomes.",
@@ -98,7 +101,8 @@ const GLOBAL_FORBIDDEN_CLAIMS = [
   "Do not convert two separate facts into a causal relationship unless an evidence item explicitly states that relationship.",
   "Do not invent future possibilities such as could later, may eventually, will enable or can help unless an evidence item explicitly supports that future relationship.",
   "Do not add current volatile metrics such as prices, TVL, APY, gas price, validator count, TPS or market figures unless explicitly approved by the source profile.",
-  "Do not pad the article with repetition, generic motivational language or unsupported examples merely to reach a word count."
+  "Do not pad the article with repetition, generic motivational language or unsupported examples merely to reach a word count.",
+  "Never publish APXN hosting platforms, repository identifiers, test bots, deployment stages, branch names, analytics, error logs, environment setup or internal operation details."
 ];
 
 function fail(message) {
@@ -697,6 +701,7 @@ function collectApxnEvidence(metadata, knowledge) {
     for (const item of flattened) {
       const clean = normalizeSpace(item.text);
       if (!clean || wordCount(clean) < 2) continue;
+      if (PUBLIC_SITE_OPERATIONS_PATTERN.test(clean)) continue;
 
       evidence.push({
         id: "",

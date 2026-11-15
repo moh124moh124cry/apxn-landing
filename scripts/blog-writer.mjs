@@ -1179,6 +1179,16 @@ function writingPlanForPrompt(packet) {
   return lines.join("\n");
 }
 
+// APXN public articles must not expose internal operational infrastructure.
+const PUBLIC_SITE_OPERATIONS_PATTERN = /\b(?:cloudflare|vercel|workers?\.dev|github(?:\s+actions?|\s+repository)?|webhooks?|runtime\s+configuration|environment\s+variables?|preview\s+environment|test(?:ing)?\s+bot|staging|production\s+server|(?:test|preview|internal|site|application|production)\s+deploy(?:ed|ment|ments)?|hosting\s+(?:provider|migration)|infrastructure\s+migration|worker\s+execution|apxn-miner-(?:preview|live)|cloudflare-migration|internal\s+(?:branch|server|analytics)|api\s+keys?|secrets?)\b/i;
+
+function publicArticleText(article) {
+  return [article?.title, article?.description, ...(article?.keywords || []),
+    ...(article?.sections || []).map(s => s?.heading),
+    ...(article?.faq || []).map(f => f?.question), articleBodyText(article)]
+    .filter(Boolean).join("\n");
+}
+
 function paidWriterInstructions() {
   return [
     "You are the Apex Network Editorial writer.",
@@ -1206,6 +1216,7 @@ function paidWriterInstructions() {
     "Do not turn planned/UI-only APXN material into a live feature.",
     "Do not promise profit, token value, listings, partnerships, yield or financial outcomes.",
     "Use a neutral educational tone suitable for a high-quality public blog.",
+    "Do not reveal APXN hosting platforms, deployment names, repository details, preview bots, branches, runtime setup, internal metrics or other operational information. Public-facing product and reward information only.",
     "Avoid keyword stuffing, hype, generic motivational filler and repeated explanations.",
     "Return only the requested JSON schema."
   ].join("\n");
@@ -1698,6 +1709,11 @@ function validateArticleAgainstPacket({
   const evidenceMap = new Map(evidence.map((item) => [item.id, item]));
   const bodyText = articleBodyText(article);
   const bodyWords = wordCount(bodyText);
+
+  if (["apxn", "hybrid"].includes(packet?.topic?.content_mode) &&
+      PUBLIC_SITE_OPERATIONS_PATTERN.test(publicArticleText(article))) {
+    errors.push("Article reveals internal hosting, deployment, monitoring or repository details.");
+  }
 
   if (packet.status !== "READY_FOR_PAID_WRITER") {
     errors.push(`Research Packet status is ${packet.status}.`);

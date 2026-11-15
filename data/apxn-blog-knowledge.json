@@ -900,7 +900,8 @@
     "Include an appropriate non-financial-advice disclaimer on tokenomics, presale, market, listing or digital-asset risk topics.",
     "Block automatic publication whenever an article requires a fact marked verify_before_publish or blocked_auto_publish.",
     "Do not use old blog articles as evidence for a new APXN fact when current code or current official project information says something different.",
-    "For current APXN project policy use the Q4 2026–Q2 2028 roadmap, approved 100 million APXN tokenomics and membership_and_loyalty_kyc_november_2026. Old September 2026 editorial submissions and older blog posts are historical, may mention identity-document checks, 2027 ICO/Presale or 2029 Mainnet, and must not be used as current policy. KYC الانتماء والولاء is membership/loyalty participation and not an assertion that ID verification is live."
+    "For current APXN project policy use the Q4 2026–Q2 2028 roadmap, approved 100 million APXN tokenomics and membership_and_loyalty_kyc_november_2026. Old September 2026 editorial submissions and older blog posts are historical, may mention identity-document checks, 2027 ICO/Presale or 2029 Mainnet, and must not be used as current policy. KYC الانتماء والولاء is membership/loyalty participation and not an assertion that ID verification is live.",
+    "Never publish confidential or internal APXN hosting or deployment information, platform vendor names, test environments, branch names, repository configuration, traffic or error metrics, or operational status. Only publish user-facing confirmed updates, official tokenomics, verified APXN Points rules and roadmap stages."
   ],
   "blog_strategy": {
     "primary_goal": "Build a trustworthy APXN knowledge hub that supports the Apex Network project without confusing community points with token or blockchain functionality.",

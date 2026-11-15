@@ -1,6 +1,5 @@
 {
   "schema_version": 1,
-
   "site": {
     "name": "APXN Blog",
     "brand": "Apex Network",
@@ -10,12 +9,10 @@
     "author": "Apex Network Editorial",
     "support_email": "contact@apxn.network"
   },
-
   "content_sources": {
     "knowledge_file": "data/apxn-blog-knowledge.json",
     "articles_manifest": "data/blog-articles.json"
   },
-
   "categories": [
     "APXN News",
     "APXN Guides",
@@ -26,7 +23,6 @@
     "Education",
     "Development"
   ],
-
   "ai": {
     "provider": "xai",
     "provider_name": "Grok",
@@ -36,7 +32,6 @@
     "reasoning_effort": "low",
     "prompt_cache_key": "apxn-blog-writer-v1"
   },
-
   "writer": {
     "enabled": true,
     "default_mode": "draft",
@@ -51,7 +46,6 @@
     "include_faq_schema": true,
     "allow_external_research": false
   },
-
   "editorial_rules": {
     "require_knowledge_file": true,
     "require_original_content": true,
@@ -64,9 +58,12 @@
     "avoid_unverified_partnerships": true,
     "avoid_unverified_prices": true,
     "avoid_presenting_planned_features_as_live": true,
-    "describe_current_balance_as_apxn_points": true
+    "describe_current_balance_as_apxn_points": true,
+    "forbid_internal_infrastructure_details": true,
+    "forbid_hosting_vendor_mentions_in_apxn_news": true,
+    "forbid_deployment_preview_branch_and_metrics_details": true,
+    "require_public_facing_user_value": true
   },
-
   "automation": {
     "auto_generate_enabled": true,
     "auto_publish_enabled": false,
@@ -82,7 +79,6 @@
     "update_sitemap_after_publish": true,
     "update_blog_index_after_publish": true
   },
-
   "cost_control": {
     "enabled": true,
     "monthly_budget_usd": 1.5,
@@ -91,7 +87,6 @@
     "track_exact_api_cost": true,
     "use_prompt_caching": true
   },
-
   "seo": {
     "canonical_domain": "https://apxn.network",
     "default_og_image": "https://apxn.network/logo2%20(1).png",
@@ -100,14 +95,12 @@
     "generate_keywords": true,
     "generate_breadcrumbs": true
   },
-
   "publishing": {
     "article_directory": "blog/articles",
     "article_extension": ".html",
     "sitemap_file": "sitemap.xml",
     "blog_index_file": "blog/index.html"
   },
-
   "security": {
     "store_api_keys_in_repository": false,
     "use_environment_variables": true,
