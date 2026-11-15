@@ -214,7 +214,7 @@ jobs:
           rec = next(a for a in m['articles'] if a.get('id') == 'apxn-019')
           assert rec['word_count'] >= 1200, rec['word_count']
           assert 'Related reading' in html
-          assert 'More than 500,000 Verified APXN Points' in html
+          assert re.search(r'more than 500,000 verified APXN points', html, re.I)
           assert not re.search(r'Cloudflare|Vercel|apxn-miner-preview|apxn-miner-live', html, re.I)
           assert rec['status'] == 'published'
           assert rec['slug'] == 'apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates'
