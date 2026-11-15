@@ -4288,6 +4288,271 @@
 })();
 </script>
 
+<!-- APXN_ARTICLE_STUDIO_V1: BEGIN -->
+<style id="apxn-article-studio-styles">
+  .apxn-studio-button { background:linear-gradient(120deg,#facc15,#f59e0b);border:0;border-radius:12px;color:#161616;font-weight:800;padding:12px 17px;cursor:pointer;font-family:inherit }
+  .apxn-studio-button:disabled {opacity:.5;cursor:not-allowed}
+  .apxn-studio-secondary {background:#1e293b;color:#f8fafc;border:1px solid #475569}
+  .apxn-studio-danger {background:#7f1d1d;color:#fff;border:1px solid #b91c1c}
+  .apxn-studio-manage { margin:0 6px 0 0;padding:10px 15px;border:1px solid #facc1555;color:#facc15;background:#1e293b;border-radius:11px;font-weight:800;cursor:pointer }
+  .apxn-studio-overlay {position:fixed;inset:0;z-index:25000;background:#020617e8;overflow:auto;padding:16px;display:flex;align-items:flex-start;justify-content:center}
+  .apxn-studio-overlay[hidden] {display:none!important}
+  .apxn-studio-shell {background:#0f172a;border:1px solid #334155;border-radius:20px;width:min(960px,100%);padding:20px;box-shadow:0 30px 80px #000a;color:#e2e8f0}
+  .apxn-studio-head {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .apxn-studio-head strong {font-size:19px}
+  .apxn-studio-actions {display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .apxn-studio-form-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .apxn-studio-field {display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+  .apxn-studio-field.full {grid-column:1/-1}
+  .apxn-studio-control {background:#020617;color:#f8fafc;border:1px solid #475569;border-radius:10px;padding:11px;font:inherit;min-width:0;width:100%}
+  .apxn-studio-control:focus {outline:2px solid #eab308;outline-offset:1px}
+  textarea.apxn-studio-control {min-height:105px;resize:vertical;direction:auto}
+  .apxn-studio-part {background:#111e35;border:1px solid #334155;border-radius:15px;padding:14px;margin:12px 0}
+  .apxn-studio-part h3 {margin:0 0 12px;font-size:16px}
+  .apxn-studio-note {color:#94a3b8;font-size:12px;line-height:1.6}
+  .apxn-studio-feedback {padding:10px 12px;border-radius:10px;background:#1e293b;color:#fef08a;margin:12px 0;min-height:20px;white-space:pre-wrap}
+  .apxn-studio-feedback:empty {display:none}
+  .apxn-studio-preview {background:#020617;border:1px solid #334155;border-radius:15px;padding:22px;line-height:1.85;overflow-wrap:anywhere}
+  .apxn-studio-preview h1 {font-size:clamp(23px,4vw,34px);line-height:1.35;color:#fff;margin:12px 0}
+  .apxn-studio-preview h2 {font-size:21px;color:#facc15;margin:20px 0 6px}
+  .apxn-studio-preview p {margin:8px 0}
+  .apxn-studio-preview img {max-width:100%;width:100%;max-height:440px;object-fit:cover;border-radius:14px;margin:15px 0}
+  .apxn-studio-image {width:100%;max-height:220px;object-fit:contain;background:#020617;border-radius:12px;margin-top:7px}
+  .apxn-studio-image[hidden] {display:none}
+  @media(max-width:630px){.apxn-studio-form-grid {grid-template-columns:1fr}.apxn-studio-shell {padding:13px}.apxn-studio-head {align-items:flex-start}.apxn-studio-button {padding:10px 12px}}
+</style>
+<script id="apxn-article-studio-script">
+(() => {
+  'use strict';
+  const API_LIST = '/api/blog-admin-articles';
+  const API_MANAGE = '/api/blog-admin-manage';
+  const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
+  const IMAGE_TYPES = ['image/jpeg','image/png','image/webp','image/gif'];
+  const studio = { article: null, original: null, mode: 'new', imageAction:'keep', imageFile:null, previewUrl:null, busy:false, lastPreviewId:null };
+  const esc = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+  const el = (id) => document.getElementById(id);
+  const uid = () => 'sec-' + Math.random().toString(36).slice(2,10);
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const paragraph = text => ({text:String(text || ''),evidence_ids:[]});
+  const emptyArticle = () => ({ title:'', description:'', category:'APXN News', keywords:[], status:'draft', content:{title:'',description:'',keywords:[],intro:paragraph(''),sections:[{heading:'',paragraphs:[paragraph('')]}],faq:[],conclusion:paragraph('')} });
+
+  function install() {
+    const header = document.querySelector('#admin-screen .page-header');
+    if (header && !el('apxn-studio-create')) {
+      const btn = document.createElement('button');
+      btn.id='apxn-studio-create'; btn.type='button';btn.className='apxn-studio-button';btn.textContent='＋ إنشاء مقالة جديدة';
+      btn.addEventListener('click',()=>openEditor(null));header.appendChild(btn);
+    }
+    const list = el('articles');
+    if (!list) return;
+    list.querySelectorAll('.article-card[data-article-id]').forEach(card => {
+      if(card.querySelector('[data-apxn-studio]'))return;
+      const id=card.getAttribute('data-article-id');
+      const actions=card.querySelector('.article-actions');if(!actions)return;
+      const btn=document.createElement('button');btn.className='apxn-studio-manage';btn.type='button';btn.setAttribute('data-apxn-studio','');btn.textContent='معاينة / تعديل / نسخ / حذف';
+      btn.addEventListener('click',()=>openEditor(id));actions.appendChild(btn);
+    });
+    const toolbar=document.querySelector('#preview-overlay .preview-toolbar');
+    if(toolbar && !el('apxn-studio-preview-copy')) {
+      const btn=document.createElement('button');btn.id='apxn-studio-preview-copy';btn.type='button';btn.className='apxn-studio-button apxn-studio-secondary';btn.textContent='نسخ نص المقالة';
+      btn.addEventListener('click',async()=>{ if(studio.lastPreviewId){await copyArticle(studio.lastPreviewId);alert('تم نسخ النص الكامل للمقالة.')} });toolbar.appendChild(btn);
+    }
+  }
+
+  const overlay=document.createElement('div');
+  overlay.id='apxn-studio-overlay';overlay.className='apxn-studio-overlay';overlay.hidden=true;
+  overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','محرر مقالات APXN');
+  overlay.innerHTML=`<div class="apxn-studio-shell">
+    <div class="apxn-studio-head"><strong id="apxn-studio-heading">محرر المقالات</strong><button type="button" class="apxn-studio-button apxn-studio-secondary" id="apxn-studio-close">إغلاق</button></div>
+    <p class="apxn-studio-note">يُعرض التعديل هنا قبل الحفظ. لا تتغير المقالة المنشورة إلا بعد نجاح الحفظ على الخادم.</p>
+    <div class="apxn-studio-actions"><button type="button" class="apxn-studio-button apxn-studio-secondary" id="apxn-studio-show-edit">تحرير</button><button type="button" class="apxn-studio-button apxn-studio-secondary" id="apxn-studio-show-preview">معاينة</button><button type="button" class="apxn-studio-button apxn-studio-secondary" id="apxn-studio-copy">نسخ النص</button></div>
+    <div id="apxn-studio-feedback" class="apxn-studio-feedback" aria-live="polite"></div>
+    <form id="apxn-studio-form">
+       <div class="apxn-studio-form-grid">
+         <label class="apxn-studio-field full">عنوان المقالة <input id="apxn-studio-title" class="apxn-studio-control" required maxlength="180"></label>
+         <label class="apxn-studio-field full">وصف المقالة <textarea id="apxn-studio-description" class="apxn-studio-control" required maxlength="350"></textarea></label>
+         <label class="apxn-studio-field">التصنيف <select id="apxn-studio-category" class="apxn-studio-control"><option>APXN News</option><option>APXN Guides</option><option>Blockchain</option><option>Web3</option><option>Security</option><option>Education</option><option>Development</option><option>BSC</option></select></label>
+         <label class="apxn-studio-field">الكلمات المفتاحية مفصولة بفاصلة <input id="apxn-studio-keywords" class="apxn-studio-control" placeholder="APXN, Telegram, Web3"></label>
+         <label class="apxn-studio-field full">المقدمة <textarea id="apxn-studio-intro" class="apxn-studio-control" required></textarea></label>
+       </div>
+       <div class="apxn-studio-part"><h3>أقسام المقالة</h3><div id="apxn-studio-sections"></div><button type="button" id="apxn-studio-add-section" class="apxn-studio-button apxn-studio-secondary">＋ إضافة قسم</button></div>
+       <div class="apxn-studio-part"><h3>أسئلة وأجوبة (اختياري)</h3><div id="apxn-studio-faq"></div><button type="button" id="apxn-studio-add-faq" class="apxn-studio-button apxn-studio-secondary">＋ إضافة سؤال</button></div>
+       <label class="apxn-studio-field full">الخاتمة <textarea id="apxn-studio-conclusion" class="apxn-studio-control" required></textarea></label>
+       <div class="apxn-studio-part"><h3>صورة المقالة</h3>
+        <img id="apxn-studio-image-preview" class="apxn-studio-image" alt="معاينة صورة المقالة" hidden>
+        <input type="file" id="apxn-studio-image-input" accept="image/jpeg,image/png,image/webp,image/gif" class="apxn-studio-control">
+        <p class="apxn-studio-note">الصور المسموحة: JPG، PNG، WebP، GIF. الحد الأقصى 3 MB.</p>
+        <div class="apxn-studio-actions"><button type="button" class="apxn-studio-button apxn-studio-secondary" id="apxn-studio-remove-image">حذف الصورة الحالية</button><button type="button" class="apxn-studio-button apxn-studio-secondary" id="apxn-studio-keep-image">إبقاء الصورة الحالية</button></div>
+       </div>
+       <div class="apxn-studio-actions" style="padding-top:15px">
+        <button type="button" class="apxn-studio-button" id="apxn-studio-save">حفظ التعديلات</button>
+        <button type="button" class="apxn-studio-button apxn-studio-secondary" id="apxn-studio-publish">حفظ ونشر</button>
+        <button type="button" class="apxn-studio-button apxn-studio-danger" id="apxn-studio-delete">حذف المقالة</button>
+       </div>
+    </form>
+    <div id="apxn-studio-preview" class="apxn-studio-preview" hidden></div>
+  </div>`;
+  document.body.appendChild(overlay);
+  const msg=(text)=>{el('apxn-studio-feedback').textContent=text||''};
+  const setBusy=(busy)=>{studio.busy=busy;overlay.querySelectorAll('button').forEach(b=>{if(b.id!=='apxn-studio-close')b.disabled=busy})};
+  const sectionRows=()=>Array.from(el('apxn-studio-sections').querySelectorAll('[data-studio-section]'));
+  const faqRows=()=>Array.from(el('apxn-studio-faq').querySelectorAll('[data-studio-faq]'));
+
+  function addSection(section={heading:'',paragraphs:[paragraph('')]}) {
+    const card=document.createElement('div');card.className='apxn-studio-part';card.setAttribute('data-studio-section',uid());
+    card.innerHTML=`<label class="apxn-studio-field">عنوان القسم<input class="apxn-studio-control" data-section-heading required></label>
+      <label class="apxn-studio-field">نص القسم (يمكن فصل الفقرات بسطر فارغ)<textarea class="apxn-studio-control" data-section-body required rows="7"></textarea></label>
+      <button class="apxn-studio-button apxn-studio-secondary" type="button" data-remove-section>حذف هذا القسم</button>`;
+    card.querySelector('[data-section-heading]').value=section.heading||'';
+    card.querySelector('[data-section-body]').value=(section.paragraphs||[]).map(p=>p.text||'').join('\n\n');
+    card.querySelector('[data-remove-section]').addEventListener('click',()=>{
+      if(sectionRows().length<=1){msg('يجب الاحتفاظ بقسم واحد على الأقل.');return}card.remove();});
+    el('apxn-studio-sections').appendChild(card);
+  }
+  function addFaq(item={question:'',answer:''}) {
+    const card=document.createElement('div');card.className='apxn-studio-part';card.setAttribute('data-studio-faq',uid());
+    card.innerHTML=`<label class="apxn-studio-field">السؤال<input class="apxn-studio-control" data-faq-question></label>
+      <label class="apxn-studio-field">الإجابة<textarea class="apxn-studio-control" data-faq-answer></textarea></label>
+      <button class="apxn-studio-button apxn-studio-secondary" type="button" data-remove-faq>حذف السؤال</button>`;
+    card.querySelector('[data-faq-question]').value=item.question||'';
+    card.querySelector('[data-faq-answer]').value=item.answer||'';
+    card.querySelector('[data-remove-faq]').addEventListener('click',()=>card.remove());
+    el('apxn-studio-faq').appendChild(card);
+  }
+
+  function readForm() {
+    const title=el('apxn-studio-title').value.trim();
+    const description=el('apxn-studio-description').value.trim();
+    const category=el('apxn-studio-category').value;
+    const keywords=el('apxn-studio-keywords').value.split(/[,،]/).map(s=>s.trim()).filter(Boolean).slice(0,15);
+    const intro=el('apxn-studio-intro').value.trim();
+    const sections=sectionRows().map(row=>({heading:row.querySelector('[data-section-heading]').value.trim(),paragraphs:row.querySelector('[data-section-body]').value.trim().split(/\n\s*\n/g).map(s=>s.trim()).filter(Boolean).map(paragraph)}));
+    const faq=faqRows().map(row=>({question:row.querySelector('[data-faq-question]').value.trim(),answer:row.querySelector('[data-faq-answer]').value.trim(),evidence_ids:[]})).filter(x=>x.question&&x.answer);
+    const conclusion=el('apxn-studio-conclusion').value.trim();
+    return {title,description,excerpt:description,category,keywords,content:{title,description,keywords,intro:paragraph(intro),sections,faq,conclusion:paragraph(conclusion)}};
+  }
+  function fillForm(article) {
+    const c=article.content||{};
+    el('apxn-studio-title').value=c.title||article.title||'';
+    el('apxn-studio-description').value=c.description||article.description||'';
+    el('apxn-studio-category').value=article.category||'APXN News';
+    el('apxn-studio-keywords').value=(c.keywords||article.keywords||[]).join(', ');
+    el('apxn-studio-intro').value=c.intro?.text||'';
+    el('apxn-studio-conclusion').value=c.conclusion?.text||'';
+    el('apxn-studio-sections').replaceChildren();
+    (c.sections?.length?c.sections:[{heading:'',paragraphs:[paragraph('')]}]).forEach(addSection);
+    el('apxn-studio-faq').replaceChildren();(c.faq||[]).forEach(addFaq);
+    studio.imageFile=null;studio.imageAction='keep';el('apxn-studio-image-input').value='';
+    updateImagePreview(article.image||'');
+    el('apxn-studio-delete').hidden=studio.mode==='new';
+    el('apxn-studio-heading').textContent=studio.mode==='new'?'إنشاء مقالة جديدة':'معاينة وتعديل المقالة';
+  }
+  function updateImagePreview(src) {
+    const img=el('apxn-studio-image-preview');img.hidden=!src;
+    if(src)img.src=src;else img.removeAttribute('src');
+  }
+
+  async function fetchArticle(id) {
+    const response=await fetch(API_LIST,{credentials:'same-origin',cache:'no-store'});
+    if(!response.ok)throw new Error(response.status===401?'جلسة الإدارة منتهية. أعد تسجيل الدخول.':'تعذر تحميل بيانات المقالة.');
+    const data=await response.json();
+    const item=(data.articles||[]).find(a=>String(a.id)===String(id));
+    if(!item)throw new Error('لم يتم العثور على المقالة.');
+    return item;
+  }
+  async function openEditor(id) {
+    if(studio.previewUrl){URL.revokeObjectURL(studio.previewUrl);studio.previewUrl=null}
+    msg('');
+    studio.mode=id?'edit':'new';studio.article=id?null:emptyArticle();studio.original=null;
+    overlay.hidden=false;document.body.style.overflow='hidden';
+    el('apxn-studio-form').hidden=false;el('apxn-studio-preview').hidden=true;
+    if(id){msg('جاري تحميل المقالة...');try{const article=await fetchArticle(id);studio.article=clone(article);studio.original=clone(article);fillForm(studio.article);msg('');}catch(e){msg(e.message);el('apxn-studio-form').hidden=true;}}
+    else fillForm(studio.article);
+  }
+  function closeEditor(force=false){if(studio.busy&&!force)return;overlay.hidden=true;document.body.style.overflow='';if(studio.previewUrl){URL.revokeObjectURL(studio.previewUrl);studio.previewUrl=null}}
+
+  function articleAsText(a) {
+    const c=a.content||{};
+    return [a.title,a.description,c.intro?.text||'',...(c.sections||[]).flatMap(s=>[s.heading,...(s.paragraphs||[]).map(p=>p.text||'')]),...(c.faq||[]).flatMap(f=>[f.question,f.answer]),c.conclusion?.text||''].filter(Boolean).join('\n\n');
+  }
+  async function doCopy(a) {
+    const text=articleAsText(a);
+    try{await navigator.clipboard.writeText(text);msg('تم نسخ النص الكامل بنجاح.');}
+    catch{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.top='-9999px';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();msg(ok?'تم نسخ النص.':'تعذر النسخ التلقائي. يمكنك تحديد النص يدويًا.');}
+  }
+  async function copyArticle(id){try{const a=await fetchArticle(id);await doCopy(a)}catch(e){msg(e.message)}}
+  function showPreview() {
+    if(!studio.article)return;
+    const a={...studio.article,...readForm()},c=a.content;const view=el('apxn-studio-preview');
+    const paragraphs=(xs)=>(xs||[]).map(p=>`<p>${esc(p.text||'')}</p>`).join('');
+    const picture=el('apxn-studio-image-preview').getAttribute('src')||'';
+    view.innerHTML=`<div class="apxn-studio-note">معاينة خاصة، لم يتم حفظ التغييرات بعد</div><h1>${esc(a.title)}</h1><p>${esc(a.description)}</p>${picture?`<img alt="صورة المقالة" src="${esc(picture)}">`:''}<p>${esc(c.intro.text)}</p>${(c.sections||[]).map(s=>`<h2>${esc(s.heading)}</h2>${paragraphs(s.paragraphs)}`).join('')}${c.faq.length?`<h2>الأسئلة الشائعة</h2>${c.faq.map(f=>`<h3>${esc(f.question)}</h3><p>${esc(f.answer)}</p>`).join('')}`:''}<h2>الخاتمة</h2><p>${esc(c.conclusion.text)}</p>`;
+    el('apxn-studio-form').hidden=true;view.hidden=false;msg('');
+  }
+  function showEdit(){el('apxn-studio-form').hidden=false;el('apxn-studio-preview').hidden=true;}
+  async function fileBase64(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('تعذر قراءة الصورة.'));reader.readAsDataURL(file)});}
+  function validateContent(a) {
+    if(!a.title||!a.description||!a.content.intro.text||!a.content.conclusion.text)throw new Error('أدخل العنوان والوصف والمقدمة والخاتمة.');
+    if(!a.content.sections.length||a.content.sections.some(s=>!s.heading||!s.paragraphs.length))throw new Error('كل قسم يحتاج عنوانًا ونصًا.');
+    const invalidFaq=faqRows().some(row=>Boolean(row.querySelector('[data-faq-question]').value.trim())!==Boolean(row.querySelector('[data-faq-answer]').value.trim()));
+    if(invalidFaq)throw new Error('أكمل السؤال وإجابته أو احذفه.');
+  }
+  async function manageRequest(payload) {
+    const response=await fetch(API_MANAGE,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const raw=await response.text();let data;try{data=JSON.parse(raw)}catch{data={}};
+    if(!response.ok||data.success!==true){
+      if(response.status===404||response.status===405)throw new Error('وظائف الحفظ تحتاج ربط API في الخطوة القادمة. لم تُحفظ أي تغييرات.');
+      if(response.status===401)throw new Error('انتهت جلسة الإدارة؛ سجل الدخول مجددًا.');
+      throw new Error(data.error||`تعذر الحفظ (HTTP ${response.status}).`);
+    }
+    return data;
+  }
+  async function doSave(publish=false){
+    if(studio.busy||!studio.article)return;
+    try{
+      const a=readForm();validateContent(a);
+      if(publish&&studio.mode==='new'&&!studio.imageFile)throw new Error('اختر صورة قبل نشر مقالة جديدة.');
+      const status=studio.mode==='new'?(publish?'published':'draft'):(publish?'published':studio.original.status);
+      const payload={action:studio.mode==='new'?'create':'update',article_id:studio.original?.id||null,expected_updated_at:studio.original?.updated_at||null,article:{...a,status},image_action:studio.imageAction};
+      if(studio.imageFile){payload.image={name:studio.imageFile.name,type:studio.imageFile.type,base64:await fileBase64(studio.imageFile)}}
+      setBusy(true);msg('جاري حفظ التغييرات...');
+      await manageRequest(payload);msg('تم الحفظ بنجاح على الموقع.');closeEditor(true);el('refresh-button')?.click();
+    }catch(e){msg(e.message||'تعذر الحفظ.')}finally{setBusy(false)}
+  }
+  async function doDelete(){
+    if(studio.mode==='new'||!studio.original||studio.busy)return;
+    if(!window.confirm(`هل تريد حذف المقالة نهائيًا؟\n${studio.original.title}\nلن يتم حذف المقالات الأخرى.`))return;
+    try{setBusy(true);msg('جاري حذف المقالة...');await manageRequest({action:'delete',article_id:studio.original.id,expected_updated_at:studio.original.updated_at});msg('تم حذف المقالة.');closeEditor(true);el('refresh-button')?.click();}
+    catch(e){msg(e.message||'تعذر الحذف.')}finally{setBusy(false)}
+  }
+
+  el('apxn-studio-close').addEventListener('click',closeEditor);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closeEditor()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closeEditor()});
+  el('apxn-studio-add-section').addEventListener('click',()=>addSection());
+  el('apxn-studio-add-faq').addEventListener('click',()=>addFaq());
+  el('apxn-studio-show-edit').addEventListener('click',showEdit);
+  el('apxn-studio-show-preview').addEventListener('click',showPreview);
+  el('apxn-studio-copy').addEventListener('click',()=>studio.article&&doCopy({...studio.article,...readForm()}));
+  el('apxn-studio-save').addEventListener('click',()=>doSave(false));
+  el('apxn-studio-publish').addEventListener('click',()=>doSave(true));
+  el('apxn-studio-delete').addEventListener('click',doDelete);
+  el('apxn-studio-form').addEventListener('submit',e=>e.preventDefault());
+  el('apxn-studio-image-input').addEventListener('change',e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    if(!IMAGE_TYPES.includes(file.type)||file.size>MAX_IMAGE_BYTES){msg('الصورة غير مدعومة أو أكبر من 3 MB.');e.target.value='';return}
+    if(studio.previewUrl)URL.revokeObjectURL(studio.previewUrl);
+    studio.previewUrl=URL.createObjectURL(file);studio.imageFile=file;studio.imageAction='replace';updateImagePreview(studio.previewUrl);msg('الصورة الجديدة جاهزة للحفظ.');
+  });
+  el('apxn-studio-remove-image').addEventListener('click',()=>{studio.imageAction='remove';studio.imageFile=null;el('apxn-studio-image-input').value='';updateImagePreview('');msg('سيتم حذف الصورة عند نجاح الحفظ.');});
+  el('apxn-studio-keep-image').addEventListener('click',()=>{studio.imageAction='keep';studio.imageFile=null;el('apxn-studio-image-input').value='';updateImagePreview(studio.original?.image||'');msg('سيتم الإبقاء على الصورة الحالية.');});
+  document.addEventListener('click',e=>{const button=e.target.closest('[data-action="preview"]');if(button)studio.lastPreviewId=button.dataset.id},true);
+  const list=el('articles');if(list){const observer=new MutationObserver(()=>install());observer.observe(list,{childList:true,subtree:true})}
+  install();
+})();
+</script>
+<!-- APXN_ARTICLE_STUDIO_V1: END -->
+
 </body>
 </html>
 
