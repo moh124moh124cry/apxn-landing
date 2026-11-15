@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 19,
-    "published": 16,
-    "ready": 3,
+    "published": 17,
+    "ready": 2,
     "drafts": 0,
     "featured": 1
   },
@@ -3855,19 +3855,19 @@
       "category": "APXN News",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-11-15",
       "generated_at": "2026-11-15",
       "updated_at": "2026-11-15",
-      "published_at": null,
+      "published_at": "2026-11-15",
       "reading_minutes": 6,
       "word_count": 1290,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
+      "url": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
+      "image": "https://apxn.network/blog/images/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates-1000151446.webp",
+      "image_filename": "apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates-1000151446.webp",
       "keywords": [
         "APXN Network",
         "Cloudflare migration",
@@ -3891,7 +3891,7 @@
         "title": "APXN Network Shares Infrastructure Migration Progress and Verified Points Level Updates",
         "description": "APXN Network reports completion of Cloudflare migration for key services while preserving user data and details the seven-tier reward structure based on verified points along.",
         "canonical": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -4066,7 +4066,8 @@
           ]
         }
       },
-      "verified_against_knowledge": true
+      "verified_against_knowledge": true,
+      "published_url": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html"
     }
   ],
   "generation_queue": [
@@ -4408,7 +4409,7 @@
       "priority": 7,
       "topic": "APXN Project News: Latest Project Development Updates (4296740a7d5e)",
       "category": "APXN News",
-      "status": "ready",
+      "status": "published",
       "source": "admin_editorial_submission",
       "topic_bank_id": "bank-admin-4296740a7d5e",
       "language": "en",
@@ -4423,7 +4424,8 @@
       "auto_publish_allowed": true,
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
       "article_id": "apxn-019",
-      "generated_at": "2026-11-15"
+      "generated_at": "2026-11-15",
+      "published_at": "2026-11-15"
     },
     {
       "priority": 6,
@@ -4448,7 +4450,7 @@
   ],
   "automation_state": {
     "last_generated_article": "apxn-019",
-    "last_published_article": "apxn-018",
+    "last_published_article": "apxn-019",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
