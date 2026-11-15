@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-11-15",
+  "last_updated": "2026-11-16",
   "default_language": "en",
   "stats": {
     "total_articles": 19,
@@ -3849,9 +3849,9 @@
     {
       "id": "apxn-019",
       "slug": "apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates",
-      "title": "OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update",
-      "description": "Apex Network announces seven updated Verified APXN Points levels, Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.",
-      "excerpt": "Apex Network announces seven updated Verified APXN Points levels, Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.",
+      "title": "Apex Network (APXN) Announces Updated Seven-Level Verified Points Reward System",
+      "description": "Apex Network details the seven Verified APXN Points levels, Membership & Loyalty KYC rewards, the 2027 claim schedule, and the 63 million APXN community allocation.",
+      "excerpt": "Apex Network details the seven Verified APXN Points levels, Membership & Loyalty KYC rewards, the 2027 claim schedule, and the 63 million APXN community allocation.",
       "category": "APXN News",
       "language": "en",
       "author": "Apex Network Editorial",
@@ -3860,25 +3860,25 @@
       "indexable": true,
       "created_at": "2026-11-15",
       "generated_at": "2026-11-15",
-      "updated_at": "2026-11-15",
+      "updated_at": "2026-11-16",
       "published_at": "2026-11-15",
-      "reading_minutes": 1,
-      "word_count": 219,
+      "reading_minutes": 8,
+      "word_count": 1700,
       "path": "blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
       "url": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
       "image": "https://apxn.network/logo2%20(1).png",
       "image_filename": "",
       "keywords": [
         "Apex Network",
-        "APXN",
+        "APXN level system",
         "Verified APXN Points",
-        "APXN Level System",
+        "APXN community rewards",
         "Membership and Loyalty KYC",
-        "APXN Rewards",
-        "100 APXN Airdrop",
-        "APXN Community Allocation"
+        "APXN airdrop 2027",
+        "seven APXN levels",
+        "APXN tokenomics"
       ],
-      "source": "founder_supplied_official_announcement",
+      "source": "official_apxn_seven_levels_announcement",
       "content_mode": "apxn",
       "source_profile": null,
       "seo_ready": true,
@@ -3886,107 +3886,129 @@
       "duplicate_check": true,
       "quality_check": true,
       "seo": {
-        "title": "OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update",
-        "description": "Apex Network announces seven updated Verified APXN Points levels, Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.",
+        "title": "Apex Network (APXN) Announces Updated Seven-Level Verified Points Reward System",
+        "description": "Apex Network details the seven Verified APXN Points levels, Membership & Loyalty KYC rewards, the 2027 claim schedule, and the 63 million APXN community allocation.",
         "canonical": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
         "robots": "index, follow",
         "article_schema": true,
         "faq_schema": false
       },
       "content": {
-        "title": "OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update",
-        "description": "Apex Network announces seven updated Verified APXN Points levels, Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.",
+        "title": "Apex Network (APXN) Announces Updated Seven-Level Verified Points Reward System",
+        "description": "Apex Network details the seven Verified APXN Points levels, Membership & Loyalty KYC rewards, the 2027 claim schedule, and the 63 million APXN community allocation.",
         "keywords": [
           "Apex Network",
-          "APXN",
+          "APXN level system",
           "Verified APXN Points",
-          "APXN Level System",
+          "APXN community rewards",
           "Membership and Loyalty KYC",
-          "APXN Rewards",
-          "100 APXN Airdrop",
-          "APXN Community Allocation"
+          "APXN airdrop 2027",
+          "seven APXN levels",
+          "APXN tokenomics"
         ],
         "intro": {
-          "text": "The Apex Network team is pleased to announce an update to the 7-level reward system, based exclusively on Verified APXN Points.",
+          "text": "Apex Network (APXN) has announced an update to its seven-level reward system, with every level determined exclusively by Verified APXN Points. The announcement clarifies the point ranges that define the seven levels, the method used to assess balances containing decimal values, and the relationship between verified points and the community reward structure. It also explains the forthcoming Membership & Loyalty KYC program, scheduled for the first quarter of 2027, and the reward opportunities associated with successful completion of its required tasks. The update brings together the level thresholds, the 20,000-point KYC completion reward, the limited 100 APXN allocation for the first 10,000 eligible participants, and the project's 63,000,000 APXN community allocation. Each part of the announcement has a distinct role within the wider Apex Network reward system.",
           "evidence_ids": []
         },
         "sections": [
           {
-            "heading": "THE 7 APXN LEVELS",
+            "heading": "Seven Levels Built Around Verified APXN Points",
             "paragraphs": [
               {
-                "text": "🥉 Level 1 — 20,000 – 49,999 Verified APXN Points.",
+                "text": "The central rule of the updated system is that Verified APXN Points determine a participant's level. The seven levels are not based on an unverified points total or on a separate ranking method. Instead, each level corresponds to a published interval of verified points. This gives community members a single reference when checking which level their balance has reached. Level 1 starts at 20,000 Verified APXN Points. The structure then progresses through higher thresholds until Level 7, which is reserved for balances greater than 500,000 Verified APXN Points. The level system is intended to organize eligible community participation according to the verified points recorded for each account.",
                 "evidence_ids": []
               },
               {
-                "text": "🥉 Level 2 — 50,000 – 99,999 Verified APXN Points.",
-                "evidence_ids": []
-              },
-              {
-                "text": "🥈 Level 3 — 100,000 – 149,999 Verified APXN Points.",
-                "evidence_ids": []
-              },
-              {
-                "text": "🥈 Level 4 — 150,000 – 249,999 Verified APXN Points.",
-                "evidence_ids": []
-              },
-              {
-                "text": "🥇 Level 5 — 250,000 – 349,999 Verified APXN Points.",
-                "evidence_ids": []
-              },
-              {
-                "text": "💎 Level 6 — 350,000 – 500,000 Verified APXN Points.",
-                "evidence_ids": []
-              },
-              {
-                "text": "👑 Level 7 — More than 500,000 Verified APXN Points.",
+                "text": "The distinction between verified points and other displayed activity matters throughout the framework. The announcement repeatedly specifies Verified APXN Points because they are the measurement used to assign each level and to guide proportional distribution within each level. A high balance of points that have not been verified should not be presented as an equivalent level-qualifying amount. The published ranges therefore serve as clear reference points for community members following their progress. They also make the categories understandable without introducing separate calculations or alternative criteria into the level thresholds. The rules below should be read together: first identify the verified balance, then compare it with the precise range for the appropriate level.",
                 "evidence_ids": []
               }
             ]
           },
           {
-            "heading": "Important Note",
+            "heading": "Official APXN Level Thresholds: Levels 1 Through 4",
             "paragraphs": [
               {
-                "text": "Important Note: All levels are determined exclusively by Verified APXN Points. If a balance contains decimal values, the user's level is determined by whether they have reached the actual minimum threshold.",
+                "text": "Level 1 applies to balances from 20,000 through 49,999 Verified APXN Points. Level 2 begins at 50,000 and continues through 99,999 verified points. Level 3 covers the interval from 100,000 to 149,999 verified points. Level 4 begins at 150,000 and extends through 249,999 Verified APXN Points. These four ranges form the first part of the official seven-level structure. Each published range identifies a minimum point balance that an account must actually reach to enter that level. The ranges provide a straightforward way for participants to recognize the level associated with their verified balance.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The progression between these levels is defined by the boundaries in the official announcement, not by rounded estimates or informal descriptions. A balance must meet the minimum of the next level before a higher classification applies. A participant whose verified balance is below the next threshold remains in the previous applicable range. The same principle is used when checking amounts containing decimal values: the actual recorded balance matters. This makes it important to use the precise ranges rather than assuming that a nearby or rounded figure qualifies. The system begins at 20,000 verified points, providing a clear entry threshold for Level 1 under the updated community rewards framework.",
                 "evidence_ids": []
               }
             ]
           },
           {
-            "heading": "MEMBERSHIP & LOYALTY KYC | Q1 2027",
+            "heading": "Official APXN Level Thresholds: Levels 5 Through 7",
             "paragraphs": [
               {
-                "text": "Every eligible user who successfully completes all required KYC tasks will instantly receive 20,000 Verified APXN Points, credited directly to their balance.",
+                "text": "Level 5 runs from 250,000 through 349,999 Verified APXN Points. Level 6 begins at 350,000 and extends through 500,000 Verified APXN Points, including the 500,000-point boundary itself. Level 7 applies to balances of more than 500,000 Verified APXN Points. This distinction is essential: Level 7 does not start at 500,000, because the announcement expressly places 500,000 within Level 6. The highest level is reached only when the verified balance exceeds that amount. The three upper levels complete the official seven-tier schedule and must be shown consistently wherever Apex Network explains the level system.",
                 "evidence_ids": []
               },
               {
-                "text": "This allows new users to reach Level 1 immediately!",
-                "evidence_ids": []
-              },
-              {
-                "text": "The first 10,000 eligible users will also receive an allocation of 100 APXN each, with claiming scheduled to open in Q2 2027.",
-                "evidence_ids": []
-              },
-              {
-                "text": "After the first 10,000 participants have received their allocation, the 20,000 Verified APXN Points reward will remain available to all eligible users, with no limit on the number of recipients.",
+                "text": "This updated structure places particular importance on the transition between Levels 6 and 7. The official wording uses “350,000 – 500,000” for Level 6 and “More than 500,000” for Level 7. These are the exact boundaries to use when discussing the two levels. It would be incorrect to shift Level 6 upward, to describe Level 7 as beginning at one million, or to treat 500,000 as already above the Level 6 ceiling. The level labels are intended to be easy for participants to recognize, but the numerical conditions determine the classification. Readers should therefore use these updated figures rather than any earlier level ranges.",
                 "evidence_ids": []
               }
             ]
           },
           {
-            "heading": "63,000,000 APXN Community Allocation",
+            "heading": "How Decimal Balances Affect Level Determination",
             "paragraphs": [
               {
-                "text": "63,000,000 APXN are allocated to the community, distributed through the 7-level system proportionally to Verified APXN Points within each level.",
+                "text": "Apex Network has also clarified how the level system treats balances that contain decimal values. The determining factor is whether the actual verified balance has reached the minimum threshold required for a level. The number should not be rounded upward merely to grant a higher classification. In the lower levels, an account enters a higher category once its verified points reach the stated minimum for that category. In the upper levels, the same rule applies while respecting the official wording of the boundaries. A verified balance at exactly 500,000 remains within Level 6, whereas a verified balance greater than 500,000 meets the stated condition for Level 7.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Using actual verified amounts provides a consistent interpretation of the published ranges. The level system can be understood without changing the announced thresholds or introducing a new point-conversion rule. For community members, the practical reference is the verified points amount associated with their account, rather than an approximation of the figure or a rounded display value. The official announcement does not replace the verified-points requirement with any other measure. Its purpose is to communicate the level boundaries clearly and explain how precise balances are classified. This rule applies throughout the seven-level structure and is particularly important at the transition into a new level.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "Membership & Loyalty KYC Rewards in Q1 2027",
+            "paragraphs": [
+              {
+                "text": "The update also outlines the Membership & Loyalty KYC program scheduled for the first quarter of 2027. Under the announced terms, every eligible user who successfully completes all required KYC tasks will receive 20,000 Verified APXN Points credited directly to their balance. The reward is described as immediate upon successful completion of the required process. Since Level 1 starts at 20,000 verified points, this completion reward is enough for a newly eligible participant to reach Level 1. This connection between the entry threshold and the KYC reward is one of the central messages of the official announcement.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The 20,000-point reward is part of the verified-points economy and should be described using the same terminology as the level system itself. It is not presented as 20,000 APXN tokens; it is a reward denominated in Verified APXN Points. The announced benefit depends on eligibility and successful completion of all required KYC tasks. It should not be described as automatically available before the program launches or before those requirements are fulfilled. The scheduled first-quarter 2027 launch establishes the next planned stage for this reward. The stated benefit is direct and clear: qualified completion adds verified points to the account and allows participants to enter the seven-level framework.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "First 10,000 Users, 2027 Claims and Community Allocation",
+            "paragraphs": [
+              {
+                "text": "The first 10,000 eligible users who meet the Membership & Loyalty KYC requirements will also receive an allocation of 100 APXN each. This allocation is separate from the 20,000 Verified APXN Points completion reward. The claim period for the 100 APXN allocation is scheduled to open in the second quarter of 2027. Accordingly, the announcement distinguishes the allocation awarded to qualifying early participants from the later opportunity to claim it. It does not state that those APXN tokens are immediately claimable during the first-quarter KYC stage. This limited allocation is an additional benefit for the first 10,000 eligible participants in the program.",
+                "evidence_ids": []
+              },
+              {
+                "text": "After the first 10,000 eligible participants have received their 100 APXN allocation, the 20,000 Verified APXN Points reward will continue to be available to all users who meet the KYC requirements, with no limit on the number of recipients of that points reward. The limited token allocation and the continuing points reward must therefore not be confused. Beyond those KYC benefits, Apex Network has allocated 63,000,000 APXN to the community through the seven-level system. Within each level, distribution is proportional to eligible users' Verified APXN Points. This links the larger community allocation to the same verified-points principle used to determine levels, while keeping the limited early-participant allocation distinct.",
                 "evidence_ids": []
               }
             ]
           }
         ],
-        "faq": [],
+        "faq": [
+          {
+            "question": "What are the seven official APXN level ranges?",
+            "answer": "Level 1 is 20,000–49,999 Verified APXN Points; Level 2 is 50,000–99,999; Level 3 is 100,000–149,999; and Level 4 is 150,000–249,999. Level 5 is 250,000–349,999. Level 6 is 350,000–500,000, while Level 7 applies to more than 500,000 verified points. These are the updated ranges announced by the Apex Network team. All seven classifications depend exclusively on Verified APXN Points, and balances containing decimals are assessed against the actual minimum applicable to each level.",
+            "evidence_ids": []
+          },
+          {
+            "question": "What does an eligible user receive after completing Membership & Loyalty KYC?",
+            "answer": "When the Membership & Loyalty KYC program launches in Q1 2027, every eligible user who successfully completes the required tasks is scheduled to receive 20,000 Verified APXN Points credited directly to their balance. This amount meets the starting threshold for Level 1. The first 10,000 eligible participants will additionally receive an allocation of 100 APXN each, with claiming planned to open in Q2 2027. The points reward and the separate APXN allocation should not be treated as the same reward.",
+            "evidence_ids": []
+          },
+          {
+            "question": "Does the 20,000 Verified APXN Points KYC reward end after 10,000 participants?",
+            "answer": "No. The announcement states that the 20,000 Verified APXN Points completion reward remains available to all eligible users after the limited first-10,000 allocation has been assigned. There is no cap on the number of eligible recipients of that verified-points reward. The 100 APXN allocation, by contrast, is specifically limited to the first 10,000 qualifying participants. Separately, the community allocation totals 63,000,000 APXN and is organized through the seven-level system with proportional distribution within each level based on verified points.",
+            "evidence_ids": []
+          }
+        ],
         "conclusion": {
-          "text": "APEX NETWORK (APXN) — MINE TODAY. BUILD TOMORROW.",
+          "text": "The updated Apex Network reward framework establishes seven precise categories based exclusively on Verified APXN Points. Level 1 begins at 20,000 points, Level 6 covers 350,000 through 500,000 points, and Level 7 requires more than 500,000. The scheduled Membership & Loyalty KYC program adds a 20,000-point completion reward for eligible users and a separate 100 APXN allocation for the first 10,000 qualifying participants, with claims planned for Q2 2027. The continuing verified-points reward is not limited to those first participants. Together with the 63,000,000 APXN community allocation, these rules provide an official reference for the seven-level system and its announced rewards.",
           "evidence_ids": []
         }
       },
