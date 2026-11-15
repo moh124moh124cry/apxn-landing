@@ -1822,10 +1822,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 173818500,
           "cost_usd": 0.01738185
+        },
+        {
+          "date": "2026-11-15",
+          "response_id": "8f1cc3b3-aed5-9a9e-8e71-c92a636fe5f2",
+          "model": "grok-4.3",
+          "topic": "APXN Project News: Latest Project Development Updates (4296740a7d5e)",
+          "article_slug": "apxn-project-news-latest-project-development-updates-4296740a7d5e",
+          "stage": "research_packet_writing",
+          "input_tokens": 4918,
+          "cached_input_tokens": 128,
+          "output_tokens": 2883,
+          "reasoning_tokens": 652,
+          "total_tokens": 7801,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 132206000,
+          "cost_usd": 0.0132206
         }
       ],
-      "total_cost_usd": 0.05735115
+      "total_cost_usd": 0.07057175
     }
   },
-  "last_updated": "2026-11-14"
+  "last_updated": "2026-11-15"
 }
