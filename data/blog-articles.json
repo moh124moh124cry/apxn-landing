@@ -3849,9 +3849,9 @@
     {
       "id": "apxn-019",
       "slug": "apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates",
-      "title": "APXN Network Updates Seven Verified Points Levels and Community Rewards",
-      "description": "Apex Network explains the seven verified APXN Points levels, the 63 million APXN community allocation, and the planned Membership and Loyalty rewards.",
-      "excerpt": "Apex Network explains the seven verified APXN Points levels, the 63 million APXN community allocation, and the planned Membership and Loyalty rewards.",
+      "title": "OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update",
+      "description": "Apex Network announces seven updated Verified APXN Points levels, Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.",
+      "excerpt": "Apex Network announces seven updated Verified APXN Points levels, Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.",
       "category": "APXN News",
       "language": "en",
       "author": "Apex Network Editorial",
@@ -3862,23 +3862,23 @@
       "generated_at": "2026-11-15",
       "updated_at": "2026-11-15",
       "published_at": "2026-11-15",
-      "reading_minutes": 6,
-      "word_count": 1234,
+      "reading_minutes": 1,
+      "word_count": 219,
       "path": "blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
       "url": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
       "image": "https://apxn.network/logo2%20(1).png",
       "image_filename": "",
       "keywords": [
-        "APXN Network",
+        "Apex Network",
+        "APXN",
         "Verified APXN Points",
-        "seven reward levels",
-        "APXN community allocation",
-        "63 million APXN",
-        "APXN Membership and Loyalty",
-        "APXN airdrops",
-        "APXN roadmap"
+        "APXN Level System",
+        "Membership and Loyalty KYC",
+        "APXN Rewards",
+        "100 APXN Airdrop",
+        "APXN Community Allocation"
       ],
-      "source": "official_apxn_public_editorial_update",
+      "source": "founder_supplied_official_announcement",
       "content_mode": "apxn",
       "source_profile": null,
       "seo_ready": true,
@@ -3886,129 +3886,107 @@
       "duplicate_check": true,
       "quality_check": true,
       "seo": {
-        "title": "APXN Network Updates Seven Verified Points Levels and Community Rewards",
-        "description": "Apex Network explains the seven verified APXN Points levels, the 63 million APXN community allocation, and the planned Membership and Loyalty rewards.",
+        "title": "OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update",
+        "description": "Apex Network announces seven updated Verified APXN Points levels, Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.",
         "canonical": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
         "robots": "index, follow",
         "article_schema": true,
-        "faq_schema": true
+        "faq_schema": false
       },
       "content": {
-        "title": "APXN Network Updates Seven Verified Points Levels and Community Rewards",
-        "description": "Apex Network explains the seven verified APXN Points levels, the 63 million APXN community allocation, and the planned Membership and Loyalty rewards.",
+        "title": "OFFICIAL ANNOUNCEMENT | Apex Network (APXN) Level System Update",
+        "description": "Apex Network announces seven updated Verified APXN Points levels, Membership & Loyalty KYC rewards in Q1 2027, and the 63 million APXN community allocation.",
         "keywords": [
-          "APXN Network",
+          "Apex Network",
+          "APXN",
           "Verified APXN Points",
-          "seven reward levels",
-          "APXN community allocation",
-          "63 million APXN",
-          "APXN Membership and Loyalty",
-          "APXN airdrops",
-          "APXN roadmap"
+          "APXN Level System",
+          "Membership and Loyalty KYC",
+          "APXN Rewards",
+          "100 APXN Airdrop",
+          "APXN Community Allocation"
         ],
         "intro": {
-          "text": "Apex Network has published an updated explanation of its seven-level community rewards framework. The levels are determined by verified APXN Points, helping participants understand how their qualifying activity relates to the community distribution structure. APXN Points are participation points in the current ecosystem and should not be confused with transferable APXN tokens. The official token allocation reserves 63 million APXN for the community, divided among seven levels. Individual token allocations, eligibility checks, and withdrawal procedures remain subject to the official rules and announcements for their respective stages.",
+          "text": "The Apex Network team is pleased to announce an update to the 7-level reward system, based exclusively on Verified APXN Points.",
           "evidence_ids": []
         },
         "sections": [
           {
-            "heading": "How the Seven APXN Levels Work",
+            "heading": "THE 7 APXN LEVELS",
             "paragraphs": [
               {
-                "text": "Each account is assigned a community level according to its verified APXN Points balance. The seven tiers start at 20,000 points and continue upward to the highest level, which begins at 1,000,000 verified points. The level framework uses the verified balance rather than the total of unverified activity. A user who has not reached the minimum for Level 1 has not entered the seven-level distribution structure. These thresholds describe level classification, not an immediate ability to withdraw tokens.",
+                "text": "🥉 Level 1 — 20,000 – 49,999 Verified APXN Points.",
                 "evidence_ids": []
               },
               {
-                "text": "The published threshold for each level is a minimum that the account must actually meet. A balance containing decimal points is assessed against the full minimum without rounding it upward. A level can change when the verified balance reaches a higher threshold under the project rules. Keeping the level rule separate from token distribution helps participants distinguish current APXN Points activity from planned token rewards. Users should rely on official project announcements for the timing and eligibility requirements of any future claim.",
+                "text": "🥉 Level 2 — 50,000 – 99,999 Verified APXN Points.",
+                "evidence_ids": []
+              },
+              {
+                "text": "🥈 Level 3 — 100,000 – 149,999 Verified APXN Points.",
+                "evidence_ids": []
+              },
+              {
+                "text": "🥈 Level 4 — 150,000 – 249,999 Verified APXN Points.",
+                "evidence_ids": []
+              },
+              {
+                "text": "🥇 Level 5 — 250,000 – 349,999 Verified APXN Points.",
+                "evidence_ids": []
+              },
+              {
+                "text": "💎 Level 6 — 350,000 – 500,000 Verified APXN Points.",
+                "evidence_ids": []
+              },
+              {
+                "text": "👑 Level 7 — More than 500,000 Verified APXN Points.",
                 "evidence_ids": []
               }
             ]
           },
           {
-            "heading": "Verified Points Thresholds from L1 to L7",
+            "heading": "Important Note",
             "paragraphs": [
               {
-                "text": "Level 1 covers 20,000 to fewer than 50,000 verified APXN Points. Level 2 covers 50,000 to fewer than 100,000 points. Level 3 covers 100,000 to fewer than 150,000 points. Level 4 covers 150,000 to fewer than 250,000 points. Each range includes its minimum but excludes the next level's minimum. This means that reaching 150,000 verified points qualifies an account for Level 4 rather than Level 3, assuming the account meets all applicable program conditions.",
-                "evidence_ids": []
-              },
-              {
-                "text": "Level 5 covers 250,000 to fewer than 450,000 verified points. Level 6 covers 450,000 to fewer than 1,000,000 verified points. Level 7 begins at 1,000,000 verified points, with no higher level currently defined in the seven-tier structure. These boundaries supersede the incorrect figures previously shown in this article. The framework offers a consistent way to describe verified points levels, while actual token allocations and claim availability will be addressed through separate official announcements.",
+                "text": "Important Note: All levels are determined exclusively by Verified APXN Points. If a balance contains decimal values, the user's level is determined by whether they have reached the actual minimum threshold.",
                 "evidence_ids": []
               }
             ]
           },
           {
-            "heading": "Understanding the 63 Million APXN Community Allocation",
+            "heading": "MEMBERSHIP & LOYALTY KYC | Q1 2027",
             "paragraphs": [
               {
-                "text": "The approved APXN tokenomics reserve 63,000,000 APXN, representing 63 percent of the total 100,000,000 APXN supply, for community allocation. This community share is organized across the seven verified-points levels. The seven levels do not imply seven identical token pools or an equal payment to every account. Each level has its own allocation, and the distribution terms are intended to reflect eligible participants' verified points within that level. Detailed allocation amounts for the separate tiers will be announced officially before distribution.",
+                "text": "Every eligible user who successfully completes all required KYC tasks will instantly receive 20,000 Verified APXN Points, credited directly to their balance.",
                 "evidence_ids": []
               },
               {
-                "text": "Within each level, eligible users share that level's designated pool proportionally to their verified APXN Points. An account holding more verified points than another account in the same level would have a larger proportional share, subject to the final published program conditions. This method is different from dividing the whole community supply equally among all participants. It also does not establish a fixed exchange rate between APXN Points and APXN tokens. Final eligibility, token allocation, and withdrawal rules remain tied to the relevant future stages of the project.",
+                "text": "This allows new users to reach Level 1 immediately!",
+                "evidence_ids": []
+              },
+              {
+                "text": "The first 10,000 eligible users will also receive an allocation of 100 APXN each, with claiming scheduled to open in Q2 2027.",
+                "evidence_ids": []
+              },
+              {
+                "text": "After the first 10,000 participants have received their allocation, the 20,000 Verified APXN Points reward will remain available to all eligible users, with no limit on the number of recipients.",
                 "evidence_ids": []
               }
             ]
           },
           {
-            "heading": "APXN Points and APXN Tokens Are Different",
+            "heading": "63,000,000 APXN Community Allocation",
             "paragraphs": [
               {
-                "text": "APXN Points reflect participation within the current Apex Network community experience. The Telegram Mini App includes mining-style points claims, daily participation, referrals, and other available tasks. Points shown in the application are not an immediately transferable cryptocurrency balance. The APXN token is a separate project asset described in the official token information. Understanding this distinction helps prevent misunderstandings about what users can do today and what depends on future program activation.",
-                "evidence_ids": []
-              },
-              {
-                "text": "The seven-level framework is a method for evaluating participation and planning community allocation, not a live token withdrawal feature. Distribution, wallet requirements, and token claims will follow the rules applicable when those services are officially introduced. Participants should avoid assuming that every point already has a cash value or that an expected token amount is guaranteed. Official communications will identify which features are currently active and which are scheduled for later phases of the roadmap.",
-                "evidence_ids": []
-              }
-            ]
-          },
-          {
-            "heading": "Membership and Loyalty KYC Rewards",
-            "paragraphs": [
-              {
-                "text": "Apex Network plans to launch its Membership and Loyalty KYC program in the first quarter of 2027. Under the announced program, eligible accounts that complete the required tasks and Telegram Stars payment can receive a one-time reward of 20,000 verified APXN Points. The verified-points completion reward is planned to continue for qualifying accounts even after the limited first-airdrop allocation is exhausted. The program concerns the relevant Telegram account and its eligibility under the published rules; it should not be confused with a claim that token withdrawals are already available.",
-                "evidence_ids": []
-              },
-              {
-                "text": "The first 10,000 qualifying participants in the program are also expected to receive a limited allocation of 100 APXN per eligible account, under the official terms. That allocation is separate from the 20,000 verified-points reward. Planned claims for the first airdrop are targeted for the second quarter of 2027 rather than immediate transfer when the KYC tasks are completed. Requirements and deadlines will be communicated through official Apex Network channels so that users can check the conditions before taking part.",
-                "evidence_ids": []
-              }
-            ]
-          },
-          {
-            "heading": "What Participants Can Expect Next",
-            "paragraphs": [
-              {
-                "text": "The project roadmap places community participation, points activity, and core application improvements in the current development stage. Future phases include the planned Membership and Loyalty program, airdrop claims, platform development, and network milestones. These items should be read as targets until the project confirms that each feature is live. A roadmap announcement does not mean that an exchange listing, token distribution, or withdrawal service has already opened. Users are encouraged to follow the official website and communication channels for confirmed changes.",
-                "evidence_ids": []
-              },
-              {
-                "text": "For participants, the practical first step is to understand their verified APXN Points balance and the corresponding level threshold. They can then review future eligibility instructions when published, rather than treating their current level as a completed token payout. The team will continue to distinguish current app functions from future token programs in official communications. This public update is intended to clarify the community reward structure in clear terms for all participants.",
+                "text": "63,000,000 APXN are allocated to the community, distributed through the 7-level system proportionally to Verified APXN Points within each level.",
                 "evidence_ids": []
               }
             ]
           }
         ],
-        "faq": [
-          {
-            "question": "What are the minimum verified APXN Points for each level?",
-            "answer": "The thresholds are L1 at 20,000; L2 at 50,000; L3 at 100,000; L4 at 150,000; L5 at 250,000; L6 at 450,000; and L7 at 1,000,000 verified APXN Points. Each level applies from its minimum up to, but not including, the next threshold.",
-            "evidence_ids": []
-          },
-          {
-            "question": "Does reaching a level mean APXN tokens can be withdrawn now?",
-            "answer": "No. Verified APXN Points determine community-level classification. APXN Points are separate from APXN tokens, and the project has not activated token withdrawals through this level system. Official distribution and withdrawal instructions will be announced for the relevant future stages.",
-            "evidence_ids": []
-          },
-          {
-            "question": "How is the 63 million APXN community allocation distributed?",
-            "answer": "The community allocation is organized across seven levels, with a dedicated pool for each level. Within a level, eligible accounts are allocated rewards proportionally to their verified points under the final published rules. Detailed amounts and claim requirements will be confirmed in official announcements.",
-            "evidence_ids": []
-          }
-        ],
+        "faq": [],
         "conclusion": {
-          "text": "Apex Network's community framework uses seven clearly defined levels based on verified APXN Points, beginning at 20,000 points for L1 and 1,000,000 points for L7. The project has allocated 63 million APXN to the community under its approved tokenomics, with proportional distribution within each level subject to the final program rules. Membership and Loyalty KYC and airdrop claims remain future roadmap stages. The essential distinction is that participation points, community-level classification, and transferable tokens are not the same thing.",
+          "text": "APEX NETWORK (APXN) — MINE TODAY. BUILD TOMORROW.",
           "evidence_ids": []
         }
       },
