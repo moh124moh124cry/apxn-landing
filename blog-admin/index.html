@@ -1361,13 +1361,26 @@
                         </span>
                     </label>
 
-                    <button
-                        id="knowledge-save-button"
-                        class="knowledge-save-button"
-                        type="submit"
-                    >
-                        حفظ في بنك معلومات APXN
-                    </button>
+                    <!-- APXN_KNOWLEDGE_TWO_BUTTONS: BEGIN -->
+                    <div class="apxn-knowledge-dual-actions" style="display:flex;flex-wrap:wrap;gap:12px;margin:14px 0">
+                        <button
+                            id="knowledge-create-article-button"
+                            class="knowledge-save-button"
+                            style="background:#facc15;color:#0f172a;flex:1 1 240px;cursor:pointer"
+                            type="button"
+                        >
+                            حفظ في إنشاء مقالة جديدة
+                        </button>
+                        <button
+                            id="knowledge-save-button"
+                            class="knowledge-save-button"
+                            style="flex:1 1 240px;cursor:pointer"
+                            type="submit"
+                        >
+                            حفظ في نظام بنك معلومات الكاتب الآلي
+                        </button>
+                    </div>
+                    <!-- APXN_KNOWLEDGE_TWO_BUTTONS: END -->
 
                     <div
                         id="knowledge-message"
@@ -4271,7 +4284,7 @@
             } finally {
                 knowledgeSaveButton.disabled = false;
                 knowledgeSaveButton.textContent =
-                    'حفظ في بنك معلومات APXN';
+                    'حفظ في نظام بنك معلومات الكاتب الآلي';
             }
         }
     );
@@ -4548,6 +4561,119 @@
   el('apxn-studio-keep-image').addEventListener('click',()=>{studio.imageAction='keep';studio.imageFile=null;el('apxn-studio-image-input').value='';updateImagePreview(studio.original?.image||'');msg('سيتم الإبقاء على الصورة الحالية.');});
   document.addEventListener('click',e=>{const button=e.target.closest('[data-action="preview"]');if(button)studio.lastPreviewId=button.dataset.id},true);
   const list=el('articles');if(list){const observer=new MutationObserver(()=>install());observer.observe(list,{childList:true,subtree:true})}
+  /* APXN_KNOWLEDGE_TO_ARTICLE_BRIDGE: BEGIN */
+  // The yellow button never submits to the automatic-writer knowledge endpoint.
+  // It opens the existing article editor with the submitted content prefilled.
+  function knowledgeSections(text, suppliedTitle) {
+    const raw = String(text || '').replace(/\r\n?/g, '\n');
+    const lines = raw.split('\n').map(line => line.trim());
+    let firstLineIsTitle = false;
+    const firstNonempty = lines.findIndex(line => line.length > 0);
+    if (firstNonempty >= 0 && suppliedTitle) {
+      const plain = line => line.replace(/^\s*#{1,6}\s*/, '').replace(/^\*\*/, '').replace(/\*\*$/, '').trim().toLowerCase();
+      firstLineIsTitle = plain(lines[firstNonempty]) === plain(suppliedTitle);
+    }
+    if (firstLineIsTitle) lines.splice(firstNonempty, 1);
+
+    const isHeading = line => {
+      if (!line || line.length > 150) return false;
+      if (/^#{1,6}\s+\S/.test(line)) return true;
+      if (/^(?:\*\*|__)[^*\n]{3,130}(?:\*\*|__)$/.test(line)) return true;
+      if (/^(?:🥉|🥈|🥇|💎|👑)\s*(?:Level|المستوى)\s*\d+\s*$/iu.test(line)) return true;
+      if (/^(?:(?:Level|المستوى)\s*\d+)\s*[:：]?$/iu.test(line)) return true;
+      if (/[:：]\s*$/.test(line) && !/^https?:/i.test(line) && line.length <= 100) return true;
+      const letters = line.replace(/^[^A-Za-z\u0600-\u06FF]*/u, '');
+      return /^[A-Z][A-Z0-9\s|&+.,'’()\-/–—:]{7,130}$/.test(letters) && /[A-Z]{3}/.test(letters);
+    };
+    const asHeading = line => line.replace(/^#{1,6}\s+/, '')
+      .replace(/^\*\*/, '').replace(/\*\*$/, '').replace(/^__/, '').replace(/__$/, '').trim()
+      .replace(/[:：]\s*$/, '').trim();
+
+    const initial = [];
+    const groups = [];
+    let current = null;
+    function pushGroup() {
+      if (current) groups.push(current);
+      current = null;
+    }
+    for (const line of lines) {
+      if (!line) continue;
+      if (isHeading(line)) {
+        pushGroup();
+        current = {heading:asHeading(line), paragraphs:[]};
+      } else if (current) {
+        current.paragraphs.push(paragraph(line));
+      } else {
+        initial.push(line);
+      }
+    }
+    pushGroup();
+
+    // Keep all supplied information, even when the text has no headings.
+    if (!groups.length) {
+      const introLine = initial.shift() || '';
+      return {
+        intro: introLine,
+        sections: [{heading:'المعلومات المقدمة', paragraphs:[paragraph(initial.join('\n') || introLine)]}]
+      };
+    }
+    for (const group of groups) {
+      if (!group.paragraphs.length) group.paragraphs = [paragraph(group.heading)];
+    }
+    return {intro:initial.join('\n') || groups[0].paragraphs[0]?.text || '', sections:groups};
+  }
+
+  const knowledgeToArticleButton = el('knowledge-create-article-button');
+  if (knowledgeToArticleButton) {
+    knowledgeToArticleButton.addEventListener('click', async () => {
+      const text = el('knowledge-text')?.value?.trim() || '';
+      const inputTitle = el('knowledge-title')?.value?.trim() || '';
+      const approval = el('knowledge-public-confirm')?.checked === true;
+      const message = el('knowledge-message');
+      const feedback = (content, kind='warning') => {
+        if (!message) return;
+        message.textContent = content;
+        message.className = 'message ' + kind;
+      };
+      if (text.length < 30) {
+        feedback('أدخل معلومات لا تقل عن 30 حرفًا قبل نقلها إلى المقالة.');
+        return;
+      }
+      if (!approval) {
+        feedback('راجع النص وأكد أنه لا يحتوي على معلومات سرية قبل المتابعة.');
+        return;
+      }
+      const first = text.split(/\r?\n/).map(x => x.trim()).find(Boolean) || '';
+      const title = (inputTitle || first.replace(/^#{1,6}\s*/, '') || 'Apex Network Update').slice(0,180);
+      const parsed = knowledgeSections(text, title);
+      const description = ((parsed.intro || parsed.sections[0]?.paragraphs[0]?.text || text)
+        .replace(/\s+/g,' ').slice(0,350)).trim();
+      const article = emptyArticle();
+      article.title = title;
+      article.description = description.length >= 8 ? description : (title + ' — Apex Network update');
+      article.category = 'APXN News';
+      article.status = 'draft';
+      article.content.title = article.title;
+      article.content.description = article.description;
+      article.content.intro = paragraph(parsed.intro);
+      article.content.sections = parsed.sections;
+      article.content.conclusion = paragraph('');
+      article.content.keywords = ['APXN', 'Apex Network'];
+      article.keywords = article.content.keywords;
+
+      try {
+        await openEditor(null);
+        studio.article = clone(article);
+        fillForm(article);
+        msg('تم نقل العنوان والأقسام إلى إنشاء مقالة جديدة. راجع النص وأكمل الخاتمة، ثم اضغط حفظ التعديلات لحفظ المسودة في GitHub أو حفظ ونشر عند الجاهزية. لم تُرسل هذه المعلومات إلى الكاتب الآلي.');
+        el('apxn-studio-title')?.focus();
+      } catch (error) {
+        feedback(error?.message || 'تعذر فتح محرر المقالة.');
+      }
+    });
+  }
+  /* APXN_KNOWLEDGE_TO_ARTICLE_BRIDGE: END */
+
   install();
 })();
 </script>
