@@ -1,0 +1,141 @@
+name: APXN Restore Missing Article Sections
+
+on:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - .github/workflows/apxn-restore-article-sections.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore-article-sections:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout APXN website
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          fetch-depth: 0
+
+      - name: Restore the original article sections in the admin data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          from html import unescape
+          import json
+          import re
+
+          manifest_path = Path('data/blog-articles.json')
+          article_path = Path('blog/articles/what-are-apxn-points.html')
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          article = next((item for item in manifest['articles']
+                          if item.get('id') == 'apxn-001'
+                          and item.get('slug') == 'what-are-apxn-points'), None)
+          if article is None:
+              raise RuntimeError('Target APXN article was not found')
+
+          existing = article.get('content') or {}
+          if (existing.get('sections') and existing.get('intro')
+                  and existing.get('conclusion')):
+              print('Article sections already exist. No change needed.')
+          else:
+              page = article_path.read_text(encoding='utf-8')
+              opening = re.search(r'<div\s+class=["\']article-body["\']\s*>', page, re.I)
+              if not opening:
+                  raise RuntimeError('Cannot find original article text')
+              remainder = page[opening.end():]
+              ending = re.search(r'\n\s*</div>\s*\n\s*<!--\s*Disclaimer\s*-->',
+                                 remainder, re.I)
+              if not ending:
+                  raise RuntimeError('Cannot find safe end of article text')
+              body = remainder[:ending.start()]
+
+              def plain(markup):
+                  text = re.sub(r'<[^>]*>', ' ', markup)
+                  return re.sub(r'\s+', ' ', unescape(text)).strip()
+
+              def paragraph(text):
+                  return {'text': text, 'evidence_ids': []}
+
+              intro, sections, faq, conclusion = [], [], [], []
+              state = 'intro'
+              current = None
+              tags = re.finditer(
+                  r'<(?P<tag>h2|h3|p|li)\b[^>]*>(?P<html>[\s\S]*?)</(?P=tag)>',
+                  body, re.I)
+              for match in tags:
+                  tag = match.group('tag').lower()
+                  value = plain(match.group('html'))
+                  if not value:
+                      continue
+                  if tag == 'h2':
+                      label = value.lower()
+                      if label == 'frequently asked questions':
+                          state, current = 'faq', None
+                      elif label in ('final thoughts', 'conclusion'):
+                          state, current = 'conclusion', None
+                      else:
+                          state = 'section'
+                          current = {'heading': value, 'paragraphs': []}
+                          sections.append(current)
+                      continue
+                  if state == 'faq':
+                      if tag == 'h3':
+                          faq.append({'question': value, 'answer': '',
+                                      'evidence_ids': []})
+                      elif faq:
+                          faq[-1]['answer'] += (' ' if faq[-1]['answer'] else '') + value
+                  elif state == 'conclusion':
+                      if tag in ('p', 'li'):
+                          conclusion.append(value)
+                  elif state == 'section':
+                      if tag in ('h3', 'p', 'li'):
+                          current['paragraphs'].append(paragraph(value))
+                  elif tag in ('p', 'li'):
+                      intro.append(value)
+
+              faq = [item for item in faq if item['question'] and item['answer']]
+              if (len(sections) != 14 or len(faq) != 5 or
+                  not intro or not conclusion or
+                  any(not section['paragraphs'] for section in sections)):
+                  raise RuntimeError(
+                      f'Original content verification failed: '
+                      f'{len(sections)} sections, {len(faq)} FAQ')
+
+              article['content'] = {
+                  'title': article['title'],
+                  'description': article['description'],
+                  'keywords': article.get('keywords', []),
+                  'intro': paragraph('\n\n'.join(intro)),
+                  'sections': sections,
+                  'faq': faq,
+                  'conclusion': paragraph('\n\n'.join(conclusion))
+              }
+              manifest_path.write_text(
+                  json.dumps(manifest, ensure_ascii=False, indent=2) + '\n',
+                  encoding='utf-8')
+              print(f'Restored {len(sections)} sections and {len(faq)} FAQs.')
+              print('No public article, image, or admin code was changed.')
+          PY
+
+      - name: Save restored article data
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add data/blog-articles.json
+          if git diff --cached --quiet; then
+            echo 'No changes required.'
+            exit 0
+          fi
+          git config user.name 'APXN Blog Bot'
+          git config user.email 'actions@github.com'
+          git commit -m 'fix(blog-admin): restore original APXN article sections'
+          git pull --rebase origin cloudflare-migration
+          git push origin HEAD:cloudflare-migration
+
