@@ -357,6 +357,99 @@ function renderFromTemplate(template, article, manifest, keepOriginalRelated) {
   return html;
 }
 
+/**
+ * Old APXN blog pages may not have a <figure> hero or an Editorial note.
+ * Preserve their original styled content for image-only changes.
+ */
+function articleContentComparable(content) {
+  if (!content || typeof content !== 'object') return null;
+  const cleaned = text => String(text ?? '').replace(/\s+/g, ' ').trim();
+  return {
+    intro: cleaned(content.intro?.text),
+    sections: (content.sections || []).map(section => ({
+      heading: cleaned(section.heading),
+      paragraphs: (section.paragraphs || []).map(p => cleaned(p.text))
+    })),
+    faq: (content.faq || []).map(item => ({
+      question: cleaned(item.question), answer: cleaned(item.answer)
+    })),
+    conclusion: cleaned(content.conclusion?.text)
+  };
+}
+
+function renderLegacyArticle(template, article, previous) {
+  const canonical = articleUrl(article.slug);
+  const image = article.image || DEFAULT_IMAGE;
+  let html = template;
+
+  html = replaceRequired(html, /<title>[\s\S]*?<\/title>/i,
+    `<title>${esc(article.title)}</title>`, 'LEGACY_TITLE');
+  for (const [attribute, name, value] of [
+    ['name', 'description', article.description],
+    ['name', 'keywords', article.keywords.join(', ')],
+    ['property', 'og:title', article.title],
+    ['property', 'og:description', article.description],
+    ['property', 'og:url', canonical],
+    ['property', 'og:image', image],
+    ['name', 'twitter:title', article.title],
+    ['name', 'twitter:description', article.description],
+    ['name', 'twitter:image', image]
+  ]) {
+    html = replaceMeta(html, attribute, name, value);
+  }
+  html = replaceRequired(html,
+    /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?\s*>/i,
+    `<link rel="canonical" href="${esc(canonical)}">`, 'LEGACY_CANONICAL');
+
+  if (previous?.title !== article.title) {
+    html = replaceRequired(html, /(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i,
+      (_, opening, closing) => `${opening}${esc(article.title)}${closing}`,
+      'LEGACY_HERO_TITLE');
+  }
+  if (previous?.description !== article.description) {
+    html = replaceRequired(html,
+      /(<\/h1>\s*<p\b[^>]*>)[\s\S]*?(<\/p>)/i,
+      (_, opening, closing) => `${opening}${esc(article.description)}${closing}`,
+      'LEGACY_HERO_DESCRIPTION');
+  }
+  html = html.replace(/(<span>\s*)\d+\s+min read(\s*<\/span>)/i,
+    (_, opening, closing) => `${opening}${article.reading_minutes} min read${closing}`);
+
+  // Only rewrite original body if the user actually changed article text.
+  const sameBody = previous?.content &&
+    JSON.stringify(articleContentComparable(previous.content)) ===
+    JSON.stringify(articleContentComparable(article.content));
+  if (!sameBody) {
+    const bodyOpen = /<div\s+class="article-body"\s*>/i.exec(html);
+    if (!bodyOpen) fail('LEGACY_ARTICLE_BODY_MISSING', 409);
+    const start = bodyOpen.index + bodyOpen[0].length;
+    const ending = /\n\s*<\/div>\s*\n\s*<!--\s*Disclaimer\s*-->/i.exec(html.slice(start));
+    if (!ending) fail('LEGACY_ARTICLE_BODY_BOUNDARY_MISSING', 409);
+    const end = start + ending.index;
+    html = html.slice(0, start) + renderArticleCore(article) + html.slice(end);
+  }
+
+  // A legacy article has no hero <figure>; add a managed image only in its body.
+  // Never replace the logo in the site header or bottom call-to-action.
+  html = html.replace(/<figure\s+data-apxn-managed-cover="true"[\s\S]*?<\/figure>\s*/gi, '');
+  if (image !== DEFAULT_IMAGE) {
+    const cover = `<figure data-apxn-managed-cover="true" ` +
+      `style="margin:0 0 2.8rem">\n` +
+      `<img src="${esc(image)}" alt="${esc(article.title)}" ` +
+      `style="display:block;width:100%;height:auto;max-height:620px;` +
+      `object-fit:cover;border:1px solid #1e293b;border-radius:18px" ` +
+      `loading="eager">\n</figure>\n`;
+    html = replaceRequired(html, /<div\s+class="article-body"\s*>/i,
+      opening => opening + '\n' + cover, 'LEGACY_COVER_POSITION');
+  }
+
+  html = replaceRequired(html,
+    /const\s+APXN_ARTICLE_SHARE\s*=\s*\{[\s\S]*?\};/,
+    `const APXN_ARTICLE_SHARE = { title: ${safeJson(article.title)}, ` +
+    `url: ${safeJson(canonical)} };`, 'LEGACY_SHARE');
+  return rewriteStructuredData(html, article, image, canonical, today());
+}
+
 async function createBlob(content, encoding) {
   return github(`/repos/${REPOSITORY}/git/blobs`, {
     method:'POST', body: { content, encoding }
@@ -506,7 +599,14 @@ async function buildChanges(payload) {
       if (!candidate) fail('PUBLISHED_TEMPLATE_NOT_FOUND',409);
       template=await readFile(candidate.path);
     }
-    const html=renderFromTemplate(template,article,manifest,oldPublished);
+    // Historical APXN Points article uses a legacy layout without a hero <figure>.
+    // Modern articles continue through the original renderer unchanged.
+    const isLegacy = oldPublished &&
+      /<div\s+class="article-body"\s*>/i.test(template) &&
+      !/<figure\b[^>]*>[\s\S]*?<img\b[^>]*\bsrc="/i.test(template);
+    const html = isLegacy
+      ? renderLegacyArticle(template, article, current)
+      : renderFromTemplate(template,article,manifest,oldPublished);
     changes.push({path:articlePath,content:html});
   }
   if (article.__image_path) {
