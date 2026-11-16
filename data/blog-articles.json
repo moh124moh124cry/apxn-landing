@@ -3638,11 +3638,11 @@
       "updated_at": "2026-11-16",
       "published_at": "2026-11-15",
       "reading_minutes": 8,
-      "word_count": 1700,
+      "word_count": 1732,
       "path": "blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
       "url": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
-      "image": "https://apxn.network/logo2%20(1).png",
-      "image_filename": "",
+      "image": "https://apxn.network/blog/images/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates-8392e146205b.webp",
+      "image_filename": "apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates-8392e146205b.webp",
       "keywords": [
         "Apex Network",
         "APXN level system",
@@ -3666,7 +3666,7 @@
         "canonical": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html",
         "robots": "index, follow",
         "article_schema": true,
-        "faq_schema": false
+        "faq_schema": true
       },
       "content": {
         "title": "Apex Network (APXN) Announces Updated Seven-Level Verified Points Reward System",
