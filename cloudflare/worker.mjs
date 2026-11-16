@@ -32,6 +32,10 @@ import {
   handleBlogAdminPublish
 } from "./api/blog-admin-publish.mjs";
 
+import {
+  handleBlogAdminManage
+} from "./api/blog-admin-manage.mjs";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -127,6 +131,15 @@ export default {
       url.pathname === "/api/blog-admin-publish"
     ) {
       return handleBlogAdminPublish(request, env);
+    }
+
+    // APXN blog article creation, editing, images and deletion.
+    // This endpoint is protected by the existing admin session
+    // and the Cloudflare management adapter.
+    if (
+      url.pathname === "/api/blog-admin-manage"
+    ) {
+      return handleBlogAdminManage(request, env);
     }
 
     // Remaining API endpoints are not migrated yet.
