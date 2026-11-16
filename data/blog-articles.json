@@ -22,12 +22,12 @@
       "featured": true,
       "indexable": true,
       "published_at": "2026-09-08",
-      "updated_at": "2026-09-08",
-      "reading_minutes": 8,
-      "word_count": 1784,
+      "updated_at": "2026-11-16",
+      "reading_minutes": 7,
+      "word_count": 1526,
       "path": "blog/articles/what-are-apxn-points.html",
       "url": "https://apxn.network/blog/articles/what-are-apxn-points.html",
-      "image": "https://apxn.network/logo2%20(1).png",
+      "image": "https://apxn.network/blog/images/what-are-apxn-points-eac939dd9b5e.webp",
       "keywords": [
         "APXN Points",
         "Apex Network",
@@ -45,7 +45,9 @@
         "canonical": "https://apxn.network/blog/articles/what-are-apxn-points.html",
         "robots": "index, follow",
         "article_schema": true,
-        "faq_schema": true
+        "faq_schema": true,
+        "title": "What Are APXN Points? How the Apex Network Telegram Mini App Works",
+        "description": "Learn how APXN Points work inside the Apex Network Telegram Mini App, including 12-hour claims, daily check-ins, social tasks, referrals, mining speed and current app mechanics."
       },
       "content": {
         "title": "What Are APXN Points? How the Apex Network Telegram Mini App Works",
@@ -375,7 +377,14 @@
           "text": "APXN Points provide the engagement layer of the current Apex Network Telegram Mini App. The system combines timed point accumulation with daily activity, tasks and referrals, creating a simple way for users to participate before later project milestones.\n\nThe most useful way to follow the project is to focus on what is live today and treat future features as roadmap items until they are released. This APXN Blog will follow the same principle: explain active functionality clearly, label planned functionality accurately and avoid unsupported financial promises.",
           "evidence_ids": []
         }
-      }
+      },
+      "excerpt": "Learn how APXN Points work inside the Apex Network Telegram Mini App, including 12-hour claims, daily check-ins, social tasks, referrals, mining speed and current app mechanics.",
+      "seo_ready": true,
+      "facts_verified": false,
+      "duplicate_check": false,
+      "quality_check": false,
+      "published_url": "https://apxn.network/blog/articles/what-are-apxn-points.html",
+      "image_filename": "what-are-apxn-points-eac939dd9b5e.webp"
     },
     {
       "id": "apxn-002",
