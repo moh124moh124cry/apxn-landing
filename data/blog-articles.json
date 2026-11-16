@@ -46,6 +46,335 @@
         "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
+      },
+      "content": {
+        "title": "What Are APXN Points? How the Apex Network Telegram Mini App Works",
+        "description": "Learn how APXN Points work inside the Apex Network Telegram Mini App, including 12-hour claims, daily check-ins, social tasks, referrals, mining speed and current app mechanics.",
+        "keywords": [
+          "APXN Points",
+          "Apex Network",
+          "Telegram Mini App",
+          "APXN Mining",
+          "Daily Check-In",
+          "APXN Referral",
+          "Web3",
+          "BSC"
+        ],
+        "intro": {
+          "text": "Apex Network is building its user experience around a Telegram Mini App, allowing people to participate directly from Telegram without installing a separate mobile application. At the center of that experience is the APXN Points system.\n\nThe most important thing to understand is that the current balance shown inside the Mini App represents ecosystem points and pre-launch rewards . These points are used to measure participation before later stages of the Apex Network roadmap. They should not be confused with a guaranteed cash balance, guaranteed investment return or guaranteed future token allocation.\n\nThis article explains how the system currently works based on the live application logic, and separates features that are already active from features that remain planned for future development.",
+          "evidence_ids": []
+        },
+        "sections": [
+          {
+            "heading": "What exactly are APXN Points?",
+            "paragraphs": [
+              {
+                "text": "APXN Points are digital participation units recorded in the Apex Network application database. They help track a user's activity in the ecosystem, including mining sessions, check-ins, tasks and referrals.",
+                "evidence_ids": []
+              },
+              {
+                "text": "In practical terms, the user opens the Telegram Mini App, starts or continues a mining session, returns after the required time window and claims the accumulated amount. Other activities can add additional points or affect the rate at which the balance grows.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The current app tracks APXN Points. The points system should not be described as a guaranteed exchange-listed token balance, guaranteed withdrawal amount or guaranteed future market value.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "How the 12-hour APXN claim cycle works",
+            "paragraphs": [
+              {
+                "text": "The current Mini App uses a 12-hour claim cycle . During this period, the app calculates the points accumulated from the user's mining rate. When the claim window is ready, the user can claim the accumulated amount and begin the next cycle.",
+                "evidence_ids": []
+              },
+              {
+                "text": "This system is designed around recurring participation rather than continuous interaction. A user does not need to keep Telegram open for 12 hours. Instead, the application uses timestamps and account data to determine how much has accumulated.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The current base mining rate in the application logic is:",
+                "evidence_ids": []
+              },
+              {
+                "text": "Because the system is driven by recorded time and a defined rate, the balance can be calculated when the user returns. This is different from traditional proof-of-work cryptocurrency mining, where specialized hardware performs computational work to secure a blockchain.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "Does the Telegram app perform real blockchain mining?",
+            "paragraphs": [
+              {
+                "text": "The current Telegram experience is best understood as an ecosystem participation and point-accrual system . Users do not need mining hardware, GPUs or ASIC devices to participate.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The term \"mining\" is used inside the product experience to describe the timed accumulation of APXN Points. However, users should distinguish this from proof-of-work mining performed directly on a blockchain network.",
+                "evidence_ids": []
+              },
+              {
+                "text": "This distinction matters for transparency. A user interacting with a Telegram button is participating in the Apex Network reward system; the action itself is not proof-of-work computation.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "Daily Check-In rewards",
+            "paragraphs": [
+              {
+                "text": "Apex Network also includes a daily check-in mechanism. This rewards users for returning to the Mini App regularly.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The current seven-day progression starts at 100 APXN Points and increases through the cycle until reaching 700 APXN Points on the seventh day.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Daily check-ins create a second participation layer beyond the 12-hour mining claim. For users, this means regular engagement can matter independently from the timed point accumulation.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "Daily Telegram and X tasks",
+            "paragraphs": [
+              {
+                "text": "Social participation is another part of the current application. Daily tasks connected to Telegram and X can each provide 100 APXN Points when completed according to the app's current rules.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The project also includes one-time social tasks. These can provide 500 APXN Points per task . The purpose is to connect community growth with the reward experience inside the Mini App.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Some Telegram membership tasks are not based only on a user pressing a button. The application can verify Telegram channel or group membership through Telegram's API before crediting the relevant reward.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "How APXN referrals work",
+            "paragraphs": [
+              {
+                "text": "Referrals are one of the main mechanics inside Apex Network. A user can invite another person through a referral link. When the referral is valid, the new participant can receive a referral-related starting reward, while the referring user's network can affect mining speed.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Under the current app logic, a valid referred user can receive an additional 1,000 APXN Points when joining through the referral flow.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Active referral mining boost",
+                "evidence_ids": []
+              },
+              {
+                "text": "An active referred friend can increase the referring user's mining rate by 5% of the base mining rate .",
+                "evidence_ids": []
+              },
+              {
+                "text": "The important word is active . In the current logic, a referred user is considered active when that user has made a claim within the previous 24 hours.",
+                "evidence_ids": []
+              },
+              {
+                "text": "This means the referral feature is not simply a count of how many people were invited. The system rewards networks where referred users continue to participate.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "Registration rewards",
+            "paragraphs": [
+              {
+                "text": "Apex Network also uses staged registration rewards. The amount can depend on the current user-growth stage of the platform.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The current project logic includes a progression of registration rewards such as:",
+                "evidence_ids": []
+              },
+              {
+                "text": "10,000 APXN Points for the earliest qualifying stage.",
+                "evidence_ids": []
+              },
+              {
+                "text": "5,000 APXN Points in a later stage.",
+                "evidence_ids": []
+              },
+              {
+                "text": "2,500 APXN Points as the user base continues to expand.",
+                "evidence_ids": []
+              },
+              {
+                "text": "1,000 APXN Points in a subsequent stage.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Because these rewards are linked to growth thresholds, users should rely on the amount displayed by the live application rather than assume that an older promotional amount is still available.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "Country and referral information",
+            "paragraphs": [
+              {
+                "text": "The Mini App stores a user's country when the account is created. This information supports ecosystem statistics and features such as displaying country flags alongside referred friends.",
+                "evidence_ids": []
+              },
+              {
+                "text": "This helps the project show the geographic reach of its community without changing the fundamental points mechanics.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "Account verification and security",
+            "paragraphs": [
+              {
+                "text": "Telegram Mini Apps can receive signed initialization data from Telegram. Apex Network's server-side logic verifies this data rather than blindly trusting identity information coming from the browser.",
+                "evidence_ids": []
+              },
+              {
+                "text": "The verification flow uses Telegram's signed initData and HMAC validation. This is an important security layer because account balances and referral relationships should be associated with verified Telegram identities rather than arbitrary client-side values.",
+                "evidence_ids": []
+              },
+              {
+                "text": "No system is risk-free, but server-side validation reduces the opportunity for simple client-side impersonation or manipulation.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "What about wallet linking?",
+            "paragraphs": [
+              {
+                "text": "The current user interface contains wallet-related elements, but users should distinguish between a visible interface and a fully persisted wallet-binding feature.",
+                "evidence_ids": []
+              },
+              {
+                "text": "In the current version reviewed for this guide, permanent wallet-address storage is not treated as a completed production feature. For that reason, Apex Network documentation should not tell users that their wallet is permanently linked to their Telegram account unless that functionality is later implemented and verified.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "What about Boosts?",
+            "paragraphs": [
+              {
+                "text": "The application includes a Boost Store concept, but the current interface marks those options as Soon and the purchase actions are disabled.",
+                "evidence_ids": []
+              },
+              {
+                "text": "This is a good example of the difference between a live feature and a planned feature. The blog will describe boosts as part of future product development until the purchasing and activation logic is actually enabled.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "APXN Points and the future token ecosystem",
+            "paragraphs": [
+              {
+                "text": "Apex Network's broader roadmap includes a BEP-20 ecosystem on Binance Smart Chain and later network-development milestones. However, the existence of a points balance today does not by itself determine the future market value of APXN, a listing price or an exact point-to-token conversion ratio.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Any conversion rules should come from a future official project announcement and should be clearly documented when finalized.",
+                "evidence_ids": []
+              },
+              {
+                "text": "For this reason, responsible APXN content should avoid statements such as \"one point equals one token\" or promises of guaranteed value unless the project formally establishes those rules.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "Why this approach matters for users",
+            "paragraphs": [
+              {
+                "text": "Clear documentation helps users understand what they are doing inside a Web3-related application. It also separates real functionality from expectations about future development.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Today, users can evaluate Apex Network based on concrete mechanics: timed claims, check-ins, tasks, referrals, active-friend boosts and account verification. Future features can then be documented when they become operational.",
+                "evidence_ids": []
+              }
+            ]
+          },
+          {
+            "heading": "How to start using the APXN Mini App",
+            "paragraphs": [
+              {
+                "text": "Open the official Apex Network Telegram Mini App.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Create or initialize your APXN account through Telegram.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Review your current starting balance and mining rate.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Participate in the 12-hour claim cycle.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Use Daily Check-In when available.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Complete eligible social tasks.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Invite real users through your referral link.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Return regularly so your own account and referral network remain active.",
+                "evidence_ids": []
+              },
+              {
+                "text": "Always use the official links published by Apex Network and be cautious of private messages claiming to offer guaranteed APXN returns, paid account upgrades or requests for seed phrases.",
+                "evidence_ids": []
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "Are APXN Points already tradable tokens?",
+            "answer": "No. The current Telegram Mini App tracks APXN ecosystem points and pre-launch rewards. They should not be described as guaranteed tradable value.",
+            "evidence_ids": []
+          },
+          {
+            "question": "How often can I claim APXN Points?",
+            "answer": "The current application logic uses a 12-hour claim cycle.",
+            "evidence_ids": []
+          },
+          {
+            "question": "Do referrals increase the mining rate?",
+            "answer": "Yes. Under the current logic, an active referred friend can add 5% of the base mining rate. An active referral is tied to recent participation, including a claim within the previous 24 hours.",
+            "evidence_ids": []
+          },
+          {
+            "question": "Is the Boost Store active?",
+            "answer": "Not yet in the version covered by this article. Boost options are shown as upcoming features and their purchase buttons are currently disabled.",
+            "evidence_ids": []
+          },
+          {
+            "question": "Is wallet linking complete?",
+            "answer": "Wallet-related interface elements exist, but permanent wallet-address binding should not be considered a completed feature until persistent storage and production behavior are confirmed.",
+            "evidence_ids": []
+          }
+        ],
+        "conclusion": {
+          "text": "APXN Points provide the engagement layer of the current Apex Network Telegram Mini App. The system combines timed point accumulation with daily activity, tasks and referrals, creating a simple way for users to participate before later project milestones.\n\nThe most useful way to follow the project is to focus on what is live today and treat future features as roadmap items until they are released. This APXN Blog will follow the same principle: explain active functionality clearly, label planned functionality accurately and avoid unsupported financial promises.",
+          "evidence_ids": []
+        }
       }
     },
     {
