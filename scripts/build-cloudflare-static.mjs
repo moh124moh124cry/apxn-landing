@@ -29,12 +29,18 @@ const PREVIEW_ORIGIN =
 const PRODUCTION_ORIGIN =
   "https://apxn.network";
 
-// Default is the existing, unchanged preview build.
-// Production preparation is opt-in, at the final cutover only.
+// Keep the existing preview/production behavior unchanged.
 const SITE_MODE =
   String(process.env.APXN_SITE_MODE || "preview")
     .trim()
     .toLowerCase();
+
+// Apex Network's official Google AdSense publisher ID.
+const ADSENSE_PUBLISHER_ID = "ca-pub-1953091750666383";
+const ADSENSE_SCRIPT =
+  `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>`;
+const ADS_TXT_RECORD =
+  "google.com, pub-1953091750666383, DIRECT, f08c47fec0942fa0";
 
 const ROOT_EXTENSIONS = new Set([
   ".html",
@@ -53,7 +59,8 @@ const ROOT_EXTENSIONS = new Set([
 const ROOT_SPECIAL_FILES = new Set([
   "robots.txt",
   "sitemap.xml",
-  "sw.js"
+  "sw.js",
+  "ads.txt"
 ]);
 
 async function copyAllowedFiles(
@@ -89,8 +96,7 @@ async function copyAllowedFiles(
 }
 
 function restoreBlogIndexing(html) {
-  // Restore the public blog's indexability only in an explicitly
-  // requested production build. Never change account/admin pages.
+  // Preserve the existing production-only blog indexing behavior.
   return html.replace(/<meta\b[^>]*>/gi, (tag) => {
     if (!/\bname\s*=\s*["']robots["']/i.test(tag)) {
       return tag;
@@ -161,6 +167,90 @@ async function prepareProductionAssets() {
   );
 }
 
+// Inject the official script into <head> once, without modifying
+// the source HTML pages. New articles receive it on every build.
+function addAdSenseToHtml(html, filePath) {
+  const scriptTags = html.match(/<script\b[^>]*\bsrc\s*=\s*["'][^"']*\/pagead\/js\/adsbygoogle\.js[^"']*["'][^>]*>\s*<\/script>/gi) || [];
+
+  if (scriptTags.length > 0) {
+    if (
+      scriptTags.length !== 1 ||
+      !scriptTags[0].includes(ADSENSE_PUBLISHER_ID)
+    ) {
+      throw new Error(
+        `Unexpected or duplicate AdSense script in ${filePath}. Review it before deploying.`
+      );
+    }
+    return html;
+  }
+
+  if (!/<head\b[^>]*>/i.test(html)) {
+    throw new Error(`Missing <head> in public page: ${filePath}`);
+  }
+
+  return html.replace(
+    /<head\b[^>]*>/i,
+    (openingTag) => `${openingTag}\n    ${ADSENSE_SCRIPT}`
+  );
+}
+
+async function addAdSenseToPublicPages(directory, isRoot = false) {
+  let count = 0;
+  const entries = await readdir(directory, {
+    withFileTypes: true
+  });
+
+  for (const entry of entries) {
+    const fullPath = join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      // Never run publisher ads on the private admin interface.
+      if (isRoot && entry.name === "blog-admin") continue;
+      count += await addAdSenseToPublicPages(fullPath);
+      continue;
+    }
+
+    if (!entry.isFile() || extname(entry.name).toLowerCase() !== ".html") {
+      continue;
+    }
+
+    // The secure account dashboard is not an editorial ad page.
+    if (isRoot && entry.name === "dashboard.html") continue;
+
+    const original = await readFile(fullPath, "utf8");
+    const updated = addAdSenseToHtml(original, fullPath);
+    if (updated !== original) {
+      await writeFile(fullPath, updated, "utf8");
+    }
+    count += 1;
+  }
+
+  return count;
+}
+
+async function ensureAdsTxt() {
+  const path = join(OUTPUT, "ads.txt");
+  let existing = "";
+  try {
+    existing = await readFile(path, "utf8");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  const lines = existing.split(/\r?\n/);
+  const hasGoogleRecord = lines.some(
+    (line) => line.trim() === ADS_TXT_RECORD
+  );
+
+  if (!hasGoogleRecord) {
+    const prefix = existing.trimEnd();
+    const content = prefix
+      ? `${prefix}\n${ADS_TXT_RECORD}\n`
+      : `${ADS_TXT_RECORD}\n`;
+    await writeFile(path, content, "utf8");
+  }
+}
+
 async function build() {
   if (
     SITE_MODE !== "preview" &&
@@ -216,8 +306,7 @@ async function build() {
     ])
   );
 
-  // Blog administration interface.
-  // Authentication remains server-side.
+  // Blog administration interface (server-side authentication).
   await copyAllowedFiles(
     join(ROOT, "blog-admin"),
     join(OUTPUT, "blog-admin"),
@@ -228,18 +317,26 @@ async function build() {
     await prepareProductionAssets();
   }
 
+  // Cloudflare serves .cloudflare-static as assets, so the script
+  // must be added during this build rather than in the Worker.
+  const publicPageCount = await addAdSenseToPublicPages(OUTPUT, true);
+  await ensureAdsTxt();
+
+  console.log(
+    `Google AdSense ${ADSENSE_PUBLISHER_ID} added to ${publicPageCount} public HTML pages.`
+  );
+  console.log(
+    "Google AdSense ads.txt published to /ads.txt."
+  );
   console.log(
     "APXN public assets prepared successfully."
   );
-
   console.log(
     "Output directory: .cloudflare-static"
   );
-
   console.log(
     `Site build mode: ${SITE_MODE}`
   );
-
   console.log(
     "Private data, API and scripts directories were not copied."
   );
