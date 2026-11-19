@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-11-16",
+  "last_updated": "2026-11-19",
   "default_language": "en",
   "stats": {
     "total_articles": 17,
@@ -4250,6 +4250,23 @@
       "source_profile": null,
       "knowledge_sections": [
         "editorial_submissions.submission_4f225b57e856c970.evidence"
+      ],
+      "auto_publish_allowed": true,
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal."
+    },
+    {
+      "priority": 6,
+      "topic": "APXN Project News: Apex Network (APXN) Official BscScan Verification: Smart Contract Details and 100 Million Token Supply (ec182b61a335)",
+      "category": "APXN News",
+      "status": "waiting",
+      "source": "admin_editorial_submission",
+      "topic_bank_id": "bank-admin-ec182b61a335",
+      "language": "en",
+      "queued_at": "2026-11-19",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "knowledge_sections": [
+        "editorial_submissions.submission_ff17c7da595eda72.evidence"
       ],
       "auto_publish_allowed": true,
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal."
