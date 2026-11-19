@@ -3,9 +3,9 @@
   "last_updated": "2026-11-19",
   "default_language": "en",
   "stats": {
-    "total_articles": 17,
+    "total_articles": 18,
     "published": 17,
-    "ready": 0,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -3893,6 +3893,256 @@
       },
       "verified_against_knowledge": true,
       "published_url": "https://apxn.network/blog/articles/apxn-network-shares-infrastructure-migration-progress-and-verified-points-level-updates.html"
+    },
+    {
+      "id": "apxn-020",
+      "slug": "apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok",
+      "title": "Apex Network APXN Official BscScan Verification Smart Contract Details and 100 Million Token Supply",
+      "description": "Explore the official Apex Network APXN BEP-20 token verification on BscScan, including the published contract address, declared total supply of 100 million tokens, and public",
+      "excerpt": "Explore the official Apex Network APXN BEP-20 token verification on BscScan, including the published contract address, declared total supply of 100 million tokens, and public",
+      "category": "APXN News",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-11-19",
+      "generated_at": "2026-11-19",
+      "updated_at": "2026-11-19",
+      "published_at": null,
+      "reading_minutes": 7,
+      "word_count": 1364,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "APXN",
+        "Apex Network",
+        "BscScan",
+        "BEP-20",
+        "token supply",
+        "smart contract",
+        "BNB Smart Chain",
+        "blockchain verification",
+        "contract address",
+        "APXN token"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "apxn",
+      "source_profile": null,
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "Apex Network APXN Official BscScan Verification Smart Contract Details and 100 Million Token Supply",
+        "description": "Explore the official Apex Network APXN BEP-20 token verification on BscScan, including the published contract address, declared total supply of 100 million tokens, and public",
+        "canonical": "https://apxn.network/blog/articles/apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "Apex Network APXN Official BscScan Verification Smart Contract Details and 100 Million Token Supply",
+        "description": "Explore the official Apex Network APXN BEP-20 token verification on BscScan, including the published contract address, declared total supply of 100 million tokens, and public",
+        "keywords": [
+          "APXN",
+          "Apex Network",
+          "BscScan",
+          "BEP-20",
+          "token supply",
+          "smart contract",
+          "BNB Smart Chain",
+          "blockchain verification",
+          "contract address",
+          "APXN token"
+        ],
+        "intro": {
+          "text": "Apex Network has announced official verification of its APXN token on BscScan, the blockchain explorer for BNB Smart Chain. The project provides public access to contract details and token information through this platform. The contract address published by the project is 0x88074bA197BBB0a3AFF891E52d05764F98509956. This address helps users identify the official token among possible similar names. The announcement emphasizes transparency by making smart contract source code and supply data publicly viewable. Readers can examine these records directly on BscScan to review the token name, symbol and related blockchain information. The verification announcement was noted on November 19, 2026, as part of project updates. Such public records form a reference point for anyone researching the APXN token on BNB Smart Chain.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Contract Address and Total Supply Information",
+            "paragraphs": [
+              {
+                "text": "The official APXN contract address published by Apex Network is 0x88074bA197BBB0a3AFF891E52d05764F98509956. This address serves as the primary identifier of the token on BNB Smart Chain. Unlike token names or logos that may be imitated, the complete contract address points to one specific deployed smart contract. Community members are advised to compare the full address against the project's published information. The declared total supply stands at 100,000,000 APXN tokens. This figure is presented as the official tokenomics reference in project documentation.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "APXN-13",
+                  "APXN-19"
+                ]
+              },
+              {
+                "text": "supply number together form core public data points. The availability of contract records on BscScan allows examination of token technical identity and reported supply. Verification of source code has been announced, yet this step remains separate from any security audit process. Total supply and circulating supply represent distinct measurements. The declared total supply of 100,000,000 does not indicate how many tokens are available in circulation. Technical reviewers can compare the published supply figure with values returned by the deployed contract on the explorer.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-07",
+                  "APXN-13",
+                  "APXN-19"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Examining Token Data on BscScan",
+            "paragraphs": [
+              {
+                "text": "BscScan provides public access to token name, symbol, total supply, contract address and related blockchain activity for APXN. Users can compare the displayed information with official project documentation. The explorer interface shows the token details once the contract address is entered. Several supply concepts require distinction when reviewing explorer data. Total supply generally refers to the quantity of tokens that exists under the token's supply accounting. The official project documentation specifies 100,000,000 APXN as the total supply. This number acts as an important reference when examining blockchain data. Maximum supply",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "APXN-14",
+                  "APXN-20"
+                ]
+              },
+              {
+                "text": "refers to any upper limit enforced by the contract, which must be checked separately in the code. Circulating supply refers to tokens considered available in public circulation under a particular reporting methodology. The declared total supply does not automatically prove that a contract contains an immutable maximum-supply restriction. The official project documentation specifies 100,000,000 APXN as the total supply. This number acts as an important reference when examining blockchain data.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "APXN-14",
+                  "APXN-20"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Role of the Smart Contract on BNB Smart Chain",
+            "paragraphs": [
+              {
+                "text": "The APXN smart contract is a central technical component of the token on BNB Smart Chain. Smart contracts operate through programs deployed to the blockchain. Once deployed, a contract contains the rules that govern token balances, transfers and supply-related information. The availability of contract information through BscScan supports transparency for community members. Reading public information on the explorer generally does not require connecting a cryptocurrency wallet. The total supply of 100,000,000 APXN does not necessarily mean that all tokens are circulating.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-09",
+                  "APXN-15",
+                  "APXN-21"
+                ]
+              },
+              {
+                "text": "Some tokens may remain held in designated addresses or other allocations. Understanding these differences helps prevent confusion when interpreting explorer data. A contract may contain an immutable maximum-supply restriction, yet this must be verified by examining the actual code. The project's stated supply and the contract's supply controls are related but distinct items. The total supply of 100,000,000 APXN does not necessarily mean that all tokens are circulating or available for trading.",
+                "evidence_ids": [
+                  "APXN-03",
+                  "APXN-09",
+                  "APXN-15",
+                  "APXN-21"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Smart Contract Verification and Source Code",
+            "paragraphs": [
+              {
+                "text": "Apex Network has announced verification of its APXN smart contract source code on BscScan. Smart contract verification connects publicly readable source code with the program deployed on the blockchain. The explorer can display published contract code and verification details where available. Users can review the contract section to confirm the currently displayed verification status. Source code verification and independent security auditing remain separate processes. A verified contract is not automatically free from technical or security risks.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-10",
+                  "APXN-16",
+                  "APXN-22"
+                ]
+              },
+              {
+                "text": "The ability to inspect smart contract information is one reason blockchain explorers serve as useful research tools. Any additional restrictions or customized functions must be evaluated in the specific APXN contract implementation. The verification process makes the code available for public examination but does not establish regulatory approval or any particular financial outcome. The contract address remains the reliable identifier for the intended token asset. Source code verification and independent security auditing remain separate processes.",
+                "evidence_ids": [
+                  "APXN-04",
+                  "APXN-10",
+                  "APXN-16",
+                  "APXN-22"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Public Token Information and Branding",
+            "paragraphs": [
+              {
+                "text": "BscScan displays token information that can include the asset name, symbol and official project logo when approved. Apex Network has identified its blue APXN token logo as part of official branding. The BEP-20 standard provides a framework for fungible tokens on BNB Smart Chain. Smart contracts define essential functionality including token balances, transfers, allowances and supply-related information. The APXN token has a publicly identified smart contract address. Branding information displayed on the explorer does not guarantee financial performance.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-11",
+                  "APXN-17",
+                  "APXN-23"
+                ]
+              },
+              {
+                "text": "The contract address remains the primary identifier for verifying the intended blockchain asset. Smart contract verification establishes a relationship between published source code and deployed code. It does not by itself demonstrate that a contract is free from risks. Users should examine the contract section to confirm currently displayed details. The project's announced source code verification provides a way to investigate the technical rules associated with the token. The APXN token has a publicly identified smart contract address.",
+                "evidence_ids": [
+                  "APXN-05",
+                  "APXN-11",
+                  "APXN-17",
+                  "APXN-23"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Public Blockchain Records and Research Approach",
+            "paragraphs": [
+              {
+                "text": "BscScan allows users to explore token contracts, transactions, wallet addresses and other information recorded on BNB Smart Chain. The verification process makes deployed blockchain bytecode available under the explorer's verification process. The raw integer returned by a smart contract may differ from the formatted number shown by the explorer. BscScan typically presents supply information in human-readable format where metadata is available. A technical review can compare the published supply with the value returned by the deployed contract. The presence of an official logo and project information does not mean the explorer endorses any",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-12",
+                  "APXN-18",
+                  "APXN-24"
+                ]
+              },
+              {
+                "text": "investment. The safest approach when identifying the intended APXN asset is to compare its full contract address with the one published by Apex Network. Researching token data through BscScan supports independent examination of essential details. The contract address helps users avoid confusion with unrelated assets that may use similar names. Public records provide a foundation for understanding the token on the blockchain. The raw integer returned by a smart contract may differ from the formatted number shown by the explorer.",
+                "evidence_ids": [
+                  "APXN-06",
+                  "APXN-12",
+                  "APXN-18",
+                  "APXN-24"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What is the official total supply of the APXN token?",
+            "answer": "Apex Network's official tokenomics specify a total supply of 100,000,000 APXN tokens. This figure is declared in project documentation and appears as the reference supply on BscScan. The declared total supply provides a foundation for understanding the quantity of tokens described by the project's tokenomics. Total supply generally refers to the quantity of tokens that exists under the token's supply accounting. The number 100,000,000 APXN is presented as the official total supply in the published information.",
+            "evidence_ids": [
+              "APXN-01",
+              "APXN-02"
+            ]
+          },
+          {
+            "question": "Where can the APXN contract address be verified?",
+            "answer": "The official published contract address is 0x88074bA197BBB0a3AFF891E52d05764F98509956. This address can be checked on BscScan by entering it into the explorer search. The project website identifies the contract and directs users to its BscScan record. Apex Network has announced verification of its token's source code and updates to its BscScan token information. Users should examine the Contract section to confirm the currently displayed verification status.",
+            "evidence_ids": [
+              "APXN-03",
+              "APXN-04"
+            ]
+          },
+          {
+            "question": "Does total supply of 100,000,000 mean all tokens are circulating?",
+            "answer": "No. The declared total supply of 100,000,000 APXN does not necessarily mean that all tokens are circulating or available for trading. Total supply and circulating supply are different measurements. Some tokens may remain held in designated addresses, reserves or other allocations. The project's stated supply and the contract's actual supply controls should be understood as related but distinct questions. The contract address remains the primary way to verify the intended asset.",
+            "evidence_ids": [
+              "APXN-05",
+              "APXN-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "Apex Network has made its APXN token contract information publicly accessible through BscScan on BNB Smart Chain. The official BEP-20 contract carries a declared total supply of 100,000,000 APXN. The published contract address 0x88074bA197BBB0a3AFF891E52d05764F98509956 serves as the primary identifier. Verification of source code has been announced, providing a link between published code and the deployed contract. Public records on the explorer include token name, symbol and supply data. Readers can review the explorer directly for the latest displayed details.",
+          "evidence_ids": [
+            "APXN-01",
+            "APXN-02",
+            "APXN-03",
+            "APXN-04"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -4258,7 +4508,7 @@
       "priority": 6,
       "topic": "APXN Project News: Apex Network (APXN) Official BscScan Verification: Smart Contract Details and 100 Million Token Supply (ec182b61a335)",
       "category": "APXN News",
-      "status": "waiting",
+      "status": "ready",
       "source": "admin_editorial_submission",
       "topic_bank_id": "bank-admin-ec182b61a335",
       "language": "en",
@@ -4269,21 +4519,23 @@
         "editorial_submissions.submission_ff17c7da595eda72.evidence"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal."
+      "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
+      "article_id": "apxn-020",
+      "generated_at": "2026-11-19"
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-019",
+    "last_generated_article": "apxn-020",
     "last_published_article": "apxn-019",
-    "next_queue_priority": 8,
+    "next_queue_priority": 7,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-11-15",
+      "last_run": "2026-11-19",
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 7,
+      "waiting_topics_after_run": 8,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {

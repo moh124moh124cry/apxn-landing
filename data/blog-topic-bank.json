@@ -644,7 +644,7 @@
       "topic": "APXN Project News: Apex Network (APXN) Official BscScan Verification: Smart Contract Details and 100 Million Token Supply (ec182b61a335)",
       "category": "APXN News",
       "risk": "safe",
-      "status": "queued",
+      "status": "ready",
       "source": "admin_editorial_submission",
       "content_mode": "apxn",
       "source_profile": null,
@@ -653,16 +653,19 @@
       ],
       "auto_publish_allowed": true,
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
-      "queued_at": "2026-11-19"
+      "queued_at": "2026-11-19",
+      "article_id": "apxn-020",
+      "article_slug": "apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok",
+      "generated_at": "2026-11-19"
     }
   ],
   "planner_state": {
-    "last_run": "2026-11-15",
+    "last_run": "2026-11-19",
     "available_topics": 22,
     "automation_eligible_available_topics": 20,
     "manual_or_review_topics": 2,
-    "queued_topics": 6,
-    "used_topics": 9,
+    "queued_topics": 7,
+    "used_topics": 10,
     "category_load_after_run": {
       "APXN Guides": 4,
       "Blockchain": 3,

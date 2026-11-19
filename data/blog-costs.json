@@ -1840,10 +1840,46 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 132206000,
           "cost_usd": 0.0132206
+        },
+        {
+          "date": "2026-11-19",
+          "response_id": "7268d468-f325-43a1-ac90-40a92d2b9f18",
+          "model": "grok-4.3",
+          "topic": "APXN Project News: Apex Network (APXN) Official BscScan Verification: Smart Contract Details and 100 Million Token Supply (ec182b61a335)",
+          "article_slug": "apxn-project-news-apex-network-apxn-official-bscscan-verification-smart-contract-details-a",
+          "stage": "research_packet_writing",
+          "input_tokens": 6943,
+          "cached_input_tokens": 128,
+          "output_tokens": 3946,
+          "reasoning_tokens": 971,
+          "total_tokens": 10889,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 184093500,
+          "cost_usd": 0.01840935
+        },
+        {
+          "date": "2026-11-19",
+          "response_id": "495e73f1-4e07-91a4-a40b-80191343f72a",
+          "model": "grok-4.3",
+          "topic": "APXN Project News: Apex Network (APXN) Official BscScan Verification: Smart Contract Details and 100 Million Token Supply (ec182b61a335)",
+          "article_slug": "apxn-project-news-apex-network-apxn-official-bscscan-verification-smart-contract-details-a",
+          "stage": "safe_repair_1",
+          "input_tokens": 9635,
+          "cached_input_tokens": 128,
+          "output_tokens": 4482,
+          "reasoning_tokens": 1693,
+          "total_tokens": 14117,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 231143500,
+          "cost_usd": 0.02311435
         }
       ],
-      "total_cost_usd": 0.07057175
+      "total_cost_usd": 0.11209545
     }
   },
-  "last_updated": "2026-11-15"
+  "last_updated": "2026-11-19"
 }
