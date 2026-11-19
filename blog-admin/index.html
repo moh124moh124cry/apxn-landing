@@ -4679,6 +4679,191 @@
 </script>
 <!-- APXN_ARTICLE_STUDIO_V1: END -->
 
+<!-- APXN_AUTO_ARTICLE_IMPORT_V2: BEGIN -->
+<script id="apxn-auto-article-import-v2">
+/* APXN blog full-article auto importer v2. Safe client-side UI enhancement. */
+(() => {
+  'use strict';
+  if (window.__apxnBlogAutoImportV2) return;
+  window.__apxnBlogAutoImportV2 = true;
+  const byId = id => document.getElementById(id);
+  const clean = s => String(s == null ? '' : s).replace(/\u00a0/g, ' ').replace(/\r\n?/g, '\n').trim();
+  const strip = s => clean(s).replace(/^\s{0,3}#{1,6}\s+/, '').replace(/^\*\*(.*?)\*\*$/, '$1').replace(/^__(.*?)__$/, '$1').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1').trim();
+  const pretty = s => clean(s).replace(/\s{2,}/g, ' ');
+  const trimTo = (s, max) => {
+    s = pretty(strip(s));
+    if (s.length <= max) return s;
+    let short = s.slice(0, max + 1);
+    const end = Math.max(short.lastIndexOf('. '), short.lastIndexOf('! '), short.lastIndexOf('? '));
+    if (end > Math.floor(max * .52)) return short.slice(0, end + 1).trim();
+    short = short.slice(0, max);
+    const space = short.lastIndexOf(' ');
+    return (space > max * .6 ? short.slice(0, space) : short).trim().replace(/[,;:]+$/, '');
+  };
+  function parseArticle(input) {
+    const raw = clean(input);
+    if (raw.length < 100) throw new Error('ألصق نص المقالة كاملًا، مع عنوانها وفقراتها.');
+    const lines = raw.replace(/^```(?:markdown|md|text)?\s*\n/i, '').replace(/\n```\s*$/, '').split('\n');
+    let title = '', summary = '', category = '', metaDescription = '', keyString = '';
+    let state = 'intro', active = null, answer = null;
+    const intro = [], conclusion = [], sections = [], faqs = [];
+    let metadataBlock = false;
+    const flushFaq = () => { if (answer) {const q=strip(answer.question), a=clean(answer.lines.join('\n'));if(q && a)faqs.push({question:q,answer:a});answer=null;} };
+    const flushSection = () => { if(active) {active.text=clean(active.lines.join('\n'));if(active.heading && active.text)sections.push({heading:active.heading,text:active.text});active=null;} };
+    const add = line => {
+      if (state === 'faq') {if(answer) answer.lines.push(line);return;}
+      if (state === 'conclusion') conclusion.push(line);
+      else if (state === 'section' && active) active.lines.push(line);
+      else intro.push(line);
+    };
+    for (let i=0; i<lines.length; i++) {
+      const original=lines[i].replace(/\s+$/, '');
+      const line=original.trim();
+      if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(line)) {metadataBlock=false;continue;}
+      if (!line) {if(!metadataBlock) add('');continue;}
+      // Exclude article metadata and convert its useful fields to the editor's metadata fields.
+      const metaLine=line.replace(/^\*\*([^*]+?):\*\*\s*/, '$1: ');
+      let m = metaLine.match(/^(article\s+summary|summary|seo\s+meta\s+description|meta\s+description|seo\s+keywords|keywords|category|published|date|author|reading\s+time)\s*:\s*(.*)$/i);
+      if(m) {
+        const label=m[1].toLowerCase();let value=strip(m[2]);
+        if (/summary/.test(label)) summary=value;
+        if (/description/.test(label)) metaDescription=value;
+        if (/keywords/.test(label)) keyString=value;
+        if (label==='category') category=value;
+        metadataBlock=false;continue;
+      }
+      if (/^(?:\*\*)?\s*(?:apex network editorial|\d+\s+min(?:ute)?s? read|published\s+\w+)/i.test(line) || /^\*\*.*[•|]\s*\d+\s+min(?:ute)?s? read\*\*$/i.test(line)) continue;
+      // Markdown heading, HTML headings and plain numbered section headings.
+      const heading=line.match(/^\s{0,3}(#{1,6})\s+(.+)$/);
+      const htmlHeading=line.match(/^<h([1-6])(?:\s[^>]*)?>(.*?)<\/h\1>$/i);
+      const level=heading?heading[1].length:(htmlHeading?Number(htmlHeading[1]):0);
+      const headingText=level?strip(heading?heading[2]:htmlHeading[2]):'';
+      const plainSection= !level && /^(\d{1,2})[.)]\s+([A-Z][^.!?]{7,100})$/.test(line) && line.length < 125;
+      const name=headingText||(plainSection?strip(line):'');
+      if (!title && !level && !plainSection && line.length <= 180 && !/[.!?]$/.test(line)) {
+        title=strip(line);continue;
+      }
+      if (level===1 && !title) {title=headingText;continue;}
+      if (level===1 && title) { flushFaq();flushSection();state='section';active={heading:headingText,lines:[]};continue; }
+      if (name) {
+        const n=name.replace(/^\d{1,2}[.)]\s*/, '').toLowerCase();
+        if (/^(frequently asked questions|faq|common questions|الأسئلة الشائعة)(\b|$)/i.test(n)) {flushSection();flushFaq();state='faq';continue;}
+        if (/^(conclusion|final thoughts|closing thoughts|in conclusion|الخاتمة)(\b|\s|:|$)/i.test(n)) {flushSection();flushFaq();state='conclusion';continue;}
+        if (/^(seo keywords|seo meta description|author)(\b|\s|:|$)/i.test(n)) {flushSection();flushFaq();state='ignore';metadataBlock=true;continue;}
+        metadataBlock=false;
+        if (state==='faq') {
+          flushFaq(); answer={question:name,lines:[]};continue;
+        }
+        if (state==='conclusion') {conclusion.push('\n'+name+'\n');continue;}
+        if (level===3 && active) {active.lines.push('\n'+name+'\n');continue;}
+        flushSection();state='section';active={heading:name,lines:[]};continue;
+      }
+      if (state==='ignore') continue;
+      if (metadataBlock) continue;
+      // Convert Markdown tables to readable label-value lines for the existing paragraph renderer.
+      if (/^\|.*\|$/.test(line)) {
+        const cols=line.slice(1,-1).split('|').map(x=>strip(x));
+        if(cols.every(c=>/^:?-{3,}:?$/.test(c)))continue;
+        if(cols.length===2 && !/^token information|details|category|percentage$/i.test(cols[0])) {add(cols[0]+': '+cols[1]);continue;}
+      }
+      if(!title && line.length <= 180){title=strip(line);continue;}
+      add(original);
+    }
+    flushSection();flushFaq();
+    const splitParagraphs = s => clean(s).split(/\n\s*\n/).map(clean).filter(Boolean);
+    let introText = clean(intro.join('\n'));
+    let conclusionText = clean(conclusion.join('\n'));
+    // Do not invent article prose. Move an existing paragraph into a missing required field.
+    if(!introText && sections.length){const ps=splitParagraphs(sections[0].text);if(ps.length>1){introText=ps.shift();sections[0].text=ps.join('\n\n');}}
+    if(!conclusionText && sections.length){const last=sections[sections.length-1];const ps=splitParagraphs(last.text);if(ps.length>1){conclusionText=ps.pop();last.text=ps.join('\n\n');}}
+    if(!conclusionText){const p=splitParagraphs(introText);if(p.length>1){conclusionText=p.pop();introText=p.join('\n\n');}}
+    if(!sections.length){const ps=splitParagraphs(introText);if(ps.length>=3){introText=ps.shift();if(!conclusionText)conclusionText=ps.pop();sections.push({heading:'Overview',text:ps.join('\n\n')});}}
+    if(!title || !introText || !conclusionText || !sections.length || sections.some(s=>!s.heading||!s.text)) {
+      throw new Error('تعذّر تحديد جميع أجزاء المقالة تلقائيًا. تأكد من وجود عنوان ومقدمة وعناوين أقسام وخاتمة، أو افتح التعديل اليدوي.');
+    }
+    // Use article-provided SEO metadata; otherwise derive a short description from the actual introduction.
+    const description=trimTo(metaDescription||summary||splitParagraphs(introText)[0]||'',320);
+    const keywords=keyString.split(/[,،]/).map(strip).filter(Boolean).slice(0,15);
+    return {title:trimTo(title,180),description,category,keywords,intro:introText,sections,faqs,conclusion:conclusionText};
+  }
+  function init() {
+    const overlay=byId('apxn-studio-overlay');
+    const form=byId('apxn-studio-form');
+    const grid=form?.querySelector('.apxn-studio-form-grid');
+    const imageInput=byId('apxn-studio-image-input');
+    if(!overlay||!form||!grid||!imageInput||byId('apxn-auto-import-text'))return false;
+    const imgBlock=imageInput.closest('.apxn-studio-part');
+    if(!imgBlock)return false;
+    const panel=document.createElement('div');panel.id='apxn-auto-import-panel';panel.className='apxn-studio-part';
+    panel.innerHTML='<h3 style="color:#facc15;margin-bottom:8px">📄 استيراد مقالة كاملة تلقائيًا</h3><p class="apxn-studio-note">الصق المقالة مرة واحدة (العنوان والفقرات والأقسام والخاتمة). سيتم توزيعها تلقائيًا في قالب APXN. أضف الصورة ثم اضغط «حفظ ونشر».</p><textarea id="apxn-auto-import-text" class="apxn-studio-control" dir="auto" rows="12" placeholder="الصق المقالة الإنجليزية أو العربية كاملة هنا..."></textarea><p id="apxn-auto-import-status" class="apxn-studio-note" aria-live="polite"></p>';
+    form.insertBefore(panel,grid);
+    const details=document.createElement('details');details.id='apxn-auto-import-advanced';details.className='apxn-studio-part';
+    const summary=document.createElement('summary');summary.textContent='تعديل الحقول والأقسام يدويًا (اختياري)';summary.style.cssText='font-weight:700;cursor:pointer;color:#facc15;padding:5px';
+    details.appendChild(summary);form.insertBefore(details,grid);
+    const sections=byId('apxn-studio-sections')?.closest('.apxn-studio-part');
+    const faq=byId('apxn-studio-faq')?.closest('.apxn-studio-part');
+    const conclusion=byId('apxn-studio-conclusion')?.closest('label');
+    for(const node of [grid,sections,faq,conclusion])if(node)details.appendChild(node);
+    const input=byId('apxn-auto-import-text');const status=byId('apxn-auto-import-status');
+    function apply(){
+      if(!input.value.trim()){status.textContent='';return;}
+      try{
+        const a=parseArticle(input.value);
+        byId('apxn-studio-title').value=a.title;
+        byId('apxn-studio-description').value=a.description;
+        byId('apxn-studio-intro').value=a.intro;
+        byId('apxn-studio-conclusion').value=a.conclusion;
+        if(a.category){const select=byId('apxn-studio-category');const options=Array.from(select.options);const category=options.find(o=>o.value.toLowerCase()===a.category.toLowerCase())||options.find(o=>a.category.toLowerCase().includes(o.value.toLowerCase()));if(category)select.value=category.value;}
+        byId('apxn-studio-keywords').value=a.keywords.length?a.keywords.join(', '):'APXN, Apex Network';
+        const sectionContainer=byId('apxn-studio-sections');sectionContainer.replaceChildren();
+        a.sections.forEach(section=>{
+          byId('apxn-studio-add-section').click();
+          const row=sectionContainer.lastElementChild;
+          row.querySelector('[data-section-heading]').value=section.heading;
+          row.querySelector('[data-section-body]').value=section.text;
+        });
+        const faqContainer=byId('apxn-studio-faq');faqContainer.replaceChildren();
+        a.faqs.forEach(item=>{
+          byId('apxn-studio-add-faq').click();
+          const row=faqContainer.lastElementChild;
+          row.querySelector('[data-faq-question]').value=item.question;
+          row.querySelector('[data-faq-answer]').value=item.answer;
+        });
+        status.style.color='#86efac';
+        status.textContent=`✓ تم توزيع المقالة تلقائيًا: ${a.sections.length} قسم، ${a.faqs.length} سؤال شائع. أضف الصورة واضغط حفظ ونشر.`;
+      }catch(e){status.style.color='#fbbf24';status.textContent=e.message;}
+    }
+    input.addEventListener('input',apply);
+    // Ensure last paste is parsed before save/preview, without changing their original handlers.
+    for(const id of ['apxn-studio-save','apxn-studio-publish','apxn-studio-show-preview']){
+      byId(id)?.addEventListener('click',()=>{if(input.value.trim())apply();},true);
+    }
+    const heading=byId('apxn-studio-heading');
+    function syncMode(){
+      if(overlay.hidden)return;
+      const isNew=/إنشاء مقالة جديدة/.test(heading?.textContent||'') || Boolean(byId('apxn-studio-delete')?.hidden);
+      panel.hidden=!isNew;
+      details.open=!isNew;
+    }
+    let wasHidden=overlay.hidden;
+    const obs=new MutationObserver(()=>{
+      if(!overlay.hidden && wasHidden){input.value='';status.textContent='';}
+      wasHidden=overlay.hidden;
+      syncMode();
+    });
+    obs.observe(overlay,{attributes:true,attributeFilter:['hidden']});
+    if(heading)obs.observe(heading,{childList:true,characterData:true,subtree:true});
+    syncMode();
+    return true;
+  }
+  if (!init()) {
+    document.addEventListener('DOMContentLoaded',init,{once:true});
+    let tries=0;const retry=setInterval(()=>{if(init()||++tries>30)clearInterval(retry);},250);
+  }
+})();
+
+</script>
+<!-- APXN_AUTO_ARTICLE_IMPORT_V2: END -->
 </body>
 </html>
 
