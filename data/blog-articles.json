@@ -4,8 +4,8 @@
   "default_language": "en",
   "stats": {
     "total_articles": 18,
-    "published": 17,
-    "ready": 1,
+    "published": 18,
+    "ready": 0,
     "drafts": 0,
     "featured": 1
   },
@@ -3903,19 +3903,19 @@
       "category": "APXN News",
       "language": "en",
       "author": "Apex Network Editorial",
-      "status": "ready",
+      "status": "published",
       "featured": false,
-      "indexable": false,
+      "indexable": true,
       "created_at": "2026-11-19",
       "generated_at": "2026-11-19",
       "updated_at": "2026-11-19",
-      "published_at": null,
+      "published_at": "2026-11-19",
       "reading_minutes": 7,
       "word_count": 1364,
-      "path": "",
-      "url": "",
-      "image": "",
-      "image_filename": "",
+      "path": "blog/articles/apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok.html",
+      "url": "https://apxn.network/blog/articles/apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok.html",
+      "image": "https://apxn.network/blog/images/apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok-1000151628.jpg",
+      "image_filename": "apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok-1000151628.jpg",
       "keywords": [
         "APXN",
         "Apex Network",
@@ -3939,7 +3939,7 @@
         "title": "Apex Network APXN Official BscScan Verification Smart Contract Details and 100 Million Token Supply",
         "description": "Explore the official Apex Network APXN BEP-20 token verification on BscScan, including the published contract address, declared total supply of 100 million tokens, and public",
         "canonical": "https://apxn.network/blog/articles/apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok.html",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "article_schema": true,
         "faq_schema": true
       },
@@ -4142,7 +4142,8 @@
           ]
         }
       },
-      "verified_against_knowledge": true
+      "verified_against_knowledge": true,
+      "published_url": "https://apxn.network/blog/articles/apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok.html"
     }
   ],
   "generation_queue": [
@@ -4508,7 +4509,7 @@
       "priority": 6,
       "topic": "APXN Project News: Apex Network (APXN) Official BscScan Verification: Smart Contract Details and 100 Million Token Supply (ec182b61a335)",
       "category": "APXN News",
-      "status": "ready",
+      "status": "published",
       "source": "admin_editorial_submission",
       "topic_bank_id": "bank-admin-ec182b61a335",
       "language": "en",
@@ -4521,12 +4522,13 @@
       "auto_publish_allowed": true,
       "editorial_guard": "Use only the administrator-submitted APXN information. Do not invent implementation details. Do not present a discussion, proposal or roadmap decision as an already implemented feature unless the submitted material explicitly confirms implementation. Do not promise token value, profit, listing or withdrawal.",
       "article_id": "apxn-020",
-      "generated_at": "2026-11-19"
+      "generated_at": "2026-11-19",
+      "published_at": "2026-11-19"
     }
   ],
   "automation_state": {
     "last_generated_article": "apxn-020",
-    "last_published_article": "apxn-019",
+    "last_published_article": "apxn-020",
     "next_queue_priority": 7,
     "automatic_generation": true,
     "automatic_publishing": false,
