@@ -1876,10 +1876,28 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 231143500,
           "cost_usd": 0.02311435
+        },
+        {
+          "date": "2026-11-20",
+          "response_id": "592d74cd-95fb-9ce3-93e8-aa7988bb6ac4",
+          "model": "grok-4.3",
+          "topic": "APXN Project News: APXN Network Strategic Update Details Point Economy and EARLY ACCESS Badge Policy (7f467a96f410)",
+          "article_slug": "apxn-project-news-apxn-network-strategic-update-details-point-economy-and-early-access-bad",
+          "stage": "research_packet_writing",
+          "input_tokens": 5813,
+          "cached_input_tokens": 128,
+          "output_tokens": 3238,
+          "reasoning_tokens": 476,
+          "total_tokens": 9051,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 152268500,
+          "cost_usd": 0.01522685
         }
       ],
-      "total_cost_usd": 0.11209545
+      "total_cost_usd": 0.1273223
     }
   },
-  "last_updated": "2026-11-19"
+  "last_updated": "2026-11-20"
 }
