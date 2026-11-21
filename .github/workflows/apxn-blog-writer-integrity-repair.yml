@@ -1,0 +1,152 @@
+name: APXN Blog - Repair Duplicate Sentences Without Disabling Quality Gates
+
+on:
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - '.github/workflows/apxn-blog-writer-integrity-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-blog-writer-integrity-repair-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair-blog-writer:
+    if: github.ref == 'refs/heads/cloudflare-migration'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Cloudflare branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Patch writer without changing knowledge, scheduling or publication
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE_PATCH'
+          import fs from 'node:fs';
+          const file = 'scripts/blog-writer.mjs';
+          let src = fs.readFileSync(file, 'utf8');
+          function replaceOnce(from, to, description) {
+            const n = src.split(from).length - 1;
+            if (n !== 1) throw new Error(`${description}: expected exactly one anchor, got ${n}`);
+            src = src.replace(from, to);
+          }
+          
+          // Keep all existing safety, evidence, minimum-word, article-uniqueness and
+          // publishing protections. Repair the writer without touching other files.
+          if (!src.includes('function removeDuplicateProseLocally(article) {')) {
+            const helper = "function removeDuplicateProseLocally(article) {\n  // Free, conservative cleanup. Never invent text or overwrite citations.\n  if (!article || typeof article !== 'object') return article;\n  const editable = [];\n  if (article.intro && typeof article.intro.text === 'string') editable.push([article.intro, 'text']);\n  for (const section of article.sections || []) {\n    for (const paragraph of section.paragraphs || []) {\n      if (typeof paragraph?.text === 'string') editable.push([paragraph, 'text']);\n    }\n  }\n  for (const item of article.faq || []) {\n    if (typeof item?.answer === 'string') editable.push([item, 'answer']);\n  }\n  if (article.conclusion && typeof article.conclusion.text === 'string') {\n    editable.push([article.conclusion, 'text']);\n  }\n\n  const seenSentences = new Set();\n  const seenLongWindows = new Set();\n  const wordsFor = (value) => normalizeTopic(value).split(/\\s+/).filter(Boolean);\n  const terminal = /[.!?][\"”')\\]]?$/u;\n  let trimmedBlocks = 0;\n\n  for (const [item, field] of editable) {\n    const original = normalizeSpace(item[field]);\n    if (!original) continue;\n    const sentences = splitSentencesForCleanup(original);\n    const kept = [];\n    const pendingSentences = new Set();\n    const pendingWindows = new Set();\n    for (const sentence of sentences) {\n      const current = normalizeSpace(sentence);\n      const words = wordsFor(current);\n      if (!words.length) continue;\n\n      // A trailing unfinished fragment can be removed only if a complete\n      // sentence survives in the same block. Otherwise paid repair remains\n      // responsible, and the strict gate continues to reject the draft.\n      if (!terminal.test(current) && kept.length > 0) continue;\n\n      const signature = words.join(' ');\n      let repeated = words.length >= 9 && (seenSentences.has(signature) || pendingSentences.has(signature));\n      if (!repeated && words.length >= 18) {\n        for (let i = 0; i <= words.length - 18; i++) {\n          const window = words.slice(i, i + 18).join(' ');\n          if (seenLongWindows.has(window) || pendingWindows.has(window)) {\n            repeated = true;\n            break;\n          }\n        }\n      }\n      if (repeated) continue;\n\n      kept.push(current);\n      if (words.length >= 9) pendingSentences.add(signature);\n      if (words.length >= 18) {\n        for (let i = 0; i <= words.length - 18; i++) {\n          pendingWindows.add(words.slice(i, i + 18).join(' '));\n        }\n      }\n    }\n\n    // Never empty an entire paragraph, FAQ answer or conclusion. If the\n    // entire block is repeated or unfinished, leave it for an evidence-locked\n    // AI repair rather than publishing a misleading empty section.\n    if (kept.length === 0) continue;\n    const cleaned = normalizeSpace(kept.join(' '));\n    if (cleaned && cleaned !== original) {\n      item[field] = cleaned;\n      trimmedBlocks += 1;\n    }\n    // Only reserve sentence signatures from retained text. Empty blocks are\n    // not cleaned, so they remain flagged by the original strict validator.\n    for (const signature of pendingSentences) seenSentences.add(signature);\n    for (const signature of pendingWindows) seenLongWindows.add(signature);\n  }\n\n  if (trimmedBlocks > 0) {\n    console.log(`FREE EDITORIAL DEDUP: safely cleaned ${trimmedBlocks} block(s).`);\n  }\n  return article;\n}\n\n";
+            replaceOnce('function autoCorrectArticleLocally(article, packet) {',
+              helper + 'function autoCorrectArticleLocally(article, packet) {',
+              'Insert free duplicate/unfinished-text cleaner');
+          }
+          if (!src.includes('return normalizeGeneratedArticle(removeDuplicateProseLocally(corrected));')) {
+            replaceOnce('  return normalizeGeneratedArticle(corrected);',
+              '  return normalizeGeneratedArticle(removeDuplicateProseLocally(corrected));',
+              'Run free duplicate cleaner after grounded corrections');
+          }
+          
+          const generationRule = '    "Every paragraph must contain different factual information. Never copy sentences, long phrases, or identical explanations from another section, the introduction, FAQ, or conclusion.",';
+          if (!src.includes(generationRule)) {
+            const anchor = '    "Avoid keyword stuffing, hype, generic motivational filler and repeated explanations.",';
+            replaceOnce(anchor, anchor + '\n' + generationRule, 'Improve initial paid generation prompt');
+          }
+          
+          const repairRule = '    "If paragraphs within one section repeat, rewrite the later paragraph with a genuinely distinct angle using only its assigned source evidence, not copied text from the first paragraph. Finish every paragraph with a complete sentence and a period.",';
+          if (!src.includes(repairRule)) {
+            const anchor = '    "Fix repeated sentences, repeated long passages, duplicate headings and incomplete endings without inventing content.",';
+            replaceOnce(anchor, anchor + '\n' + repairRule, 'Improve grounded AI repair prompt');
+          }
+          
+          // Prevent paying for another repair if the preceding expensive attempt returned
+          // precisely the same validation errors. No bypass of the final quality gate.
+          if (!src.includes('const errorsBeforePaidRepair = [...local.errors];')) {
+            replaceOnce('    repairAttempts += 1;\n\n    console.log(\n      `SAFE AUTO-REPAIR',
+              '    const errorsBeforePaidRepair = [...local.errors];\n    repairAttempts += 1;\n\n    console.log(\n      `SAFE AUTO-REPAIR',
+              'Track whether expensive repair actually improved the draft');
+            const anchor = '    console.log(\n      `Repair ${repairAttempts} result: ${local.body_word_count} words; ${local.errors.length} remaining quality errors.`\n    );';
+            replaceOnce(anchor,
+              anchor + '\n\n    if (!local.ok && JSON.stringify([...local.errors].sort()) === JSON.stringify(errorsBeforePaidRepair.sort())) {\n      console.log("No improvement in paid repair validation; refusing another paid retry.");\n      break;\n    }',
+              'Stop costly repeat repairs when the error set is unchanged');
+          }
+          
+          if (!src.includes('errors.push(...strictArticleIntegrityErrors(article));') ||
+              !src.includes('errors.push(...repeatedBlockErrors(article));')) {
+            throw new Error('Original strict repetition gates are not present; refusing unsafe change.');
+          }
+          if (!src.includes('MAX_LENGTH_REPAIR_CALLS = 2')) {
+            throw new Error('Unexpected paid repair policy; refusing unsafe change.');
+          }
+          fs.writeFileSync(file, src, 'utf8');
+          console.log('PASS: free repetition/unfinished-fragment cleanup installed.');
+          console.log('PASS: original strict article-integrity gate and manual publishing preserved.');
+          NODE_PATCH
+      - name: Verify syntax and offline self tests (no AI call)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/blog-writer.mjs
+          BLOG_WRITER_SELF_TEST=1 node scripts/blog-writer.mjs
+          node --input-type=module <<'NODE_TEST'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+          const text = fs.readFileSync('scripts/blog-writer.mjs', 'utf8');
+          const a = text.indexOf('function removeDuplicateProseLocally(article) {');
+          const b = text.indexOf('function autoCorrectArticleLocally(article, packet) {', a);
+          if (a < 0 || b < 0) throw new Error('Repair helper missing');
+          const excerpt = text.slice(a, b);
+          const fn = vm.runInNewContext(`
+            const normalizeSpace = x => String(x ?? '').replace(/\\s+/g, ' ').trim();
+            const normalizeTopic = x => normalizeSpace(x).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+            const splitSentencesForCleanup = x => normalizeSpace(x).split(/(?<=[.!?])\\s+(?=[A-Z0-9])/u).map(normalizeSpace).filter(Boolean);
+            ${excerpt}
+            removeDuplicateProseLocally;
+          `, {console});
+          const repeated = 'The Telegram Mini App records APXN participation points that are not automatically blockchain tokens.';
+          const unique = 'These counters represent app participation instead of an on chain account balance.';
+          const second = 'The published roadmap describes later distribution periods under announced eligibility rules.';
+          const sample = {
+            intro: {text: 'An introduction describes the broad context in a clear manner and avoids repeating the same statements again.'},
+            sections: [{paragraphs: [
+              {text: `${repeated} ${unique} An unfinished sentence without punctuation`},
+              {text: `${repeated} ${second}`}
+            ]}],
+            faq: [{answer: 'The FAQ explains a different aspect, with no duplicate phrases or invented factual additions.'}],
+            conclusion: {text: 'A conclusion remains a complete unique final explanation of the material and its limits.'}
+          };
+          fn(sample);
+          if (sample.sections[0].paragraphs[0].text.includes('unfinished sentence')) throw new Error('Unfinished tail was not removed');
+          if (sample.sections[0].paragraphs[1].text.includes(repeated)) throw new Error('Repeated sentence was not removed');
+          if (!sample.sections[0].paragraphs[1].text.includes(second)) throw new Error('Distinct fact incorrectly deleted');
+          if (!sample.sections[0].paragraphs[0].text.includes(unique)) throw new Error('Original supported text incorrectly deleted');
+          const unsafe = {intro: {text: 'A single completely unfinished paragraph with no terminal punctuation'}};
+          fn(unsafe);
+          if (!unsafe.intro.text.includes('unfinished')) throw new Error('A fully incomplete paragraph must remain for strict gate rejection');
+          console.log('PASS: free cleanup retains unique facts, removes duplicates/tails, leaves unsafe drafts blocked.');
+          NODE_TEST
+          git diff --check
+      - name: Commit repaired writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/blog-writer.mjs
+          if git diff --cached --quiet; then
+            echo 'Fix already present; no commit needed.'
+          else
+            git commit -m 'fix(blog): safe local dedup before paid repair'
+            git push origin HEAD:cloudflare-migration
+          fi
+
