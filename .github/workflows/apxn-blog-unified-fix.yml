@@ -1,0 +1,468 @@
+name: APXN - One-Click Blog Knowledge Quality and Rotation Fix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apxn-blog-unified-maintenance-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  update-all-three-files:
+    if: github.ref == 'refs/heads/cloudflare-migration'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: cloudflare-migration
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Update knowledge in place without deleting existing source sections
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const FILE = 'data/apxn-blog-knowledge.json';
+          const k = JSON.parse(fs.readFileSync(FILE, 'utf8'));
+          const date = '2026-11-21';
+
+          const unique = (array) => Array.from(new Set(array));
+          const rule = (message) => {
+            if (!Array.isArray(k.automation_editorial_rules)) k.automation_editorial_rules = [];
+            k.automation_editorial_rules = unique([...k.automation_editorial_rules, message]);
+          };
+
+          // Keep the entire existing 100KB+ knowledge base. Update approved facts
+          // rather than replacing it with a reduced or incompatible schema.
+          k.last_reviewed_at = date;
+          k.canonical_revision = {
+            version: '2026-11-21',
+            priority: 'Latest official project Whitepaper, Roadmap and November 2026 level update override older marketing copy and September strategy drafts.',
+            approved_status: 'Editorial fact sheet for future articles; not a claim that planned features are already live.',
+            official_project_website: 'https://apxn.network',
+            official_contract_explorer: 'https://bscscan.com/token/0x88074bA197BBB0a3AFF891E52d05764F98509956',
+            source_caution: 'Historic submitted documents are archived context only. Do not reuse older numeric thresholds, fixed level percentages or unfinished article fragments.'
+          };
+
+          const token = (k.tokenomics_and_contract_content ??= {});
+          token.total_supply_displayed = '100,000,000 APXN';
+          token.distribution = [
+            { bucket: 'Community', percent: 63, amount_apxn: 63000000 },
+            { bucket: 'Listings & Exchanges', percent: 15, amount_apxn: 15000000 },
+            { bucket: 'Partnerships, Marketing, Development & Airdrops', percent: 15, amount_apxn: 15000000 },
+            { bucket: 'Project Team', percent: 5, amount_apxn: 5000000 },
+            { bucket: 'CEX Launchpad', percent: 2, amount_apxn: 2000000 }
+          ];
+          token.points_relationship = 'APXN Points earned inside the Telegram Mini App are off-chain participation points. They are not immediately withdrawable APXN tokens. The 63,000,000 APXN community allocation is reserved for the planned community distribution. No fixed points-to-tokens conversion is promised.';
+          token.points_conversion_ui_statement = 'Verified APXN Points determine eligibility for one of seven levels. Each level has its own APXN allocation pool; user shares inside the pool are proportional to their Verified APXN Points relative to all eligible verified points in that level. The final amount per level is to be officially announced.';
+          token.editorial_rule = 'Always use the approved 100,000,000 supply and 63/15/15/5/2 allocation. Seven level thresholds must use the November 2026 update. Never use old 30/50/70/100 percent user eligibility as a final withdrawal ratio. Badge privileges are separate from token supply and must not be presented as 60% of the total supply.';
+
+          const levels = (token.levels ??= {});
+          levels.count = 7;
+          levels.labels = ['L1','L2','L3','L4','L5','L6','L7'];
+          levels.total_community_allocation_apxn = 63000000;
+          levels.thresholds = [
+            { level: 1, verified_points_min: 20000, verified_points_max_exclusive: 50000 },
+            { level: 2, verified_points_min: 50000, verified_points_max_exclusive: 100000 },
+            { level: 3, verified_points_min: 100000, verified_points_max_exclusive: 150000 },
+            { level: 4, verified_points_min: 150000, verified_points_max_exclusive: 250000 },
+            { level: 5, verified_points_min: 250000, verified_points_max_exclusive: 350000 },
+            { level: 6, verified_points_min: 350000, verified_points_max_inclusive: 500000 },
+            { level: 7, verified_points_min_exclusive: 500000 }
+          ];
+          levels.source_revision = 'November 2026 update: Level 7 is MORE THAN 500,000 Verified APXN Points; Level 6 is 350,000 through 500,000 inclusive.';
+          levels.distribution_method = 'Each of seven levels has its own token pool from the 63 million APXN community allocation. Eligible users share their level pool proportionally to their Verified APXN Points compared with all eligible Verified APXN Points in that same level; not an equal division and not a fixed 30%, 50%, 70% or 100% of personal tokens.';
+          levels.allocation_announcement = 'Exact pool sizes and final claim/withdrawal conditions are to be officially confirmed before distribution and listing.';
+          levels.article_evidence = [
+            'The APXN community distribution has seven separate level pools funded by the community allocation. Level assignment uses Verified APXN Points rather than a raw or unverified mining balance. The levels measure eligibility only; a point does not automatically equal an APXN blockchain token.',
+            'Level 1 starts at 20,000 Verified APXN Points and ends below 50,000. Level 2 starts at 50,000 and ends below 100,000. Level 3 starts at 100,000 and ends below 150,000. Level 4 starts at 150,000 and ends below 250,000.',
+            'Level 5 starts at 250,000 and ends below 350,000 Verified APXN Points. Level 6 starts at 350,000 and includes 500,000. Level 7 requires MORE THAN 500,000. Earlier descriptions starting Level 7 at one million points are superseded.',
+            'The number of APXN tokens for each participating user is calculated from the separate pool assigned to their verified level, relative to the total verified points of eligible users within that level. The project must announce final pool sizes and claim conditions before claiming opens.',
+            'Do not use a historic 30%, 50%, 70%, or 100% eligibility ladder as the final allocation method. Do not confuse badge privileges with 63% of the token supply, and do not equate verified points with a live wallet balance.'
+          ];
+
+          const kyc = (token.membership_and_loyalty_kyc_november_2026 ??= {});
+          kyc.program = 'APXN Membership & Loyalty KYC / KYC الانتماء والولاء';
+          kyc.target_launch = 'Q1 2027 (planned)';
+          kyc.verified_points_completion_bonus = 20000;
+          kyc.points_bonus_frequency = 'Once per eligible account after completing required program tasks and paying the displayed Telegram Stars';
+          kyc.points_bonus_recipient_cap = null;
+          kyc.first_airdrop_apxn_per_eligible_account = 100;
+          kyc.first_airdrop_recipient_cap = 10000;
+          kyc.first_airdrop_eligibility = 'First 10,000 qualifying Badge holders who complete specified tasks and the displayed Telegram Stars payment';
+          kyc.first_airdrop_target_claim = 'Q2 2027';
+          kyc.after_first_airdrop_cap = 'The 20,000 Verified APXN Points reward continues for eligible new completers after the first 10,000 token allocations run out; it is awarded once per qualifying account.';
+          kyc.important = 'The KYC الانتماء والولاء program is planned, not currently active. Do not imply a completed government-ID check, automatic token transfer, fixed token value, or live token withdrawal.';
+
+          token.airdrop_program = {
+            first_airdrop: {
+              target_period_eligibility: 'Q1 2027',
+              target_period_claim: 'Q2 2027',
+              eligible_badge_holders_target: 10000,
+              planned_apxn_per_qualified_holder: 100,
+              notice: 'The first 10,000 qualifying badge holders completing the required loyalty program and Stars payment have a planned 100 APXN allocation. It is separate from the once-per-account 20,000 Verified APXN Points reward, which continues after the 10,000 allocation limit.'
+            },
+            second_airdrop: {
+              target_period: 'Q2 2027',
+              approximate_tokens: 2000000,
+              fund: 'Partnerships, Marketing, Development & Airdrops (15% allocation)',
+              notice: 'Approximately two million APXN from the existing 15-million-APXN fund, not additional minting. Per-user rewards and eligibility must not be promised until official rules are published.'
+            }
+          };
+
+          token.early_access_badge_guidance = 'EARLY ACCESS badge is an early-user identifier. Proposed benefits include priority access and a conditional 60% pre-listing withdrawal privilege, and a 14-day inactivity/auction policy. These older strategic mechanics must not be described as active, final, automatic or guaranteed unless current public terms and application behavior confirm them. The 60% figure is NOT 60% of token supply.';
+
+          const statuses = (k.current_ecosystem_status ??= {});
+          statuses.staking = {
+            status: 'reported_active',
+            label: 'APXN Points Staking / Telegram Mini App',
+            description: 'Points staking has been announced and opened in the Telegram Mini App. Describe it as app points participation, not on-chain token staking or guaranteed investment yield. Recheck the currently displayed reward and entry requirements before citing numbers.'
+          };
+          statuses.token_distribution = {
+            status: 'not_active',
+            label: 'Planned',
+            description: 'Token claims/distribution are subject to the published roadmap and future eligibility instructions, not currently live.'
+          };
+          statuses.withdrawals = {
+            status: 'not_active',
+            label: 'Not Active',
+            description: 'No current on-chain APXN withdrawal feature is confirmed; do not state withdrawals have opened.'
+          };
+
+          // Add compact, current facts usable by the researcher without importing
+          // obsolete narratives from submissions or earlier generated articles.
+          k.official_current_editorial_facts = {
+            review_date: date,
+            source_rank: 'Latest public Whitepaper and Roadmap > November 2026 verified-level update > historical September planning documents',
+            sections: {
+              token_supply: {
+                article_evidence: [
+                  'APXN has a declared total supply of one hundred million tokens on BNB Smart Chain, as represented by the project. The allocations are sixty-three million tokens to the community, fifteen million to listings and exchanges, fifteen million to partnerships, marketing, development and airdrops, five million to the team, and two million to the planned CEX launchpad.',
+                  'The second airdrop target of approximately two million APXN belongs to the existing partnerships, marketing, development and airdrops allocation. It must not be added to the announced token supply. The APXN Points balance shown in the Telegram Mini App remains distinct from transferable blockchain tokens until officially announced claim and distribution processes become active.'
+                ]
+              },
+              badge: {
+                article_evidence: [
+                  'The EARLY ACCESS badge marks a limited group of early participants. Earlier strategic proposals described retaining the badge through activity and potentially redistributing an inactive badge through an auction after fourteen days. These proposals should be presented as historical planning context unless current terms specifically confirm implementation.',
+                  'A proposed sixty percent withdrawal eligibility for badge holders describes a conditional personal privilege, not a share of the total APXN supply. Articles must not imply that badges currently guarantee a token withdrawal, an immediate wallet transfer, or profit. Future eligibility and transaction rules must be checked against current public announcements.'
+                ]
+              },
+              roadmap: {
+                article_evidence: [
+                  'Q4 2026 focuses on the Telegram Mini App and APXN Points participation, including mining-style accumulation, daily activities, referrals and app improvements. Q1 2027 targets the Membership and Loyalty KYC program and the verified-points completion bonus. These activities are distinct from on-chain token distribution.',
+                  'Q2 2027 targets continued development, partnerships, marketing and a second airdrop from the existing partnership allocation, as well as claim windows for the first and second airdrops subject to published rules. Q3 2027 targets the APXN decentralized exchange and a centralized-exchange launchpad.',
+                  'Q4 2027 targets the APXN Testnet and planned CEX and DEX listings. Q1 2028 focuses on Mainnet preparation and new ecosystem products. Q2 2028 is the target for Mainnet. None of these dates guarantees a launch, exchange listing, token valuation or technical readiness.'
+                ]
+              }
+            }
+          };
+
+          // The September strategic submission and the generated November 16 article
+          // contain outdated numeric thresholds, repeated sentences and truncated
+          // fragments. Replace their RESEARCH EVIDENCE, not their audit metadata.
+          const submissions = (k.editorial_submissions ??= {});
+          const September = [
+            'Historical overview: On 19 September 2026 Apex Network described an early strategic proposal concerning APXN Points, user levels, EARLY ACCESS badges, retention conditions and later token distribution. It was a planning document rather than a release note. Where it differs from the current November 2026 roadmap and Whitepaper, the later official rules control. Readers should understand this chronology before treating any older proposal as current functionality.',
+            'The APXN Points economy currently supports participation through the Telegram Mini App. Mining-style activity, check-ins, tasks and referrals may contribute to app points according to each feature’s applicable rules. APXN Points are an internal participation record and are not automatically blockchain tokens. The earlier document discussed future eligibility. Present-day publications must keep the distinction clear to avoid suggesting users can already claim tokens directly from all point balances.',
+            'The verified seven-level policy was updated after the September plan. Level one begins at twenty thousand points. Levels two, three and four begin at fifty thousand, one hundred thousand and one hundred fifty thousand respectively. Level five begins at two hundred fifty thousand, and level six at three hundred fifty thousand. Level seven is strictly more than five hundred thousand Verified APXN Points. Older one-million-point descriptions are no longer suitable for current articles.',
+            'The project allocates sixty-three percent of its declared one-hundred-million-token supply to the community. Users are allocated to a specific level through Verified APXN Points. Each level has a separate token allocation pool, and a user’s share depends on their points as a fraction of all verified points in that particular level. Earlier proposed personal eligibility percentages should not replace this pool-based approach in current explanations.',
+            'The EARLY ACCESS badge was designed as an early-participation marker with conditional privileges. Earlier strategic plans discussed fourteen days of inactivity, badge withdrawal and reallocation through a community auction. These remain historical proposals in the absence of fresh implementation evidence. Losing a badge must not be confused with automatic cancellation of all previously recorded APXN Points. No article should imply a badge auction is already functioning without official confirmation.',
+            'For Q1 2027 the roadmap targets KYC الانتماء والولاء. Eligible participants completing the required tasks and Telegram Stars payment are planned to receive twenty thousand Verified APXN Points once. That points award is not limited to ten thousand users. Separately, a planned allocation of one hundred APXN for each of the first ten thousand qualified badge holders is targeted for claim in Q2 2027, according to future claim rules.',
+            'The roadmap targets a second airdrop in Q2 2027 funded by approximately two million APXN from the existing marketing, development and partnership allocation. Later roadmap targets include APXN DEX and CEX Launchpad in Q3 2027, Testnet and exchange listings in Q4 2027, Mainnet preparation during Q1 2028, and Mainnet during Q2 2028. All dates are planning targets and may change based on official decisions.'
+          ];
+
+          const policyUpdate = [
+            'This article covers a historical September 2026 strategy document, updated against November 2026 Apex Network policies. That document described point economics, participation rules, EARLY ACCESS badges and future distribution ideas. It was not proof that every planned feature had launched. A current explanation should explicitly identify which information was a former proposal and which elements appear in the latest official Whitepaper and roadmap.',
+            'APXN is represented as a BEP-20 token on BNB Smart Chain with a declared maximum supply of one hundred million units. Its allocation comprises sixty-three million APXN to the community, fifteen million to exchange listings, fifteen million to partnerships, marketing, development and airdrops, five million to the team and two million to a future centralized-exchange launchpad. No badge privilege should be described as a percentage of the overall supply.',
+            'Participation happens through the Apex Network Telegram Mini App, where users earn APXN Points from approved actions. Accrued APXN Points are not the same as on-chain APXN tokens. The current distribution plan uses Verified APXN Points following the planned loyalty verification process. Writers should avoid calling these points withdrawable wallet tokens or promising a fixed conversion formula before the project announces eligibility and claim rules.',
+            'The revised seven-level thresholds start at twenty thousand, fifty thousand, one hundred thousand, one hundred fifty thousand, two hundred fifty thousand and three hundred fifty thousand Verified APXN Points for levels one through six. Level six covers up to and including five hundred thousand. Level seven requires more than five hundred thousand. These current ranges replace any old September chart that set the top level at one million.',
+            'The proposed system sets aside separate APXN pools for each of the seven levels out of the community allocation. Eligible users within the same level receive a proportional share according to the ratio of their Verified APXN Points to the combined eligible verified points for that level. This replaces historical percentage-based ladder descriptions and avoids implying that every individual can withdraw a constant fixed percent of all their points as APXN.',
+            'EARLY ACCESS badges remain a significant project identity feature. Older plans discussed an inactivity threshold of fourteen days and redistribution of badges through an auction. Such mechanics must be called historical proposals until implementation has been independently confirmed within current official materials. A proposed sixty percent conditional withdrawal privilege does not represent sixty percent of supply and does not establish that withdrawals are already live.',
+            'Q1 2027 is the planned launch period for KYC الانتماء والولاء. Completing its required tasks and paying the displayed Telegram Stars is expected to unlock twenty thousand Verified APXN Points once for each eligible account without a recipient cap. The first ten thousand qualifying badge holders additionally have a planned one-hundred-APXN allocation for claims targeted in Q2 2027. Planned allocations are not immediate blockchain transfers.',
+            'Q2 2027 also targets the second airdrop funded by approximately two million APXN from the existing fifteen-million marketing and partnerships allocation. The roadmap subsequently targets APXN DEX and a CEX Launchpad in Q3 2027, Testnet and listings in Q4 2027, Mainnet preparation in Q1 2028, and Mainnet in Q2 2028. Future dates and eligibility are subject to official updates.'
+          ];
+
+          function replaceHistoricalSubmission(id, evidence) {
+            if (!submissions[id]) return;
+            submissions[id].source_status = 'historical_strategy_reconciled';
+            submissions[id].verification_note = 'Reconciled with November 2026 official facts. Historical draft is not authority for current token level thresholds, withdrawal mechanics or feature activation.';
+            submissions[id].evidence = evidence;
+            submissions[id].knowledge_reconciled_at = date;
+          }
+          replaceHistoricalSubmission('submission_c50de1cb14474587', September);
+          replaceHistoricalSubmission('submission_4f225b57e856c970', policyUpdate);
+
+          // The official November 2026 levels submission is retained as it already
+          // contains the correct 20k / 50k / 100k / 150k / 250k / 350k / >500k levels.
+          rule('As of 21 November 2026, current Verified APXN Point levels are L1 20k-<50k, L2 50k-<100k, L3 100k-<150k, L4 150k-<250k, L5 250k-<350k, L6 350k-500k inclusive, L7 >500k. Earlier one-million-point limits are obsolete.');
+          rule('The 63 million APXN community tokens are distributed through seven separate pools proportionally within levels. Reject fixed old 30/50/70/100 percent level eligibility claims.');
+          rule('Badge inactivity, auction and proposed 60% privilege are not final active functionality without current implementation evidence. Badge percentage is not percentage of APXN total supply.');
+          rule('KYC الانتماء والولاء is a planned Q1 2027 milestone; its one-time 20,000 Verified Points reward continues after the limited 10,000 allocations of 100 APXN have been exhausted.');
+          rule('All automatically generated blog content must avoid repeated or truncated sentences, duplicated paragraphs, outdated token distribution language and invented launch confirmations.');
+          rule('The approved roadmap extends from Q4 2026 to Q2 2028; all future dates are targets and do not guarantee launches, claims, exchange listings or profits.');
+
+          const checks = [
+            token.distribution.reduce((sum, d) => sum + d.amount_apxn, 0) === 100000000,
+            token.distribution.reduce((sum, d) => sum + d.percent, 0) === 100,
+            levels.thresholds.length === 7,
+            levels.thresholds[6].verified_points_min_exclusive === 500000,
+            kyc.points_bonus_recipient_cap === null,
+            kyc.first_airdrop_recipient_cap === 10000,
+            k.roadmap && k.project_identity && k.implemented_product_facts,
+            Array.isArray(k.automation_editorial_rules)
+          ];
+          if (checks.some((x) => !x)) throw new Error('Canonical blog knowledge validation failed.');
+          fs.writeFileSync(FILE, JSON.stringify(k, null, 2) + '\n', 'utf8');
+          JSON.parse(fs.readFileSync(FILE, 'utf8'));
+          console.log('PASS: Updated canonical facts without deleting the original knowledge sections.');
+          console.log('PASS: Historical September submission evidence reconciled.');
+          console.log('PASS: 100M supply / 63-15-15-5-2 distribution / 7 latest levels.');
+          NODE
+
+      - name: Patch duplicate-content checks and one-per-category topic rotation
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          function patchFile(path, changes) {
+            let source = fs.readFileSync(path, 'utf8');
+            for (const [oldText, newText, label] of changes) {
+              if (source.includes(newText)) {
+                console.log(`Already applied: ${label}`);
+                continue;
+              }
+              const count = source.split(oldText).length - 1;
+              if (count !== 1) {
+                throw new Error(`Safe patch failed: ${label} (expected one anchor, found ${count}). No alternate guess will be applied.`);
+              }
+              source = source.replace(oldText, newText);
+              console.log(`Patched: ${label}`);
+            }
+            fs.writeFileSync(path, source, 'utf8');
+          }
+
+          const integrityHelper = `function strictArticleIntegrityErrors(article) {
+            const errors = [];
+            const sentenceSeen = new Map();
+            const phraseSeen = new Map();
+            const blocks = allArticleBlocks(article);
+
+            for (const block of blocks) {
+              const content = normalizeSpace(block.text);
+              if (!content) continue;
+
+              if (!/[.!?]["”')\\]]?$/.test(content)) {
+                errors.push(\`Incomplete sentence ending: \${block.label}.\`);
+              }
+
+              // The generated text sometimes repeats a sentence within one paragraph.
+              // Identify duplicates both inside and between all article sections.
+              for (const sentence of splitSentencesForCleanup(content)) {
+                const normalized = normalizeTopic(sentence);
+                const words = normalized.split(/\\s+/).filter(Boolean);
+                if (words.length < 9) continue;
+                if (sentenceSeen.has(normalized)) {
+                  errors.push(\`Repeated sentence across article: \${sentenceSeen.get(normalized)} and \${block.label}.\`);
+                } else {
+                  sentenceSeen.set(normalized, block.label);
+                }
+              }
+
+              // Detect re-used long passages, including fragments missing punctuation.
+              // A repeated 18-word phrase is too specific to be ordinary terminology.
+              const words = normalizeTopic(content).split(/\\s+/).filter(Boolean);
+              for (let i = 0; i <= words.length - 18; i++) {
+                const signature = words.slice(i, i + 18).join(' ');
+                const prior = phraseSeen.get(signature);
+                if (prior && (prior.label !== block.label || i - prior.index >= 18)) {
+                  errors.push(\`Repeated passage across article: \${prior.label} and \${block.label}.\`);
+                  break;
+                }
+                if (!prior) phraseSeen.set(signature, { label: block.label, index: i });
+              }
+            }
+
+            const headingSeen = new Set();
+            for (const section of article?.sections || []) {
+              const heading = normalizeTopic(section?.heading);
+              if (heading && headingSeen.has(heading)) {
+                errors.push(\`Duplicate section heading: \${section?.heading}.\`);
+              }
+              if (heading) headingSeen.add(heading);
+            }
+            const questionsSeen = new Set();
+            for (const item of article?.faq || []) {
+              const question = normalizeTopic(item?.question);
+              if (question && questionsSeen.has(question)) {
+                errors.push(\`Duplicate FAQ question: \${item?.question}.\`);
+              }
+              if (question) questionsSeen.add(question);
+            }
+            return [...new Set(errors)].slice(0, 12);
+          }
+
+          `;
+
+          // Build a JavaScript source string for the function above. The double escaping
+          // in the template literal is intentional: the resulting JS must retain its
+          // regular-expression backslashes and backticks.
+          patchFile('scripts/blog-writer.mjs', [
+            [
+              'function splitSentencesForCleanup(value) {',
+              integrityHelper + 'function splitSentencesForCleanup(value) {',
+              'Add strict sentence, passage, heading and ending quality checks'
+            ],
+            [
+              '  const warnings = repeatedBlockErrors(article);\n\n  return {',
+              '  errors.push(...repeatedBlockErrors(article));\n  errors.push(...strictArticleIntegrityErrors(article));\n  const warnings = [];\n\n  return {',
+              'Make article repetition a blocking error instead of a warning'
+            ],
+            [
+              '  // One final free cleanup pass. Quality-only repetition is kept as a warning\n  // and never rejects an otherwise grounded article.',
+              '  // Final local correction is allowed; repeated or truncated material\n  // is a blocking error and cannot be published if repair fails.',
+              'Never accept low-quality repetition on final validation'
+            ],
+            [
+              '   * Structural/schema failures, dangerous promotional claims, duplicate\n   * content and arbitrary validator failures remain hard stops.',
+              '   * Structural/schema failures and dangerous promotional claims remain\n   * hard stops; grounded repetition and truncation may receive a bounded repair.',
+              'Allow bounded editorial repairs while retaining safety hard stops'
+            ],
+            [
+              '    /^Article contains a blocked volatile metric claim\\.$/,',
+              '    /^Article contains a blocked volatile metric claim\\.$/,\n    /^Repeated sentence across article:/,\n    /^Repeated passage across article:/,\n    /^Incomplete sentence ending:/,\n    /^Duplicate section heading:/,\n    /^Duplicate FAQ question:/,\n    /^.+ are too repetitive \\(\\d+\\.\\d+ lexical similarity\\)\\.$/,',
+              'Permit up to two safe repairs for duplication and truncation'
+            ],
+            [
+              '    "Avoid keyword stuffing, hype, generic motivational filler and repeated explanations.",',
+              '    "Avoid keyword stuffing, hype, generic motivational filler and repeated explanations.",\n    "Every paragraph and FAQ answer must end in a complete sentence with final punctuation.",\n    "Never repeat a complete sentence or an 18-word passage anywhere in this article, including its conclusion and FAQ.",\n    "Each section must present genuinely distinct information, not reword earlier paragraphs to meet the word count.",',
+              'Strengthen original article-writing instructions'
+            ],
+            [
+              '    "Avoid repetition and filler. Every added sentence must remain grounded in the block\'s allowed evidence.",',
+              '    "Avoid repetition and filler. Every added sentence must remain grounded in the block\'s allowed evidence.",\n    "Fix repeated sentences, repeated long passages, duplicate headings and incomplete endings without inventing content.",',
+              'Teach repair stage to fix the new editorial validation errors'
+            ],
+            [
+              '  for (const existing of Array.isArray(manifest.articles)\n    ? manifest.articles\n    : []) {',
+              '  const newBody = articleBodyText(article);\n  for (const existing of Array.isArray(manifest.articles)\n    ? manifest.articles\n    : []) {\n    const oldBody = existing?.content && typeof existing.content === "object"\n      ? articleBodyText(existing.content) : "";\n    if (wordCount(oldBody) > 250 && jaccardSimilarity(newBody, oldBody) >= 0.90) {\n      fail(`Near-duplicate article content rejected: ${existing.title}`);\n    }',
+              'Block substantially identical bodies across different blog articles'
+            ]
+          ]);
+
+          const normalizeQueueHelper = `function normalizeOneWaitingTopicPerCategory(manifest) {
+            // Preserve excess topics in the queue as deferred. Never discard topics.
+            // A ready article blocks the next waiting article in that same category
+            // until its image is added and its publication status changes.
+            const readyCategories = new Set(
+              manifest.articles
+                .filter((a) => a?.status === 'ready')
+                .map((a) => normalizeSpace(a?.category))
+            );
+            const waiting = manifest.generation_queue
+              .filter((item) => item?.status === 'waiting')
+              .sort((a, b) => Number(a?.priority || 999999) - Number(b?.priority || 999999));
+            const occupied = new Set();
+            for (const item of waiting) {
+              const category = normalizeSpace(item?.category);
+              if (occupied.has(category) || readyCategories.has(category)) {
+                item.status = 'deferred';
+                item.deferred_reason = 'one_active_article_per_category';
+              } else {
+                occupied.add(category);
+              }
+            }
+            // Re-enable the earliest deferred item when its category has a free slot.
+            const deferred = manifest.generation_queue
+              .filter((item) => item?.status === 'deferred')
+              .sort((a, b) => Number(a?.priority || 999999) - Number(b?.priority || 999999));
+            for (const item of deferred) {
+              const category = normalizeSpace(item?.category);
+              if (!occupied.has(category) && !readyCategories.has(category)) {
+                item.status = 'waiting';
+                delete item.deferred_reason;
+                occupied.add(category);
+              }
+            }
+          }
+
+          `;
+
+          patchFile('scripts/blog-planner.mjs', [
+            [
+              '  targetWaitingTopics: 12,',
+              '  targetWaitingTopics: 7,',
+              'Cap the waiting rotation at seven automated blog categories'
+            ],
+            [
+              '        "published",\n        "draft"\n      ].includes(',
+              '        "published",\n        "draft",\n        "ready"\n      ].includes(',
+              'Include manually reviewable ready articles in category balancing'
+            ],
+            [
+              '  const load =\n    categoryLoad(manifest);\n\n  const selected = [];',
+              '  const load =\n    categoryLoad(manifest);\n\n  const occupiedCategories = new Set([\n    ...manifest.generation_queue.filter((q) => q?.status === "waiting").map((q) => normalizeSpace(q?.category)),\n    ...manifest.articles.filter((a) => a?.status === "ready").map((a) => normalizeSpace(a?.category))\n  ]);\n  const selected = [];',
+              'Exclude categories already holding a waiting or ready article'
+            ],
+            [
+              '      if (!items.length) {\n        continue;\n      }\n\n      candidates.push({',
+              '      if (!items.length || occupiedCategories.has(category)) {\n        continue;\n      }\n\n      candidates.push({',
+              'Select no more than one new queue topic from any category'
+            ],
+            [
+              '    selected.push(chosen);\n\n    load.set(',
+              '    selected.push(chosen);\n    occupiedCategories.add(chosenCategory);\n\n    load.set(',
+              'Reserve each category as soon as a topic is selected'
+            ],
+            [
+              '/* -------------------------------------------------------------------------- */\n/* Main                                                                       */\n/* -------------------------------------------------------------------------- */\n\nfunction main() {',
+              '/* -------------------------------------------------------------------------- */\n/* Main                                                                       */\n/* -------------------------------------------------------------------------- */\n\n' + normalizeQueueHelper + 'function main() {',
+              'Add reversible normalization for pre-existing duplicate waiting topics'
+            ],
+            [
+              '  validateManifest(manifest);\n  validateTopicBank(bank);\n\n  const date =',
+              '  validateManifest(manifest);\n  validateTopicBank(bank);\n  normalizeOneWaitingTopicPerCategory(manifest);\n\n  const date =',
+              'Apply one-per-category queue normalization at every planner run'
+            ]
+          ]);
+
+          console.log('PASS: writer and planner patched. Existing articles and blog topics preserved.');
+          NODE
+
+      - name: Validate knowledge, article writer and topic planner
+        run: |
+          node -e "const d=require('./data/apxn-blog-knowledge.json'); if(d.canonical_revision?.version!=='2026-11-21')process.exit(1);console.log('APXN canonical knowledge validated')"
+          node --check scripts/blog-writer.mjs
+          node --check scripts/blog-planner.mjs
+          git diff --check
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const writer = fs.readFileSync('scripts/blog-writer.mjs', 'utf8');
+          const planner = fs.readFileSync('scripts/blog-planner.mjs', 'utf8');
+          if (!writer.includes('errors.push(...strictArticleIntegrityErrors(article))')) throw new Error('Writer strict check missing');
+          if (!writer.includes('Near-duplicate article content rejected')) throw new Error('Cross-article check missing');
+          if (!planner.includes('normalizeOneWaitingTopicPerCategory(manifest)')) throw new Error('Category queue check missing');
+          console.log('All three APXN Blog fixes verified.');
+          NODE
+
+      - name: Commit all three updated files to cloudflare-migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/apxn-blog-knowledge.json scripts/blog-writer.mjs scripts/blog-planner.mjs
+          if git diff --cached --quiet; then
+            echo "Already updated. No changes to commit."
+            exit 0
+          fi
+          git commit -m "fix(blog): refresh APXN policy and enforce unique prose plus category rotation"
+          git push origin HEAD:cloudflare-migration
+
