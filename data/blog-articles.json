@@ -3,9 +3,9 @@
   "last_updated": "2026-11-21",
   "default_language": "en",
   "stats": {
-    "total_articles": 18,
+    "total_articles": 19,
     "published": 18,
-    "ready": 0,
+    "ready": 1,
     "drafts": 0,
     "featured": 1
   },
@@ -4144,6 +4144,256 @@
       },
       "verified_against_knowledge": true,
       "published_url": "https://apxn.network/blog/articles/apex-network-apxn-official-bscscan-verification-smart-contract-details-and-100-million-tok.html"
+    },
+    {
+      "id": "apxn-021",
+      "slug": "apxn-points-compared-to-ethereum-token-standards-for-application-balances",
+      "title": "APXN Points Compared to Ethereum Token Standards for Application Balances",
+      "description": "Explore how APXN Points operate as an in-app participation balance through a mining-style experience and how this differs from fungible token standards such as ERC-20 on the E",
+      "excerpt": "Explore how APXN Points operate as an in-app participation balance through a mining-style experience and how this differs from fungible token standards such as ERC-20 on the E",
+      "category": "APXN Guides",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-11-21",
+      "generated_at": "2026-11-21",
+      "updated_at": "2026-11-21",
+      "published_at": null,
+      "reading_minutes": 6,
+      "word_count": 1297,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "APXN Points",
+        "Ethereum token standards",
+        "ERC-20",
+        "mining experience",
+        "application balance",
+        "fungible tokens",
+        "points mining",
+        "token contract",
+        "balance tracking",
+        "claim cooldown"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "hybrid",
+      "source_profile": "crypto_token_basics",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "APXN Points Compared to Ethereum Token Standards for Application Balances",
+        "description": "Explore how APXN Points operate as an in-app participation balance through a mining-style experience and how this differs from fungible token standards such as ERC-20 on the E",
+        "canonical": "https://apxn.network/blog/articles/apxn-points-compared-to-ethereum-token-standards-for-application-balances.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "APXN Points Compared to Ethereum Token Standards for Application Balances",
+        "description": "Explore how APXN Points operate as an in-app participation balance through a mining-style experience and how this differs from fungible token standards such as ERC-20 on the E",
+        "keywords": [
+          "APXN Points",
+          "Ethereum token standards",
+          "ERC-20",
+          "mining experience",
+          "application balance",
+          "fungible tokens",
+          "points mining",
+          "token contract",
+          "balance tracking",
+          "claim cooldown"
+        ],
+        "intro": {
+          "text": "The current APXN community product uses a mining-style points experience inside Telegram where the balance tracked by the application is APXN Points. The word mining describes the user experience of accumulating points over time while the current claim action is not proof-of-work and does not solve cryptographic puzzles. Ethereum provides token standards that define how fungible tokens behave on the network. These standards specify methods such as balanceOf to return the account balance of another account with address _owner and totalSupply to return the total token supply. The distinction begins with the fact that APXN Points remain an application participation balance managed through backend logic rather than a token deployed under any Ethereum standard. External documentation on Ethereum token standards outlines the foundational methods that ERC-20 contracts must implement to allow interoperability across products and services.",
+          "evidence_ids": [
+            "APXN-01",
+            "EXT-01",
+            "EXT-02"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "How APXN Points Mining Calculates Rewards",
+            "paragraphs": [
+              {
+                "text": "The reward formula is based on elapsed seconds multiplied by the total mining rate. The total mining rate begins with the user's base mining rate and can include active-referral bonuses. The resulting APXN Points are added to the existing balance and the successful claim time becomes the new last-claim timestamp. Terminology used for this balance is strictly APXN Points. External documentation shows that token contracts implement a balanceOf function to return the account balance of another account with address _owner along with a totalSupply function that returns the total token supply.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-03",
+                  "APXN-04",
+                  "EXT-12"
+                ]
+              },
+              {
+                "text": "A normal APXN Points mining claim has a twelve-hour cooldown represented in the database logic as seconds. Requests made before the cooldown expires do not receive a new reward. The API can return the remaining retry time so the interface can show when the next claim becomes available. The base rate in the reviewed implementation is points per second and the user's effective rate can be higher when active referred friends qualify for the referral-speed bonus. The server-side claim logic uses the effective rate when calculating the amount credited after an eligible claim.",
+                "evidence_ids": [
+                  "APXN-01",
+                  "APXN-03",
+                  "APXN-04",
+                  "EXT-12"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Ethereum Token Standards Define Fungible Balances",
+            "paragraphs": [
+              {
+                "text": "ERC-20 provides a standard interface for fungible tokens that are interchangeable like voting tokens or virtual currencies. This standard allows developers to build token applications that are interoperable with other products and services. Example functionalities include transfer of tokens from one account to another, retrieval of the current token balance of an account, and approval of whether an amount of token from an account can be spent by a third-party account. If a smart contract implements the required methods and events it can be called an ERC-20 token contract.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-05",
+                  "EXT-06",
+                  "EXT-10"
+                ]
+              },
+              {
+                "text": "The ERC-20 standard also supports ERC-721 for non-fungible tokens and ERC-1155 for more efficient trades that bundle transactions. Many Ethereum development standards focus on token interfaces that enable consistent behavior across the network. These standards specify how contracts keep track of created tokens once deployed on Ethereum. The ERC-20 approach ensures that tokens representing reputation points or financial assets follow the same core methods for balance queries and transfers.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-05",
+                  "EXT-06",
+                  "EXT-10"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Smart Contracts and Contract Addresses on Ethereum",
+            "paragraphs": [
+              {
+                "text": "Smart contracts on Ethereum handle the logic for token standards including ERC-20. The standard requires functions such as approve that takes an address for the spender and a value for the amount. It also includes allowance that returns the amount which the spender is still allowed to withdraw from the owner. Events such as Transfer must trigger when tokens are transferred including zero value transfers and Approval must trigger on any successful call to approve an address and value.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "APXN-07",
+                  "EXT-09",
+                  "EXT-13"
+                ]
+              },
+              {
+                "text": "A token contract which creates new tokens should trigger a Transfer event with the from address set to zero. The transferFrom method is used for a withdraw workflow allowing contracts to transfer tokens on behalf of an account. This mechanism can charge fees in sub-currencies when the from account has deliberately authorized the sender. Implementation details show that transfers of zero values must be treated as normal transfers and fire the Transfer event while the contract itself should not enforce certain allowance rules to maintain backwards compatibility.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "APXN-07",
+                  "EXT-09",
+                  "EXT-13"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Token Addresses and Indexed Events in Standards",
+            "paragraphs": [
+              {
+                "text": "The event Transfer uses indexed parameters for the from address and the to address along with the value. The event Approval also uses indexed parameters for the owner address and the spender address along with the value. Different implementations of ERC-20 have been written by various teams that have different trade-offs from gas saving to improved security. There are already plenty of ERC-20 compliant tokens deployed on the Ethereum network that follow these patterns for address handling and event emission.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "APXN-06",
+                  "EXT-07",
+                  "EXT-15"
+                ]
+              },
+              {
+                "text": "The base rate in the reviewed implementation is points per second. Further reading resources include token integration checklists and line-by-line annotated walkthroughs of ERC-20 contract implementations that cover how addresses and indexed events support transfers and approvals.",
+                "evidence_ids": [
+                  "EXT-03",
+                  "APXN-06",
+                  "EXT-07",
+                  "EXT-15"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Application Balance Tracking Versus Token Contract Methods",
+            "paragraphs": [
+              {
+                "text": "The APXN Points balance is an application participation balance that must not be described as a bank deposit or a guaranteed cash balance. Token distribution conversion and withdrawal are separate future project stages that require their own official activation. Editorial content may use phrases such as APXN Points mining experience or collect APXN Points when writing for users. Technical explanations should immediately clarify that the system calculates and records points in the application backend rather than performing proof-of-work blockchain mining.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "EXT-11",
+                  "EXT-14"
+                ]
+              },
+              {
+                "text": "Consider using alternative token standards that have come out of certain issues such as ERC-223 or ERC-1363. Further reading covers EIP-20 as the ERC-20 token standard along with OpenZeppelin implementations and guides to Solidity ERC-20 tokens. The current application tracks APXN Points as an in-app participation balance and a successful claim updates the user's points balance and last-claim timestamp through server-side database logic. Other fungible token standards include ERC-777 and ERC-4626 for tokenized vaults.",
+                "evidence_ids": [
+                  "APXN-02",
+                  "APXN-08",
+                  "EXT-11",
+                  "EXT-14"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Ethereum Overview Pages and Token Standards Learning",
+            "paragraphs": [
+              {
+                "text": "The Ethereum token standards page covers foundational topics including the Ethereum stack and community hub. It lists popular token standards such as ERC-20 for fungible tokens and ERC-721 for non-fungible tokens along with ERC-1155 for efficient trades. The page notes that website content was last updated on a date in twenty twenty six and encourages contributions through the Discord server or content channel.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "APXN-05",
+                  "EXT-08",
+                  "EXT-16"
+                ]
+              },
+              {
+                "text": "The current application tracks APXN Points as an in-app participation balance. Related tutorials provide line-by-line annotated walkthroughs of ERC-20 contract implementations and discuss how to add safeguards to ERC-20 tokens. Note that transfers of zero values must be treated as normal transfers and fire the Transfer event according to the standard specification.",
+                "evidence_ids": [
+                  "EXT-04",
+                  "APXN-05",
+                  "EXT-08",
+                  "EXT-16"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "What is the difference between APXN Points and an ERC-20 token balance?",
+            "answer": "APXN Points represent an application participation balance accumulated through a mining-style experience inside Telegram where the reward formula uses elapsed seconds multiplied by the total mining rate. The current claim action is not proof-of-work and does not solve cryptographic puzzles.",
+            "evidence_ids": [
+              "APXN-01",
+              "EXT-01"
+            ]
+          },
+          {
+            "question": "How do Ethereum token standards handle account balances and approvals?",
+            "answer": "Ethereum token standards such as ERC-20 require functions including approve that takes an address for the spender and a value along with allowance that returns the remaining amount the spender can withdraw. Events such as Transfer must trigger on token movements including zero value transfers and Approval must trigger on successful approve calls. These methods allow contracts to manage token balances across accounts while the APXN Points system uses separate server-side database logic for its participation balance.",
+            "evidence_ids": [
+              "EXT-02",
+              "EXT-03"
+            ]
+          },
+          {
+            "question": "Why is APXN Points described as an in-app balance rather than a token?",
+            "answer": "The APXN Points balance must not be described as a bank deposit or a guaranteed cash balance and token distribution remains a separate future project stage. Ethereum standards define token contracts that track created tokens on the network through methods like transfer and balanceOf while APXN Points rely on application participation tracking with a twelve-hour claim cooldown.",
+            "evidence_ids": [
+              "APXN-02",
+              "EXT-04"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "APXN Points function as an in-app participation balance accumulated through a mining-style experience with rewards calculated from elapsed seconds and mining rate. This approach differs from Ethereum token standards such as ERC-20 which define fungible tokens through specific contract methods including balanceOf transfer and approval events that enable interoperability across the network. The distinction rests on application backend logic versus standardized smart contract behavior for token tracking and transfers. External documentation outlines the core functions required for ERC-20 compliance while APXN documentation clarifies that points remain separate from any current token distribution stage.",
+          "evidence_ids": [
+            "APXN-01",
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        }
+      },
+      "verified_against_knowledge": true
     }
   ],
   "generation_queue": [
@@ -4385,7 +4635,7 @@
       "priority": 19,
       "topic": "How Telegram Mini App initData Authentication Protects APXN Users",
       "category": "Security",
-      "status": "waiting",
+      "status": "deferred",
       "source": "topic_bank",
       "topic_bank_id": "bank-011",
       "language": "en",
@@ -4395,7 +4645,8 @@
       "knowledge_sections": [
         "implemented_product_facts.telegram_authentication"
       ],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "deferred_reason": "one_active_article_per_category"
     },
     {
       "priority": 20,
@@ -4415,7 +4666,7 @@
       "priority": 21,
       "topic": "How Supabase Can Support Secure Web3 Mini App Backends",
       "category": "Development",
-      "status": "waiting",
+      "status": "deferred",
       "source": "topic_bank",
       "topic_bank_id": "bank-015",
       "language": "en",
@@ -4427,13 +4678,14 @@
         "implemented_product_facts.points_mining",
         "implemented_product_facts.daily_checkin"
       ],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "deferred_reason": "one_active_article_per_category"
     },
     {
       "priority": 22,
       "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
       "category": "APXN Guides",
-      "status": "waiting",
+      "status": "ready",
       "source": "topic_bank",
       "topic_bank_id": "bank-001",
       "language": "en",
@@ -4444,7 +4696,9 @@
         "implemented_product_facts.points_mining"
       ],
       "auto_publish_allowed": true,
-      "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed."
+      "editorial_guard": "Describe the current APXN balance as APXN Points. Do not imply that points are already withdrawable tokens or that conversion value is guaranteed.",
+      "article_id": "apxn-021",
+      "generated_at": "2026-11-21"
     },
     {
       "priority": 7,
@@ -4507,6 +4761,20 @@
       "article_id": "apxn-020",
       "generated_at": "2026-11-19",
       "published_at": "2026-11-19"
+    },
+    {
+      "priority": 23,
+      "topic": "Testnet vs Mainnet: What Is the Difference?",
+      "category": "Blockchain",
+      "status": "waiting",
+      "source": "topic_bank",
+      "topic_bank_id": "bank-028",
+      "language": "en",
+      "queued_at": "2026-11-21",
+      "content_mode": "external",
+      "source_profile": "testnet_mainnet",
+      "knowledge_sections": [],
+      "auto_publish_allowed": true
     }
   ],
   "automation_state": {
@@ -4516,21 +4784,25 @@
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-11-20",
-      "added_topics": 0,
-      "added_topic_ids": [],
-      "added_categories": [],
-      "waiting_topics_after_run": 7,
+      "last_run": "2026-11-21",
+      "added_topics": 1,
+      "added_topic_ids": [
+        "bank-028"
+      ],
+      "added_categories": [
+        "Blockchain"
+      ],
+      "waiting_topics_after_run": 5,
       "minimum_waiting_topics": 6,
-      "target_waiting_topics": 12,
+      "target_waiting_topics": 7,
       "category_load_after_run": {
         "APXN Guides": 4,
-        "Blockchain": 3,
+        "Blockchain": 4,
         "Web3": 2,
         "BSC": 3,
-        "Security": 3,
+        "Security": 2,
         "Education": 3,
-        "Development": 3
+        "Development": 2
       }
     }
   }
