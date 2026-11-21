@@ -1,6 +1,13 @@
 name: APXN - One-Click Blog Knowledge Quality and Rotation Fix
 
 on:
+  # Execute automatically when this single maintenance workflow is updated
+  # on the active Cloudflare branch. No main-branch workflow registration needed.
+  push:
+    branches:
+      - cloudflare-migration
+    paths:
+      - '.github/workflows/apxn-blog-unified-fix.yml'
   workflow_dispatch:
 
 permissions:
