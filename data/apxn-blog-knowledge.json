@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "last_reviewed_at": "2026-11-09",
+  "last_reviewed_at": "2026-11-21",
   "knowledge_scope": {
     "purpose": "Canonical editorial knowledge for the Apex Network website, APXN Blog and automated article pipeline.",
     "core_separation": {
@@ -141,12 +141,12 @@
     "token_distribution": {
       "status": "not_active",
       "label": "Planned",
-      "description": "Token distribution is not active. Eligibility and distribution instructions must be officially announced before activation."
+      "description": "Token claims/distribution are subject to the published roadmap and future eligibility instructions, not currently live."
     },
     "withdrawals": {
       "status": "not_active",
       "label": "Not Active",
-      "description": "Withdrawals are not active and must not be presented as available."
+      "description": "No current on-chain APXN withdrawal feature is confirmed; do not state withdrawals have opened."
     },
     "presale_ico": {
       "status": "not_active",
@@ -164,9 +164,9 @@
       "description": "The planned APXN Mainnet launch target is Q2 2028; no live Mainnet is implied."
     },
     "staking": {
-      "status": "planned",
-      "label": "Planned",
-      "description": "Staking is a future roadmap item and is not currently active."
+      "status": "reported_active",
+      "label": "APXN Points Staking / Telegram Mini App",
+      "description": "Points staking has been announced and opened in the Telegram Mini App. Describe it as app points participation, not on-chain token staking or guaranteed investment yield. Recheck the currently displayed reward and entry requirements before citing numbers."
     }
   },
   "website_content_baseline": {
@@ -772,10 +772,10 @@
     "presale_ico_status": "Not Live / no active public sale",
     "current_sale_price": null,
     "sale_price_rule": "Do not publish a current APXN sale price as official unless an active sale is launched and the price is manually verified.",
-    "points_relationship": "APXN Points are a separate in-app participation balance. 63,000,000 APXN are reserved for community allocation across seven levels based on verified APXN Points, subject to future eligibility and official distribution rules. No fixed points-to-token conversion rate is guaranteed.",
-    "points_conversion_ui_statement": "Every user level is based on verified APXN Points. Each of the seven levels has its own APXN pool, distributed proportionally within that level according to eligible users’ verified points. A user’s level and APXN share appear on the Dashboard only after completing all APXN Membership & Loyalty KYC stages. The final level-pool allocations will be announced ahead of distribution and listing.",
+    "points_relationship": "APXN Points earned inside the Telegram Mini App are off-chain participation points. They are not immediately withdrawable APXN tokens. The 63,000,000 APXN community allocation is reserved for the planned community distribution. No fixed points-to-tokens conversion is promised.",
+    "points_conversion_ui_statement": "Verified APXN Points determine eligibility for one of seven levels. Each level has its own APXN allocation pool; user shares inside the pool are proportional to their Verified APXN Points relative to all eligible verified points in that level. The final amount per level is to be officially announced.",
     "contract_verification_note": "The contract address is publicly linked on BscScan by the official website. Explorer visibility must not be described as proof of an independent security audit.",
-    "editorial_rule": "Use the approved allocation 63% Community, 15% Listings & Exchanges, 15% Partnerships/Marketing/Development/Airdrops, 5% Team, 2% CEX Launchpad. The approximately 2,000,000 APXN second airdrop is included within the 15% fund, not extra supply; the 2,000,000 APXN Launchpad pool is separately allocated. No sale, listing, withdrawal or distribution is live unless officially verified.",
+    "editorial_rule": "Always use the approved 100,000,000 supply and 63/15/15/5/2 allocation. Seven level thresholds must use the November 2026 update. Never use old 30/50/70/100 percent user eligibility as a final withdrawal ratio. Badge privileges are separate from token supply and must not be presented as 60% of the total supply.",
     "source_paths": [
       "apxn-landing/index.html",
       "apex-miner/app/page.js",
@@ -787,16 +787,16 @@
         "target_period_claim": "Q2 2027",
         "eligible_badge_holders_target": 10000,
         "planned_apxn_per_qualified_holder": 100,
-        "notice": "The first 10,000 qualified Badge holders completing all required Membership & Loyalty KYC tasks and the displayed Telegram Stars payment have a planned 100 APXN allocation for claim in Q2 2027. A separate one-time 20,000 verified APXN Points bonus continues for qualified KYC completers even after those 10,000 limited allocations are exhausted. The allocation is not an immediate on-chain token transfer; all claims remain subject to officially announced conditions."
+        "notice": "The first 10,000 qualifying badge holders completing the required loyalty program and Stars payment have a planned 100 APXN allocation. It is separate from the once-per-account 20,000 Verified APXN Points reward, which continues after the 10,000 allocation limit."
       },
       "second_airdrop": {
         "target_period": "Q2 2027",
         "approximate_tokens": 2000000,
         "fund": "Partnerships, Marketing, Development & Airdrops (15% allocation)",
-        "notice": "Included within the existing 15 million token allocation; planned claims subject to official terms."
+        "notice": "Approximately two million APXN from the existing 15-million-APXN fund, not additional minting. Per-user rewards and eligibility must not be promised until official rules are published."
       }
     },
-    "early_access_badge_guidance": "Official instructions will be published separately covering Badge eligibility, activity requirements, holder benefits and retention conditions. Do not invent final policies or sale/transfer mechanisms.",
+    "early_access_badge_guidance": "EARLY ACCESS badge is an early-user identifier. Proposed benefits include priority access and a conditional 60% pre-listing withdrawal privilege, and a 14-day inactivity/auction policy. These older strategic mechanics must not be described as active, final, automatic or guaranteed unless current public terms and application behavior confirm them. The 60% figure is NOT 60% of token supply.",
     "levels": {
       "count": 7,
       "labels": [
@@ -809,22 +809,66 @@
         "L7"
       ],
       "total_community_allocation_apxn": 63000000,
-      "distribution_method": "Within each level, the level token allocation is distributed proportionally to eligible users’ verified APXN Points divided by the total verified APXN Points of eligible users in that level. It is not an equal split.",
+      "distribution_method": "Each of seven levels has its own token pool from the 63 million APXN community allocation. Eligible users share their level pool proportionally to their Verified APXN Points compared with all eligible Verified APXN Points in that same level; not an equal division and not a fixed 30%, 50%, 70% or 100% of personal tokens.",
       "dashboard_display_requirement": "Complete every stage of APXN Membership & Loyalty KYC",
-      "allocation_announcement": "The final allocation for each level will be officially announced before the distribution and listing described in the Whitepaper."
+      "allocation_announcement": "Exact pool sizes and final claim/withdrawal conditions are to be officially confirmed before distribution and listing.",
+      "thresholds": [
+        {
+          "level": 1,
+          "verified_points_min": 20000,
+          "verified_points_max_exclusive": 50000
+        },
+        {
+          "level": 2,
+          "verified_points_min": 50000,
+          "verified_points_max_exclusive": 100000
+        },
+        {
+          "level": 3,
+          "verified_points_min": 100000,
+          "verified_points_max_exclusive": 150000
+        },
+        {
+          "level": 4,
+          "verified_points_min": 150000,
+          "verified_points_max_exclusive": 250000
+        },
+        {
+          "level": 5,
+          "verified_points_min": 250000,
+          "verified_points_max_exclusive": 350000
+        },
+        {
+          "level": 6,
+          "verified_points_min": 350000,
+          "verified_points_max_inclusive": 500000
+        },
+        {
+          "level": 7,
+          "verified_points_min_exclusive": 500000
+        }
+      ],
+      "source_revision": "November 2026 update: Level 7 is MORE THAN 500,000 Verified APXN Points; Level 6 is 350,000 through 500,000 inclusive.",
+      "article_evidence": [
+        "The APXN community distribution has seven separate level pools funded by the community allocation. Level assignment uses Verified APXN Points rather than a raw or unverified mining balance. The levels measure eligibility only; a point does not automatically equal an APXN blockchain token.",
+        "Level 1 starts at 20,000 Verified APXN Points and ends below 50,000. Level 2 starts at 50,000 and ends below 100,000. Level 3 starts at 100,000 and ends below 150,000. Level 4 starts at 150,000 and ends below 250,000.",
+        "Level 5 starts at 250,000 and ends below 350,000 Verified APXN Points. Level 6 starts at 350,000 and includes 500,000. Level 7 requires MORE THAN 500,000. Earlier descriptions starting Level 7 at one million points are superseded.",
+        "The number of APXN tokens for each participating user is calculated from the separate pool assigned to their verified level, relative to the total verified points of eligible users within that level. The project must announce final pool sizes and claim conditions before claiming opens.",
+        "Do not use a historic 30%, 50%, 70%, or 100% eligibility ladder as the final allocation method. Do not confuse badge privileges with 63% of the token supply, and do not equate verified points with a live wallet balance."
+      ]
     },
     "membership_and_loyalty_kyc_november_2026": {
       "program": "APXN Membership & Loyalty KYC / KYC الانتماء والولاء",
       "target_launch": "Q1 2027 (planned)",
       "verified_points_completion_bonus": 20000,
-      "points_bonus_frequency": "Once per eligible account after required program tasks and the displayed Telegram Stars payment",
+      "points_bonus_frequency": "Once per eligible account after completing required program tasks and paying the displayed Telegram Stars",
       "points_bonus_recipient_cap": null,
       "first_airdrop_apxn_per_eligible_account": 100,
       "first_airdrop_recipient_cap": 10000,
-      "first_airdrop_eligibility": "First 10,000 qualifying Badge holders completing the specified KYC tasks and Telegram Stars payment",
+      "first_airdrop_eligibility": "First 10,000 qualifying Badge holders who complete specified tasks and the displayed Telegram Stars payment",
       "first_airdrop_target_claim": "Q2 2027",
-      "after_first_airdrop_cap": "Qualified new KYC completers still receive the one-time 20,000 verified APXN Points completion bonus; the 100 APXN limited allocation closes",
-      "important": "APXN Points are not on-chain APXN tokens; planned airdrop allocation is not an immediate on-chain transfer. Do not frame KYC as government identity-document verification."
+      "after_first_airdrop_cap": "The 20,000 Verified APXN Points reward continues for eligible new completers after the first 10,000 token allocations run out; it is awarded once per qualifying account.",
+      "important": "The KYC الانتماء والولاء program is planned, not currently active. Do not imply a completed government-ID check, automatic token transfer, fixed token value, or live token withdrawal."
     }
   },
   "claims_requiring_manual_confirmation": [
@@ -901,7 +945,13 @@
     "Block automatic publication whenever an article requires a fact marked verify_before_publish or blocked_auto_publish.",
     "Do not use old blog articles as evidence for a new APXN fact when current code or current official project information says something different.",
     "For current APXN project policy use the Q4 2026–Q2 2028 roadmap, approved 100 million APXN tokenomics and membership_and_loyalty_kyc_november_2026. Old September 2026 editorial submissions and older blog posts are historical, may mention identity-document checks, 2027 ICO/Presale or 2029 Mainnet, and must not be used as current policy. KYC الانتماء والولاء is membership/loyalty participation and not an assertion that ID verification is live.",
-    "Never publish confidential or internal APXN hosting or deployment information, platform vendor names, test environments, branch names, repository configuration, traffic or error metrics, or operational status. Only publish user-facing confirmed updates, official tokenomics, verified APXN Points rules and roadmap stages."
+    "Never publish confidential or internal APXN hosting or deployment information, platform vendor names, test environments, branch names, repository configuration, traffic or error metrics, or operational status. Only publish user-facing confirmed updates, official tokenomics, verified APXN Points rules and roadmap stages.",
+    "As of 21 November 2026, current Verified APXN Point levels are L1 20k-<50k, L2 50k-<100k, L3 100k-<150k, L4 150k-<250k, L5 250k-<350k, L6 350k-500k inclusive, L7 >500k. Earlier one-million-point limits are obsolete.",
+    "The 63 million APXN community tokens are distributed through seven separate pools proportionally within levels. Reject fixed old 30/50/70/100 percent level eligibility claims.",
+    "Badge inactivity, auction and proposed 60% privilege are not final active functionality without current implementation evidence. Badge percentage is not percentage of APXN total supply.",
+    "KYC الانتماء والولاء is a planned Q1 2027 milestone; its one-time 20,000 Verified Points reward continues after the limited 10,000 allocations of 100 APXN have been exhausted.",
+    "All automatically generated blog content must avoid repeated or truncated sentences, duplicated paragraphs, outdated token distribution language and invented launch confirmations.",
+    "The approved roadmap extends from Q4 2026 to Q2 2028; all future dates are targets and do not guarantee launches, claims, exchange listings or profits."
   ],
   "blog_strategy": {
     "primary_goal": "Build a trustworthy APXN knowledge hub that supports the Apex Network project without confusing community points with token or blockchain functionality.",
@@ -1020,31 +1070,19 @@
       "title": "تحديث استراتيجي لمشروع APXN Network — 19 سبتمبر 2026",
       "type": "conversation",
       "submitted_at": "2026-09-19",
-      "source_status": "administrator_supplied",
-      "verification_note": "Founder-provided information. A discussion or proposal is not automatically an implemented feature.",
+      "source_status": "historical_strategy_reconciled",
+      "verification_note": "Reconciled with November 2026 official facts. Historical draft is not authority for current token level thresholds, withdrawal mechanics or feature activation.",
       "evidence": [
-        "تحديث استراتيجي لمشروع APXN Network — 19 سبتمبر 2026 هذه المعلومات مستمدة من وثيقة التخطيط الاستراتيجي المحدّثة لمشروع APXN Network، وتشمل اقتصاد النقاط، والمستويات السبعة، وشارة EARLY ACCESS، وشروط النشاط، وترقيات التعدين، وأهلية KYC، وسياسة الحسابات، وآلية الإيدروب المستقبلية. ملاحظة تحريرية أساسية: الوثيقة تمثل تصوراً استراتيجياً وسياسات مقصودة للمشروع. لا يجوز للمقالات الناتجة عنها تقديم جميع الميزات المذكورة باعتبارها مفعلة حالياً في التطبيق. يجب التمييز بين ما يظهر أو يعمل بالفعل داخل",
-        "APXN وبين ما تقرر التخطيط له ولم يُعلن إطلاقه بعد. أولاً: فكرة مشروع APXN يعتمد APXN على تجربة تعدين النقاط من خلال تطبيق مصغر داخل Telegram. يجمع المستخدم نقاط APXN عبر التعدين، وتسجيل الدخول اليومي، والمهام والأنشطة المتاحة، والإعلانات المكافئة، ووسائل زيادة سرعة التعدين وفق شروط كل ميزة. تمثل النقاط مساهمة المستخدم وتقدمه داخل المشروع. وهي ليست توكنات موجودة تلقائياً في محفظته على البلوكشين، ولا يعني امتلاك عدد معين من النقاط استحقاق",
-        "العدد نفسه من التوكنات عند التوزيع. يبلغ إجمالي المعروض المعلن من توكن APXN مقدار 100,000,000 توكن. وتعرض وثائق المشروع السابقة تخصيصاً للمجتمع والإيدروب بنسبة 63% من إجمالي المعروض. هذه النسبة مختلفة تماماً عن امتياز شارة EARLY ACCESS البالغ 60% من الحصة المحسوبة للمستخدم، ولا يجوز الخلط بينهما. ثانياً: نظام المستويات السبعة تتضمن الاستراتيجية تقسيم رحلة المستخدم إلى سبعة مستويات بحسب إجمالي النقاط المؤهلة المكتسبة. الغرض من المستويات هو توضيح التقدم داخل المشروع",
-        "وربط درجات أهلية الإيدروب بمساهمة المستخدم واستمراريته. المستوى الأول: من 20,000 إلى 49,999 نقطة، دون نسبة أهلية عادية للمطالبة. المستوى الثاني: من 50,000 إلى 99,999 نقطة، دون نسبة أهلية عادية للمطالبة. المستوى الثالث: من 100,000 إلى 149,999 نقطة، دون نسبة أهلية عادية للمطالبة. المستوى الرابع: من 150,000 إلى 249,999 نقطة، وتبدأ عنده أهلية مقترحة بنسبة 30% من الحصة المحسوبة للمستخدم. المستوى الخامس: من 250,000 إلى 449,999 نقطة، بنسبة أهلية مقترحة تبلغ 50%.",
-        "المستوى السادس: من 450,000 إلى 999,999 نقطة، بنسبة أهلية مقترحة تبلغ 70%. المستوى السابع: من 1,000,000 نقطة فأكثر، بنسبة أهلية مقترحة تبلغ 100%. الحسابات التي تملك أقل من 20,000 نقطة تظهر قبل المستوى الأول. وتظل هذه المستويات ونسبها جزءاً من سياسة التوزيع المقترحة إلى أن تُعتمد قواعدها النهائية ويُعلن بدء تطبيقها. ثالثاً: شارة EARLY ACCESS تقوم فكرة شارة EARLY ACCESS على تخصيص إصدار أولي محدود لا يتجاوز 10,000 شارة للمستخدمين الأوائل المؤهلين.",
-        "وبحسب التصور الاستراتيجي، تظهر الشارة تلقائياً للحساب المؤهل عند التسجيل المبكر، دون اشتراط شراء أولي للحصول عليها. ليست الشارة مجرد عنصر بصري داخل لوحة المستخدم؛ بل صُممت لتمثل امتيازاً مشروطاً باستمرار المشاركة في المشروع. تمنح الشارة النشطة حاملها امتياز أهلية مقترحاً بنسبة 60% من حصته المحسوبة في الإيدروب، حتى إن لم يبلغ المستوى الرابع من سلم النقاط. لكن هذا الامتياز لا يعني حصول المستخدم على 60% من إجمالي معروض APXN، ولا يعني",
-        "تحويل 60% من نقاطه مباشرة إلى توكنات. عندما يكون المستخدم مؤهلاً بنسبة أعلى من خلال مستواه، يُعتمد الامتياز الأعلى دون جمع النسبتين. على سبيل المثال، إذا وصل المستخدم إلى المستوى السادس، فإن نسبة المستوى المقترحة البالغة 70% لا تنخفض إلى 60% بسبب امتلاكه شارة EARLY ACCESS. رابعاً: سياسة الغياب لمدة 14 يوماً تستهدف الاستراتيجية تشجيع المشاركة المستمرة بدلاً من إبقاء الامتيازات المحدودة مرتبطة إلى أجل غير محدد بحسابات لم تعد نشطة. وفق",
-        "السياسة المقترحة، إذا غاب حامل شارة EARLY ACCESS عن التطبيق مدة 14 يوماً كاملة منذ آخر نشاط مؤهل مسجل لدى خادم APXN، يمكن سحب الشارة وامتيازها المرتبط بها. سحب الشارة لا يعني حذف الحساب أو إلغاء نقاط التعدين. يحتفظ المستخدم بحسابه المرتبط بـTelegram، ورصيد نقاطه المستحقة، وسجل مشاركته ومشترياته، ومستواه المكتسب وفق القواعد المعتمدة. ويستطيع العودة إلى التطبيق ومواصلة التعدين. تاريخ بدء احتساب الغياب، وتعريف النشاط المؤهل، وإجراءات منع السحب الخاطئ أثناء",
-        "الأعطال التقنية، كلها تفاصيل ينبغي إعلانها قبل تفعيل السياسة. ولا يجوز وصف سحب الشارات بعد 14 يوماً بأنه إجراء يعمل حالياً لمجرد وروده في الوثيقة الاستراتيجية. خامساً: صندوق شارات EARLY ACCESS والمزاد تنص الاستراتيجية المقترحة على إعادة الشارات المسحوبة إلى صندوق مخصص لإعادة توزيع الامتيازات المحدودة من خلال مزاد مجتمعي، بدلاً من إصدار شارات جديدة تتجاوز الحد الأولي البالغ 10,000. تنتقل الشارة نفسها برقمها الفريد إلى المالك الجديد عند اكتمال إجراءات المزاد",
-        "المعتمدة، لكن نقاط المالك السابق وحسابه وسجل مشاركته لا تنتقل معها. تسمح الفكرة بمشاركة جميع المستخدمين في المزاد وفق قواعد معلنة، بمن فيهم المستخدم الذي فقد شارة سابقة بسبب الغياب. وتظل الشارة قابلة للخضوع لشرط النشاط نفسه عند انتقالها إلى مستخدم جديد. المزاد جزء من الخطة المستقبلية، وليس إعلاناً عن فتح مزايدات فعلية أو اعتماد سعر أو وسيلة دفع أو موعد إطلاق. يجب تحديد هذه الجوانب ومراجعة شروط الدفع والحقوق المرتبطة بالشارة",
-        "قبل تشغيل الميزة. سادساً: سياسة الحسابات وتعدد حسابات Telegram يوضح الملحق الاستراتيجي المحدّث أن APXN لا يعتبر تعدد الحسابات وحده دليلاً على أن الحساب وهمي أو غير مؤهل. يُعامل كل حساب مسجل عبر Telegram بوصفه حساباً مستقلاً له لوحة تحكم ورصيد نقاط وسجل نشاط وترقيات وشارات خاصة به. وإذا استوفى الحساب الشروط المعلنة، فلا يُستبعد لمجرد أن صاحبه يستخدم حساب Telegram آخر. لا تنتقل نقاط حساب إلى حساب آخر، ولا تمنح ترقيات",
-        "حساب أهلية تلقائية لحساب مختلف، ولا تنتقل الإحالات أو حقوق الشارة بين الحسابات دون آلية معتمدة. تظل الحسابات المزيفة والعمليات المزورة والتلاعب التقني وإساءة استخدام نظام الإحالات مسائل منفصلة عن مجرد تعدد الحسابات، وتُعالج وفق القواعد التي يعلنها المشروع. سابعاً: شراء سرعات التعدين بالنقاط تحدد السياسة المحدّثة سقفاً خاصاً لشراء سرعات التعدين باستخدام نقاط APXN: أربع عمليات شراء ناجحة كحد أقصى طوال عمر كل حساب داخل التطبيق. هذا الحد يخص فئة شراء",
-        "السرعات بالنقاط فقط. ولا يعني أن المستخدم يستطيع إجراء أربع مشتريات إجمالاً من جميع أقسام المتجر. تبقى الترقيات الأخرى المتاحة بوسائل دفع مختلفة مفتوحة وفق الفئات والباقات المعروضة وشروط المتجر، ولا تُخصم من عداد العمليات الأربع المخصصة للشراء بالنقاط. لكل حساب Telegram عداده المستقل. ولا تُحسب العملية الفاشلة ضمن الحد، ويجب منع خصم النقاط مرتين للعملية نفسها. ومن تفاصيل التنفيذ المقترحة عرض عداد واضح داخل لوحة المستخدم يبين عدد عمليات شراء السرعات",
-        "بالنقاط من أصل أربع. الغرض من هذا التنظيم هو ضبط اقتصاد النقاط، وتنظيم استخدام الترقيات، وزيادة تكلفة وجهد تشغيل أعداد كبيرة من الحسابات بغرض إساءة الاستخدام، دون الادعاء أن شراء الترقيات يثبت هوية الشخص أو صحة كل إحالة تلقائياً. ثامناً: العلاقة بين ترقيات التعدين وKYC تؤكد السياسة المحدّثة أن استيفاء مشتريات ترقيات التعدين المطلوبة يرتبط بأهلية المستخدم للتقدم إلى مرحلة KYC وفق الشروط المنشورة داخل التطبيق. وتشير لقطات التطبيق المستخدمة في الوثيقة",
-        "إلى شرط فتح مرحلتين على الأقل من كل مستوى من مستويات أجهزة التعدين الثلاثة. لكن هناك فرقاً مهماً بين أهلية التقدم إلى KYC واجتياز التحقق الفعلي من الهوية. شراء الترقيات أو تسجيل الدخول عبر Telegram أو امتلاك شارة EARLY ACCESS لا يعني أن هوية المستخدم قد تم التحقق منها تلقائياً. يظل التحقق الفعلي إجراءً مستقلاً عندما يصبح مطلوباً لمرحلة المطالبة أو السحب. كذلك يجب توضيح علاقة امتياز EARLY ACCESS بشروط شراء الأجهزة",
-        "بصورة نهائية قبل إعلان حقوق التوزيع. تاسعاً: الحفاظ على حقوق المستخدم عند تغيير الامتيازات المبدأ الحاكم لاستراتيجية APXN هو الفصل بين رصيد النقاط والامتيازات المشروطة. النقاط تسجل مساهمة المستخدم في المشروع. المستويات توضح تقدمه. الشارات تمنح امتيازات محدودة مرتبطة بشروط معلنة. عندما يفقد المستخدم امتياز شارة بسبب الغياب، لا ينبغي حذف نقاطه أو سجله أو مشترياته الصحيحة. وعندما ينفق نقاطاً على ترقية متاحة، يجب التمييز بين إجمالي النقاط المؤهلة التي اكتسبها تاريخياً",
-        "وبين رصيد النقاط القابل للإنفاق. كما يجب الفصل بين هذين الرصيدين وبين الحصة النهائية من توكنات APXN التي قد تُحسب لاحقاً وفق معادلة التوزيع المعتمدة. عاشراً: خطة التنفيذ والتواصل تعتمد الوثيقة تصوراً مرحلياً يبدأ بمراجعة البيانات الحالية، ثم تثبيت القواعد النهائية، وإظهار المستويات للمستخدمين، ونشر الإشعارات المسبقة، واختبار تطبيق سياسة النشاط، ثم دراسة تشغيل المزاد والمتجر، وأخيراً إعلان قواعد التوزيع والمطالبة عندما يحين موعدها الرسمي. يجب أن يعرف مجتمع APXN بوضوح ما",
-        "الذي يحدث عند غياب المستخدم، وما الذي يبقى محفوظاً في حسابه، وكيف تُحسب أهلية كل مستوى، وما حدود شراء السرعات بالنقاط، وما الفرق بين استيفاء شروط الترقيات والتحقق الفعلي من الهوية. يمكن توضيح هذه القواعد داخل التطبيق والورقة البيضاء وخريطة الطريق، ثم دعمها بالمنشورات الرسمية على Telegram وX والشروحات عبر YouTube. التوجيه النهائي لمدونة APXN: يمكن استخدام هذه المعلومات لإنتاج مقالات إخبارية وتعليمية عن رؤية المشروع وتطوير نظام المكافآت والمستويات والشارات والترقيات.",
-        "يجب صياغة المقالات بوصفها شرحاً للاستراتيجية المحدّثة، مع عدم الادعاء بأن المزاد أو السحب التلقائي للشارات أو المستويات الجديدة أو كل شروط الترقيات قد أُطلقت فعلياً، ما لم تتوافر معلومات لاحقة تؤكد تنفيذها. يجب عدم تقديم نسب أهلية الإيدروب باعتبارها ضماناً بقيمة مالية أو سعر مستقبلي للتوكن، وعدم الخلط بين نقاط التعدين والتوكنات الموزعة فعلياً. الهوية التحريرية لهذا التحديث: APXN يكافئ الاستمرارية. النقاط تمثل مساهمة المستخدم، والمستويات توثق تقدمه، وشارة EARLY ACCESS",
-        "امتياز محدود يرتبط بالنشاط وفق السياسة التي سيعلن المشروع بدء تطبيقها."
+        "Historical overview: On 19 September 2026 Apex Network described an early strategic proposal concerning APXN Points, user levels, EARLY ACCESS badges, retention conditions and later token distribution. It was a planning document rather than a release note. Where it differs from the current November 2026 roadmap and Whitepaper, the later official rules control. Readers should understand this chronology before treating any older proposal as current functionality.",
+        "The APXN Points economy currently supports participation through the Telegram Mini App. Mining-style activity, check-ins, tasks and referrals may contribute to app points according to each feature’s applicable rules. APXN Points are an internal participation record and are not automatically blockchain tokens. The earlier document discussed future eligibility. Present-day publications must keep the distinction clear to avoid suggesting users can already claim tokens directly from all point balances.",
+        "The verified seven-level policy was updated after the September plan. Level one begins at twenty thousand points. Levels two, three and four begin at fifty thousand, one hundred thousand and one hundred fifty thousand respectively. Level five begins at two hundred fifty thousand, and level six at three hundred fifty thousand. Level seven is strictly more than five hundred thousand Verified APXN Points. Older one-million-point descriptions are no longer suitable for current articles.",
+        "The project allocates sixty-three percent of its declared one-hundred-million-token supply to the community. Users are allocated to a specific level through Verified APXN Points. Each level has a separate token allocation pool, and a user’s share depends on their points as a fraction of all verified points in that particular level. Earlier proposed personal eligibility percentages should not replace this pool-based approach in current explanations.",
+        "The EARLY ACCESS badge was designed as an early-participation marker with conditional privileges. Earlier strategic plans discussed fourteen days of inactivity, badge withdrawal and reallocation through a community auction. These remain historical proposals in the absence of fresh implementation evidence. Losing a badge must not be confused with automatic cancellation of all previously recorded APXN Points. No article should imply a badge auction is already functioning without official confirmation.",
+        "For Q1 2027 the roadmap targets KYC الانتماء والولاء. Eligible participants completing the required tasks and Telegram Stars payment are planned to receive twenty thousand Verified APXN Points once. That points award is not limited to ten thousand users. Separately, a planned allocation of one hundred APXN for each of the first ten thousand qualified badge holders is targeted for claim in Q2 2027, according to future claim rules.",
+        "The roadmap targets a second airdrop in Q2 2027 funded by approximately two million APXN from the existing marketing, development and partnership allocation. Later roadmap targets include APXN DEX and CEX Launchpad in Q3 2027, Testnet and exchange listings in Q4 2027, Mainnet preparation during Q1 2028, and Mainnet during Q2 2028. All dates are planning targets and may change based on official decisions."
       ],
-      "queued_for_article_id": "bank-admin-4a9cefde074a"
+      "queued_for_article_id": "bank-admin-4a9cefde074a",
+      "knowledge_reconciled_at": "2026-11-21"
     },
     "submission_bd73e45d260e2020": {
       "title": "### APXN Telegram Mining App Migration from Vercel to Cloudflare",
@@ -1111,29 +1149,20 @@
       "title": "APXN Network Strategic Update Details Point Economy and EARLY ACCESS Badge Policy",
       "type": "conversation",
       "submitted_at": "2026-11-16",
-      "source_status": "administrator_supplied",
-      "verification_note": "Founder-provided information. A discussion or proposal is not automatically an implemented feature.",
+      "source_status": "historical_strategy_reconciled",
+      "verification_note": "Reconciled with November 2026 official facts. Historical draft is not authority for current token level thresholds, withdrawal mechanics or feature activation.",
       "evidence": [
-        "APXN Network Strategic Update Details Point Economy and EARLY ACCESS Badge Policy The APXN Network strategic planning document dated 19 September 2026 outlines the point economy, seven user levels, EARLY ACCESS badge conditions, activity rules, mining The APXN Network released a strategic planning update on 19 September 2026. This document covers the point economy, seven levels, EARLY ACCESS badge, activity conditions, mining upgrades, KYC eligibility, account policy and future airdrop mechanism. The",
-        "information comes from an updated strategic planning document for the APXN Network project. Editorial guidance states the document represents intended strategy and policies. Articles must distinguish between features that already appear or function inside the application and those that remain planned but not yet announced for launch. The project relies on point mining inside a Telegram mini app. Users collect APXN points through mining, daily login, available tasks and activities, equivalent advertisements",
-        "and methods to increase mining speed according to each feature conditions. Points represent user contribution and progress inside the project. They are not tokens that automatically exist in a blockchain wallet. Early Access Badge and Initial Participation Rules The badge is designed to represent a conditional privilege tied to continued participation in the project. Articles must not present the badge auction or automatic withdrawal of badges as already active unless later information",
-        "confirms implementation. The initial limited issuance does not exceed 10,000 badges for qualified early users. Withdrawn badges return to a dedicated pool for redistribution through a community auction rather than issuing new badges beyond the initial 10,000 limit. The same badge with its unique number transfers to the new owner once auction procedures complete. Previous owner points, account and participation record do not transfer with the badge. The auction remains part of",
-        "the future plan and is not an announcement of open bidding, approved price or payment method. Telegram Mini App Mining Experience APXN relies on a point mining experience inside a mini application within Telegram. Users gather points through mining, daily login, tasks, activities and equivalent advertisements. Methods exist to raise mining speed according to the conditions of each feature. The document clarifies that points stand for user contribution and progress within the",
-        "project rather than automatic tokens. Each Telegram account maintains its own independent counter for purchases. Failed operations do not count toward the limit and duplicate point deductions for the same operation must be prevented. A clear counter display inside the user panel is proposed to show the number of speed purchases made with points out of four. The purpose is to regulate point economy and limit large scale account operation for misuse.",
-        "Badge Absence Policy and Telegram Account Continuity Under the proposed policy an EARLY ACCESS badge holder absent for fourteen days from the last qualifying activity recorded on the APXN server may have the badge and linked privilege withdrawn. Withdrawal does not delete the account or cancel earned mining points. The user retains the Telegram linked account, earned point balance, participation record and acquired level according to approved rules. The user can return",
-        "to the application and continue mining. Details such as absence start date, definition of qualifying activity and procedures to prevent erroneous withdrawal during technical outages should be announced before the policy activates. Badge withdrawal after fourteen days must not be described as currently operating merely because it appears in the strategic document. The badge does not automatically verify identity. Level Thresholds and Telegram YouTube Communication Channels The strategy divides the user journey",
-        "into seven levels according to total qualifying points earned. Level one covers twenty thousand to forty nine thousand nine hundred ninety nine points. Level two covers fifty thousand to ninety nine thousand nine hundred ninety nine points. Level three covers one hundred thousand to one hundred forty nine thousand nine hundred ninety nine points. Level four begins at one hundred fifty thousand points and carries a proposed thirty percent eligibility share of",
-        "the calculated user allocation. Level five ranges from two hundred fifty thousand to four hundred forty nine thousand nine hundred ninety nine points with fifty percent proposed eligibility. These levels and shares form part of the proposed distribution policy until final rules receive approval and implementation begins. The document recommends clarifying these rules inside the application, white paper and roadmap then supporting them with official posts on Telegram, X and explanations on",
-        "YouTube. Point Requirements for Early Access Eligibility Accounts holding fewer than twenty thousand points appear before the first level. Level six covers four hundred fifty thousand to nine hundred ninety nine thousand nine hundred ninety nine points with seventy percent proposed eligibility. Level seven starts at one million points and carries one hundred percent proposed eligibility. The total announced supply of APXN tokens equals one hundred million tokens. Previous project documents showed",
-        "a sixty three percent community and airdrop allocation of total supply. This percentage differs completely from the sixty percent EARLY ACCESS badge share of the calculated user allocation and the two must not be confused. The badge grants an active holder a proposed sixty percent eligibility share of the calculated allocation even if the user has not reached the fourth level on the point ladder. Activity Requirements and Early Badge Retention The",
-        "strategy aims to encourage continuous participation rather than leaving limited privileges tied indefinitely to inactive accounts. When a user qualifies for a higher share through level the higher eligibility applies without combining the two percentages. For example a user reaching level six receives the proposed seventy percent level share and does not drop to sixty percent because of holding the EARLY ACCESS badge. The badge is not merely a visual element inside",
-        "the user panel. It is designed to represent a conditional privilege that requires ongoing project participation. The active badge grants the holder a proposed sixty percent eligibility share of the calculated allocation even without reaching the fourth point level. This share does not equal sixty percent of total APXN supply and does not guarantee receipt of the same number of tokens at distribution. What does the 19 September 2026 strategic update cover",
-        "for APXN Network? The update document dated 19 September 2026 addresses the point economy, seven levels, EARLY ACCESS badge, activity conditions, mining upgrades, KYC eligibility, account policy and future airdrop mechanism. It represents intended strategy and policies. Articles must separate features already functioning inside the application from those planned but not yet announced for launch. How does the fourteen day absence rule affect the EARLY ACCESS badge? If an EARLY ACCESS badge",
-        "holder is absent from the application for a full fourteen days since the last qualifying activity recorded on the APXN server, the badge and linked privilege may be withdrawn. Withdrawal does not delete the account or cancel earned points. The user keeps the Telegram linked account, point balance, participation record and acquired level. What token supply and allocation figures appear in the APXN documents? The total announced supply of APXN tokens equals",
-        "one hundred million tokens. Earlier documents showed a sixty three percent community and airdrop allocation of total supply. This percentage differs from the sixty percent EARLY ACCESS badge share of the calculated user allocation and the two must not be confused. The APXN Network strategic update dated 19 September 2026 presents planning details on the point economy, seven levels, EARLY ACCESS badge, activity conditions, mining upgrades, KYC eligibility and future airdrop mechanism.",
-        "The document distinguishes between features already present inside the application and those that remain planned. Badge withdrawal after fourteen days of absence does not remove the account or earned points. Level thresholds begin at twenty thousand points and proposed eligibility shares increase at higher ranges. The initial badge issuance limit stands at ten thousand. Communication of rules is recommended through official Telegram, X and YouTube channels."
+        "This article covers a historical September 2026 strategy document, updated against November 2026 Apex Network policies. That document described point economics, participation rules, EARLY ACCESS badges and future distribution ideas. It was not proof that every planned feature had launched. A current explanation should explicitly identify which information was a former proposal and which elements appear in the latest official Whitepaper and roadmap.",
+        "APXN is represented as a BEP-20 token on BNB Smart Chain with a declared maximum supply of one hundred million units. Its allocation comprises sixty-three million APXN to the community, fifteen million to exchange listings, fifteen million to partnerships, marketing, development and airdrops, five million to the team and two million to a future centralized-exchange launchpad. No badge privilege should be described as a percentage of the overall supply.",
+        "Participation happens through the Apex Network Telegram Mini App, where users earn APXN Points from approved actions. Accrued APXN Points are not the same as on-chain APXN tokens. The current distribution plan uses Verified APXN Points following the planned loyalty verification process. Writers should avoid calling these points withdrawable wallet tokens or promising a fixed conversion formula before the project announces eligibility and claim rules.",
+        "The revised seven-level thresholds start at twenty thousand, fifty thousand, one hundred thousand, one hundred fifty thousand, two hundred fifty thousand and three hundred fifty thousand Verified APXN Points for levels one through six. Level six covers up to and including five hundred thousand. Level seven requires more than five hundred thousand. These current ranges replace any old September chart that set the top level at one million.",
+        "The proposed system sets aside separate APXN pools for each of the seven levels out of the community allocation. Eligible users within the same level receive a proportional share according to the ratio of their Verified APXN Points to the combined eligible verified points for that level. This replaces historical percentage-based ladder descriptions and avoids implying that every individual can withdraw a constant fixed percent of all their points as APXN.",
+        "EARLY ACCESS badges remain a significant project identity feature. Older plans discussed an inactivity threshold of fourteen days and redistribution of badges through an auction. Such mechanics must be called historical proposals until implementation has been independently confirmed within current official materials. A proposed sixty percent conditional withdrawal privilege does not represent sixty percent of supply and does not establish that withdrawals are already live.",
+        "Q1 2027 is the planned launch period for KYC الانتماء والولاء. Completing its required tasks and paying the displayed Telegram Stars is expected to unlock twenty thousand Verified APXN Points once for each eligible account without a recipient cap. The first ten thousand qualifying badge holders additionally have a planned one-hundred-APXN allocation for claims targeted in Q2 2027. Planned allocations are not immediate blockchain transfers.",
+        "Q2 2027 also targets the second airdrop funded by approximately two million APXN from the existing fifteen-million marketing and partnerships allocation. The roadmap subsequently targets APXN DEX and a CEX Launchpad in Q3 2027, Testnet and listings in Q4 2027, Mainnet preparation in Q1 2028, and Mainnet in Q2 2028. Future dates and eligibility are subject to official updates."
       ],
-      "queued_for_article_id": "bank-admin-7f467a96f410"
+      "queued_for_article_id": "bank-admin-7f467a96f410",
+      "knowledge_reconciled_at": "2026-11-21"
     },
     "submission_ff17c7da595eda72": {
       "title": "Apex Network (APXN) Official BscScan Verification: Smart Contract Details and 100 Million Token Supply",
@@ -1183,6 +1212,39 @@
         "contract verification does not constitute an independent security audit, and publicly displayed blockchain information should be interpreted within its appropriate technical context."
       ],
       "queued_for_article_id": "bank-admin-ec182b61a335"
+    }
+  },
+  "canonical_revision": {
+    "version": "2026-11-21",
+    "priority": "Latest official project Whitepaper, Roadmap and November 2026 level update override older marketing copy and September strategy drafts.",
+    "approved_status": "Editorial fact sheet for future articles; not a claim that planned features are already live.",
+    "official_project_website": "https://apxn.network",
+    "official_contract_explorer": "https://bscscan.com/token/0x88074bA197BBB0a3AFF891E52d05764F98509956",
+    "source_caution": "Historic submitted documents are archived context only. Do not reuse older numeric thresholds, fixed level percentages or unfinished article fragments."
+  },
+  "official_current_editorial_facts": {
+    "review_date": "2026-11-21",
+    "source_rank": "Latest public Whitepaper and Roadmap > November 2026 verified-level update > historical September planning documents",
+    "sections": {
+      "token_supply": {
+        "article_evidence": [
+          "APXN has a declared total supply of one hundred million tokens on BNB Smart Chain, as represented by the project. The allocations are sixty-three million tokens to the community, fifteen million to listings and exchanges, fifteen million to partnerships, marketing, development and airdrops, five million to the team, and two million to the planned CEX launchpad.",
+          "The second airdrop target of approximately two million APXN belongs to the existing partnerships, marketing, development and airdrops allocation. It must not be added to the announced token supply. The APXN Points balance shown in the Telegram Mini App remains distinct from transferable blockchain tokens until officially announced claim and distribution processes become active."
+        ]
+      },
+      "badge": {
+        "article_evidence": [
+          "The EARLY ACCESS badge marks a limited group of early participants. Earlier strategic proposals described retaining the badge through activity and potentially redistributing an inactive badge through an auction after fourteen days. These proposals should be presented as historical planning context unless current terms specifically confirm implementation.",
+          "A proposed sixty percent withdrawal eligibility for badge holders describes a conditional personal privilege, not a share of the total APXN supply. Articles must not imply that badges currently guarantee a token withdrawal, an immediate wallet transfer, or profit. Future eligibility and transaction rules must be checked against current public announcements."
+        ]
+      },
+      "roadmap": {
+        "article_evidence": [
+          "Q4 2026 focuses on the Telegram Mini App and APXN Points participation, including mining-style accumulation, daily activities, referrals and app improvements. Q1 2027 targets the Membership and Loyalty KYC program and the verified-points completion bonus. These activities are distinct from on-chain token distribution.",
+          "Q2 2027 targets continued development, partnerships, marketing and a second airdrop from the existing partnership allocation, as well as claim windows for the first and second airdrops subject to published rules. Q3 2027 targets the APXN decentralized exchange and a centralized-exchange launchpad.",
+          "Q4 2027 targets the APXN Testnet and planned CEX and DEX listings. Q1 2028 focuses on Mainnet preparation and new ecosystem products. Q2 2028 is the target for Mainnet. None of these dates guarantees a launch, exchange listing, token valuation or technical readiness."
+        ]
+      }
     }
   }
 }

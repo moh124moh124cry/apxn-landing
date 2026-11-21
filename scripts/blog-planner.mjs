@@ -32,7 +32,7 @@ const PATHS = {
 
 const SETTINGS = {
   minimumWaitingTopics: 6,
-  targetWaitingTopics: 12,
+  targetWaitingTopics: 7,
   maximumQueueSize: 50,
   language: "en",
   supportedContentModes: new Set(["apxn", "external", "hybrid", "manual"]),
@@ -518,7 +518,8 @@ function categoryLoad(manifest) {
     if (
       ![
         "published",
-        "draft"
+        "draft",
+        "ready"
       ].includes(
         String(article?.status || "")
       )
@@ -640,6 +641,10 @@ function selectBalancedTopics({
   const load =
     categoryLoad(manifest);
 
+  const occupiedCategories = new Set([
+    ...manifest.generation_queue.filter((q) => q?.status === "waiting").map((q) => normalizeSpace(q?.category)),
+    ...manifest.articles.filter((a) => a?.status === "ready").map((a) => normalizeSpace(a?.category))
+  ]);
   const selected = [];
 
   while (
@@ -651,7 +656,7 @@ function selectBalancedTopics({
       const [category, items]
       of pools.entries()
     ) {
-      if (!items.length) {
+      if (!items.length || occupiedCategories.has(category)) {
         continue;
       }
 
@@ -693,6 +698,7 @@ function selectBalancedTopics({
         .shift();
 
     selected.push(chosen);
+    occupiedCategories.add(chosenCategory);
 
     load.set(
       chosenCategory,
@@ -993,6 +999,42 @@ function updatePlannerState(
 /* Main                                                                       */
 /* -------------------------------------------------------------------------- */
 
+function normalizeOneWaitingTopicPerCategory(manifest) {
+  // Preserve excess topics in the queue as deferred. Never discard topics.
+  // A ready article blocks the next waiting article in that same category
+  // until its image is added and its publication status changes.
+  const readyCategories = new Set(
+    manifest.articles
+      .filter((a) => a?.status === 'ready')
+      .map((a) => normalizeSpace(a?.category))
+  );
+  const waiting = manifest.generation_queue
+    .filter((item) => item?.status === 'waiting')
+    .sort((a, b) => Number(a?.priority || 999999) - Number(b?.priority || 999999));
+  const occupied = new Set();
+  for (const item of waiting) {
+    const category = normalizeSpace(item?.category);
+    if (occupied.has(category) || readyCategories.has(category)) {
+      item.status = 'deferred';
+      item.deferred_reason = 'one_active_article_per_category';
+    } else {
+      occupied.add(category);
+    }
+  }
+  // Re-enable the earliest deferred item when its category has a free slot.
+  const deferred = manifest.generation_queue
+    .filter((item) => item?.status === 'deferred')
+    .sort((a, b) => Number(a?.priority || 999999) - Number(b?.priority || 999999));
+  for (const item of deferred) {
+    const category = normalizeSpace(item?.category);
+    if (!occupied.has(category) && !readyCategories.has(category)) {
+      item.status = 'waiting';
+      delete item.deferred_reason;
+      occupied.add(category);
+    }
+  }
+}
+
 function main() {
   const manifest =
     readJson(
@@ -1006,6 +1048,7 @@ function main() {
 
   validateManifest(manifest);
   validateTopicBank(bank);
+  normalizeOneWaitingTopicPerCategory(manifest);
 
   const date =
     todayISO();

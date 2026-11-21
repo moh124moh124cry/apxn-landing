@@ -1218,6 +1218,9 @@ function paidWriterInstructions() {
     "Use a neutral educational tone suitable for a high-quality public blog.",
     "Do not reveal APXN hosting platforms, deployment names, repository details, preview bots, branches, runtime setup, internal metrics or other operational information. Public-facing product and reward information only.",
     "Avoid keyword stuffing, hype, generic motivational filler and repeated explanations.",
+    "Every paragraph and FAQ answer must end in a complete sentence with final punctuation.",
+    "Never repeat a complete sentence or an 18-word passage anywhere in this article, including its conclusion and FAQ.",
+    "Each section must present genuinely distinct information, not reword earlier paragraphs to meet the word count.",
     "Return only the requested JSON schema."
   ].join("\n");
 }
@@ -1275,6 +1278,7 @@ function lengthRepairInstructions() {
     "Before returning JSON, silently audit every block's evidence_ids, numeric tokens and the approximate word count of the full body.",
     "Keep every intro, section, FAQ answer and conclusion substantial enough to remain useful.",
     "Avoid repetition and filler. Every added sentence must remain grounded in the block's allowed evidence.",
+    "Fix repeated sentences, repeated long passages, duplicate headings and incomplete endings without inventing content.",
     "Return only the requested JSON schema."
   ].join("\n");
 }
@@ -1324,8 +1328,8 @@ function isSafeRepairableQualityFailure(local) {
    * - unknown evidence IDs
    * - numeric tokens not supported by the block's cited evidence
    *
-   * Structural/schema failures, dangerous promotional claims, duplicate
-   * content and arbitrary validator failures remain hard stops.
+   * Structural/schema failures and dangerous promotional claims remain
+   * hard stops; grounded repetition and truncation may receive a bounded repair.
    */
   const blockLabel =
     "(?:intro|conclusion|section_\\d+_paragraph_\\d+|faq_\\d+)";
@@ -1333,6 +1337,12 @@ function isSafeRepairableQualityFailure(local) {
   const allowed = [
     /^Article body has \d+ words; (?:minimum|maximum) is \d+\.$/,
     /^Article contains a blocked volatile metric claim\.$/,
+    /^Repeated sentence across article:/,
+    /^Repeated passage across article:/,
+    /^Incomplete sentence ending:/,
+    /^Duplicate section heading:/,
+    /^Duplicate FAQ question:/,
+    /^.+ are too repetitive \(\d+\.\d+ lexical similarity\)\.$/,
     new RegExp(
       `^${blockLabel} contains unsupported high-risk inference pattern: [^.]+\\.$`
     ),
@@ -1604,6 +1614,66 @@ function repeatedBlockErrors(article) {
 }
 
 
+function strictArticleIntegrityErrors(article) {
+  const errors = [];
+  const sentenceSeen = new Map();
+  const phraseSeen = new Map();
+  const blocks = allArticleBlocks(article);
+
+  for (const block of blocks) {
+    const content = normalizeSpace(block.text);
+    if (!content) continue;
+
+    if (!/[.!?]["”')\]]?$/.test(content)) {
+      errors.push(`Incomplete sentence ending: ${block.label}.`);
+    }
+
+    // The generated text sometimes repeats a sentence within one paragraph.
+    // Identify duplicates both inside and between all article sections.
+    for (const sentence of splitSentencesForCleanup(content)) {
+      const normalized = normalizeTopic(sentence);
+      const words = normalized.split(/\s+/).filter(Boolean);
+      if (words.length < 9) continue;
+      if (sentenceSeen.has(normalized)) {
+        errors.push(`Repeated sentence across article: ${sentenceSeen.get(normalized)} and ${block.label}.`);
+      } else {
+        sentenceSeen.set(normalized, block.label);
+      }
+    }
+
+    // Detect re-used long passages, including fragments missing punctuation.
+    // A repeated 18-word phrase is too specific to be ordinary terminology.
+    const words = normalizeTopic(content).split(/\s+/).filter(Boolean);
+    for (let i = 0; i <= words.length - 18; i++) {
+      const signature = words.slice(i, i + 18).join(' ');
+      const prior = phraseSeen.get(signature);
+      if (prior && (prior.label !== block.label || i - prior.index >= 18)) {
+        errors.push(`Repeated passage across article: ${prior.label} and ${block.label}.`);
+        break;
+      }
+      if (!prior) phraseSeen.set(signature, { label: block.label, index: i });
+    }
+  }
+
+  const headingSeen = new Set();
+  for (const section of article?.sections || []) {
+    const heading = normalizeTopic(section?.heading);
+    if (heading && headingSeen.has(heading)) {
+      errors.push(`Duplicate section heading: ${section?.heading}.`);
+    }
+    if (heading) headingSeen.add(heading);
+  }
+  const questionsSeen = new Set();
+  for (const item of article?.faq || []) {
+    const question = normalizeTopic(item?.question);
+    if (question && questionsSeen.has(question)) {
+      errors.push(`Duplicate FAQ question: ${item?.question}.`);
+    }
+    if (question) questionsSeen.add(question);
+  }
+  return [...new Set(errors)].slice(0, 12);
+}
+
 function splitSentencesForCleanup(value) {
   const text = normalizeSpace(value);
   if (!text) return [];
@@ -1831,7 +1901,9 @@ function validateArticleAgainstPacket({
     }
   }
 
-  const warnings = repeatedBlockErrors(article);
+  errors.push(...repeatedBlockErrors(article));
+  errors.push(...strictArticleIntegrityErrors(article));
+  const warnings = [];
 
   return {
     ok: errors.length === 0,
@@ -1852,9 +1924,15 @@ function assertNotDuplicate(article, manifest) {
   const title = normalizeTopic(article.title);
   const slug = slugify(article.title);
 
+  const newBody = articleBodyText(article);
   for (const existing of Array.isArray(manifest.articles)
     ? manifest.articles
     : []) {
+    const oldBody = existing?.content && typeof existing.content === "object"
+      ? articleBodyText(existing.content) : "";
+    if (wordCount(oldBody) > 250 && jaccardSimilarity(newBody, oldBody) >= 0.90) {
+      fail(`Near-duplicate article content rejected: ${existing.title}`);
+    }
     if (normalizeTopic(existing.title) === title) {
       fail(`Duplicate article title rejected: ${article.title}`);
     }
@@ -2983,8 +3061,8 @@ async function main() {
     );
   }
 
-  // One final free cleanup pass. Quality-only repetition is kept as a warning
-  // and never rejects an otherwise grounded article.
+  // Final local correction is allowed; repeated or truncated material
+  // is a blocking error and cannot be published if repair fails.
   if (!local.ok) {
     article = autoCorrectArticleLocally(article, packet);
     local = validateArticleAgainstPacket({
