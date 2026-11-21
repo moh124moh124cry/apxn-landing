@@ -1218,6 +1218,7 @@ function paidWriterInstructions() {
     "Use a neutral educational tone suitable for a high-quality public blog.",
     "Do not reveal APXN hosting platforms, deployment names, repository details, preview bots, branches, runtime setup, internal metrics or other operational information. Public-facing product and reward information only.",
     "Avoid keyword stuffing, hype, generic motivational filler and repeated explanations.",
+    "Every paragraph must contain different factual information. Never copy sentences, long phrases, or identical explanations from another section, the introduction, FAQ, or conclusion.",
     "Every paragraph and FAQ answer must end in a complete sentence with final punctuation.",
     "Never repeat a complete sentence or an 18-word passage anywhere in this article, including its conclusion and FAQ.",
     "Each section must present genuinely distinct information, not reword earlier paragraphs to meet the word count.",
@@ -1279,6 +1280,7 @@ function lengthRepairInstructions() {
     "Keep every intro, section, FAQ answer and conclusion substantial enough to remain useful.",
     "Avoid repetition and filler. Every added sentence must remain grounded in the block's allowed evidence.",
     "Fix repeated sentences, repeated long passages, duplicate headings and incomplete endings without inventing content.",
+    "If paragraphs within one section repeat, rewrite the later paragraph with a genuinely distinct angle using only its assigned source evidence, not copied text from the first paragraph. Finish every paragraph with a complete sentence and a period.",
     "Return only the requested JSON schema."
   ].join("\n");
 }
@@ -1684,6 +1686,89 @@ function splitSentencesForCleanup(value) {
     .filter(Boolean);
 }
 
+function removeDuplicateProseLocally(article) {
+  // Free, conservative cleanup. Never invent text or overwrite citations.
+  if (!article || typeof article !== 'object') return article;
+  const editable = [];
+  if (article.intro && typeof article.intro.text === 'string') editable.push([article.intro, 'text']);
+  for (const section of article.sections || []) {
+    for (const paragraph of section.paragraphs || []) {
+      if (typeof paragraph?.text === 'string') editable.push([paragraph, 'text']);
+    }
+  }
+  for (const item of article.faq || []) {
+    if (typeof item?.answer === 'string') editable.push([item, 'answer']);
+  }
+  if (article.conclusion && typeof article.conclusion.text === 'string') {
+    editable.push([article.conclusion, 'text']);
+  }
+
+  const seenSentences = new Set();
+  const seenLongWindows = new Set();
+  const wordsFor = (value) => normalizeTopic(value).split(/\s+/).filter(Boolean);
+  const terminal = /[.!?]["”')\]]?$/u;
+  let trimmedBlocks = 0;
+
+  for (const [item, field] of editable) {
+    const original = normalizeSpace(item[field]);
+    if (!original) continue;
+    const sentences = splitSentencesForCleanup(original);
+    const kept = [];
+    const pendingSentences = new Set();
+    const pendingWindows = new Set();
+    for (const sentence of sentences) {
+      const current = normalizeSpace(sentence);
+      const words = wordsFor(current);
+      if (!words.length) continue;
+
+      // A trailing unfinished fragment can be removed only if a complete
+      // sentence survives in the same block. Otherwise paid repair remains
+      // responsible, and the strict gate continues to reject the draft.
+      if (!terminal.test(current) && kept.length > 0) continue;
+
+      const signature = words.join(' ');
+      let repeated = words.length >= 9 && (seenSentences.has(signature) || pendingSentences.has(signature));
+      if (!repeated && words.length >= 18) {
+        for (let i = 0; i <= words.length - 18; i++) {
+          const window = words.slice(i, i + 18).join(' ');
+          if (seenLongWindows.has(window) || pendingWindows.has(window)) {
+            repeated = true;
+            break;
+          }
+        }
+      }
+      if (repeated) continue;
+
+      kept.push(current);
+      if (words.length >= 9) pendingSentences.add(signature);
+      if (words.length >= 18) {
+        for (let i = 0; i <= words.length - 18; i++) {
+          pendingWindows.add(words.slice(i, i + 18).join(' '));
+        }
+      }
+    }
+
+    // Never empty an entire paragraph, FAQ answer or conclusion. If the
+    // entire block is repeated or unfinished, leave it for an evidence-locked
+    // AI repair rather than publishing a misleading empty section.
+    if (kept.length === 0) continue;
+    const cleaned = normalizeSpace(kept.join(' '));
+    if (cleaned && cleaned !== original) {
+      item[field] = cleaned;
+      trimmedBlocks += 1;
+    }
+    // Only reserve sentence signatures from retained text. Empty blocks are
+    // not cleaned, so they remain flagged by the original strict validator.
+    for (const signature of pendingSentences) seenSentences.add(signature);
+    for (const signature of pendingWindows) seenLongWindows.add(signature);
+  }
+
+  if (trimmedBlocks > 0) {
+    console.log(`FREE EDITORIAL DEDUP: safely cleaned ${trimmedBlocks} block(s).`);
+  }
+  return article;
+}
+
 function autoCorrectArticleLocally(article, packet) {
   if (!article || typeof article !== "object" || Array.isArray(article)) {
     return article;
@@ -1766,7 +1851,7 @@ function autoCorrectArticleLocally(article, packet) {
 
   repairBlock(corrected.conclusion, "conclusion");
 
-  return normalizeGeneratedArticle(corrected);
+  return normalizeGeneratedArticle(removeDuplicateProseLocally(corrected));
 }
 
 function validateArticleAgainstPacket({
@@ -3003,6 +3088,7 @@ async function main() {
     repairAttempts < MAX_LENGTH_REPAIR_CALLS &&
     isSafeRepairableQualityFailure(local)
   ) {
+    const errorsBeforePaidRepair = [...local.errors];
     repairAttempts += 1;
 
     console.log(
@@ -3059,6 +3145,11 @@ async function main() {
     console.log(
       `Repair ${repairAttempts} result: ${local.body_word_count} words; ${local.errors.length} remaining quality errors.`
     );
+
+    if (!local.ok && JSON.stringify([...local.errors].sort()) === JSON.stringify(errorsBeforePaidRepair.sort())) {
+      console.log("No improvement in paid repair validation; refusing another paid retry.");
+      break;
+    }
   }
 
   // Final local correction is allowed; repeated or truncated material
