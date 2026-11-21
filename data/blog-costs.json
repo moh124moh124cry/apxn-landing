@@ -1894,10 +1894,64 @@
           "web_source_count": 0,
           "cost_in_usd_ticks": 152268500,
           "cost_usd": 0.01522685
+        },
+        {
+          "date": "2026-11-21",
+          "response_id": "245756f4-3db5-975a-aabe-9069e12443b5",
+          "model": "grok-4.3",
+          "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
+          "article_slug": "apxn-points-vs-crypto-tokens-understanding-the-difference",
+          "stage": "research_packet_writing",
+          "input_tokens": 7692,
+          "cached_input_tokens": 128,
+          "output_tokens": 3376,
+          "reasoning_tokens": 1020,
+          "total_tokens": 11068,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 179206000,
+          "cost_usd": 0.0179206
+        },
+        {
+          "date": "2026-11-21",
+          "response_id": "99db8801-739c-9314-b64e-218cb68968ca",
+          "model": "grok-4.3",
+          "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
+          "article_slug": "apxn-points-vs-crypto-tokens-understanding-the-difference",
+          "stage": "safe_repair_1",
+          "input_tokens": 9773,
+          "cached_input_tokens": 128,
+          "output_tokens": 3149,
+          "reasoning_tokens": 658,
+          "total_tokens": 12922,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 199543500,
+          "cost_usd": 0.01995435
+        },
+        {
+          "date": "2026-11-21",
+          "response_id": "5469c3e1-e8bc-94dc-b56f-0e8b9da15045",
+          "model": "grok-4.3",
+          "topic": "APXN Points vs Crypto Tokens: Understanding the Difference",
+          "article_slug": "apxn-points-vs-crypto-tokens-understanding-the-difference",
+          "stage": "safe_repair_2",
+          "input_tokens": 9881,
+          "cached_input_tokens": 128,
+          "output_tokens": 3435,
+          "reasoning_tokens": 944,
+          "total_tokens": 13316,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 208043500,
+          "cost_usd": 0.02080435
         }
       ],
-      "total_cost_usd": 0.1273223
+      "total_cost_usd": 0.1860016
     }
   },
-  "last_updated": "2026-11-20"
+  "last_updated": "2026-11-21"
 }
