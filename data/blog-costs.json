@@ -1861,7 +1861,30 @@
         }
       ],
       "total_cost_usd": 0.06862515
+    },
+    "2026-11": {
+      "requests": [
+        {
+          "date": "2026-11-25",
+          "response_id": "62290df4-8a01-928f-b6ed-4aa50e5e1274",
+          "model": "grok-4.3",
+          "topic": "DEX vs CEX: Understanding Crypto Exchange Models",
+          "article_slug": "dex-vs-cex-understanding-crypto-exchange-models",
+          "stage": "research_packet_writing",
+          "input_tokens": 4624,
+          "cached_input_tokens": 128,
+          "output_tokens": 2830,
+          "reasoning_tokens": 724,
+          "total_tokens": 7454,
+          "server_side_tools_used": 0,
+          "web_research_enabled": false,
+          "web_source_count": 0,
+          "cost_in_usd_ticks": 127206000,
+          "cost_usd": 0.0127206
+        }
+      ],
+      "total_cost_usd": 0.0127206
     }
   },
-  "last_updated": "2026-10-12"
+  "last_updated": "2026-11-25"
 }

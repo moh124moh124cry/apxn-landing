@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-10-12",
+  "last_updated": "2026-11-25",
   "default_language": "en",
   "stats": {
-    "total_articles": 21,
+    "total_articles": 22,
     "published": 12,
-    "ready": 9,
+    "ready": 10,
     "drafts": 0,
     "featured": 1
   },
@@ -4612,6 +4612,225 @@
         }
       },
       "verified_against_knowledge": true
+    },
+    {
+      "id": "apxn-022",
+      "slug": "dex-vs-cex-models-structural-differences-in-crypto-exchanges",
+      "title": "DEX vs CEX Models: Structural Differences in Crypto Exchanges",
+      "description": "Explore the structural elements of decentralized exchange design on Ethereum and how exchanges are evaluated for listing, drawing from official design guidance and submission,",
+      "excerpt": "Explore the structural elements of decentralized exchange design on Ethereum and how exchanges are evaluated for listing, drawing from official design guidance and submission,",
+      "category": "Education",
+      "language": "en",
+      "author": "Apex Network Editorial",
+      "status": "ready",
+      "featured": false,
+      "indexable": false,
+      "created_at": "2026-11-25",
+      "generated_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": null,
+      "reading_minutes": 6,
+      "word_count": 1222,
+      "path": "",
+      "url": "",
+      "image": "",
+      "image_filename": "",
+      "keywords": [
+        "DEX design",
+        "Ethereum exchanges",
+        "decentralized exchange",
+        "crypto exchange models",
+        "Uniswap",
+        "DEX best practices",
+        "ethereum.org listing",
+        "DeFi interface",
+        "exchange evaluation",
+        "smart contract standards"
+      ],
+      "source": "automated_research_packet_pipeline",
+      "content_mode": "external",
+      "source_profile": "exchange_models",
+      "seo_ready": true,
+      "facts_verified": true,
+      "duplicate_check": true,
+      "quality_check": true,
+      "seo": {
+        "title": "DEX vs CEX Models: Structural Differences in Crypto Exchanges",
+        "description": "Explore the structural elements of decentralized exchange design on Ethereum and how exchanges are evaluated for listing, drawing from official design guidance and submission,",
+        "canonical": "https://apxn.network/blog/articles/dex-vs-cex-models-structural-differences-in-crypto-exchanges.html",
+        "robots": "noindex, nofollow",
+        "article_schema": true,
+        "faq_schema": true
+      },
+      "content": {
+        "title": "DEX vs CEX Models: Structural Differences in Crypto Exchanges",
+        "description": "Explore the structural elements of decentralized exchange design on Ethereum and how exchanges are evaluated for listing, drawing from official design guidance and submission,",
+        "keywords": [
+          "DEX design",
+          "Ethereum exchanges",
+          "decentralized exchange",
+          "crypto exchange models",
+          "Uniswap",
+          "DEX best practices",
+          "ethereum.org listing",
+          "DeFi interface",
+          "exchange evaluation",
+          "smart contract standards"
+        ],
+        "intro": {
+          "text": "Decentralized exchange design follows patterns established since the launch of Uniswap in 2018. Hundreds of decentralized exchanges have launched across dozens of different chains, yet the interface has remained generally consistent. Early innovators such as Uniswap, Pancakeswap, and Sushiswap have given DeFi users a shared understanding of what a DEX looks like. This collective experience has led to emerging standards where design decisions become standardized across sites. The evolution of DEXes serves as ongoing live testing, with effective elements retained and ineffective ones discarded. Certain standards now guide how a DEX should conform while still allowing room for personality. Ethereum documentation outlines these fundamentals alongside related topics such as smart contracts and network elements.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03"
+          ]
+        },
+        "sections": [
+          {
+            "heading": "Core Elements of DEX Interface Design",
+            "paragraphs": [
+              {
+                "text": "Decentralized exchange design best practices emphasize clear presentation of essential user information. Protocols have contributed to improved DEX design, establishing what details users require and how to display them effectively. The flow is structured to support smooth interaction through defined components and layout choices. Documentation covers foundational topics including the Ethereum stack, standards, and user experience fundamentals that inform these interfaces. Builders reference these principles when constructing applications that interact with the network.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              },
+              {
+                "text": "Design resources such as the Figma wireframe kit assist in applying consistent structures. The emphasis remains on showing necessary details without unnecessary complexity. Multiple protocols have advanced the overall quality of DEX interfaces over time. This progress reflects accumulated knowledge about user needs and presentation methods within the Ethereum ecosystem. The guidance provides an overview of UX principles relevant to these environments and related network features.",
+                "evidence_ids": [
+                  "EXT-01",
+                  "EXT-07"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Evolution of Exchange Interfaces Since 2018",
+            "paragraphs": [
+              {
+                "text": "Since the launch of Uniswap in 2018, decentralized exchanges have proliferated across numerous chains. Many introduced new elements or variations, yet the core interface structure persisted. This continuity reflects the influence of early examples that shaped user expectations. The page on ethereum.org allows users to input location details and view available exchanges, illustrating how listing information is organized for accessibility across different regions and services. ethereum.org maintains listings of exchanges on its get-eth section.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              },
+              {
+                "text": "The consistent interface across exchanges demonstrates how initial designs established lasting patterns. Newer implementations often build upon these foundations rather than altering the fundamental layout. ethereum.org documentation addresses security considerations and testing alongside broader Ethereum roadmap topics. Anyone may suggest additional exchanges for inclusion on the site through established contribution processes. This approach supports an open method for expanding available options.",
+                "evidence_ids": [
+                  "EXT-02",
+                  "EXT-08"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Key Information Displayed in DEX Forms",
+            "paragraphs": [
+              {
+                "text": "DEX interfaces include specific details within the main form to support user decisions. Balance in wallet, a max button, fiat equivalent, and price impact on the received amount represent core elements that have become standard. During early DeFi development, the fiat equivalent was frequently absent. Including this information aligns with how users conceptualize value in local currencies. Documentation notes that this element is essential for matching real-world mental models in any Web3 project.",
+                "evidence_ids": [
+                  "EXT-05",
+                  "EXT-09"
+                ]
+              },
+              {
+                "text": "Additional information beyond the primary fields may also appear depending on the implementation. The structure of the main form allows for variations while maintaining consistency in essential data points. DeFi continues to evolve with ongoing opportunities for refinement. Resources such as the Figma kit support builders in applying these display standards. Page updates through 2025 and 2026 reflect continued attention to these design considerations within the Ethereum documentation.",
+                "evidence_ids": [
+                  "EXT-05",
+                  "EXT-09"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Standardization Across DEX Platforms",
+            "paragraphs": [
+              {
+                "text": "Thanks to early innovators, users now hold a collective idea of DEX appearance and function. This shared reference has allowed best practices to emerge over time. More design decisions become standardized across different sites as effective approaches are adopted widely. The evolution of DEXes functions as extensive live testing where successful elements persist and others are set aside. Standards provide guidance without eliminating all opportunity for individual expression in the interface.",
+                "evidence_ids": [
+                  "EXT-03"
+                ]
+              },
+              {
+                "text": "Certain conventions now define expected DEX behavior and presentation. There remains space for personality within the established framework. Things that proved useful stayed in place while less effective choices were removed. This process has produced recognizable patterns that users encounter across various platforms. The resulting standards reflect practical outcomes from ongoing development and user interaction within the ecosystem of decentralized exchanges and related applications.",
+                "evidence_ids": [
+                  "EXT-03"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Fiat Equivalents and Transaction Details",
+            "paragraphs": [
+              {
+                "text": "Fiat equivalent display supports user understanding by connecting token amounts to familiar currency values. In earlier stages of DeFi development this element was often omitted. Current guidance stresses that any Web3 project should incorporate the fiat equivalent so that users can relate values to their local currency context. This inclusion helps align interface elements with established mental models for evaluating amounts during transactions and balance checks. Key details such as wallet balance and price impact are presented alongside this figure.",
+                "evidence_ids": [
+                  "EXT-04"
+                ]
+              },
+              {
+                "text": "The max button and received amount information further clarify transaction outcomes. During the evolution of DeFi many different elements were tested for inclusion in these forms. The fiat equivalent stands out as a component now viewed as necessary for effective communication. Users continue to think in terms of local currencies, making this reference point important for practical usability. Documentation highlights this requirement as part of broader design considerations for decentralized interfaces and related projects.",
+                "evidence_ids": [
+                  "EXT-04"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Adding Exchanges to Official Resources",
+            "paragraphs": [
+              {
+                "text": "Ethereum documentation outlines a process for suggesting exchanges through GitHub issues. This method allows contributors to propose additions so that ethereum.org can maintain listings of available services. The goal includes supporting confidence that listed exchanges represent legitimate options. Create an issue on GitHub when seeking to add an exchange. Page updates through 2026 indicate ongoing maintenance of these contribution guidelines and related sections on the site.",
+                "evidence_ids": [
+                  "EXT-06"
+                ]
+              },
+              {
+                "text": "The listing process supports users who visit ethereum.org/get-eth to locate exchanges based on location input. Anyone remains free to suggest new exchanges through the established channel. This open approach helps expand the information available while following defined criteria. Documentation references security topics alongside the exchange listing guidance. Contributors follow the steps provided to submit proposals for review and potential inclusion on the resource pages. Updates dated June 2026 and November 2026 reflect continued attention to these procedures.",
+                "evidence_ids": [
+                  "EXT-06"
+                ]
+              }
+            ]
+          }
+        ],
+        "faq": [
+          {
+            "question": "How has the DEX interface changed since 2018?",
+            "answer": "Since the launch of Uniswap in 2018, hundreds of decentralized exchanges have appeared across many chains. Early examples established a consistent interface structure that later projects largely retained. New elements were introduced by some exchanges, yet the overall layout remained similar. This consistency stems from collective user familiarity developed through early innovators. Design decisions have become more standardized as effective patterns persisted through ongoing development and testing.",
+            "evidence_ids": [
+              "EXT-01",
+              "EXT-02"
+            ]
+          },
+          {
+            "question": "What information appears in a typical DEX form?",
+            "answer": "A DEX form commonly displays wallet balance, a max button, fiat equivalent, and price impact on the received amount. The fiat equivalent helps users connect token values to local currency references. Earlier DeFi interfaces sometimes omitted this detail. Current guidance identifies it as essential for matching how users think about amounts. Other transaction-related details support evaluation of the exchange outcome within the interface.",
+            "evidence_ids": [
+              "EXT-03",
+              "EXT-04"
+            ]
+          },
+          {
+            "question": "How can an exchange be suggested for ethereum.org?",
+            "answer": "An exchange can be suggested by creating a GitHub issue following the guidance on the adding exchanges page. This process supports review so that ethereum.org can list services with greater confidence in their legitimacy. The site currently presents exchanges on the get-eth section where users may filter by location. Updates to the documentation through 2025 and 2026 maintain these contribution instructions for ongoing use.",
+            "evidence_ids": [
+              "EXT-05",
+              "EXT-06"
+            ]
+          }
+        ],
+        "conclusion": {
+          "text": "Documentation on DEX design highlights consistent interface patterns established since 2018 and refined through live testing across many exchanges. Key form elements such as fiat equivalents and price impact support user understanding of amounts. ethereum.org provides a defined process for suggesting exchanges to its listings, emphasizing legitimacy considerations. These resources describe structural aspects of decentralized exchange presentation and contribution methods without extending into operational comparisons or recommendations.",
+          "evidence_ids": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04"
+          ]
+        }
+      }
     }
   ],
   "generation_queue": [
@@ -4882,7 +5101,7 @@
       "priority": 20,
       "topic": "DEX vs CEX: Understanding Crypto Exchange Models",
       "category": "Education",
-      "status": "waiting",
+      "status": "ready",
       "source": "topic_bank",
       "topic_bank_id": "bank-030",
       "language": "en",
@@ -4890,7 +5109,9 @@
       "content_mode": "external",
       "source_profile": "exchange_models",
       "knowledge_sections": [],
-      "auto_publish_allowed": true
+      "auto_publish_allowed": true,
+      "article_id": "apxn-022",
+      "generated_at": "2026-11-25"
     },
     {
       "priority": 21,
@@ -5085,17 +5306,17 @@
     }
   ],
   "automation_state": {
-    "last_generated_article": "apxn-021",
+    "last_generated_article": "apxn-022",
     "last_published_article": "apxn-011",
     "next_queue_priority": 8,
     "automatic_generation": true,
     "automatic_publishing": false,
     "topic_planner": {
-      "last_run": "2026-10-12",
+      "last_run": "2026-11-25",
       "added_topics": 0,
       "added_topic_ids": [],
       "added_categories": [],
-      "waiting_topics_after_run": 11,
+      "waiting_topics_after_run": 10,
       "minimum_waiting_topics": 6,
       "target_waiting_topics": 12,
       "category_load_after_run": {
@@ -5105,7 +5326,7 @@
         "BSC": 2,
         "Security": 5,
         "Education": 2,
-        "Development": 4
+        "Development": 3
       }
     }
   }
