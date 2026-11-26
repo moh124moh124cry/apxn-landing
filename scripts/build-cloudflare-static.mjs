@@ -38,7 +38,7 @@ const SITE_MODE =
 // Official Monetag In-Page Push tag for apxn.network.
 // Configure the website advertisement only here.
 const MONETAG_SCRIPT =
-  `<script>(function(s){s.dataset.zone='11803833',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>`;
+  `<script data-cfasync="false">(function(s){s.dataset.zone='11803833',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>`;
 
 const ROOT_EXTENSIONS = new Set([
   ".html",
