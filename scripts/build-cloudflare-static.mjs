@@ -35,12 +35,10 @@ const SITE_MODE =
     .trim()
     .toLowerCase();
 
-// Apex Network's official Google AdSense publisher ID.
-const ADSENSE_PUBLISHER_ID = "ca-pub-1953091750666383";
-const ADSENSE_SCRIPT =
-  `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>`;
-const ADS_TXT_RECORD =
-  "google.com, pub-1953091750666383, DIRECT, f08c47fec0942fa0";
+// Official Monetag In-Page Push tag for apxn.network.
+// Configure the website advertisement only here.
+const MONETAG_SCRIPT =
+  `<script>(function(s){s.dataset.zone='11803833',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>`;
 
 const ROOT_EXTENSIONS = new Set([
   ".html",
@@ -167,34 +165,39 @@ async function prepareProductionAssets() {
   );
 }
 
-// Inject the official script into <head> once, without modifying
-// the source HTML pages. New articles receive it on every build.
-function addAdSenseToHtml(html, filePath) {
-  const scriptTags = html.match(/<script\b[^>]*\bsrc\s*=\s*["'][^"']*\/pagead\/js\/adsbygoogle\.js[^"']*["'][^>]*>\s*<\/script>/gi) || [];
-
-  if (scriptTags.length > 0) {
-    if (
-      scriptTags.length !== 1 ||
-      !scriptTags[0].includes(ADSENSE_PUBLISHER_ID)
-    ) {
-      throw new Error(
-        `Unexpected or duplicate AdSense script in ${filePath}. Review it before deploying.`
-      );
-    }
-    return html;
-  }
-
-  if (!/<head\b[^>]*>/i.test(html)) {
-    throw new Error(`Missing <head> in public page: ${filePath}`);
-  }
-
+// Remove the old AdSense loader if it is present in a copied HTML file.
+// All changes are made only in the generated output directory.
+function removeOldAdSenseLoader(html) {
   return html.replace(
-    /<head\b[^>]*>/i,
-    (openingTag) => `${openingTag}\n    ${ADSENSE_SCRIPT}`
+    /<script\b[^>]*\bsrc\s*=\s*["'][^"']*\/pagead\/js\/adsbygoogle\.js[^"']*["'][^>]*>\s*<\/script>/gi,
+    ""
   );
 }
 
-async function addAdSenseToPublicPages(directory, isRoot = false) {
+// Insert the exact Monetag tag immediately after <head> once.
+// Existing identical tags are normalized to one copy.
+function addMonetagToHtml(html, filePath) {
+  const cleaned = removeOldAdSenseLoader(html)
+    .split(MONETAG_SCRIPT).join("");
+
+  // Do not silently add a second loader if a different copy of the
+  // same website ad has been introduced into a source page.
+  const scriptTags = cleaned.match(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi) || [];
+  if (scriptTags.some((tag) => /nap5k\.com\/tag\.min\.js|\b11803833\b/i.test(tag))) {
+    throw new Error(`Unexpected existing Monetag tag in ${filePath}. Keep the tag only in the build script.`);
+  }
+
+  if (!/<head\b[^>]*>/i.test(cleaned)) {
+    throw new Error(`Missing <head> in public page: ${filePath}`);
+  }
+
+  return cleaned.replace(
+    /<head\b[^>]*>/i,
+    (openingTag) => `${openingTag}\n    ${MONETAG_SCRIPT}`
+  );
+}
+
+async function addMonetagToPublicPages(directory, isRoot = false) {
   let count = 0;
   const entries = await readdir(directory, {
     withFileTypes: true
@@ -206,7 +209,7 @@ async function addAdSenseToPublicPages(directory, isRoot = false) {
     if (entry.isDirectory()) {
       // Never run publisher ads on the private admin interface.
       if (isRoot && entry.name === "blog-admin") continue;
-      count += await addAdSenseToPublicPages(fullPath);
+      count += await addMonetagToPublicPages(fullPath);
       continue;
     }
 
@@ -214,11 +217,11 @@ async function addAdSenseToPublicPages(directory, isRoot = false) {
       continue;
     }
 
-    // The secure account dashboard is not an editorial ad page.
+    // Do not load third-party advertisements in the account dashboard.
     if (isRoot && entry.name === "dashboard.html") continue;
 
     const original = await readFile(fullPath, "utf8");
-    const updated = addAdSenseToHtml(original, fullPath);
+    const updated = addMonetagToHtml(original, fullPath);
     if (updated !== original) {
       await writeFile(fullPath, updated, "utf8");
     }
@@ -228,26 +231,29 @@ async function addAdSenseToPublicPages(directory, isRoot = false) {
   return count;
 }
 
-async function ensureAdsTxt() {
+// Stop publishing the old Google seller record, if an ads.txt source
+// is added later. Preserve all unrelated seller records and comments.
+async function removeOldAdSenseRecord() {
   const path = join(OUTPUT, "ads.txt");
-  let existing = "";
+  let existing;
   try {
     existing = await readFile(path, "utf8");
   } catch (error) {
-    if (error.code !== "ENOENT") throw error;
+    if (error.code === "ENOENT") return;
+    throw error;
   }
 
   const lines = existing.split(/\r?\n/);
-  const hasGoogleRecord = lines.some(
-    (line) => line.trim() === ADS_TXT_RECORD
+  const remaining = lines.filter((line) =>
+    !/^\s*google\.com\s*,\s*pub-1953091750666383\s*,/i.test(line)
   );
 
-  if (!hasGoogleRecord) {
-    const prefix = existing.trimEnd();
-    const content = prefix
-      ? `${prefix}\n${ADS_TXT_RECORD}\n`
-      : `${ADS_TXT_RECORD}\n`;
-    await writeFile(path, content, "utf8");
+  if (remaining.length === lines.length) return;
+
+  if (!remaining.join("\n").trim()) {
+    await rm(path, { force: true });
+  } else {
+    await writeFile(path, remaining.join("\n"), "utf8");
   }
 }
 
@@ -285,7 +291,7 @@ async function build() {
     new Set([".html"])
   );
 
-  // Published articles only.
+  // Published articles only (including future articles).
   await copyAllowedFiles(
     join(ROOT, "blog", "articles"),
     join(OUTPUT, "blog", "articles"),
@@ -319,14 +325,11 @@ async function build() {
 
   // Cloudflare serves .cloudflare-static as assets, so the script
   // must be added during this build rather than in the Worker.
-  const publicPageCount = await addAdSenseToPublicPages(OUTPUT, true);
-  await ensureAdsTxt();
+  const publicPageCount = await addMonetagToPublicPages(OUTPUT, true);
+  await removeOldAdSenseRecord();
 
   console.log(
-    `Google AdSense ${ADSENSE_PUBLISHER_ID} added to ${publicPageCount} public HTML pages.`
-  );
-  console.log(
-    "Google AdSense ads.txt published to /ads.txt."
+    `Monetag In-Page Push added to ${publicPageCount} public HTML pages.`
   );
   console.log(
     "APXN public assets prepared successfully."
@@ -350,4 +353,3 @@ build().catch((error) => {
 
   process.exitCode = 1;
 });
-
